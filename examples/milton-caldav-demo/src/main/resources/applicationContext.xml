@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+           
+<!--
+ * For iCal, start off by opening a calendar at
+ *
+ * http://localhost:8080/users/userA/  - iCal will discover the calendar inside
+ * that user.
+ *
+ * For Mozilla clients (eg thunderbird) connect directory to the calendar url, eg
+ *
+ * http://localhost:8080/users/userA/calendars/cal1/
+ -->
+
+    <bean id="caldav.demo.resource.factory" class="io.milton.http.caldav.demo.TResourceFactory"/>
+	
+    <bean id="wellknown.resource.factory" class="io.milton.http.WellKnownResourceFactory">
+        <constructor-arg ref="caldav.demo.resource.factory"/>
+        <constructor-arg>
+            <list>
+                <ref local="protocol.caldav"/>
+                <ref local="protocol.carddav"/>
+            </list>
+        </constructor-arg>
+    </bean>
+
+    <bean id="resource.type.helper.default" class="io.milton.http.webdav.WebDavResourceTypeHelper"/>
+
+    <bean id="resource.type.helper.acl" class="io.milton.http.acl.AccessControlledResourceTypeHelper">
+        <constructor-arg ref="resource.type.helper.default"/>
+    </bean>
+
+    <bean id="resource.type.helper.caldav" class="io.milton.http.caldav.CalendarResourceTypeHelper">
+        <constructor-arg ref="resource.type.helper.acl"/>
+    </bean>        
+
+    <bean id="resource.type.helper.carddav" class="io.milton.http.carddav.AddressBookResourceTypeHelper">
+        <constructor-arg ref="resource.type.helper.caldav"/>
+    </bean>
+
+
+    <bean id="auth.service" class="io.milton.http.AuthenticationService"/>
+<!--
+    <bean id="response.handler" class="io.milton.http.MsOfficeResponseHandler"/>
+-->
+
+    <bean id="handler.helper" class="io.milton.http.HandlerHelper">
+        <constructor-arg ref="auth.service"/>
+        <constructor-arg>
+            <list>
+                <!-- Storage quota checkers-->
+            </list>
+        </constructor-arg>
+    </bean>
+
+    <bean id="response.handler" class="io.milton.http.webdav.DefaultWebDavResponseHandler">
+        <constructor-arg ref="auth.service"/>
+        <constructor-arg ref="resource.type.helper.carddav"/>
+    </bean>
+
+    <bean id="protocol.http11" class="io.milton.http.http11.Http11Protocol">
+        <constructor-arg ref="response.handler"/>
+        <constructor-arg ref="handler.helper"/>
+    </bean>
+
+    <bean id="protocol.webdav" class="io.milton.http.webdav.WebDavProtocol">
+        <constructor-arg ref="response.handler"/>
+        <constructor-arg ref="handler.helper"/>
+        <constructor-arg ref="resource.type.helper.carddav"/>
+    </bean>
+
+    <bean id="protocol.caldav" class="io.milton.http.caldav.CalDavProtocol">
+        <constructor-arg ref="caldav.demo.resource.factory" />
+        <constructor-arg ref="response.handler"/>
+        <constructor-arg ref="handler.helper"/>
+        <constructor-arg ref="protocol.webdav"/>
+    </bean>
+
+    <bean id="protocol.carddav" class="io.milton.http.carddav.CardDavProtocol">
+        <constructor-arg ref="caldav.demo.resource.factory" />
+        <constructor-arg ref="response.handler"/>
+        <constructor-arg ref="handler.helper"/>
+        <constructor-arg ref="protocol.webdav"/>
+    </bean>
+
+    <bean id="protocol.acl" class="io.milton.http.acl.ACLProtocol">
+        <constructor-arg ref="protocol.webdav"/>
+    </bean>
+
+    <bean id="protocol.handlers" class="io.milton.http.ProtocolHandlers">
+        <constructor-arg>
+            <list>
+                <ref bean="protocol.http11"/>
+                <ref bean="protocol.webdav"/>
+                <ref bean="protocol.caldav"/>
+                <ref bean="protocol.acl"/>
+                <ref bean="protocol.carddav"/>				
+            </list>
+        </constructor-arg>
+    </bean>
+
+    <bean id="http.manager" class="io.milton.http.HttpManager">
+        <constructor-arg ref="wellknown.resource.factory" />
+        <constructor-arg ref="response.handler" />
+        <constructor-arg ref="protocol.handlers" />
+<!-- Note that I believe that this causes iCal5 to not work correctly: BM -->                
+<!--
+		<property name="filters">
+			<list>
+				<ref bean="debug.filter" />
+			</list>
+		</property>
+-->
+    </bean>
+
+    <!-- If added to the http manager, this filter will output request and responses
+    to the logger -->
+    <bean id="debug.filter" class="io.milton.http.DebugFilter" >
+        <!-- By default the debugfilter will log to the current user's home directory -->
+        <!-- To change this behaviour uncomment the following line and set the path you want to log to-->
+<!--
+        <constructor-arg value="g:\\temp"/>
+-->
+    </bean>
+
+	
+    <bean id="ldap.user.factory" class="io.milton.http.caldav.demo.TLdapUserFactory">
+        <constructor-arg ref="caldav.demo.resource.factory" />
+    </bean>
+        
+    <bean id="ldap.tx.manager" class="io.milton.ldap.NullLdapTransactionManager"/>
+	
+    <bean id="ldap.server" class="io.milton.ldap.LdapServer" init-method="start" destroy-method="close">
+        <constructor-arg ref="ldap.tx.manager" />
+        <constructor-arg ref="ldap.user.factory" />
+        <constructor-arg ref="protocol.webdav" />
+        <property name="port" value="8389" />
+		<!--
+		<property name="bindAddress" value="localhost" />
+		-->
+        <property name="nosslFlag" value="true"/>
+    </bean>
+	
+</beans>

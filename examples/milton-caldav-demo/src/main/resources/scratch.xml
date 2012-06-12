@@ -1,0 +1,94 @@
+
+<d:multistatus xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:" xmlns:cal="urn:ietf:params:xml:ns:caldav" xmlns:card="urn:ietf:params:xml:ns:carddav">
+    <d:response>
+        <d:href>/user1/cal/cal1/</d:href>
+        <d:propstat>
+            <d:prop>
+                <d:getcontenttype>text/html</d:getcontenttype>
+                <d:resourcetype>
+                    <d:collection/>
+                    <cal:calendar/>
+                </d:resourcetype>
+                <d:getetag/>
+            </d:prop>
+            <d:status>HTTP/1.1 200 OK</d:status>
+        </d:propstat>
+    </d:response>
+    <d:response>
+        <d:href>/user1/cal/cal1/Auto1</d:href>
+        <d:propstat>
+            <d:prop>
+                <d:getcontenttype>text/calendar</d:getcontenttype>
+                <d:resourcetype/>
+                <d:getetag/>
+            </d:prop>
+            <d:status>HTTP/1.1 200 OK</d:status>
+        </d:propstat>
+    </d:response>
+    <d:response>
+        <d:href>/user1/cal/cal1/ad128eec-c24d-431c-a7e5-f7d513b0ff9d.ics</d:href>
+        <d:propstat>
+            <d:prop>
+                <d:getcontenttype>text/calendar</d:getcontenttype>
+                <d:resourcetype/>
+                <d:getetag/>
+            </d:prop>
+            <d:status>HTTP/1.1 200 OK</d:status>
+        </d:propstat>
+    </d:response>
+    <d:response>
+        <d:href>/user1/cal/cal1/3a6601fe-b54a-40ad-bd7c-c041ef1958bf.ics</d:href>
+        <d:propstat>
+            <d:prop>
+                <d:getcontenttype>text/calendar</d:getcontenttype>
+                <d:resourcetype/>
+                <d:getetag/>
+            </d:prop>
+            <d:status>HTTP/1.1 200 OK</d:status>
+        </d:propstat>
+    </d:response>
+    <d:response>
+        <d:href>/user1/cal/cal1/4a4715f2-278e-4793-85cc-6273e4fb1925.ics</d:href>
+        <d:propstat>
+            <d:prop>
+                <d:getcontenttype>text/calendar</d:getcontenttype>
+                <d:resourcetype/>
+                <d:getetag/>
+            </d:prop>
+            <d:status>HTTP/1.1 200 OK</d:status>
+        </d:propstat>
+    </d:response>
+    <d:response>
+        <d:href>/user1/cal/cal1/743bda8f-9027-4443-8c4f-63c6d80884ab.ics</d:href>
+        <d:propstat>
+            <d:prop>
+                <d:getcontenttype>text/calendar</d:getcontenttype>
+                <d:resourcetype/>
+                <d:getetag/>
+            </d:prop>
+            <d:status>HTTP/1.1 200 OK</d:status>
+        </d:propstat>
+    </d:response>
+    <d:response>
+        <d:href>/user1/cal/cal1/6242642c-0e70-4763-b035-53b468462d2d.ics</d:href>
+        <d:propstat>
+            <d:prop>
+                <d:getcontenttype>text/calendar</d:getcontenttype>
+                <d:resourcetype/>
+                <d:getetag/>
+            </d:prop>
+            <d:status>HTTP/1.1 200 OK</d:status>
+        </d:propstat>
+    </d:response>
+    <d:response>
+        <d:href>/user1/cal/cal1/e910c4b4-31c3-4c27-a235-3ac601acbe85.ics</d:href>
+        <d:propstat>
+            <d:prop>
+                <d:getcontenttype>text/calendar</d:getcontenttype>
+                <d:resourcetype/>
+                <d:getetag/>
+            </d:prop>
+            <d:status>HTTP/1.1 200 OK</d:status>
+        </d:propstat>
+    </d:response>
+</d:multistatus>

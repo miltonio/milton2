@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<d:multistatus xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:" xmlns:cal="urn:ietf:params:xml:ns:caldav">
+	<d:response>
+		<d:href>/folder%20with%20ampersand%20%26/</d:href>
+		<d:propstat>
+			<d:prop>
+				<d:getcontenttype/>
+				<d:getcontentlength/>
+				<d:resourcetype>
+					<d:collection/>
+				</d:resourcetype>
+				<d:getlastmodified>Fri, 31 Dec 2004 11:00:00 GMT</d:getlastmodified>
+				<d:displayname>folder with ampersand &amp;</d:displayname>
+				<d:getetag>210772451_684204673</d:getetag>
+				<d:creationdate>1999-12-31T11:00:00Z</d:creationdate>
+			</d:prop>
+			<d:status>HTTP/1.1 200 OK</d:status>
+		</d:propstat>
+	</d:response>
+</d:multistatus>

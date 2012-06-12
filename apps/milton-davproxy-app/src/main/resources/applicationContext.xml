@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+           
+
+
+    <bean id="server.A" class="com.ettrema.httpclient.HostBuilder">
+        <property name="server" value="localhost" />
+        <property name="port" value="8085" />
+        <property name="user" value="me" />
+        <property name="password" value="pwd" />
+        <property name="rootPath" value="/" />
+    </bean>
+
+    <bean id="server.B" class="com.ettrema.httpclient.HostBuilder">
+        <property name="server" value="localhost" />
+        <property name="port" value="8095" />
+        <property name="user" value="me" />
+        <property name="password" value="pwd" />
+        <property name="rootPath" value="/" />
+    </bean>
+
+    <bean id="content.generator" class="com.ettrema.davproxy.content.FolderHtmlContentGenerator">        
+    </bean>
+
+    <bean id="remote.manager" class="com.ettrema.davproxy.adapter.RemoteManager">        
+        <constructor-arg ref="milton.fs.security.manager" />
+        <constructor-arg ref="content.generator" />
+    </bean>
+
+
+    <bean id="davproxy.resource.factory" class="com.ettrema.davproxy.adapter.RemoteDavResourceFactory">
+        <constructor-arg ref="milton.fs.security.manager" />
+        <constructor-arg ref="content.generator" />
+        <constructor-arg ref="remote.manager" />
+        <constructor-arg>
+            <map>
+                <entry key="serverA">
+                    <ref local="server.A" />
+                </entry>
+                <entry key="serverB">
+                    <ref local="server.B" />
+                </entry>				
+            </map>
+        </constructor-arg>
+    </bean>
+
+    <bean id="milton.fs.security.manager" class="com.ettrema.http.fs.SimpleSecurityManager" >
+        <property name="realm" value="aRealm" />
+        <property name="nameAndPasswords">
+            <map>
+                <entry key="me" value="pwd"/>
+                <entry key="user1" value="pwd1"/>
+                <entry key="user2" value="pwd2"/>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="milton.fs.lock.manager" class="com.ettrema.http.fs.SimpleLockManager" />
+
+    <bean id="auth.service" class="com.bradmcevoy.http.AuthenticationService">
+        <property name="disableDigest" value="false"/>
+        <property name="disableBasic" value="true"/>
+    </bean>
+
+    <bean id="milton.response.handler" class="com.bradmcevoy.http.webdav.DefaultWebDavResponseHandler">
+        <constructor-arg ref="auth.service"/>
+    </bean>
+
+    <bean id="milton.http.manager" class="com.bradmcevoy.http.HttpManager">
+        <constructor-arg ref="davproxy.resource.factory" />
+        <constructor-arg ref="milton.response.handler" />
+        <constructor-arg ref="auth.service" />
+    </bean>
+</beans>

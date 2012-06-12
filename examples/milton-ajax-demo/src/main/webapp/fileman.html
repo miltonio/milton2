@@ -1,0 +1,149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>File manager</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<link href="css/styleFM.css" rel="stylesheet" type="text/css" />		
+		<link href="css/style.css" rel="stylesheet" type="text/css" />		
+		<link href="css/jquery-ui.css" type="text/css" rel="stylesheet" />
+		<link href="css/basic.css" type="text/css" rel="stylesheet" />
+		<link href="css/validation.css" type="text/css" rel="stylesheet" />
+		<link href="css/jquery-ui-1.8.11.custom.css" rel="stylesheet" type="text/css" media="screen" />
+
+		<script type="text/javascript" src="js/jquery-1.5.1.min.js"></script>
+		<script type="text/javascript" src="js/jquery.cookie.js" ></script>
+		<script type="text/javascript" src="js/jquery-ui-1.8.11.custom.min.js" ></script>
+		<script type="text/javascript" src="js/jquery.metadata.js" ></script>
+		<script type="text/javascript" src="js/jquery.sizes.js" ></script>
+
+		<script type="text/javascript" src="js/jlayout.border.js" ></script>
+		<script type="text/javascript" src="js/jquery.dataTables.min.js" ></script>
+		<script type="text/javascript" src="js/jquery.jlayout.js" ></script>
+		<script type="text/javascript" src="js/jquery.jstree.js" ></script>
+		<script type="text/javascript" src="js/jquery.simplemodal.js" ></script>
+		<script type="text/javascript" src="js/toolTip.js" ></script>
+
+		<script type="text/javascript" src="js/panels.js" ></script>
+		<script type="text/javascript" src="js/common.js" ></script>
+		<script type="text/javascript" src="js/file.js" ></script>
+		<script type="text/javascript" src="js/buttons.js" ></script>
+		<script type="text/javascript" src="js/types.js" ></script>
+		<script type="text/javascript" src="js/jquery.dropshadow.js" ></script>
+
+		<script type="text/javascript" src="js/tree.init.js" ></script>
+		<script type="text/javascript" src="js/common.js" ></script>
+		<script type="text/javascript" src="js/user.js" ></script>
+		<script type="text/javascript" src="js/ajaxupload.3.6.js" >//</script>
+		<script type="text/javascript" src="js/flowplayer-3.2.2.min.js" ></script>
+		<script type="text/javascript" src="js/jquery.contextmenu.r2.js" ></script>
+
+		<script type="text/javascript" src="js/swfobject.js" ></script>
+		<script type="text/javascript" >
+			jQuery(function($) {
+				initTree();
+				initFileManPanels();
+			});
+        </script>
+	</head>
+	<body>
+		<div class="layout">
+			<div class="north">
+				<ul>
+
+					<li class="right">
+						<a href="javascript:doLogout()" shape="rect">Logout</a>
+					</li>
+					<li class="right">
+						<a id="editLink" href="javascript:doEdit()" shape="rect">Edit</a>
+					</li>
+					<li class="right">
+						<a id="filemanUpload" href="#" shape="rect">Upload</a>
+
+					</li>
+					<li class="right">
+						<a id="filemanMigrate" href="javascript:showMigrator()" shape="rect">Migrate</a>
+					</li>
+				</ul>
+			</div>
+			<script type="text/javascript" >
+            </script>
+			<div class="center">
+
+				<div id="tabs">
+					<ul>
+						<li>
+							<a href="#files" shape="rect">Files</a>
+						</li>
+						<li>
+							<a href="#preview" shape="rect">Content</a>
+						</li>
+
+					</ul>
+					<div id="files"></div>
+					<div id="preview" class="preview"></div>
+				</div>
+				<div class="grabberV"></div>
+			</div>
+			<div class="west">
+				<!-- This is the container for the tree view - VERY important -->
+				<div id="tree"></div>
+
+			</div>
+		</div>
+		<div id="ajaxLoading" class="modal" style="display: none">
+			<p>Please wait while we process your request...</p>
+		</div>
+		<div id="addPageModal" class="modal" style="display: none">
+			<h2>Add a new file/folder</h2>
+			<p>Please choose which template to use:</p>
+
+			<ul class="templates">
+				<li />
+			</ul>
+		</div>
+		<div class="contextMenu" id="fileContextMenu">
+			<ul>
+				<li id="contextView">View</li>
+				<li id="contextEdit">Edit</li>
+
+				<li id="contextRename">Rename</li>
+				<li id="contextDelete">Delete</li>
+			</ul>
+		</div>
+		<div id="migrator" class="modal" style="display: none">
+			<h2 id="headline">Migrator</h2>
+			<form action="" method="POST" onsubmit="startMigration()" id="migrateForm" enctype="application/x-www-form-urlencoded">
+
+				<fieldset>
+					<button id="btnMigrateScan" type="button" onclick="queryFiles(); return false;">Scan for file changes</button>
+					<button id="btnMigrateRefresh" type="button" onclick="initStatus(); return false;">Refresh</button>
+					<button id="btnMigrateStart" type="button" onclick="startMigration()">Migrate selected files</button>
+					<button id="btnMigrateStop" type="button" onclick="stopMigration()">Cancel the current job</button>
+					<div id="migrateFilesContainer" style="height: 400px; overflow: scroll-y">
+						<table id="migrateFiles" style="width: 100%">
+
+							<thead>
+								<tr>
+									<td rowspan="1" colspan="1">
+										<input type="checkbox" id="selectAll" onclick="toggleMigrateFiles(this)" />
+									</td>
+									<th rowspan="1" colspan="1">Local File</th>
+									<th rowspan="1" colspan="1">Local modified</th>
+									<th rowspan="1" colspan="1">Remote date</th>
+
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td colspan="5" rowspan="1">Loading...</td>
+								</tr>
+							</tbody>
+						</table>
+
+					</div>
+					<input type="hidden" name="command" value="submit" />
+				</fieldset>
+			</form>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>io.milton</groupId>
+		<artifactId>milton</artifactId>
+		<version>2.0.0-SNAPSHOT</version>
+	</parent>
+	<groupId>io.milton</groupId>
+	<artifactId>milton-restlet</artifactId>
+	<packaging>jar</packaging>
+	<name>milton-restlet</name>
+	<dependencies>
+		<dependency>
+			<groupId>io.milton</groupId>
+			<artifactId>milton-server</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.restlet.jse</groupId>
+			<artifactId>org.restlet</artifactId>
+			<version>2.1-RC4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.restlet.jse</groupId>
+			<artifactId>org.restlet.ext.fileupload</artifactId>
+			<version>2.1-RC4</version>
+		</dependency>
+
+        <!-- This is not a transitive dependency, only needed to run a test in this module -->
+		<dependency>
+			<groupId>org.restlet.jse</groupId>
+			<artifactId>org.restlet.ext.jetty</artifactId>
+			<version>2.1-RC4</version>
+			<optional>true</optional>
+			<scope>test</scope>
+		</dependency>
+        <!-- Some for this, it's for the "test" -->
+		<dependency>
+			<groupId>io.milton</groupId>
+			<artifactId>milton-filesystem</artifactId>
+			<version>${project.version}</version>
+			<optional>true</optional>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+
+    <!--
+    Execute 'mvn -Pexec-restlet-fileserver test' in the root project directory.
+    DANGER! It will serve the files read/write in your $user.home directory!
+    -->
+	<profiles>
+		<profile>
+			<id>exec-restlet-fileserver</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<version>1.2.1</version>
+						<executions>
+							<execution>
+								<phase>test</phase>
+								<goals>
+									<goal>java</goal>
+								</goals>
+								<configuration>
+									<mainClass>com.ettrema.restlet.test.RestletFileserver</mainClass>
+									<classpathScope>test</classpathScope>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+	<repositories>
+		<repository>  
+			<id>maven-restlet</id>  
+			<name>Public online Restlet repository</name>  
+			<url>http://maven.restlet.org</url>  
+		</repository> 
+	</repositories>
+</project>
+

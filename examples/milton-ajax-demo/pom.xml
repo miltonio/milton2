@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">    
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.milton</groupId>
+        <artifactId>milton</artifactId>
+        <version>2.0.0-SNAPSHOT</version>
+    </parent>
+    <groupId>io.milton</groupId>
+    <artifactId>milton-ajax-demo</artifactId>
+    <packaging>war</packaging>
+    <name>Milton Ajax Demo</name>
+    <description>Configuration only (no java sources) web application which shows how to use milton's
+    file system implementation of the milton API and the AJAX gateway. Configured with spring.</description>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.mortbay.jetty</groupId>
+                <artifactId>maven-jetty-plugin</artifactId>
+                <configuration>
+                    <connectors>
+                        <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
+                            <port>8080</port>
+                            <maxIdleTime>60000</maxIdleTime>
+                        </connector>
+                    </connectors>
+
+                    <contextPath>/</contextPath>
+                    <stopKey>stop</stopKey>
+                    <stopPort>8899</stopPort>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <dependencies>
+        <dependency>
+            <groupId>com.ettrema</groupId>
+            <artifactId>milton-servlet</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ettrema</groupId>
+            <artifactId>milton-ftp</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ettrema</groupId>
+            <artifactId>milton-console</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ettrema</groupId>
+            <artifactId>milton-filesystem</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ettrema</groupId>
+            <artifactId>milton-json</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ettrema</groupId>
+            <artifactId>milton-zsync</artifactId>
+            <version>${project.version}</version>
+        </dependency>		
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring</artifactId>
+            <version>2.5.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.5.2</version>
+        </dependency>
+		
+    </dependencies>
+</project>

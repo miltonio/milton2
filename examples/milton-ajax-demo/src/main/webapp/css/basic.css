@@ -1,0 +1,183 @@
+/*
+ * SimpleModal Basic Modal Dialog
+ * http://www.ericmmartin.com/projects/simplemodal/
+ * http://code.google.com/p/simplemodal/
+ *
+ * Copyright (c) 2010 Eric Martin - http://ericmmartin.com
+ *
+ * Licensed under the MIT license:
+ *   http://www.opensource.org/licenses/mit-license.php
+ *
+ * Revision: $Id: basic.css 242 2010-03-14 00:55:02Z emartin24 $
+ *
+*/
+
+#basic-modal-content {
+    display:none;
+}
+/* Overlay */
+#simplemodal-overlay {
+    background-color:#000;
+    cursor:wait;
+}
+/* Container */
+#simplemodal-container {
+    color:#bbb;
+    background-color:#ffffff;
+    border:12px solid #282828;
+    padding:30px;
+    background-image:url(images/framework/pageShadeInner.jpg);
+    background-repeat:repeat-x;
+}
+#simplemodal-container code {
+    background:#141414;
+    border-left:3px solid #65B43D;
+    color:#bbb;
+    display:block;
+    margin-bottom:12px;
+    padding:4px 6px 6px;
+}
+#simplemodal-container a {
+    color:#ddd;
+}
+#simplemodal-container a.modalCloseImg {
+    background:url(../templates/images/framework/modal/x.png) no-repeat;
+    width:25px;
+    height:29px;
+    display:inline;
+    z-index:3200;
+    position:absolute;
+    top:5px;
+    right:7px;
+    cursor:pointer;
+}
+#simplemodal-container #basic-modal-content {
+    padding:8px;
+}
+/**************************** Fonts *****************************/
+
+#simplemodal-container h3 {
+    position:relative;
+    font-family:Tahoma;
+    font-size:20px;
+    font-weight:normal;
+    color:#92c73e;
+    padding:0px 0px 15px 0px;
+    margin:0px;
+    z-index:100;
+}
+#simplemodal-container p {
+    position:relative;
+    font-family:Tahoma;
+    font-size:12px;
+    font-weight:normal;
+    color:#454545;
+    padding:0px 0px 15px 0px;
+    margin:0px;
+    z-index:100;
+}
+#simplemodal-container .description {
+    position:relative;
+    font-family:Tahoma;
+    font-size:12px;
+    font-weight:normal;
+    color:#767676;
+    padding:0px 0px 8px 0px;
+    margin:0px 0px 10px 0px;
+    z-index:100;
+    border-bottom:solid 1px #b8b8b8;
+}
+#simplemodal-container .descriptionHighlight {
+    position:relative;
+    font-family:Tahoma;
+    font-size:12px;
+    font-weight:bold;
+    color:#92c73e;
+    padding:0px 0px 8px 0px;
+    margin:0px 0px 10px 0px;
+}
+
+#simplemodal-container .error {
+    display:block;
+    position:relative;
+    font-family:Tahoma;
+    font-size:11px;
+    font-weight:normal;
+    color:#de2a00 !important;
+    padding:0px 0px 0px 0px;
+    margin:0px 0px 5px 0px;
+}
+
+#simplemodal-container .info {
+    display:block;
+    position:relative;
+    font-family:Tahoma;
+    font-size:24px;
+    font-weight:normal;
+    color:#92C73E !important;
+    padding-top: 50px;
+    text-align: center;
+}
+
+
+/**************************** Form *****************************/
+
+#simplemodal-container textarea {
+    position:relative;
+    display:block;
+    margin:0px;
+    padding: 10px 3px 3px 10px;
+    border:0px;
+    height:200px;
+    width:100px;
+    font-family:Tahoma;
+    font-size:12px;
+    color:#252525;
+    -moz-border-radius:4px;
+    -webkit-border-radius:4px;
+    border:1px solid #b8b8b8;
+    background-color:#f4f4f4;
+}
+/**************************** Buttons *****************************/
+
+
+
+#simplemodal-container .buttons > a {
+    background: transparent url('images/framework/buttons/buttonGrey2/bg_button_a.gif') no-repeat scroll top right;
+    color: #444;
+    display: block;
+    float: left;
+    font: normal 11px arial, sans-serif;
+    height: 31px;
+    margin-right: 6px;
+    padding-right: 18px; /* sliding doors padding */
+    text-decoration: none;
+}
+#simplemodal-container .buttons > a > span {
+    background: transparent url('images/framework/buttons/buttonGrey2/bg_button_span.gif') no-repeat;
+    display: block;
+    line-height: 21px;
+    padding: 5px 0 5px 18px;
+    color: #454545 !important;
+}
+#simplemodal-container .buttons a:active {
+    background-position: bottom right;
+    color: #454545 !important;
+    outline: none; /* hide dotted outline in Firefox */
+}
+#simplemodal-container .buttons a:active span {
+    background-position: bottom left;
+    padding: 5px 0 5px 18px;
+}
+#simplemodal-container .buttons a .subIcon {
+    position:relative;
+    left:-7px;
+    top:1px;
+    float:left;
+}
+#simplemodal-container .buttons a .subIconDrop {
+    position:relative;
+    float:right;
+    right:-15px;
+    top:-3px;
+}

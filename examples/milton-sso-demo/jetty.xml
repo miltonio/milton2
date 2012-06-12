@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN" "http://jetty.mortbay.org/configure.dtd">
+
+<Configure id="Server" class="org.mortbay.jetty.Server">
+	<Array id="plusConfig" type="java.lang.String">
+		<Item>org.mortbay.jetty.webapp.WebInfConfiguration</Item>
+		<Item>org.mortbay.jetty.plus.webapp.EnvConfiguration</Item>
+		<Item>org.mortbay.jetty.plus.webapp.Configuration</Item>
+		<Item>org.mortbay.jetty.webapp.JettyWebXmlConfiguration</Item>
+		<Item>org.mortbay.jetty.webapp.TagLibConfiguration</Item>
+	</Array>	
+<!--
+	<Call name="addHandler">
+		<Arg>
+			<New class="org.mortbay.jetty.webapp.WebAppContext">
+				<Set name="configurationClasses">
+					<Ref id="plusConfig" />
+				</Set>
+				<Set name="contextPath">/dodgy</Set>
+				<Set name="war">dodgy.war</Set>				
+			</New>
+		</Arg>
+	</Call>		
+-->	
+	<Call name="addHandler">
+		<Arg>
+			<New class="org.mortbay.jetty.webapp.WebAppContext">
+				<Set name="configurationClasses">
+					<Ref id="plusConfig" />
+				</Set>				
+				<Set name="contextPath">/openam</Set>
+				<Set name="war">openam_953.war</Set>				
+			</New>
+		</Arg>
+	</Call>
+
+</Configure>

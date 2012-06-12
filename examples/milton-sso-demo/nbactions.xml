@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+        <action>
+            <actionName>CUSTOM-jetty:run</actionName>
+            <displayName>jetty:run</displayName>
+            <goals>
+                <goal>jetty:run</goal>
+            </goals>
+        </action>
+        <action>
+            <actionName>CUSTOM-jetty:stop compile jetty:run</actionName>
+            <displayName>jetty:stop compile jetty:run</displayName>
+            <goals>
+                <goal>jetty:stop</goal>
+                <goal>compile</goal>
+                <goal>jetty:run</goal>
+            </goals>
+        </action>
+    </actions>

@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN" "http://jetty.mortbay.org/configure.dtd">
+
+<Configure class="org.mortbay.jetty.webapp.WebAppContext">
+    <!--
+    <New id="ReNew-webapp" class="org.mortbay.jetty.plus.naming.Resource">
+        <Arg>jdbc/ReNewDataSource</Arg>
+        <Arg>
+            <New class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+                <Set name="driverClassName">org.hsqldb.jdbcDriver</Set>
+                <Set name="url">jdbc:hsqldb:file:../target/database/ReNew;shutdown=true</Set>
+                <Set name="username">sa</Set>
+                <Set name="password"></Set>
+            </New>
+        </Arg>
+    </New>
+    -->
+</Configure>

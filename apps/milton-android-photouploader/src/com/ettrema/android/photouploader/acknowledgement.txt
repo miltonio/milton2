@@ -1,0 +1,10 @@
+Most of this code has been adaptedn from the wonderful Picasa Photo Uploader project
+(http://code.google.com/p/picasaphotouploader/) by Jan Peter Hooiveld
+
+I gratefully acknowledge his work.
+
+Jan's project is available under the terms of the GNU Public License and this
+license applies to the milton-android-photouploader project also.
+
+Brad McEvoy
+27/11/2010

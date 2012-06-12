@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<d:multistatus xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:" xmlns:ns1="clyde" xmlns:cal="urn:ietf:params:xml:ns:caldav">
+	<d:response>
+		<d:href>/users/a1/Documents/</d:href>
+		<d:propstat>
+			<d:prop>
+				<d:iscollection>TRUE</d:iscollection>
+				<d:quota-used-bytes/>
+				<d:lockdiscovery></d:lockdiscovery>
+				<d:quota-available-bytes/>
+				<d:getcontentlength/>
+				<d:getlastmodified>Sun, 06 Nov 2011 20:57:31 GMT</d:getlastmodified>
+				<d:resourcetype>
+					<d:collection/>
+				</d:resourcetype>
+				<d:displayname>Documents</d:displayname>
+				<d:creationdate>2011-11-07 09:57:31.418</d:creationdate>
+			</d:prop>
+			<d:status>HTTP/1.1 200 OK</d:status>
+		</d:propstat>
+		<d:propstat>
+			<d:prop>
+				<ns1:crc/>
+			</d:prop>
+			<d:status>HTTP/1.1 404 Not Found</d:status>
+		</d:propstat>
+	</d:response>
+	<d:response>
+		<d:href>/users/a1/Documents/001.jpeg</d:href>
+		<d:propstat>
+			<d:prop>
+				<d:iscollection>FALSE</d:iscollection>
+				<d:quota-used-bytes/>
+				<d:lockdiscovery>
+					<d:activelock>
+						<d:locktype>
+							<d:write/>
+						</d:locktype>
+						<d:lockscope>
+							<d:exclusive/>
+						</d:lockscope>
+						<d:depth>Infinity</d:depth>
+						<d:owner>a1</d:owner>
+						<d:locktoken>
+							<d:href>opaquelocktoken:98e4f486-9439-40d4-add8-18448bc9c2c8</d:href>
+						</d:locktoken>
+						<d:lockroot>
+							<d:href>/users/a1/Documents/001.jpeg</d:href>
+						</d:lockroot>
+					</d:activelock>
+				</d:lockdiscovery>
+				<d:quota-available-bytes/>
+				<ns1:crc>761811954</ns1:crc>
+				<d:getcontentlength>1052400</d:getcontentlength>
+				<d:getlastmodified>Tue, 08 Nov 2011 00:45:41 GMT</d:getlastmodified>
+				<d:resourcetype/>
+				<d:displayname>001.jpeg</d:displayname>
+				<d:creationdate>2011-11-08 13:45:41.134</d:creationdate>
+			</d:prop>
+			<d:status>HTTP/1.1 200 OK</d:status>
+		</d:propstat>
+	</d:response>
+	<d:response>
+		<d:href>/users/a1/Documents/bluefin03.pdf</d:href>
+		<d:propstat>
+			<d:prop>
+				<d:iscollection>FALSE</d:iscollection>
+				<d:quota-used-bytes/>
+				<d:lockdiscovery>
+					<d:activelock>
+						<d:locktype>
+							<d:write/>
+						</d:locktype>
+						<d:lockscope>
+							<d:exclusive/>
+						</d:lockscope>
+						<d:depth>Infinity</d:depth>
+						<d:owner>a1</d:owner>
+						<d:locktoken>
+							<d:href>opaquelocktoken:d2bc70a3-4d92-42a2-aa50-fae6ac9524cb</d:href>
+						</d:locktoken>
+						<d:lockroot>
+							<d:href>/users/a1/Documents/bluefin03.pdf</d:href>
+						</d:lockroot>
+					</d:activelock>
+				</d:lockdiscovery>
+				<d:quota-available-bytes/>
+				<ns1:crc>2527702713</ns1:crc>
+				<d:getcontentlength>3341</d:getcontentlength>
+				<d:getlastmodified>Mon, 07 Nov 2011 23:56:19 GMT</d:getlastmodified>
+				<d:resourcetype/>
+				<d:displayname>bluefin03.pdf</d:displayname>
+				<d:creationdate>2011-11-08 12:56:19.139</d:creationdate>
+			</d:prop>
+			<d:status>HTTP/1.1 200 OK</d:status>
+		</d:propstat>
+	</d:response>
+	<d:response>
+		<d:href>/users/a1/Documents/david%20surf%20trick%201.jpg</d:href>
+		<d:propstat>
+			<d:prop>
+				<d:iscollection>FALSE</d:iscollection>
+				<d:quota-used-bytes/>
+				<d:lockdiscovery></d:lockdiscovery>
+				<d:quota-available-bytes/>
+				<ns1:crc>3962766161</ns1:crc>
+				<d:getcontentlength>19758</d:getcontentlength>
+				<d:getlastmodified>Sun, 11 Dec 2011 23:54:32 GMT</d:getlastmodified>
+				<d:resourcetype/>
+				<d:displayname>david surf trick 1.jpg</d:displayname>
+				<d:creationdate>2011-12-12 12:54:32.076</d:creationdate>
+			</d:prop>
+			<d:status>HTTP/1.1 200 OK</d:status>
+		</d:propstat>
+	</d:response>
+	<d:response>
+		<d:href>/users/a1/Documents/LLLL/</d:href>
+		<d:propstat>
+			<d:prop>
+				<d:iscollection>TRUE</d:iscollection>
+				<d:quota-used-bytes/>
+				<d:lockdiscovery></d:lockdiscovery>
+				<d:quota-available-bytes/>
+				<d:getcontentlength/>
+				<d:getlastmodified>Tue, 20 Dec 2011 04:14:28 GMT</d:getlastmodified>
+				<d:resourcetype>
+					<d:collection/>
+				</d:resourcetype>
+				<d:displayname>LLLL</d:displayname>
+				<d:creationdate>2011-12-20 17:14:28.866</d:creationdate>
+			</d:prop>
+			<d:status>HTTP/1.1 200 OK</d:status>
+		</d:propstat>
+		<d:propstat>
+			<d:prop>
+				<ns1:crc/>
+			</d:prop>
+			<d:status>HTTP/1.1 404 Not Found</d:status>
+		</d:propstat>
+	</d:response>
+	<d:response>
+		<d:href>/users/a1/Documents/login.bat</d:href>
+		<d:propstat>
+			<d:prop>
+				<d:iscollection>FALSE</d:iscollection>
+				<d:quota-used-bytes/>
+				<d:lockdiscovery></d:lockdiscovery>
+				<d:quota-available-bytes/>
+				<ns1:crc>1830812121</ns1:crc>
+				<d:getcontentlength>2031</d:getcontentlength>
+				<d:getlastmodified>Tue, 20 Dec 2011 04:15:08 GMT</d:getlastmodified>
+				<d:resourcetype/>
+				<d:displayname>login.bat</d:displayname>
+				<d:creationdate>2011-12-20 17:15:08.203</d:creationdate>
+			</d:prop>
+			<d:status>HTTP/1.1 200 OK</d:status>
+		</d:propstat>
+	</d:response>
+	<d:response>
+		<d:href>/users/a1/Documents/PP%20reporting%20ENS%2022%2003.docx</d:href>
+		<d:propstat>
+			<d:prop>
+				<d:iscollection>FALSE</d:iscollection>
+				<d:quota-used-bytes/>
+				<d:lockdiscovery>
+					<d:activelock>
+						<d:locktype>
+							<d:write/>
+						</d:locktype>
+						<d:lockscope>
+							<d:exclusive/>
+						</d:lockscope>
+						<d:depth>Infinity</d:depth>
+						<d:owner>a1</d:owner>
+						<d:locktoken>
+							<d:href>opaquelocktoken:1a39f711-e0dc-4c52-b686-770e29bad0bd</d:href>
+						</d:locktoken>
+						<d:lockroot>
+							<d:href>/users/a1/Documents/PP%20reporting%20ENS%2022%2003.docx</d:href>
+						</d:lockroot>
+					</d:activelock>
+				</d:lockdiscovery>
+				<d:quota-available-bytes/>
+				<ns1:crc>512438684</ns1:crc>
+				<d:getcontentlength>43343</d:getcontentlength>
+				<d:getlastmodified>Tue, 08 Nov 2011 23:50:43 GMT</d:getlastmodified>
+				<d:resourcetype/>
+				<d:displayname>PP reporting ENS 22 03.docx</d:displayname>
+				<d:creationdate>2011-11-08 13:45:05.112</d:creationdate>
+			</d:prop>
+			<d:status>HTTP/1.1 200 OK</d:status>
+		</d:propstat>
+	</d:response>
+	<d:response>
+		<d:href>/users/a1/Documents/reporting.docx</d:href>
+		<d:propstat>
+			<d:prop>
+				<d:iscollection>FALSE</d:iscollection>
+				<d:quota-used-bytes/>
+				<d:lockdiscovery>
+					<d:activelock>
+						<d:locktype>
+							<d:write/>
+						</d:locktype>
+						<d:lockscope>
+							<d:exclusive/>
+						</d:lockscope>
+						<d:depth>Infinity</d:depth>
+						<d:owner>a1</d:owner>
+						<d:locktoken>
+							<d:href>opaquelocktoken:e8964458-0373-4020-8f8d-430fc2721eae</d:href>
+						</d:locktoken>
+						<d:lockroot>
+							<d:href>/users/a1/Documents/reporting.docx</d:href>
+						</d:lockroot>
+					</d:activelock>
+				</d:lockdiscovery>
+				<d:quota-available-bytes/>
+				<ns1:crc>512438684</ns1:crc>
+				<d:getcontentlength>43343</d:getcontentlength>
+				<d:getlastmodified>Wed, 09 Nov 2011 00:04:58 GMT</d:getlastmodified>
+				<d:resourcetype/>
+				<d:displayname>reporting.docx</d:displayname>
+				<d:creationdate>2011-11-09 13:04:58.408</d:creationdate>
+			</d:prop>
+			<d:status>HTTP/1.1 200 OK</d:status>
+		</d:propstat>
+	</d:response>
+</d:multistatus>

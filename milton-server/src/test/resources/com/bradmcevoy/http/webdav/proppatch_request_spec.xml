@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<D:propertyupdate xmlns:D="DAV:"
+   xmlns:Z="http://www.w3.com/standards/z39.50/">
+    <D:set>
+        <D:prop>
+            <Z:Author1>Jim Whitehead</Z:Author1>
+            <Z:Author2>Roy Fielding</Z:Author2>
+        </D:prop>
+    </D:set>
+    <D:remove>
+        <D:prop>
+            <Z:Copyright-Owner/>
+        </D:prop>
+    </D:remove>
+</D:propertyupdate>

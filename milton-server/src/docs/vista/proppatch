@@ -1,0 +1,330 @@
+    PROPFIND / HTTP/1.1\r\n
+    Content-Length: 0
+    Depth: 0\r\n
+    translate: f\r\n
+    User-Agent: Microsoft-WebDAV-MiniRedir/6.0.6000\r\n
+    Host: 210.1.164.225:9000\r\n
+    Connection: Keep-Alive\r\n
+    \r\n
+
+    HTTP/1.1 207 Multi Status\r\n
+    Content-Type: text/xml; charset=UTF-8\r\n
+    Content-Length: 604
+    Server: Jetty(6.1.11)\r\n
+    \r\n
+    <?xml
+    <D:multistatus
+        xmlns:D="DAV:">
+        <D:response
+            xmlns:R="CCRepository">
+            <D:href>
+                http://210.1.164.225:9000/
+                </D:href>
+            <D:propstat>
+                <D:prop>
+                    <D:displayname>
+                        /
+                        </D:displayname>
+                    <D:resourcetype>
+                        <D:collection/>
+                        </D:resourcetype>
+                    <D:getlastmodified>
+                        Thu, 02 Jul 2009 11:29:30 GMT
+                        </D:getlastmodified>
+                    <D:getcontenttype>
+                        text/html
+                        </D:getcontenttype>
+                    <D:getetag>
+                        -1580537574_993655146
+                        </D:getetag>
+                    <D:creationdate>
+                        2009-07-02T12:29:30Z
+                        </D:creationdate>
+                    <D:getcontentlength>
+                        </D:getcontentlength>
+                    </D:prop>
+                <D:status>
+                    HTTP/1.1 200 Ok
+                    </D:status>
+                </D:propstat>
+            </D:response>
+        </D:multistatus>
+
+---
+
+    PROPFIND /repository HTTP/1.1\r\n
+    Content-Length: 0
+    Depth: 0\r\n
+    translate: f\r\n
+    User-Agent: Microsoft-WebDAV-MiniRedir/6.0.6000\r\n
+    Host: 210.1.164.225:9000\r\n
+    Connection: Keep-Alive\r\n
+    \r\n
+
+    HTTP/1.1 207 Multi Status\r\n
+    Content-Type: text/xml; charset=UTF-8\r\n
+    Transfer-Encoding: chunked\r\n
+    Server: Jetty(6.1.11)\r\n
+    \r\n
+    <?xml
+    <D:multistatus
+        xmlns:D="DAV:">
+        <D:response
+            xmlns:R="CCRepository">
+            <D:href>
+                http://210.1.164.225:9000/repository/
+                </D:href>
+            <D:propstat>
+                <D:prop>
+                    <D:displayname>
+                        testRep
+                        </D:displayname>
+                    <D:resourcetype>
+                        <D:collection/>
+                        </D:resourcetype>
+                    <D:getlastmodified>
+                        Thu, 02 Jul 2009 11:29:30 GMT
+                        </D:getlastmodified>
+                    <D:getcontenttype>
+                        text/html
+                        </D:getcontenttype>
+                    <D:getetag>
+                        -1580537574_993655179
+                        </D:getetag>
+                    <D:creationdate>
+                        2009-07-02T12:29:30Z
+                        </D:creationdate>
+                    <D:getcontentlength>
+                        </D:getcontentlength>
+                    </D:prop>
+                <D:status>
+                    HTTP/1.1 200 Ok
+                    </D:status>
+                </D:propstat>
+            </D:response>
+        </D:multistatus>
+
+---
+
+    PROPFIND / HTTP/1.1\r\n
+    Content-Length: 0
+    Depth: 0\r\n
+    translate: f\r\n
+    User-Agent: Microsoft-WebDAV-MiniRedir/6.0.6000\r\n
+    Host: 210.1.164.225:9000\r\n
+    Connection: Keep-Alive\r\n
+    \r\n
+
+    HTTP/1.1 207 Multi Status\r\n
+    Content-Type: text/xml; charset=UTF-8\r\n
+    Content-Length: 604
+    Server: Jetty(6.1.11)\r\n
+    \r\n
+    <?xml
+    <D:multistatus
+        xmlns:D="DAV:">
+        <D:response
+            xmlns:R="CCRepository">
+            <D:href>
+                http://210.1.164.225:9000/
+                </D:href>
+            <D:propstat>
+                <D:prop>
+                    <D:displayname>
+                        /
+                        </D:displayname>
+                    <D:resourcetype>
+                        <D:collection/>
+                        </D:resourcetype>
+                    <D:getlastmodified>
+                        Thu, 02 Jul 2009 11:29:30 GMT
+                        </D:getlastmodified>
+                    <D:getcontenttype>
+                        text/html
+                        </D:getcontenttype>
+                    <D:getetag>
+                        -1580537574_993655192
+                        </D:getetag>
+                    <D:creationdate>
+                        2009-07-02T12:29:30Z
+                        </D:creationdate>
+                    <D:getcontentlength>
+                        </D:getcontentlength>
+                    </D:prop>
+                <D:status>
+                    HTTP/1.1 200 Ok
+                    </D:status>
+                </D:propstat>
+            </D:response>
+        </D:multistatus>
+
+---
+
+    PROPFIND /repository/test.asp HTTP/1.1\r\n
+    Content-Length: 0
+    Depth: 0\r\n
+    translate: f\r\n
+    User-Agent: Microsoft-WebDAV-MiniRedir/6.0.6000\r\n
+    Host: 210.1.164.225:9000\r\n
+    Connection: Keep-Alive\r\n
+    \r\n
+
+    HTTP/1.1 404 Not Found\r\n
+    Transfer-Encoding: chunked\r\n
+    Server: Jetty(6.1.11)\r\n
+    \r\n
+    HTTP chunked response
+    Data (50 bytes)
+
+0000  3c 68 74 6d 6c 3e 3c 62 6f 64 79 3e 3c 68 31 3e   <html><body><h1>
+0010  4e 6f 74 20 46 6f 75 6e 64 20 28 34 30 34 29 3c   Not Found (404)<
+0020  2f 68 31 3e 3c 2f 62 6f 64 79 3e 3c 2f 68 74 6d   /h1></body></htm
+0030  6c 3e                                             l>
+
+---
+
+    PUT /repository/test.asp HTTP/1.1\r\n
+    translate: f\r\n
+    User-Agent: Microsoft-WebDAV-MiniRedir/6.0.6000\r\n
+    Host: 210.1.164.225:9000\r\n
+    Content-Length: 0
+    Connection: Keep-Alive\r\n
+    \r\n
+
+    HTTP/1.1 201 Created\r\n
+    Transfer-Encoding: chunked\r\n
+    Server: Jetty(6.1.11)\r\n
+    \r\n
+
+---
+
+    LOCK /repository/test.asp HTTP/1.1\r\n
+    translate: f\r\n
+    Timeout: Second-3600\r\n
+    Content-Type: text/xml; charset="utf-8"\r\n
+    User-Agent: Microsoft-WebDAV-MiniRedir/6.0.6000\r\n
+    Host: 210.1.164.225:9000\r\n
+    Content-Length: 202
+    Connection: Keep-Alive\r\n
+    Cache-Control: no-cache\r\n
+    Pragma: no-cache\r\n
+    \r\n
+    <?xml
+    <D:lockinfo
+        xmlns:D="DAV:">
+        <D:lockscope>
+            <D:exclusive/>
+            </D:lockscope>
+        <D:locktype>
+            <D:write/>
+            </D:locktype>
+        <D:owner>
+            <D:href>
+                DEV-PC2\dev
+                </D:href>
+            </D:owner>
+        </D:lockinfo>
+
+    HTTP/1.1 200 OK\r\n
+    Content-Type: text/xml; charset=UTF-8\r\n
+    Lock-Token: <opaquelocktoken:8c967478-989b-4e2e-88e8-a202ab61867f>\r\n
+    Transfer-Encoding: chunked\r\n
+    Server: Jetty(6.1.11)\r\n
+    \r\n
+    HTTP chunked response
+    <?xml
+    <D:prop
+        xmlns:D="DAV:">
+        <D:lockdiscovery>
+            <D:activelock>
+                <D:locktype>
+                    <D:write/>
+                    </D:locktype>
+                <D:lockscope>
+                    <D:exclusive/>
+                    </D:lockscope>
+                <D:depth>
+                    INFINITY
+                    </D:depth>
+                <D:owner>
+                    <D:href>
+                        DEV-PC2\dev
+                        </D:href>
+                    </D:owner>
+                <D:timeout>
+                    Second-3600
+                    </D:timeout>
+                <D:locktoken>
+                    <D:href>
+                        opaquelocktoken:8c967478-989b-4e2e-88e8-a202ab61867f
+                        </D:href>
+                    </D:locktoken>
+                <D:lockroot>
+                    <D:href>
+                        http://210.1.164.225:9000/repository/test.asp
+                        </D:href>
+                    </D:lockroot>
+                </D:activelock>
+            </D:lockdiscovery>
+        </D:prop>
+
+---
+
+    PUT /repository/test.asp HTTP/1.1\r\n
+    If: (<opaquelocktoken:8c967478-989b-4e2e-88e8-a202ab61867f>)\r\n
+    translate: f\r\n
+    User-Agent: Microsoft-WebDAV-MiniRedir/6.0.6000\r\n
+    Host: 210.1.164.225:9000\r\n
+    Content-Length: 41
+    Connection: Keep-Alive\r\n
+    \r\n
+    Data (41 bytes)
+
+0000  3c 68 74 6d 6c 3e 0d 0a 3c 62 6f 64 79 3e 0d 0a   <html>..<body>..
+0010  6a 73 64 68 73 6a 64 68 0d 0a 3c 2f 62 6f 64 79   jsdhsjdh..</body
+0020  3e 0d 0a 3c 68 74 6d 6c 3e                        >..<html>
+
+    HTTP/1.1 201 Created\r\n
+    Transfer-Encoding: chunked\r\n
+    Server: Jetty(6.1.11)\r\n
+    \r\n
+
+---
+
+    PROPPATCH /repository/test.asp HTTP/1.1\r\n
+    If: (<opaquelocktoken:8c967478-989b-4e2e-88e8-a202ab61867f>)\r\n
+    translate: f\r\n
+    Content-Type: text/xml; charset="utf-8"\r\n
+    User-Agent: Microsoft-WebDAV-MiniRedir/6.0.6000\r\n
+    Host: 210.1.164.225:9000\r\n
+    Content-Length: 443
+    Connection: Keep-Alive\r\n
+    Cache-Control: no-cache\r\n
+    Pragma: no-cache\r\n
+    \r\n
+    <?xml
+    <D:propertyupdate
+        xmlns:D="DAV:"
+        xmlns:Z="urn:schemas-microsoft-com:">
+        <D:set>
+            <D:prop>
+                <Z:Win32CreationTime>
+                    Thu, 02 Jul 2009 11:28:59 GMT
+                    </Z:Win32CreationTime>
+                <Z:Win32LastAccessTime>
+                    Thu, 02 Jul 2009 11:28:59 GMT
+                    </Z:Win32LastAccessTime>
+                <Z:Win32LastModifiedTime>
+                    Thu, 02 Jul 2009 11:28:59 GMT
+                    </Z:Win32LastModifiedTime>
+                <Z:Win32FileAttributes>
+                    00000020
+                    </Z:Win32FileAttributes>
+                </D:prop>
+            </D:set>
+        </D:propertyupdate>
+
+    HTTP/1.1 200 OK\r\n
+    Transfer-Encoding: chunked\r\n
+    Server: Jetty(6.1.11)\r\n
+    \r\n

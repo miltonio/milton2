@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jnlp spec="1.0+" codebase="" href="launch.jnlp">
+    <information>
+        <title>Brads WEBDAV Client</title>
+        <vendor>McEvoy Software Limited</vendor>
+        <homepage href="http://www.bradmcevoy.com/webdav"/>
+        <description>A simple WEBDAV tool, for browsing, uploading and downloading
+from WEBDAV sites</description>
+        <description kind="short">Brads WEBDAV Client</description>
+        <offline-allowed/>
+    </information>
+    <security>
+        <all-permissions/>
+    </security>
+    <resources>
+        <j2se version="1.5+"/>
+        <jar href="BradsWebdavClient.jar" main="true" download="eager"/>
+        <jar href="lib/BradsWebdavLib.jar" download="eager"/>
+        <jar href="lib/appframework-1.0.3.jar" download="eager"/>
+        <jar href="lib/common.jar" download="eager"/>
+        <jar href="lib/commons-codec-1.3.jar" download="eager"/>
+        <jar href="lib/commons-httpclient-3.1.jar" download="eager"/>
+        <jar href="lib/commons-logging.jar" download="eager"/>
+        <jar href="lib/dom4j-1.6.jar" download="eager"/>
+        <jar href="lib/filedrop.jar" download="eager"/>
+        <jar href="lib/swing-layout-1.0.3.jar" download="eager"/>
+        <jar href="lib/swing-worker-1.1.jar" download="eager"/>
+    </resources>
+    <application-desc main-class="bradswebdavclient.BradsWebdavClientApp">
+    </application-desc>
+</jnlp>

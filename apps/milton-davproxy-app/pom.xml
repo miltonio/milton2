@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">    
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.milton</groupId>
+        <artifactId>milton</artifactId>
+        <version>2.0.0-SNAPSHOT</version>
+    </parent>
+    <groupId>io.milton</groupId>
+    <artifactId>milton-davproxy-app</artifactId>
+    <packaging>war</packaging>
+    <description>Configuration only (no java sources) web application which is a reverse proxy to multiple other
+	DAV servers. The other dav servers appear as root folders on this server</description>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.mortbay.jetty</groupId>
+                <artifactId>maven-jetty-plugin</artifactId>
+                <version>6.1.26</version>
+                <configuration>
+                    <connectors>
+                        <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
+                            <port>8080</port>
+                            <maxIdleTime>60000</maxIdleTime>
+                        </connector>
+                    </connectors>
+                    <contextPath>/</contextPath>
+                    <stopKey>stop</stopKey>
+                    <stopPort>8899</stopPort>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.5.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ettrema</groupId>
+            <artifactId>milton-servlet</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ettrema</groupId>
+            <artifactId>milton-proxy</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring</artifactId>
+            <version>2.5.6</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>milton-servlet</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+</project>

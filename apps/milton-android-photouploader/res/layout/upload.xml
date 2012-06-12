@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- custom notification view for upload progress -->
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="horizontal"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  android:padding="3px"
+>
+  <ImageView
+    android:id="@+id/uploadImage"
+    android:layout_width="wrap_content"
+    android:layout_height="fill_parent"
+    android:layout_marginRight="10px"
+  />
+  <LinearLayout
+    android:orientation="vertical"
+    android:layout_width="0dip"
+    android:layout_weight="1"
+    android:layout_height="fill_parent"
+  >
+    <TextView
+      android:id="@+id/uploadText"
+      android:layout_width="wrap_content"
+      android:layout_height="35px"
+      android:textColor="#000"
+    />
+    <ProgressBar
+      style="?android:attr/progressBarStyleHorizontal"
+      android:id="@+id/uploadBar"
+      android:layout_width="fill_parent"
+      android:layout_height="20px"
+    />
+  </LinearLayout>
+</LinearLayout>

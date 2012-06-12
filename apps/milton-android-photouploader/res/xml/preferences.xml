@@ -1,0 +1,48 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+  <ListPreference
+    android:key="connection"
+    android:title="Device connections"
+    android:dialogTitle="Select device connection"
+    android:defaultValue="both"
+    android:entries="@array/connection_entries"
+    android:entryValues="@array/connection_values"
+  />
+  <EditTextPreference
+    android:key="userName"
+    android:title="Your username"
+    android:dialogTitle="Enter your username"
+    android:singleLine="true"
+  />
+  <EditTextPreference
+    android:key="password"
+    android:title="Your password"
+    android:dialogTitle="Enter your password"
+    android:singleLine="true"
+    android:password="true"
+  />
+  <EditTextPreference
+    android:key="serverAddress"
+    android:title="Server address"
+    android:dialogTitle="Enter the server address Eg www.somewhere.com/pictures"
+    android:defaultValue="www.shmego.com/sites/?/Pictures"
+    android:singleLine="true"
+  />
+
+  <ListPreference
+    android:key="retries"
+    android:title="Upload retries"
+    android:dialogTitle="Select number of times to retry failed uploads"
+    android:defaultValue="_0"
+    android:entries="@array/retries_entries"
+    android:entryValues="@array/retries_values"
+  />
+  <!-- class that extends listPreference to enable of disable application notification -->
+  <com.ettrema.android.photouploader.ApplicationNotificationPreference
+    android:key="notification"
+    android:title="Notification"
+    android:dialogTitle="Select application notification"
+    android:defaultValue="enabled"
+    android:entries="@array/notification_entries"
+    android:entryValues="@array/notification_values"
+  />
+</PreferenceScreen>

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">    
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.milton</groupId>
+        <artifactId>milton</artifactId>
+        <version>2.0.0-SNAPSHOT</version>
+    </parent>
+    <groupId>io.milton</groupId>
+    <artifactId>milton-db-demo</artifactId>
+    <packaging>war</packaging>
+    <name>milton-db-demo</name>
+    <description>Demonstrates using milton with a transaction database</description>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.mortbay.jetty</groupId>
+                <artifactId>maven-jetty-plugin</artifactId>
+                <configuration>
+                    <connectors>
+                        <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
+                            <port>8095</port>
+                            <maxIdleTime>60000</maxIdleTime>
+                        </connector>
+                    </connectors>
+
+                    <contextPath>/</contextPath>
+                    <stopKey>stop</stopKey>
+                    <stopPort>8899</stopPort>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.5.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ettrema</groupId>
+            <artifactId>milton-servlet</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ettrema</groupId>
+            <artifactId>milton-ftp</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring</artifactId>
+            <version>2.5.6</version>
+        </dependency>
+        <dependency>
+            <groupId>hsqldb</groupId>
+            <artifactId>hsqldb</artifactId>
+            <version>1.8.0.7</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate</artifactId>
+            <version>3.2.1.ga</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-annotations</artifactId>
+            <version>3.2.0.ga</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.persistence</groupId>
+            <artifactId>persistence-api</artifactId>
+            <version>1.0</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>${jdbc.groupId}</groupId>
+            <artifactId>${jdbc.artifactId}</artifactId>
+            <version>${jdbc.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>2.1</version>
+        </dependency>
+    </dependencies>
+
+    <properties>
+        <hibernate.version>3.2.6.ga</hibernate.version>
+        <hibernate.annotations.version>3.3.0.ga</hibernate.annotations.version>
+        <jpa.version>1.0</jpa.version>
+        <!-- JDBC Properties plus overrides-->
+        <jdbc.url>jdbc:hsqldb:file:${project.build.directory}/database/DemoDb;shutdown=true</jdbc.url>
+
+        <!-- JDBC Settings -->
+        <jdbc.driverClassName>org.hsqldb.jdbcDriver</jdbc.driverClassName>
+        <jdbc.username>sa</jdbc.username>
+        <jdbc.password />
+        <jdbc.groupId>hsqldb</jdbc.groupId>
+        <jdbc.artifactId>hsqldb</jdbc.artifactId>
+        <jdbc.version>1.8.0.7</jdbc.version>
+    </properties>
+
+    <repositories>
+        <!-- Needed for JTA -->
+        <repository>
+            <id>maven2-repository.dev.java.net</id>
+            <name>Java.net Repository for Maven</name>
+            <url>http://download.java.net/maven/2/</url>
+            <layout>default</layout>
+        </repository>
+    </repositories>
+</project>
+

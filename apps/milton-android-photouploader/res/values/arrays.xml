@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <!-- we need empty album array values as placeholder -->
+    <array name="album_values">
+    </array>
+    <array name="album_entries">
+    </array>
+    <!-- arrays for connection -->
+    <array name="connection_values">
+      <item>both</item>
+      <item>wifi</item>
+    </array>
+    <array name="connection_entries">
+      <item>Wi-Fi and 3G</item>
+      <item>Wi-Fi only</item>
+    </array>
+    <!-- arrays for retries, items can only contain strings :( So that's why you see crazy characters -->
+    <array name="retries_values">
+      <item>_0</item>
+      <item>_1</item>
+      <item>_2</item>
+      <item>_3</item>
+      <item>_4</item>
+      <item>_5</item>
+    </array>
+    <array name="retries_entries">
+      <item>0\t</item>
+      <item>1\t</item>
+      <item>2\t</item>
+      <item>3\t</item>
+      <item>4\t</item>
+      <item>5\t</item>
+    </array>
+    <!-- arrays for application notification -->
+    <array name="notification_values">
+      <item>enabled</item>
+      <item>disabled</item>
+    </array>
+    <array name="notification_entries">
+      <item>Enabled</item>
+      <item>Disabled</item>
+    </array>
+</resources>

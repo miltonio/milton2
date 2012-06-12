@@ -1,0 +1,481 @@
+/*
+ * Copyright 2012 McEvoy Software Ltd.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package io.milton.http;
+
+import org.apache.commons.io.output.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.Writer;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import io.milton.common.FileUtils;
+
+/**
+ * Lightweight XML generation. Gives the programmer fine grained control
+ * of the generated xml, including whitespace.
+ * <P/>
+ * The XML is not guaranteed to be parseable.
+ *
+ * @author brad
+ */
+public class XmlWriter {
+
+    private Logger log = LoggerFactory.getLogger(XmlWriter.class);
+
+    public enum Type {
+
+        OPENING,
+        CLOSING,
+        NO_CONTENT
+    };
+    protected final Writer writer;
+
+    public XmlWriter(OutputStream out) {
+        this.writer = new PrintWriter(out, true);
+    }
+
+    /**
+     * Append the given raw String to the ouput. No encoding is applied
+     *
+     * @param value
+     */
+    private void append(String value) {
+        try {
+            writer.write(value);
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    /**
+     * Append the given character to the output. No encoding is applied
+     *
+     * @param c
+     */
+    private void append(char c) {
+        try {
+            writer.write((int) c);
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    /**
+     * Convenience method to write a single element containing a piece of text
+     *
+     *
+     * @param namespace - optional, namespace prefix
+     * @param namespaceInfo - optional, namespace url
+     * @param name - the local name of the element to create
+     * @param value - the raw text to insert into the element
+     */
+    public void writeProperty(String namespace, String namespaceInfo, String name, String value) {
+        writeElement(namespace, namespaceInfo, name, Type.OPENING);
+        append(value);
+        writeElement(namespace, namespaceInfo, name, Type.CLOSING);
+
+    }
+
+    public void writeProperty(String namespace, String name, String value) {
+        if (value == null) {
+            writeProperty(namespace, name);
+        } else {
+            writeElement(namespace, name, Type.OPENING);
+            append(value);
+            writeElement(namespace, name, Type.CLOSING);
+        }
+    }
+
+    public void writeProperty(String namespace, String name) {
+        writeElement(namespace, name, Type.NO_CONTENT);
+    }
+
+    public void writeProperty(String name) {
+        writeElement(null, name, Type.NO_CONTENT);
+    }
+
+
+    public void writeElement(String namespace, String name, Type type) {
+        writeElement(namespace, null, name, type);
+    }
+
+    /**
+     * Write an opening tag
+     *
+     * @param namespace
+     * @param name
+     */
+    public void open(String namespace, String name) {
+        writeElement(namespace, name, Type.OPENING);
+    }
+
+    /**
+     * Write a closing tag, Eg </name>
+     *
+     * @param namespace
+     * @param name
+     */
+    public void close(String namespace, String name) {
+        writeElement(namespace, name, Type.CLOSING);
+    }
+
+    /**
+     * Write an opening tag
+     *
+     * @param name
+     */
+    public void open(String name) {
+        writeElement(null, name, Type.OPENING);
+    }
+
+    /**
+     * Write a closing tag for the given name
+     *
+     * @param name
+     */
+    public void close(String name) {
+        writeElement(null, name, Type.CLOSING);
+    }
+
+    /**
+     * Represents an element which is currently being written
+     *
+     */
+    public class Element {
+
+        private final Element parent;
+        private final String nsPrefix;
+        private final String name;
+        private boolean openEnded;
+
+        /**
+         * Create the element and write the first part of the opening tag
+         *
+         * Eg <name
+         *
+         * @param name
+         */
+        Element(Element parent, String name) {
+            this(parent, null, name);
+        }
+
+        /**
+         * Create the element and write the first part of the opening tag
+         *
+         * Eg <name
+         *
+         * @param nsPrefix
+         * @param name
+         */
+        Element(Element parent, String nsPrefix, String name) {
+            this.parent = parent;
+            this.name = name;
+            this.nsPrefix = nsPrefix;
+            append("<");
+            if (nsPrefix != null) {
+                append(nsPrefix);
+                append(":");
+            }
+            append(name);
+        }
+        Element(Element parent, String uri, String nsPrefix, String name) {
+            this.parent = parent;
+            this.name = name;
+            this.nsPrefix = nsPrefix;
+            append("<");
+            if (nsPrefix != null) {
+                append(nsPrefix);
+                append(":");
+            }
+            append(name);
+			append(" ");
+			append("xmlns:" + nsPrefix + "=\"");
+			append(uri);
+			append("\"");
+        }
+
+		
+        /**
+         * Write a name/value attribute pair
+         *
+         * @param name
+         * @param value
+         * @return
+         */
+        public Element writeAtt(String name, String value) {
+            append(" ");
+            append(name);
+            append("=");
+            append((char) 34);
+            append(value == null ? "" : value);
+            append((char) 34);
+            return this;
+        }
+
+        /**
+         * Write the text into the element. Will finish the opening tag if required
+         *
+         * @param text
+         * @return
+         */
+        public Element writeText(String text) {
+            return writeText(text, true);
+        }
+        
+        public Element writeText(String text, boolean newline) {
+            if (!openEnded) {
+                open(newline);
+            }
+            append(text);
+            return this;
+        }
+
+        /**
+         * Completes the opening tag which is started in the constructor. And
+         * writes a new line
+         *
+         * Eg >
+         *
+         * @return
+         */
+        public Element open() {
+            return open(true);
+        }
+
+        public Element open(boolean newline) {
+            openEnded = true;
+            append(">");
+            if (newline) {
+				// CALDAV HACK, temporary for caldav, just to see if it makes a difference
+//                append("\n");
+            }
+            return this;
+        }
+
+        /**
+         * Closes the tag by determining its current state. Can close with a no-content
+         * tag </name> if no content has been written, or with write a close tag
+         *
+         * @return - the parent element
+         */
+        public Element close() {
+            return close(false);
+        }
+        public Element close(boolean newline) {
+            if (openEnded) {
+                if (nsPrefix != null) {
+					//CALDAV HACK
+                    append("</" + nsPrefix + ":" + name + ">");
+					//append("</" + nsPrefix + ":" + name + ">\n");
+                } else {
+					// CALDAV HACK
+                    append("</" + name + ">");
+					//append("</" + name + ">\n");
+                }
+                if (newline) {
+					// caldav hack
+                    //append("\n");
+                }
+                return parent;
+            } else {
+                if (newline) {
+					// CALDAV HACK
+                    //append("\n");
+                }
+                return noContent();
+            }
+        }
+
+        /**
+         * Write a self closing tag, eg />
+         *
+         * @return - the parent element
+         */
+        public Element noContent() {
+			append("/>");
+			// CALDAV HACK
+            //append("/>\n");
+            return parent;
+        }
+        public Element noContent(boolean newLine) {
+            append("/>");
+            if(newLine) {
+				// CALDAV HACK
+             //   append("\n");
+            }
+            return parent;
+        }
+
+        /**
+         * Start a new element, completing the open tag if required
+         *
+         * @param name
+         * @return
+         */
+        public Element begin(String name) {
+            return begin(null, name);
+        }
+
+        public Element begin(String prefix, String name) {
+            if (!openEnded) {
+                open();
+            }
+
+            Element el = new Element(this, prefix, name);
+            return el;
+        }
+		
+        public Element begin(String uri, String prefix, String name) {
+            if (!openEnded) {
+                open();
+            }
+
+            Element el = new Element(this, uri, prefix, name);
+            return el;
+        }		
+
+        /**
+         * Write a property element like -
+         * <name>value</name>
+         *
+         * @param name
+         * @param value
+         * @return
+         */
+        public Element prop(String name, String value) {
+            begin(name).writeText(value,false).close(true);
+            return this;
+        }
+
+        public Element prop(String name, Integer value) {
+            if (value != null) {
+                prop(name, value.toString());
+            } else {
+                begin(name).noContent();
+            }
+            return this;
+        }
+    }
+
+    public Element begin(String name) {
+        Element el = new Element(null, name);
+        return el;
+    }
+
+    public Element begin(String nsPrefix, String name) {
+        Element el = new Element(null, nsPrefix, name);
+        return el;
+    }
+
+    public void writeElement(String nsPrefix, String nsUrl, String name, Type type) {
+        if ((nsPrefix != null) && (nsPrefix.length() > 0)) {
+            switch (type) {
+                case OPENING:
+                    if (nsUrl != null) {
+                        append("<" + nsPrefix + ":" + name + " xmlns:" + nsPrefix + "=\"" + nsUrl + "\">");
+                    } else {
+                        append("<" + nsPrefix + ":" + name + ">");
+                    }
+                    break;
+                case CLOSING:
+					// CALDAV HACK
+					append("</" + nsPrefix + ":" + name + ">");
+                    //append("</" + nsPrefix + ":" + name + ">\n");
+                    break;
+                case NO_CONTENT:
+                default:
+                    if (nsUrl != null) {
+                        append("<" + nsPrefix + ":" + name + " xmlns:" + nsPrefix + "=\"" + nsUrl + "\"/>");
+                    } else {
+                        append("<" + nsPrefix + ":" + name + "/>");
+                    }
+                    break;
+            }
+        } else {
+            switch (type) {
+                case OPENING:
+                    append("<" + name + ">");
+                    break;
+                case CLOSING:
+					// CALDAV HACK
+                    append("</" + name + ">\n");
+					//append("</" + name + ">\n");
+                    break;
+                case NO_CONTENT:
+                default:
+                    append("<" + name + "/>");
+                    break;
+            }
+        }
+    }
+
+    /**
+     * Append plain text.
+     *
+     * @param text Text to append
+     */
+    public void writeText(String text) {
+        append(text);
+    }
+
+    /**
+     * Write a CDATA segment.
+     *
+     * @param data Data to append
+     */
+    public void writeData(String data) {
+        append("<![CDATA[" + data + "]]>");
+    }
+
+    public void writeXMLHeader() {
+        append("<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n");
+    }
+
+    /**
+     * Send data and reinitializes buffer.
+     */
+    public void flush() {
+        try {
+            writer.flush();
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    public void sample(InputStream in) {
+        log.debug("outputting sample");
+        try {
+            ByteArrayOutputStream out = FileUtils.readIn(in);
+            writer.write(out.toString());
+        } catch (FileNotFoundException ex) {
+            log.error("", ex);
+        } catch (IOException ex) {
+            log.error("", ex);
+        } finally {
+            FileUtils.close(in);
+        }
+    }
+
+    public void newLine() {
+		// CALDAV HACK
+        //append("\n");
+    }
+}

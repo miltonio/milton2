@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<D:propertyupdate xmlns:D="DAV:" xmlns:Z="urn:schemas-microsoft-com:">
+<D:set>
+<D:prop>
+<Z:Win32LastAccessTime>Wed, 10 Dec 2008 21:55:22 GMT</Z:Win32LastAccessTime>
+<Z:Win32LastModifiedTime>Wed, 10 Dec 2008 21:55:22 GMT</Z:Win32LastModifiedTime>
+<Z:Win32FileAttributes>00000020</Z:Win32FileAttributes>
+</D:prop>
+</D:set>
+</D:propertyupdate>

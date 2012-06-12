@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- main application layout -->
+<RelativeLayout
+  android:id="@+id/layoutMain"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android"
+>
+  <TextView
+    android:id="@+id/labelInfo"
+    android:layout_width="250px"
+    android:layout_height="wrap_content"
+    android:text="Milton Photo Uploader\n\nAn application to automatically upload photos taken by the phone's camera to a Milton server without any user interaction.\n\nUse the menu button to control this application.\n\nAuthor:Brad McEvoy\nhttp://milton.ettrema.com\nVersion: 1.0"
+    android:textSize="18sp"
+    android:gravity="center"
+    android:layout_centerVertical="true"
+    android:layout_centerHorizontal="true"
+  >
+</TextView>
+</RelativeLayout>

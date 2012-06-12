@@ -1,0 +1,33 @@
+
+<d:multistatus xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:" xmlns:cal="urn:ietf:params:xml:ns:caldav">
+    <d:response>
+        <d:href>/path</d:href>
+        <d:propstat>
+            <d:prop>
+                <d:version-history>
+                    <d:response>
+                        <d:href>/versionHistory</d:href>
+                        <d:propstat>
+                            <d:prop>
+                                <d:version-set>
+                                    <d:response>
+                                        <d:href>/versionSet</d:href>
+                                        <d:propstat>
+                                            <d:prop>
+                                                <d:creator-displayname>Joe</d:creator-displayname>
+                                                <d:activity-set>Activity1</d:activity-set>
+                                            </d:prop>
+                                            <d:status>HTTP/1.1 200 OK</d:status>
+                                        </d:propstat>
+                                    </d:response>
+                                </d:version-set>
+                            </d:prop>
+                            <d:status>HTTP/1.1 200 OK</d:status>
+                        </d:propstat>
+                    </d:response>
+                </d:version-history>
+            </d:prop>
+            <d:status>HTTP/1.1 200 OK</d:status>
+        </d:propstat>
+    </d:response>
+</d:multistatus>

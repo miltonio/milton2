@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+	 version="2.4">
+
+     <!-- Use the CustomFilter as an example of creating your own filter -->
+     <!-- Alternatively, use MiltonServlet further below-->
+	 <!--
+    <filter>
+        <filter-name>CustomFilter</filter-name>
+        <filter-class>com.mycompany.CustomFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>CustomFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+	-->
+
+<!--
+    <filter>
+        <filter-name>StaticResourceFilter</filter-name>
+        <filter-class>com.bradmcevoy.http.StaticResourceFilter</filter-class>
+    </filter>
+    
+    <filter-mapping>
+        <filter-name>StaticResourceFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+-->
+
+	<!-- NOTE: the servlet is currently not mapped to any urls, and the filter above is being used!! -->
+	<!-- Below is how most people use milton, but you should remove the filter definition above and enabled
+			the url mapping below to use it -->
+    <servlet>
+        <servlet-name>milton</servlet-name>
+        <servlet-class>io.milton.http.MiltonServlet</servlet-class>
+        <init-param>
+            <param-name>resource.factory.class</param-name>
+            <param-value>com.mycompany.TResourceFactory</param-value>
+        </init-param>
+<!--
+To disable digest authentication uncomment the following. To completely disable
+all authentication provide an empty value. If this init-param is missing milton
+will default to basic and digest authentication.
+-->
+<!--
+        <init-param>
+            <param-name>authentication.handler.classes</param-name>
+            <param-value>com.bradmcevoy.http.http11.auth.BasicAuthHandler</param-value>
+        </init-param>
+-->
+
+
+        <init-param>
+            <param-name>not.found.url</param-name>
+            <param-value>/404.jsp</param-value>
+        </init-param>    
+<!-- Uncomment the following filter to enable request and response logging to your user.home-->
+
+        <init-param>
+            <param-name>filter_0</param-name>
+            <param-value>com.bradmcevoy.http.DebugFilter</param-value>
+        </init-param>
+
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>milton</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>    
+
+    <session-config>
+        <session-timeout>
+            30
+        </session-timeout>
+    </session-config>
+    <welcome-file-list>
+	<welcome-file>
+            index.jsp
+        </welcome-file>
+    </welcome-file-list>
+</web-app>

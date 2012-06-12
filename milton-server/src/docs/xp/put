@@ -1,0 +1,78 @@
+HEAD /repository/test.txt HTTP/1.1
+Accept-Language: de, en-us;q=0.2
+Translate: f
+Content-Length: 0
+User-Agent: Microsoft Data Access Internet Publishing Provider DAV 1.1
+Host: ak:9000
+Connection: Keep-Alive
+
+HTTP/1.1 404 Not Found
+Transfer-Encoding: chunked
+Server: Jetty(6.1.11)
+
+---
+
+PUT /repository/test.txt HTTP/1.1
+Accept-Language: de, en-us;q=0.2
+Translate: f
+Content-Length: 12
+User-Agent: Microsoft Data Access Internet Publishing Provider DAV 1.1
+Host: ak:9000
+Connection: Keep-Alive
+
+asdfasdasdas
+
+HTTP/1.1 201 Created
+Transfer-Encoding: chunked
+Server: Jetty(6.1.11)
+
+0
+
+---
+
+HEAD /repository/test.txt HTTP/1.1
+Accept-Language: de, en-us;q=0.2
+Translate: f
+Content-Length: 0
+User-Agent: Microsoft Data Access Internet Publishing Provider DAV 1.1
+Host: ak:9000
+Connection: Keep-Alive
+
+HTTP/1.1 200 OK
+Transfer-Encoding: chunked
+Server: Jetty(6.1.11)
+
+---
+
+PUT /repository/test.txt HTTP/1.1
+Accept-Language: de, en-us;q=0.2
+Translate: f
+Content-Length: 12
+User-Agent: Microsoft Data Access Internet Publishing Provider DAV 1.1
+Host: ak:9000
+Connection: Keep-Alive
+
+asdfasdasdas
+
+HTTP/1.1 201 Created
+Transfer-Encoding: chunked
+Server: Jetty(6.1.11)
+
+0
+---
+
+HEAD /repository/test.txt HTTP/1.1
+Accept-Language: de, en-us;q=0.2
+Translate: f
+Content-Length: 0
+User-Agent: Microsoft Data Access Internet Publishing Provider DAV 1.1
+Host: ak:9000
+Connection: Keep-Alive
+
+HTTP/1.1 200 OK
+Transfer-Encoding: chunked
+Server: Jetty(6.1.11)
+
+---
+
+
