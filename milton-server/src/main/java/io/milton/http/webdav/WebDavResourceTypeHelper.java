@@ -33,6 +33,7 @@ public class WebDavResourceTypeHelper implements ResourceTypeHelper {
 
     private static final Logger log = LoggerFactory.getLogger( WebDavResourceTypeHelper.class );
 
+	@Override
     public List<QName> getResourceTypes( Resource r ) {
         if( r instanceof CollectionResource ) {
             ArrayList<QName> list = new ArrayList<QName>();
@@ -46,6 +47,7 @@ public class WebDavResourceTypeHelper implements ResourceTypeHelper {
 
     //Need to create a ArrayList as Arrays.asList returns a fixed length list which
     //cannot be extended.
+	@Override
     public List<String> getSupportedLevels( Resource r ) {
         if( r instanceof LockableResource ) {
             return new ArrayList<String> (Arrays.asList( "1", "2" ));

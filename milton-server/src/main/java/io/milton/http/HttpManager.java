@@ -12,36 +12,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package io.milton.http;
 
 import io.milton.common.Utils;
 import io.milton.resource.Resource;
-import io.milton.http.entity.DefaultEntityTransport;
 import io.milton.http.entity.EntityTransport;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
-import io.milton.http.http11.Bufferable;
 import io.milton.http.http11.CustomPostHandler;
-import io.milton.http.http11.DefaultHttp11ResponseHandler;
 import io.milton.http.http11.Http11ResponseHandler;
-import io.milton.http.http11.auth.ExpiredNonceRemover;
-import io.milton.http.http11.auth.Nonce;
-import io.milton.http.http11.auth.NonceProvider;
-import io.milton.http.http11.auth.SimpleMemoryNonceProvider;
-import io.milton.http.webdav.DefaultWebDavResponseHandler;
 import io.milton.http.webdav.WebDavResponseHandler;
-import io.milton.property.PropertyAuthoriser;
-import io.milton.property.PropertyHandler;
 import io.milton.common.Stoppable;
 import io.milton.event.EventManager;
-import io.milton.event.EventManagerImpl;
 import io.milton.event.RequestEvent;
 import io.milton.event.ResponseEvent;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,89 +56,49 @@ public class HttpManager {
 	public static Response response() {
 		return tlResponse.get();
 	}
-	private final ProtocolHandlers handlers;
-	private Map<String, Handler> methodHandlers = new ConcurrentHashMap<String, Handler>();
-	List<Filter> filters = new ArrayList<Filter>();
-	List<EventListener> eventListeners = new ArrayList<EventListener>();
-	protected final ResourceFactory resourceFactory;
-	protected final Http11ResponseHandler responseHandler;
-	private SessionAuthenticationHandler sessionAuthenticationHandler;
-	private PropertyAuthoriser propertyPermissionService;
-	private EventManager eventManager = new EventManagerImpl();
-	private final List<Stoppable> shutdownHandlers = new CopyOnWriteArrayList<Stoppable>();
-	private EntityTransport entityTransport;
+	private final ProtocolHandlers handlers;	
+	private final List<Filter> filters;
+	private final List<EventListener> eventListeners = new ArrayList<EventListener>();
+	private final ResourceFactory resourceFactory;
+	private final Http11ResponseHandler responseHandler;	
+	private final EventManager eventManager;
+	private final List<Stoppable> shutdownHandlers;
+	private final EntityTransport entityTransport;
+	
+	private Map<String, Handler> methodHandlers;
 
 	/**
-	 * Creates the manager with a DefaultResponseHandler
-	 *
+	 * Instead of using this constructor directly, consider using the HttpManagerConfig
+	 * builder class
+	 * 
 	 * @param resourceFactory
+	 * @param responseHandler
+	 * @param handlers
+	 * @param entityTransport
+	 * @param filters
+	 * @param eventManager
+	 * @param shutdownHandlers 
 	 */
-	public HttpManager(ResourceFactory resourceFactory) {
-		if (resourceFactory == null) {
-			throw new NullPointerException("resourceFactory cannot be null");
-		}
-		Map<UUID, Nonce> nonces = new ConcurrentHashMap<UUID, Nonce>();
-		int nonceValiditySeconds = 60 * 60 * 24;
-		ExpiredNonceRemover expiredNonceRemover = new ExpiredNonceRemover(nonces, nonceValiditySeconds);
-		NonceProvider nonceProvider = new SimpleMemoryNonceProvider(nonceValiditySeconds, expiredNonceRemover, nonces);
-		AuthenticationService authenticationService = new AuthenticationService(nonceProvider);
-		
-		this.resourceFactory = resourceFactory;
-		DefaultWebDavResponseHandler webdavResponseHandler = new DefaultWebDavResponseHandler(authenticationService);
-		this.responseHandler = webdavResponseHandler;
-		HandlerHelper handlerHelper = new HandlerHelper(authenticationService);
-		this.handlers = new ProtocolHandlers(webdavResponseHandler, handlerHelper, resourceFactory);
-
-		entityTransport = new DefaultEntityTransport(); // default implementation, can be overridden with setter
-		
-		initHandlers();
-
-		shutdownHandlers.add(expiredNonceRemover);
-
-		expiredNonceRemover.start();
-
-	}
-
-	public HttpManager(ResourceFactory resourceFactory, AuthenticationService authenticationService) {
-		if (resourceFactory == null) {
-			throw new NullPointerException("resourceFactory cannot be null");
-		}
-		this.resourceFactory = resourceFactory;
-		DefaultWebDavResponseHandler webdavResponseHandler = new DefaultWebDavResponseHandler(authenticationService);
-		this.responseHandler = webdavResponseHandler;
-		HandlerHelper handlerHelper = new HandlerHelper(authenticationService);
-		this.handlers = new ProtocolHandlers(webdavResponseHandler, handlerHelper, resourceFactory);
-
-		entityTransport = new DefaultEntityTransport(); // default implementation, can be overridden with setter
-		
-		initHandlers();
-	}
-
-	public HttpManager(ResourceFactory resourceFactory, WebDavResponseHandler responseHandler, AuthenticationService authenticationService) {
-		if (resourceFactory == null) {
-			throw new NullPointerException("resourceFactory cannot be null");
-		}
-		this.resourceFactory = resourceFactory;
-		this.responseHandler = responseHandler;
-		HandlerHelper handlerHelper = new HandlerHelper(authenticationService);
-		this.handlers = new ProtocolHandlers(responseHandler, handlerHelper, resourceFactory);
-
-		entityTransport = new DefaultEntityTransport(); // default implementation, can be overridden with setter
-		
-		initHandlers();
-	}
-
-	public HttpManager(ResourceFactory resourceFactory, WebDavResponseHandler responseHandler, ProtocolHandlers handlers) {
-		if (resourceFactory == null) {
-			throw new NullPointerException("resourceFactory cannot be null");
-		}
-		this.resourceFactory = resourceFactory;
+	public HttpManager(ResourceFactory resourceFactory, WebDavResponseHandler responseHandler, ProtocolHandlers handlers, EntityTransport entityTransport, List<Filter> filters, EventManager eventManager, List<Stoppable> shutdownHandlers) {
 		this.responseHandler = responseHandler;
 		this.handlers = handlers;
-
-		entityTransport = new DefaultEntityTransport(); // default implementation, can be overridden with setter
-		
+		this.resourceFactory = resourceFactory;
+		this.entityTransport = entityTransport;
+		this.filters = filters;
+		this.eventManager = eventManager;
+		this.shutdownHandlers = shutdownHandlers;
 		initHandlers();
+	}
+
+	private void initHandlers() {
+		this.methodHandlers = new ConcurrentHashMap<String, Handler>();
+		for (HttpExtension ext : handlers) {
+			for (Handler h : ext.getHandlers()) {
+				for (String m : h.getMethods()) {
+					this.methodHandlers.put(m, h);
+				}
+			}
+		}
 	}
 
 	public void sendResponseEntity(Response response) throws Exception {
@@ -163,49 +110,12 @@ public class HttpManager {
 
 	}
 
-	private void initHandlers() {
-		for (HttpExtension ext : handlers) {
-			for (Handler h : ext.getHandlers()) {
-				for (String m : h.getMethods()) {
-					this.methodHandlers.put(m, h);
-				}
-			}
-		}
-		// The standard filter must always be there, its what invokes the main milton processing
-		filters.add(createStandardFilter());
-	}
-
 	public Handler getMethodHandler(Request.Method m) {
 		return methodHandlers.get(m.code);
 	}
 
 	public ResourceFactory getResourceFactory() {
 		return resourceFactory;
-	}
-
-	public SessionAuthenticationHandler getSessionAuthenticationHandler() {
-		return sessionAuthenticationHandler;
-	}
-
-	public void setSessionAuthenticationHandler(SessionAuthenticationHandler sessionAuthenticationHandler) {
-		this.sessionAuthenticationHandler = sessionAuthenticationHandler;
-	}
-
-	/**
-	 * @deprecated - use an AuthenticationHandler instead
-	 *
-	 * @param request
-	 * @return - if no SessionAuthenticationHandler has been set returns null.
-	 * Otherwise, calls getSessionAuthentication on it and returns the result
-	 *
-	 *
-	 */
-	@Deprecated
-	public Auth getSessionAuthentication(Request request) {
-		if (this.sessionAuthenticationHandler == null) {
-			return null;
-		}
-		return this.sessionAuthenticationHandler.getSessionAuthentication(request);
 	}
 
 	public void process(Request request, Response response) {
@@ -239,14 +149,6 @@ public class HttpManager {
 			tlRequest.remove();
 			tlResponse.remove();
 		}
-	}
-
-	protected Filter createStandardFilter() {
-		return new StandardFilter();
-	}
-
-	public void addFilter(int pos, Filter filter) {
-		filters.add(pos, filter);
 	}
 
 	public void addEventListener(EventListener l) {
@@ -286,15 +188,6 @@ public class HttpManager {
 		return col;
 	}
 
-	public void setFilters(List<Filter> filters) {
-		this.filters = filters;
-		filters.add(createStandardFilter());
-	}
-
-	public void setEventListeners(List<EventListener> eventListeners) {
-		this.eventListeners = eventListeners;
-	}
-
 	public Collection<Handler> getAllHandlers() {
 		return this.methodHandlers.values();
 	}
@@ -307,22 +200,6 @@ public class HttpManager {
 		return handlers;
 	}
 
-	public PropertyAuthoriser getPropertyPermissionService() {
-		return propertyPermissionService;
-	}
-
-	public void setPropertyPermissionService(PropertyAuthoriser propertyPermissionService) {
-		log.trace("setPropertyPermissionService: " + propertyPermissionService.getClass().getCanonicalName());
-		this.propertyPermissionService = propertyPermissionService;
-		for (Handler h : methodHandlers.values()) {
-			if (h instanceof PropertyHandler) {
-				PropertyHandler ph = (PropertyHandler) h;
-				log.trace("set propertyPermissionService on: " + ph.getClass().getCanonicalName());
-				ph.setPermissionService(propertyPermissionService);
-			}
-		}
-	}
-
 	public boolean isEnableExpectContinue() {
 		return handlers.isEnableExpectContinue();
 	}
@@ -333,10 +210,6 @@ public class HttpManager {
 
 	public EventManager getEventManager() {
 		return eventManager;
-	}
-
-	public void setEventManager(EventManager eventManager) {
-		this.eventManager = eventManager;
 	}
 
 	private void fireRequestEvent(Request request) throws ConflictException, BadRequestException, NotAuthorizedException {
@@ -376,29 +249,7 @@ public class HttpManager {
 		}
 	}
 
-	public DefaultHttp11ResponseHandler.BUFFERING getBuffering() {
-		if (this.responseHandler instanceof Bufferable) {
-			Bufferable hrh = (Bufferable) responseHandler;
-			return hrh.getBuffering();
-		} else {
-			return null; // unknown
-		}
-	}
-
-	public void setBuffering(DefaultHttp11ResponseHandler.BUFFERING buffering) {
-		if (this.responseHandler instanceof Bufferable) {
-			Bufferable hrh = (Bufferable) responseHandler;
-			hrh.setBuffering(buffering);
-		} else {
-			throw new RuntimeException("Can't set buffering on unsupported Http11ResponseHandler: " + responseHandler.getClass());
-		}
-	}
-
 	public EntityTransport getEntityTransport() {
 		return entityTransport;
 	}
-
-	public void setEntityTransport(EntityTransport entityTransport) {
-		this.entityTransport = entityTransport;
-	}		
 }

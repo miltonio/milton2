@@ -47,16 +47,15 @@ public class ResourceHandlerHelper {
     public static final String ATT_NAME_FILES = "_files";
 
     private final HandlerHelper handlerHelper;
-    private final Http11ResponseHandler responseHandler;
-    private UrlAdapter urlAdapter = new UrlAdapterImpl();
+    private final Http11ResponseHandler responseHandler; // set after construction
+    private final UrlAdapter urlAdapter;
 
-    public ResourceHandlerHelper( HandlerHelper handlerHelper, Http11ResponseHandler responseHandler ) {
-        if( responseHandler == null )
-            throw new IllegalArgumentException( "responseHandler may not be null" );
+    public ResourceHandlerHelper( HandlerHelper handlerHelper, UrlAdapter urlAdapter, Http11ResponseHandler responseHandler ) {
         if( handlerHelper == null )
             throw new IllegalArgumentException( "handlerHelper may not be null" );
+		this.responseHandler = responseHandler;
+		this.urlAdapter = urlAdapter;
         this.handlerHelper = handlerHelper;
-        this.responseHandler = responseHandler;
     }
 
     public void process( HttpManager manager, Request request, Response response, ResourceHandler handler ) throws NotAuthorizedException, ConflictException, BadRequestException {
@@ -170,7 +169,9 @@ public class ResourceHandlerHelper {
         return urlAdapter;
     }
 
-    public void setUrlAdapter( UrlAdapter urlAdapter ) {
-        this.urlAdapter = urlAdapter;
-    }
+	public Http11ResponseHandler getResponseHandler() {
+		return responseHandler;
+	}
+
+	
 }

@@ -18,7 +18,9 @@
  */
 package io.milton.http.caldav.demo.servlet;
 
-import io.milton.http.*;
+import io.milton.servlet.ServletRequest;
+import io.milton.servlet.MiltonServlet;
+import io.milton.servlet.ServletResponse;
 import io.milton.http.acl.ACLProtocol;
 import io.milton.http.caldav.CalDavProtocol;
 import io.milton.http.caldav.CalendarResourceTypeHelper;

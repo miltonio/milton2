@@ -13,25 +13,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.milton.http;
+package io.milton.servlet;
+
+import io.milton.http.HttpManager;
 
 /**
  *
  * @author brad
  */
-public class UrlAdapterImpl implements UrlAdapter{
-
-	public UrlAdapterImpl() {
-	}
-	
-	@Override
-    public String getUrl(Request request) {
-        String s = HttpManager.decodeUrl( request.getAbsolutePath() );
-        if( s.contains( "/DavWWWRoot")) {
-            return s.replace( "/DavWWWRoot", "");
-        } else {
-            return s;
-        }
-    }
-
+public interface Initable {
+    void init(ApplicationConfig config, HttpManager manager);
+    void destroy(HttpManager manager);
 }

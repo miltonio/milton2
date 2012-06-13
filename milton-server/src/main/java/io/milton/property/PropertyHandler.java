@@ -26,7 +26,7 @@ import io.milton.http.Handler;
  * @author brad
  */
 public interface PropertyHandler extends Handler{
+	
     public PropertyAuthoriser getPermissionService();
 
-    public void setPermissionService( PropertyAuthoriser permissionService );
 }

@@ -17,7 +17,6 @@ package io.milton.http.caldav.demo;
 
 
 import io.milton.http.AccessControlledResource.Priviledge;
-import io.milton.http.*;
 import io.milton.http.acl.Principal;
 import io.milton.http.values.HrefList;
 import io.milton.http.webdav.PropPatchHandler.Fields;

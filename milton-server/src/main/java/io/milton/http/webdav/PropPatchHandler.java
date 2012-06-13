@@ -125,20 +125,14 @@ public class PropPatchHandler implements ExistingEntityHandler, PropertyHandler 
     private final PropPatchRequestParser requestParser;
     private final PropPatchSetter patchSetter;
     private final WebDavResponseHandler responseHandler;
-    private PropertyAuthoriser permissionService = new DefaultPropertyAuthoriser();
+    private final PropertyAuthoriser permissionService;
 
-    public PropPatchHandler( ResourceHandlerHelper resourceHandlerHelper, WebDavResponseHandler responseHandler, PropPatchSetter propPatchSetter ) {
-        this.resourceHandlerHelper = resourceHandlerHelper;
-        this.requestParser = new DefaultPropPatchParser();
-        patchSetter = propPatchSetter;
-        this.responseHandler = responseHandler;
-    }
-
-    public PropPatchHandler( ResourceHandlerHelper resourceHandlerHelper, PropPatchRequestParser requestParser, PropPatchSetter patchSetter, WebDavResponseHandler responseHandler ) {
+    public PropPatchHandler( ResourceHandlerHelper resourceHandlerHelper, PropPatchRequestParser requestParser, PropPatchSetter patchSetter, WebDavResponseHandler responseHandler, PropertyAuthoriser permissionService ) {
         this.resourceHandlerHelper = resourceHandlerHelper;
         this.requestParser = requestParser;
         this.patchSetter = patchSetter;
         this.responseHandler = responseHandler;
+		this.permissionService = permissionService;
     }
 
 	@Override
@@ -243,11 +237,6 @@ public class PropPatchHandler implements ExistingEntityHandler, PropertyHandler 
 	@Override
     public PropertyAuthoriser getPermissionService() {
         return permissionService;
-    }
-
-	@Override
-    public void setPermissionService( PropertyAuthoriser permissionService ) {
-        this.permissionService = permissionService;
     }
 
     public static class Field {

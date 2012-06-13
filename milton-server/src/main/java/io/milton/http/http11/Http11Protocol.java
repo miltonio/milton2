@@ -18,6 +18,7 @@ package io.milton.http.http11;
 import io.milton.http.Handler;
 import io.milton.http.HandlerHelper;
 import io.milton.http.HttpExtension;
+import io.milton.http.ResourceHandlerHelper;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -34,31 +35,17 @@ public class Http11Protocol implements HttpExtension{
 
     private List<CustomPostHandler> customPostHandlers;
 
-    public Http11Protocol( Set<Handler> handlers, HandlerHelper handlerHelper ) {
-        this.handlers = handlers;
-        this.handlerHelper = handlerHelper;
-    }
-
-    /**
-     * OPTIONS authentication is disabled by default
-     *
-     * @param responseHandler
-     * @param handlerHelper
-     */
-    public Http11Protocol(Http11ResponseHandler responseHandler, HandlerHelper handlerHelper) {
-        this(responseHandler, handlerHelper, false );
-    }
-
-    public Http11Protocol(Http11ResponseHandler responseHandler, HandlerHelper handlerHelper, boolean enableOptionsAuth) {
+    public Http11Protocol(Http11ResponseHandler responseHandler, HandlerHelper handlerHelper, ResourceHandlerHelper resourceHandlerHelper, boolean enableOptionsAuth) {
         this.handlers = new HashSet<Handler>();
         this.handlerHelper = handlerHelper;
-        handlers.add(new OptionsHandler(responseHandler, handlerHelper, enableOptionsAuth));
-        handlers.add(new GetHandler(responseHandler, handlerHelper));
-        handlers.add(new PostHandler(responseHandler, handlerHelper));
-        handlers.add(new DeleteHandler(responseHandler, handlerHelper));
+        handlers.add(new OptionsHandler(responseHandler, resourceHandlerHelper, enableOptionsAuth));
+        handlers.add(new GetHandler(responseHandler, resourceHandlerHelper));
+        handlers.add(new PostHandler(responseHandler, resourceHandlerHelper));
+        handlers.add(new DeleteHandler(responseHandler, resourceHandlerHelper, handlerHelper));
         handlers.add(new PutHandler(responseHandler, handlerHelper));
     }
 
+	@Override
     public Set<Handler> getHandlers() {
         return handlers;
     }
@@ -67,6 +54,7 @@ public class Http11Protocol implements HttpExtension{
         return handlerHelper;
     }
 
+	@Override
     public List<CustomPostHandler> getCustomPostHandlers() {
         return customPostHandlers;
     }

@@ -52,7 +52,7 @@ public class PropFindHandler implements ExistingEntityHandler, PropertyHandler {
     private final PropFindRequestFieldParser requestFieldParser;
     private final WebDavResponseHandler responseHandler;
     private final PropFindPropertyBuilder propertyBuilder;
-    private PropertyAuthoriser permissionService = new DefaultPropertyAuthoriser();
+    private final PropertyAuthoriser permissionService = new DefaultPropertyAuthoriser();
 
     /**
      * 
@@ -156,10 +156,5 @@ public class PropFindHandler implements ExistingEntityHandler, PropertyHandler {
 	@Override
     public PropertyAuthoriser getPermissionService() {
         return permissionService;
-    }
-
-	@Override
-    public void setPermissionService( PropertyAuthoriser permissionService ) {
-        this.permissionService = permissionService;
     }
 }

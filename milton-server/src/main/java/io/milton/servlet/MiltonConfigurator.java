@@ -12,26 +12,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package io.milton.servlet;
 
-package io.milton.http;
+import io.milton.http.HttpManager;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
 
 /**
+ * Implement this to customise how the HttpManager is created in the servlet
  *
  * @author brad
  */
-public class UrlAdapterImpl implements UrlAdapter{
+public interface MiltonConfigurator {
+    HttpManager configure(ServletConfig config) throws ServletException;
 
-	public UrlAdapterImpl() {
-	}
-	
-	@Override
-    public String getUrl(Request request) {
-        String s = HttpManager.decodeUrl( request.getAbsolutePath() );
-        if( s.contains( "/DavWWWRoot")) {
-            return s.replace( "/DavWWWRoot", "");
-        } else {
-            return s;
-        }
-    }
-
+    /**
+     * called on destroy from the servlet
+     */
+    void shutdown();
 }

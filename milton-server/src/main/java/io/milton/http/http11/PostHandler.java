@@ -35,14 +35,12 @@ public class PostHandler implements ExistingEntityHandler {
 
     private Logger log = LoggerFactory.getLogger( PostHandler.class );
     private final Http11ResponseHandler responseHandler;
-    private final HandlerHelper handlerHelper;
     private final ResourceHandlerHelper resourceHandlerHelper;
     
 
-    public PostHandler( Http11ResponseHandler responseHandler, HandlerHelper handlerHelper ) {
+    public PostHandler( Http11ResponseHandler responseHandler, ResourceHandlerHelper resourceHandlerHelper ) {
         this.responseHandler = responseHandler;
-        this.handlerHelper = handlerHelper;
-        this.resourceHandlerHelper = new ResourceHandlerHelper( handlerHelper, responseHandler );
+        this.resourceHandlerHelper = resourceHandlerHelper;
     }
 
     @Override

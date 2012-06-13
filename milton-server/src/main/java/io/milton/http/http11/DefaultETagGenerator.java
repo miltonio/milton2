@@ -33,6 +33,11 @@ public class DefaultETagGenerator implements ETagGenerator {
 
     private static final Logger log = LoggerFactory.getLogger( DefaultETagGenerator.class );
 
+	public DefaultETagGenerator() {
+	}
+	
+	
+	@Override
     public String generateEtag( Resource r ) {
         log.trace( "generateEtag" );
         String s = r.getUniqueId();

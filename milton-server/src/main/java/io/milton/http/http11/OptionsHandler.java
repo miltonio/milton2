@@ -55,52 +55,21 @@ public class OptionsHandler implements ResourceHandler {
      * 
      * @param responseHandler
      */
-    public OptionsHandler( Http11ResponseHandler responseHandler ) {
+    public OptionsHandler( Http11ResponseHandler responseHandler, ResourceHandlerHelper resourceHandlerHelper, boolean enableAuthorisation ) {
         this.responseHandler = responseHandler;
         this.handlerHelper = null;
-        this.resourceHandlerHelper = new ResourceHandlerHelper( handlerHelper, responseHandler );
+        this.resourceHandlerHelper = resourceHandlerHelper;
         this.enableAuthorisation = false;
+		this.enableAuthorisation = enableAuthorisation;
     }
 
-    /**
-     * Creates an OptionHandler with no authorisation
-     *
-     * Note that the handlerHelper is redundant, but this constructor is kept
-     * for backwards compatibility
-     *
-     * @param responseHandler
-     */
-    public OptionsHandler( Http11ResponseHandler responseHandler, HandlerHelper handlerHelper ) {
-        this.responseHandler = responseHandler;
-        this.handlerHelper = handlerHelper;
-        this.resourceHandlerHelper = new ResourceHandlerHelper( handlerHelper, responseHandler );
-        this.enableAuthorisation = false;
-    }
-
-    /**
-     * Allows the choice of enabling authorisation. Some webdav clients (such as windows 7) require 
-     * un-authenticated OPTIONS requests, because they use the information returned to determine
-     * how to authenticate.
-     * 
-     * However, this might be considered a security risk as it allows mailicious
-     * users to determine the existence of resources, although not their content.
-     * 
-     * @param responseHandler
-     * @param handlerHelper - redundant if enableAuthorisation is false
-     * @param enableAuthorisation - if false OPTIONS requests will never request authentication
-     */
-    public OptionsHandler( Http11ResponseHandler responseHandler, HandlerHelper handlerHelper, boolean enableAuthorisation ) {
-        this.responseHandler = responseHandler;
-        this.handlerHelper = handlerHelper;
-        this.resourceHandlerHelper = new ResourceHandlerHelper( handlerHelper, responseHandler );
-        this.enableAuthorisation = enableAuthorisation;
-    }
 
     @Override
     public void process( HttpManager manager, Request request, Response response ) throws NotAuthorizedException, ConflictException, BadRequestException {
         resourceHandlerHelper.process( manager, request, response, this );
     }
 
+	@Override
     public void processResource( HttpManager manager, Request request, Response response, Resource resource ) throws NotAuthorizedException, ConflictException, BadRequestException {
         long t = System.currentTimeMillis();
         try {
@@ -122,6 +91,7 @@ public class OptionsHandler implements ResourceHandler {
         }
     }
 
+	@Override
     public String[] getMethods() {
         return new String[]{Method.OPTIONS.code};
     }

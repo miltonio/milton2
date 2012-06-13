@@ -67,11 +67,6 @@ public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Buff
 	private int maxMemorySize = 100000;
 	private BUFFERING buffering;
 
-	public DefaultHttp11ResponseHandler(AuthenticationService authenticationService) {
-		this.authenticationService = authenticationService;
-		this.eTagGenerator = new DefaultETagGenerator();
-	}
-
 	public DefaultHttp11ResponseHandler(AuthenticationService authenticationService, ETagGenerator eTagGenerator) {
 		this.authenticationService = authenticationService;
 		this.eTagGenerator = eTagGenerator;

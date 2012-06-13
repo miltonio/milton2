@@ -40,14 +40,12 @@ public class GetHandler implements ExistingEntityHandler {
 
     private static final Logger log = LoggerFactory.getLogger( GetHandler.class );
     private final Http11ResponseHandler responseHandler;
-    private final HandlerHelper handlerHelper;
     private final ResourceHandlerHelper resourceHandlerHelper;
 	private final PartialGetHelper partialGetHelper;
 
-    public GetHandler( Http11ResponseHandler responseHandler, HandlerHelper handlerHelper ) {
+    public GetHandler( Http11ResponseHandler responseHandler, ResourceHandlerHelper resourceHandlerHelper ) {
         this.responseHandler = responseHandler;
-        this.handlerHelper = handlerHelper;
-        this.resourceHandlerHelper = new ResourceHandlerHelper( handlerHelper, responseHandler );
+        this.resourceHandlerHelper = resourceHandlerHelper;
 		partialGetHelper = new PartialGetHelper(responseHandler);
     }
 

@@ -15,7 +15,6 @@
 
 package io.milton.http.webdav;
 
-import io.milton.http.AuthenticationService;
 import io.milton.resource.GetableResource;
 import io.milton.http.HrefStatus;
 import io.milton.http.Range;
@@ -30,10 +29,8 @@ import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.exceptions.NotFoundException;
 import io.milton.http.http11.Bufferable;
-import io.milton.http.http11.DefaultHttp11ResponseHandler;
 import io.milton.http.http11.DefaultHttp11ResponseHandler.BUFFERING;
 import io.milton.http.http11.Http11ResponseHandler;
-import io.milton.http.values.ValueWriters;
 import io.milton.http.quota.StorageChecker.StorageErrorReason;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -54,32 +51,6 @@ public class DefaultWebDavResponseHandler implements WebDavResponseHandler, Buff
     protected final ResourceTypeHelper resourceTypeHelper;
     protected final PropFindXmlGenerator propFindXmlGenerator;
 
-    public DefaultWebDavResponseHandler( AuthenticationService authenticationService ) {
-        ValueWriters valueWriters = new ValueWriters();
-        wrapped = new DefaultHttp11ResponseHandler( authenticationService );
-        resourceTypeHelper = new WebDavResourceTypeHelper();
-        propFindXmlGenerator = new PropFindXmlGenerator( valueWriters );
-    }
-
-    public DefaultWebDavResponseHandler( AuthenticationService authenticationService, ResourceTypeHelper resourceTypeHelper ) {
-        ValueWriters valueWriters = new ValueWriters();
-        wrapped = new DefaultHttp11ResponseHandler( authenticationService );
-        this.resourceTypeHelper = resourceTypeHelper;
-        propFindXmlGenerator = new PropFindXmlGenerator( valueWriters );
-
-    }
-
-    public DefaultWebDavResponseHandler( ValueWriters valueWriters, AuthenticationService authenticationService ) {
-        wrapped = new DefaultHttp11ResponseHandler( authenticationService );
-        resourceTypeHelper = new WebDavResourceTypeHelper();
-        propFindXmlGenerator = new PropFindXmlGenerator( valueWriters );
-    }
-
-    public DefaultWebDavResponseHandler( ValueWriters valueWriters, AuthenticationService authenticationService, ResourceTypeHelper resourceTypeHelper ) {
-        wrapped = new DefaultHttp11ResponseHandler( authenticationService );
-        this.resourceTypeHelper = resourceTypeHelper;
-        propFindXmlGenerator = new PropFindXmlGenerator( valueWriters );
-    }
 
     public DefaultWebDavResponseHandler( Http11ResponseHandler wrapped, ResourceTypeHelper resourceTypeHelper, PropFindXmlGenerator propFindXmlGenerator ) {
         this.wrapped = wrapped;

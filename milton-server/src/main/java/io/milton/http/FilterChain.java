@@ -32,7 +32,7 @@ public class FilterChain {
     }
 
     public void process( Request request, Response response) {        
-        Filter filter = httpManager.filters.get(pos++);
+        Filter filter = httpManager.getFilters().get(pos++);
         filter.process(this,request,response);
     }
 

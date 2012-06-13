@@ -30,6 +30,7 @@ import io.milton.resource.PropFindableResource;
 import io.milton.resource.PutableResource;
 import io.milton.resource.Resource;
 import io.milton.http.ResourceHandlerHelper;
+import io.milton.http.UrlAdapter;
 import io.milton.http.XmlWriter;
 import io.milton.http.http11.DefaultETagGenerator;
 import io.milton.http.http11.ETagGenerator;
@@ -40,6 +41,7 @@ import io.milton.http.values.ValueWriters;
 import io.milton.http.webdav.PropertyMap.StandardProperty;
 import io.milton.http.report.Report;
 import io.milton.http.report.ReportHandler;
+import io.milton.property.PropertyAuthoriser;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -84,31 +86,11 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 
 
     private List<CustomPostHandler> customPostHandlers;
-    //private DisplayNameFormatter displayNameFormatter = new CdataDisplayNameFormatter( new DefaultDisplayNameFormatter());
 
-//    public WebDavProtocol( Set<Handler> handlers ) {
-//        this.handlers = handlers;
-//        reports = new HashMap<String, Report>();
-//    }
-    public WebDavProtocol( WebDavResponseHandler responseHandler, HandlerHelper handlerHelper ) {
-        this( responseHandler, handlerHelper, new WebDavResourceTypeHelper() );
-    }
 
-    public WebDavProtocol( WebDavResponseHandler responseHandler, HandlerHelper handlerHelper, ResourceTypeHelper resourceTypeHelper ) {
-        this( handlerHelper, resourceTypeHelper, responseHandler, PropertySourceUtil.createDefaultSources( resourceTypeHelper ) );
-    }
-
-    public WebDavProtocol( HandlerHelper handlerHelper, ResourceTypeHelper resourceTypeHelper, WebDavResponseHandler responseHandler, List<PropertySource> extraPropertySources ) {
-        this( handlerHelper, resourceTypeHelper, responseHandler, extraPropertySources, new DefaultQuotaDataAccessor() );
-    }
-
-    public WebDavProtocol( HandlerHelper handlerHelper, ResourceTypeHelper resourceTypeHelper, WebDavResponseHandler responseHandler, List<PropertySource> extraPropertySources, QuotaDataAccessor quotaDataAccessor ) {
-        this( handlerHelper, resourceTypeHelper, responseHandler, extraPropertySources, quotaDataAccessor, null );
-    }
-
-    public WebDavProtocol( HandlerHelper handlerHelper, ResourceTypeHelper resourceTypeHelper, WebDavResponseHandler responseHandler, List<PropertySource> propertySources, QuotaDataAccessor quotaDataAccessor, PropPatchSetter patchSetter ) {
+    public WebDavProtocol( HandlerHelper handlerHelper, ResourceTypeHelper resourceTypeHelper, WebDavResponseHandler responseHandler, List<PropertySource> propertySources, QuotaDataAccessor quotaDataAccessor, PropPatchSetter patchSetter, PropertyAuthoriser propertyAuthoriser, ETagGenerator eTagGenerator, UrlAdapter urlAdapter, ResourceHandlerHelper resourceHandlerHelper ) {
         this.handlerHelper = handlerHelper;
-        this.eTagGenerator = new DefaultETagGenerator();
+        this.eTagGenerator = eTagGenerator;
         handlers = new HashSet<Handler>();
         this.resourceTypeHelper = resourceTypeHelper;
         this.quotaDataAccessor = quotaDataAccessor;
@@ -140,8 +122,7 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
         propertyMap.add( new QuotaUsedBytesPropertyWriter() );
 
         propertyMap.add( new SupportedReportSetProperty() );
-
-        ResourceHandlerHelper resourceHandlerHelper = new ResourceHandlerHelper( handlerHelper, responseHandler );
+       
 
         // note valuewriters is also used in DefaultWebDavResponseHandler
         // if using non-default configuration you should inject the same instance into there
@@ -163,7 +144,7 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
         handlers.add( new PropFindHandler( resourceHandlerHelper, resourceTypeHelper, responseHandler, propertySources ) );
         mkColHandler = new MkColHandler( responseHandler, handlerHelper );
         handlers.add( mkColHandler );
-        propPatchHandler = new PropPatchHandler( resourceHandlerHelper, responseHandler, patchSetter );
+        propPatchHandler = new PropPatchHandler(resourceHandlerHelper, new DefaultPropPatchParser(), patchSetter, responseHandler, propertyAuthoriser);
         handlers.add( propPatchHandler );
         handlers.add( new CopyHandler( responseHandler, handlerHelper, resourceHandlerHelper ) );
         handlers.add( new LockHandler( responseHandler, handlerHelper ) );

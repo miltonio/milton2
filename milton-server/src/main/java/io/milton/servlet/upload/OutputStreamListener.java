@@ -13,25 +13,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.milton.http;
+/* Licence:
+*   Use this however/wherever you like, just don't blame me if it breaks anything.
+*
+* Credit:
+*   If you're nice, you'll leave this bit:
+*
+*   Class by Pierre-Alexandre Losson -- http://www.telio.be/blog
+*   email : plosson@users.sourceforge.net
+*/
+package io.milton.servlet.upload;
 
-/**
- *
- * @author brad
- */
-public class UrlAdapterImpl implements UrlAdapter{
-
-	public UrlAdapterImpl() {
-	}
-	
-	@Override
-    public String getUrl(Request request) {
-        String s = HttpManager.decodeUrl( request.getAbsolutePath() );
-        if( s.contains( "/DavWWWRoot")) {
-            return s.replace( "/DavWWWRoot", "");
-        } else {
-            return s;
-        }
-    }
-
+public interface OutputStreamListener
+{
+    public void start();
+    public void bytesRead(int bytesRead);
+    public void error(String message);
+    public void done();
 }

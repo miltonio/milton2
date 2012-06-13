@@ -39,14 +39,12 @@ public class DeleteHandler implements ExistingEntityHandler {
 
     private Logger log = LoggerFactory.getLogger(DeleteHandler.class);
     private final Http11ResponseHandler responseHandler;
-    private final HandlerHelper handlerHelper;
     private final ResourceHandlerHelper resourceHandlerHelper;
     private DeleteHelper deleteHelper;
 
-    public DeleteHandler(Http11ResponseHandler responseHandler, HandlerHelper handlerHelper) {
+    public DeleteHandler(Http11ResponseHandler responseHandler,  ResourceHandlerHelper resourceHandlerHelper, HandlerHelper handlerHelper) {
         this.responseHandler = responseHandler;
-        this.handlerHelper = handlerHelper;
-        this.resourceHandlerHelper = new ResourceHandlerHelper(handlerHelper, responseHandler);
+        this.resourceHandlerHelper = resourceHandlerHelper;
         deleteHelper = new DeleteHelperImpl(handlerHelper);
     }
 

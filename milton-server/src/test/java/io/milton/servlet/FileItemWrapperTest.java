@@ -13,25 +13,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.milton.http;
 
-/**
- *
- * @author brad
- */
-public class UrlAdapterImpl implements UrlAdapter{
+package io.milton.servlet;
 
-	public UrlAdapterImpl() {
-	}
-	
-	@Override
-    public String getUrl(Request request) {
-        String s = HttpManager.decodeUrl( request.getAbsolutePath() );
-        if( s.contains( "/DavWWWRoot")) {
-            return s.replace( "/DavWWWRoot", "");
-        } else {
-            return s;
-        }
+import io.milton.servlet.FileItemWrapper;
+import junit.framework.TestCase;
+
+public class FileItemWrapperTest extends TestCase {
+    public void test() {
+        String s = "c:\\abc\\def\\aaa.doc";
+        String s2 = FileItemWrapper.fixIEFileName(s);
+        assertEquals("aaa.doc", s2);
+        
+        s = "aaa.doc";
+        s2 = FileItemWrapper.fixIEFileName(s);
+        assertEquals("aaa.doc", s2);        
     }
-
 }

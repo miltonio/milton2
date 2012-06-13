@@ -15,6 +15,7 @@
 
 package io.milton.restlet;
 
+import io.milton.config.HttpManagerConfig;
 import io.milton.http.HttpManager;
 import io.milton.http.ResourceFactory;
 import org.restlet.Context;
@@ -72,10 +73,10 @@ public class WebDavRestlet extends Restlet {
     @Override
     public synchronized void start() throws Exception {
         if (!isStarted()) {
-            httpManager = new HttpManager(getResourceFactory());
-            httpManager.setEntityTransport(
-                    new RestletEntityTransport()
-            );
+            HttpManagerConfig config = new HttpManagerConfig();
+            config.setMainResourceFactory(getResourceFactory());
+            config.setEntityTransport(new RestletEntityTransport());
+            httpManager = config.buildHttpManager();
         }
         super.start();
     }
