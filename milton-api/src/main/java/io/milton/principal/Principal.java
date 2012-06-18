@@ -13,7 +13,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.milton.http.acl;
+package io.milton.principal;
 
 import javax.xml.namespace.QName;
 

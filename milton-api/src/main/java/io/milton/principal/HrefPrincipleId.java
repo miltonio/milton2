@@ -13,17 +13,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.milton.http.acl;
+package io.milton.principal;
 
-import io.milton.principal.Principal;
-import io.milton.http.Auth;
+import javax.xml.namespace.QName;
 
 /**
- * Transforms various sources of user and group information into ACL compatible
- * Principal objects
  *
  * @author brad
  */
-public interface PrincipalFactory {
-	Principal fromAuth(Auth auth);
+public class HrefPrincipleId implements Principal.PrincipleId {
+
+    private final QName type;
+    private final String url;
+
+    public HrefPrincipleId(String url) {
+        this.url = url;
+        this.type = new QName("DAV:", "href");
+    }
+
+    @Override
+    public QName getIdType() {
+        return type;
+    }
+
+    @Override
+    public String getValue() {
+        return url;
+    }
+
+    @Override
+    public String toString() {
+        return url;
+    }
 }

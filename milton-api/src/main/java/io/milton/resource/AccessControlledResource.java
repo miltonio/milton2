@@ -13,11 +13,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.milton.http;
+package io.milton.resource;
 
-import io.milton.resource.Resource;
+import io.milton.http.Auth;
 import io.milton.http.values.HrefList;
-import io.milton.http.acl.Principal;
+import io.milton.principal.Principal;
 import java.util.List;
 import java.util.Map;
 

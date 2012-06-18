@@ -25,7 +25,7 @@ import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.webdav.WebDavResponseHandler;
-import io.milton.http.AccessControlledResource;
+import io.milton.resource.AccessControlledResource;
 import io.milton.resource.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -15,6 +15,7 @@
 
 package io.milton.event;
 
+import io.milton.event.Event;
 import io.milton.http.Request;
 import io.milton.http.Response;
 

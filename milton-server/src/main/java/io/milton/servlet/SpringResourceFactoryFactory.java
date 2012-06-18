@@ -15,7 +15,7 @@
 
 package io.milton.servlet;
 
-import io.milton.config.HttpManagerConfig;
+import io.milton.config.HttpManagerBuilder;
 import io.milton.http.HttpManager;
 import io.milton.http.ResourceFactory;
 import io.milton.http.webdav.WebDavResponseHandler;
@@ -70,7 +70,7 @@ public class SpringResourceFactoryFactory implements MiltonConfigurator{
 
     ApplicationContext context;
     
-    private HttpManagerConfig configurer = new HttpManagerConfig();
+    private HttpManagerBuilder configurer = new HttpManagerBuilder();
 
     private HttpManager httpManager;
     

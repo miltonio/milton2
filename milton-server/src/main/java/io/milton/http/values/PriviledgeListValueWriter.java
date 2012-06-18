@@ -15,11 +15,11 @@
 
 package io.milton.http.values;
 
-import io.milton.http.AccessControlledResource.Priviledge;
+import io.milton.resource.AccessControlledResource.Priviledge;
 import io.milton.http.XmlWriter;
 import io.milton.http.XmlWriter.Element;
 import io.milton.http.webdav.WebDavProtocol;
-import io.milton.http.acl.PriviledgeList;
+import io.milton.principal.PriviledgeList;
 import java.util.EnumMap;
 import java.util.Map;
 

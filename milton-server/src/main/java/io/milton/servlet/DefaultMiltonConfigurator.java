@@ -14,7 +14,7 @@
  */
 package io.milton.servlet;
 
-import io.milton.config.HttpManagerConfig;
+import io.milton.config.HttpManagerBuilder;
 import io.milton.http.AuthenticationHandler;
 import io.milton.http.Filter;
 import io.milton.http.HttpManager;
@@ -30,7 +30,7 @@ import javax.servlet.ServletException;
  */
 public class DefaultMiltonConfigurator implements MiltonConfigurator {
 
-    private HttpManagerConfig configurer = new HttpManagerConfig();
+    private HttpManagerBuilder configurer = new HttpManagerBuilder();
 
     private List<Initable> initables;
     

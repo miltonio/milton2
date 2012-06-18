@@ -16,7 +16,7 @@
 package io.milton.http.caldav;
 
 import io.milton.http.values.HrefList;
-import io.milton.http.acl.DiscretePrincipal;
+import io.milton.principal.DiscretePrincipal;
 
 /**
  *

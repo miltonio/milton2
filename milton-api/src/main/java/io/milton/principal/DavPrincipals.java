@@ -13,10 +13,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.milton.http.acl;
+package io.milton.principal;
 
 import io.milton.http.Auth;
-import io.milton.http.webdav.WebDavProtocol;
 import io.milton.resource.Resource;
 import javax.xml.namespace.QName;
 
@@ -40,7 +39,7 @@ public class DavPrincipals {
         private final QName qname;
 
         public AbstractDavPrincipal( String name ) {
-            this.qname = new QName( WebDavProtocol.NS_DAV.getName(), name );
+            this.qname = new QName( "DAV:", name );
             this.id = new PrincipleId() {
 
                 public QName getIdType() {

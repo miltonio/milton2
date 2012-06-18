@@ -15,8 +15,10 @@
 
 package io.milton.http.acl;
 
-import io.milton.http.AccessControlledResource;
-import io.milton.http.AccessControlledResource.Priviledge;
+import io.milton.principal.PriviledgeList;
+import io.milton.principal.DiscretePrincipal;
+import io.milton.resource.AccessControlledResource;
+import io.milton.resource.AccessControlledResource.Priviledge;
 import io.milton.http.Auth;
 import io.milton.http.Handler;
 import io.milton.http.HttpExtension;
@@ -212,7 +214,7 @@ public class ACLProtocol implements HttpExtension, PropertySource {
 				AccessControlledResource acr = (AccessControlledResource) res;
 				Auth auth = HttpManager.request().getAuthorization();
 				List<Priviledge> list = acr.getPriviledges(auth);
-				PriviledgeList privs = new PriviledgeList(list);
+				PriviledgeList privs = new PriviledgeList(list); 
 				return privs;
 			} else {
 				return null;

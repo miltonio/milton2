@@ -16,11 +16,12 @@
 package io.milton.http.acl;
 
 import io.milton.common.LogUtils;
-import io.milton.http.AccessControlledResource;
-import io.milton.http.AccessControlledResource.Priviledge;
+import io.milton.resource.AccessControlledResource;
+import io.milton.resource.AccessControlledResource.Priviledge;
 import io.milton.http.Auth;
 import io.milton.http.Request;
 import io.milton.http.Request.Method;
+import io.milton.principal.Principal;
 import io.milton.property.PropertyAuthoriser;
 import io.milton.resource.Resource;
 import java.util.List;

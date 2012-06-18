@@ -32,6 +32,7 @@ import io.milton.http.http11.auth.ExpiredNonceRemover;
 import io.milton.http.http11.auth.Nonce;
 import io.milton.http.http11.auth.NonceProvider;
 import io.milton.http.http11.auth.SimpleMemoryNonceProvider;
+import io.milton.http.json.JsonResourceFactory;
 import io.milton.http.quota.QuotaDataAccessor;
 import io.milton.http.values.ValueWriters;
 import io.milton.http.webdav.*;
@@ -44,6 +45,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Manages the options for configuring a HttpManager. To use it just set
@@ -69,7 +72,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *
  * @author brad
  */
-public class HttpManagerConfig {
+public class HttpManagerBuilder {
+	
+	private static final Logger log = LoggerFactory.getLogger(HttpManager.class);
 
 	private ResourceFactory mainResourceFactory;
 	private ResourceFactory outerResourceFactory;
@@ -103,13 +108,21 @@ public class HttpManagerConfig {
 	private boolean enableOptionsAuth = false;
 	private ResourceHandlerHelper resourceHandlerHelper;
 	private boolean initDone;
+	private boolean enableCompression = true;
+	private boolean enableWellKnown = true;
+	private boolean enabledJson = true;
 
 	/**
-	 * Create instances of required objects which have not been set, and wire
-	 * together dependencies. You can call this before calling buildHttpManager
-	 * if you would like to modify property values on the created objects before
-	 * HttpManager is instantiated. Otherwise, you can call buildHttpManager
-	 * directly and it will call init if it has not been called
+	 * This method creates instances of required objects which have not been set
+	 * on the builder.
+	 *
+	 * These are subsequently wired together immutably in HttpManager when
+	 * buildHttpManager is called.
+	 *
+	 * You can call this before calling buildHttpManager if you would like to
+	 * modify property values on the created objects before HttpManager is
+	 * instantiated. Otherwise, you can call buildHttpManager directly and it
+	 * will call init if it has not been called
 	 *
 	 */
 	public final void init() {
@@ -120,42 +133,57 @@ public class HttpManagerConfig {
 			if (nonceProvider == null) {
 				if (expiredNonceRemover == null) {
 					expiredNonceRemover = new ExpiredNonceRemover(nonces, nonceValiditySeconds);
+					showLog("expiredNonceRemover", expiredNonceRemover);
 				}
 				nonceProvider = new SimpleMemoryNonceProvider(nonceValiditySeconds, expiredNonceRemover, nonces);
+				showLog("nonceProvider", nonceProvider);
 			}
 			authenticationService = new AuthenticationService(nonceProvider);
+			showLog("authenticationService", authenticationService);
 		}
 
-		init(mainResourceFactory, authenticationService);
+		init( authenticationService);
 		shutdownHandlers.add(expiredNonceRemover);
 		expiredNonceRemover.start();
 	}
 
-	private void init(ResourceFactory resourceFactory, AuthenticationService authenticationService) {
+	private void init( AuthenticationService authenticationService) {
 		// build a stack of resource type helpers
 		if (resourceTypeHelper == null) {
 			WebDavResourceTypeHelper webDavResourceTypeHelper = new WebDavResourceTypeHelper();
 			AccessControlledResourceTypeHelper accessControlledResourceTypeHelper = new AccessControlledResourceTypeHelper(webDavResourceTypeHelper);
 			CalendarResourceTypeHelper calendarResourceTypeHelper = new CalendarResourceTypeHelper(accessControlledResourceTypeHelper);
 			resourceTypeHelper = new AddressBookResourceTypeHelper(calendarResourceTypeHelper);
+			showLog("resourceTypeHelper", resourceTypeHelper);
 		}
 
 		if (webdavResponseHandler == null) {
 			if (propFindXmlGenerator == null) {
 				propFindXmlGenerator = new PropFindXmlGenerator(valueWriters);
+				showLog("propFindXmlGenerator", propFindXmlGenerator);
+			}
+			if (http11ResponseHandler == null) {
+				http11ResponseHandler = new DefaultHttp11ResponseHandler(authenticationService, eTagGenerator);
+				showLog("http11ResponseHandler", http11ResponseHandler);
 			}
 			webdavResponseHandler = new DefaultWebDavResponseHandler(http11ResponseHandler, resourceTypeHelper, propFindXmlGenerator);
+			if( enableCompression ) {
+				webdavResponseHandler = new CompressingResponseHandler(webdavResponseHandler);
+				showLog("webdavResponseHandler", webdavResponseHandler);
+			}
 		}
-		init(resourceFactory, authenticationService, webdavResponseHandler, resourceTypeHelper);
+		init(authenticationService, webdavResponseHandler, resourceTypeHelper);
 	}
 
-	private void init(ResourceFactory resourceFactory, AuthenticationService authenticationService, WebDavResponseHandler webdavResponseHandler, ResourceTypeHelper resourceTypeHelper) {
+	private void init(AuthenticationService authenticationService, WebDavResponseHandler webdavResponseHandler, ResourceTypeHelper resourceTypeHelper) {
 		initDone = true;
 		if (handlerHelper == null) {
 			handlerHelper = new HandlerHelper(authenticationService);
+			showLog("handlerHelper", handlerHelper);
 		}
 		if (resourceHandlerHelper == null) {
 			resourceHandlerHelper = new ResourceHandlerHelper(handlerHelper, urlAdapter, webdavResponseHandler);
+			showLog("resourceHandlerHelper", resourceHandlerHelper);
 		}
 		if (protocols == null) {
 			protocols = new ArrayList<HttpExtension>();
@@ -170,11 +198,11 @@ public class HttpManagerConfig {
 
 			WebDavProtocol webDavProtocol = new WebDavProtocol(handlerHelper, resourceTypeHelper, webdavResponseHandler, propertySources, quotaDataAccessor, propPatchSetter, propertyAuthoriser, eTagGenerator, urlAdapter, resourceHandlerHelper);
 			protocols.add(webDavProtocol);
-			CalDavProtocol calDavProtocol = new CalDavProtocol(resourceFactory, webdavResponseHandler, handlerHelper, webDavProtocol);
+			CalDavProtocol calDavProtocol = new CalDavProtocol(mainResourceFactory, webdavResponseHandler, handlerHelper, webDavProtocol);
 			protocols.add(calDavProtocol);
 			ACLProtocol acl = new ACLProtocol(webDavProtocol);
 			protocols.add(acl);
-			CardDavProtocol cardDavProtocol = new CardDavProtocol(resourceFactory, webdavResponseHandler, handlerHelper, webDavProtocol);
+			CardDavProtocol cardDavProtocol = new CardDavProtocol(mainResourceFactory, webdavResponseHandler, handlerHelper, webDavProtocol);
 			protocols.add(cardDavProtocol);
 		}
 
@@ -192,9 +220,15 @@ public class HttpManagerConfig {
 			}
 		}
 
-		// wrap the real resource factory to provide well-known support
+		// wrap the real (ie main) resource factory to provide well-known support and ajax gateway
 		if (outerResourceFactory == null) {
-			outerResourceFactory = new WellKnownResourceFactory(resourceFactory, wellKnownHandlers);
+			 outerResourceFactory = mainResourceFactory; // in case nothing else enabled
+			if( enabledJson ) {
+				outerResourceFactory = new JsonResourceFactory(outerResourceFactory, eventManager, propertySources, propPatchSetter, propertyAuthoriser);
+			}
+			if( enableWellKnown) {
+				outerResourceFactory = new WellKnownResourceFactory(outerResourceFactory, wellKnownHandlers);
+			}
 		}
 		if (filters != null) {
 			filters = new ArrayList<Filter>(filters);
@@ -208,7 +242,7 @@ public class HttpManagerConfig {
 		if (!initDone) {
 			init();
 		}
-		return new HttpManager(mainResourceFactory, webdavResponseHandler, protocolHandlers, entityTransport, filters, eventManager, shutdownHandlers);
+		return new HttpManager(outerResourceFactory, webdavResponseHandler, protocolHandlers, entityTransport, filters, eventManager, shutdownHandlers);
 	}
 
 	public BUFFERING getBuffering() {
@@ -489,4 +523,39 @@ public class HttpManagerConfig {
 	public void setEnableOptionsAuth(boolean enableOptionsAuth) {
 		this.enableOptionsAuth = enableOptionsAuth;
 	}
+
+	public boolean isEnableCompression() {
+		return enableCompression;
+	}
+
+	public void setEnableCompression(boolean enableCompression) {
+		this.enableCompression = enableCompression;
+	}
+
+	public boolean isEnableWellKnown() {
+		return enableWellKnown;
+	}
+
+	public void setEnableWellKnown(boolean enableWellKnown) {
+		this.enableWellKnown = enableWellKnown;
+	}
+
+	public boolean isEnabledJson() {
+		return enabledJson;
+	}
+
+	public void setEnabledJson(boolean enabledJson) {
+		this.enabledJson = enabledJson;
+	}
+
+	/**
+	 * 
+	 * @param propertyName
+	 * @param defaultedTo 
+	 */
+	private void showLog(String propertyName, Object defaultedTo) {
+		log.info("set property: " + propertyName + " to: " + defaultedTo);
+	}
+	
+	
 }

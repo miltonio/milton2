@@ -12,26 +12,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package io.milton.http.acl;
-
-import io.milton.http.Auth;
-import io.milton.resource.Resource;
+package io.milton.http.webdav;
 
 /**
- * A common webdav group
- * 
+ *
  * @author brad
  */
-public interface DavPrincipal extends Principal {
-
-    /**
-     * Does the current user match this group
-     *
-     * @param auth
-     * @return
-     */
-    boolean matches( Auth auth, Resource current );
-
-
+public class Webdav {
+    
 }

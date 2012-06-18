@@ -15,10 +15,10 @@
 
 package io.milton.servlet;
 
+import io.milton.config.HttpManagerBuilder;
 import io.milton.http.HttpManager;
 import io.milton.http.Request;
 import io.milton.http.Response;
-import io.milton.http.http11.DefaultHttp11ResponseHandler;
 import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -28,7 +28,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
 
@@ -37,6 +36,9 @@ import org.springframework.context.support.StaticApplicationContext;
  *
  * This filter then gets the bean named milton.http.manager and uses that for
  * milton processing.
+ * 
+ * The milton.http.manager bean can either be a HttpManager or it can be a
+ * HttpManagerBuilder, in which case a HttpManager is constructed from it
  *
  * Requests with a path which begins with one of the exclude paths will not be
  * processed by milton. Instead, for these requests, the filter chain will be
@@ -70,7 +72,13 @@ public class SpringMiltonFilter implements javax.servlet.Filter {
         parent.getBeanFactory().registerSingleton("servletContext", fc.getServletContext());
         parent.refresh();
         context = new ClassPathXmlApplicationContext(new String[]{"applicationContext.xml"}, parent);
-        this.httpManager = (HttpManager) context.getBean("milton.http.manager");
+        Object milton = context.getBean("milton.http.manager");
+		if( milton instanceof HttpManager) {
+			this.httpManager = (HttpManager) milton;
+		} else if( milton instanceof HttpManagerBuilder ) {
+			HttpManagerBuilder builder = (HttpManagerBuilder)milton;
+			this.httpManager = builder.buildHttpManager();
+		}
         this.filterConfig = fc;
         servletContext = fc.getServletContext();
         String sExcludePaths = fc.getInitParameter("milton.exclude.paths");

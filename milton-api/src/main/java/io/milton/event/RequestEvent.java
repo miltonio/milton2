@@ -13,38 +13,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.milton.http.acl;
+package io.milton.event;
 
-import io.milton.http.acl.Principal;
-import io.milton.http.webdav.WebDavProtocol;
-import javax.xml.namespace.QName;
+import io.milton.event.Event;
+import io.milton.http.Request;
 
 /**
  *
  * @author brad
  */
-public class HrefPrincipleId implements Principal.PrincipleId {
+public class RequestEvent implements Event {
+    private final Request request;
 
-    private final QName type;
-    private final String url;
-
-    public HrefPrincipleId(String url) {
-        this.url = url;
-        this.type = new QName(WebDavProtocol.DAV_URI, "href");
+    public RequestEvent(Request request) {
+        this.request = request;
     }
 
-    @Override
-    public QName getIdType() {
-        return type;
+    public Request getRequest() {
+        return request;
     }
 
-    @Override
-    public String getValue() {
-        return url;
-    }
 
-    @Override
-    public String toString() {
-        return url;
-    }
 }

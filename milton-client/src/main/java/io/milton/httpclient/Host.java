@@ -818,7 +818,7 @@ public class Host extends Folder {
      *
      * @param url - fully qualified and encoded URL to post to
      * @param params
-     * @return
+     * @return - the body of the response
      */
     public String doPost(String url, Map<String, String> params) throws io.milton.httpclient.HttpException, NotAuthorizedException, ConflictException, BadRequestException, NotFoundException {
         notifyStartRequest();

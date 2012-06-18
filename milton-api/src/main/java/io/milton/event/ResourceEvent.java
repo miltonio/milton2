@@ -15,22 +15,13 @@
 
 package io.milton.event;
 
-import io.milton.http.Request;
+import io.milton.event.Event;
+import io.milton.resource.Resource;
 
 /**
  *
  * @author brad
  */
-public class RequestEvent implements Event {
-    private final Request request;
-
-    public RequestEvent(Request request) {
-        this.request = request;
-    }
-
-    public Request getRequest() {
-        return request;
-    }
-
-
+public interface ResourceEvent extends Event {
+    Resource getResource();
 }

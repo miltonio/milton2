@@ -15,7 +15,7 @@
 
 package io.milton.servlet;
 
-import io.milton.config.HttpManagerConfig;
+import io.milton.config.HttpManagerBuilder;
 import io.milton.http.HttpManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -43,7 +43,7 @@ public class MiltonController implements Controller {
     public MiltonController() {
     }
 
-    public MiltonController(HttpManagerConfig config) {
+    public MiltonController(HttpManagerBuilder config) {
         this.httpManager = config.buildHttpManager();
     }
     

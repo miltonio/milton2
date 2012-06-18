@@ -15,7 +15,7 @@
 
 package io.milton.http.acl;
 
-import io.milton.http.AccessControlledResource;
+import io.milton.resource.AccessControlledResource;
 import io.milton.http.webdav.ResourceTypeHelper;
 import io.milton.resource.Resource;
 import java.util.List;

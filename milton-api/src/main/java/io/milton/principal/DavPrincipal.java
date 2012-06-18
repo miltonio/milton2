@@ -13,33 +13,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.milton.http.acl;
+package io.milton.principal;
 
+import io.milton.http.Auth;
 import io.milton.resource.Resource;
 
-
 /**
- * Indicates a principle which is identifiable by a URL, like a user or
- * an application defined group
- *
+ * A common webdav group
+ * 
  * @author brad
  */
-public interface DiscretePrincipal extends Principal, Resource{
+public interface DavPrincipal extends Principal {
 
-        
     /**
-     * A URL to identify this principle. Note the relationship between this and
-	 * the AccessControlledResource.getPrincipalURL method which returns the principal
-	 * that owns the resource.
-	 * 
-	 * It is assumed that where a AccessControlledResource instance is also a DiscretePrincipal
-	 * that the getPrincipalURL method will return the url of the resource/principal
-	 * 
-	 * In other words, we make the semantic decision that a principle owns itself.
+     * Does the current user match this group
      *
+     * @param auth
      * @return
      */
-    public String getPrincipalURL();
+    boolean matches( Auth auth, Resource current );
 
 
 }

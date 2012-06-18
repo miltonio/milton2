@@ -13,9 +13,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.milton.http.acl;
+package io.milton.principal;
 
-import io.milton.http.AccessControlledResource.Priviledge;
+import io.milton.resource.AccessControlledResource.Priviledge;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +26,7 @@ import java.util.List;
 public class PriviledgeList extends ArrayList<Priviledge>{
     private static final long serialVersionUID = 1L;
 
-    PriviledgeList( List<Priviledge> list ) {
+    public PriviledgeList( List<Priviledge> list ) {
         super(list);
     }
 
