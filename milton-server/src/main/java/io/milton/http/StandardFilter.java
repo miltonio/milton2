@@ -55,11 +55,11 @@ public class StandardFilter implements Filter {
             log.warn( "BadRequestException: " + ex.getReason(), ex );
             manager.getResponseHandler().respondBadRequest( ex.getResource(), response, request );
         } catch( ConflictException ex ) {
-            log.warn( "conflictException: " + ex.getMessage() );
+            log.warn( "conflictException: " , ex );
             manager.getResponseHandler().respondConflict( ex.getResource(), response, request, INTERNAL_SERVER_ERROR_HTML );
         } catch( NotAuthorizedException ex ) {
-            log.warn( "NotAuthorizedException" );
-            manager.getResponseHandler().respondUnauthorised( ex.getResource(), response, request );
+            log.warn( "NotAuthorizedException", ex );
+            manager.getResponseHandler().respondUnauthorised( ex.getResource(), response, request );			
         } catch( Throwable e ) {
             log.error( "process", e );
             try {
