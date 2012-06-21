@@ -15,6 +15,8 @@
 
 package io.milton.ldap;
 
+import io.milton.http.exceptions.BadRequestException;
+import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.resource.LdapContact;
 import java.util.List;
 
@@ -43,5 +45,5 @@ public interface UserFactory {
 	 * @param sizeLimit
 	 * @return 
 	 */
-	List<LdapContact> galFind(Condition equalTo, int sizeLimit);	
+	List<LdapContact> galFind(Condition equalTo, int sizeLimit) throws NotAuthorizedException, BadRequestException;	
 }

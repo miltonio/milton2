@@ -58,7 +58,11 @@ public class ContentTypeUtils {
 
     public static String findAcceptableContentType(String mime, String preferredList) {
         MimeType mt = MimeUtil.getPreferedMimeType(preferredList, mime);
-        return mt.toString();
+        if( mt != null ) {
+            return mt.toString();
+        } else {
+            return "";
+        }
 
     }
 

@@ -15,6 +15,8 @@
 
 package io.milton.ldap;
 
+import io.milton.http.exceptions.BadRequestException;
+import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.resource.LdapContact;
 
 /**
@@ -29,11 +31,13 @@ public class NotCondition implements Condition {
 		this.condition = condition;
 	}
 
+	@Override
 	public boolean isEmpty() {
 		return condition.isEmpty();
 	}
 
-	public boolean isMatch(LdapContact contact) {
+	@Override
+	public boolean isMatch(LdapContact contact) throws NotAuthorizedException, BadRequestException {
 		return !condition.isMatch(contact);
 	}
 

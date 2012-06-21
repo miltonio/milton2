@@ -15,6 +15,8 @@
 
 package io.milton.ldap;
 
+import io.milton.http.exceptions.BadRequestException;
+import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.resource.LdapContact;
 
 public interface Condition {
@@ -48,5 +50,5 @@ public interface Condition {
 	 * @param contact Exchange Contact
 	 * @return true if contact matches condition
 	 */
-	boolean isMatch(LdapContact contact);
+	boolean isMatch(LdapContact contact) throws NotAuthorizedException, BadRequestException;
 }

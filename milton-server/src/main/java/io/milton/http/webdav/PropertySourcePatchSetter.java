@@ -18,6 +18,7 @@ package io.milton.http.webdav;
 import io.milton.resource.Resource;
 import io.milton.http.Response;
 import io.milton.http.Response.Status;
+import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.values.ValueAndType;
 import io.milton.http.values.ValueWriters;
@@ -72,7 +73,7 @@ public class PropertySourcePatchSetter implements PropPatchSetter {
 	}
 
 	@Override
-	public PropFindResponse setProperties(String href, ParseResult parseResult, Resource r) {
+	public PropFindResponse setProperties(String href, ParseResult parseResult, Resource r) throws NotAuthorizedException, BadRequestException {
 		log.trace("setProperties: resource type: {}", r.getClass());
 		Map<QName, ValueAndType> knownProps = new HashMap<QName, ValueAndType>();
 
@@ -110,7 +111,7 @@ public class PropertySourcePatchSetter implements PropPatchSetter {
 				}
 			}
 			if (!found) {
-				log.warn("property not found: " + entry.getKey());
+				log.warn("property not found: " + entry.getKey() + " on resource: " + r.getClass());
 				addErrorProp(errorProps, Status.SC_NOT_FOUND, entry.getKey(), "Unknown property");
 			}
 		}
@@ -185,6 +186,6 @@ public class PropertySourcePatchSetter implements PropPatchSetter {
 
 	public interface CommitableResource extends Resource {
 
-		void doCommit(Map<QName, ValueAndType> knownProps, Map<Status, List<NameAndError>> errorProps);
+		void doCommit(Map<QName, ValueAndType> knownProps, Map<Status, List<NameAndError>> errorProps) throws BadRequestException, NotAuthorizedException ;
 	}
 }

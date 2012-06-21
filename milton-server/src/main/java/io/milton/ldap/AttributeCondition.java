@@ -17,6 +17,7 @@ package io.milton.ldap;
 
 import io.milton.resource.LdapContact;
 import io.milton.common.LogUtils;
+import io.milton.http.exceptions.BadRequestException;
 import io.milton.ldap.Condition.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,7 +109,7 @@ public class AttributeCondition implements Condition {
 //	}
 
 	@Override
-	public boolean isMatch(LdapContact contact) {
+	public boolean isMatch(LdapContact contact) throws BadRequestException {
 		String lowerCaseValue = value.toLowerCase();
 		String actualValue = propertyMapper.getLdapPropertyValue(attributeName, contact);
 		Operator actualOperator = operator;

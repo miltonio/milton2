@@ -83,7 +83,7 @@ public class PropFindPropertyBuilder {
 		return propFindResponses;
 	}
 
-	public ValueAndType getProperty(QName field, Resource resource) throws NotAuthorizedException {		
+	public ValueAndType getProperty(QName field, Resource resource) throws NotAuthorizedException, BadRequestException {		
 		for (PropertySource source : propertySources) {
 			PropertyMetaData meta = source.getPropertyMetaData(field, resource);
 			if (meta != null && !meta.isUnknown()) {
@@ -198,7 +198,7 @@ public class PropFindPropertyBuilder {
 		return s;
 	}
 
-	public Set<QName> findAllProps(PropFindableResource resource) {
+	public Set<QName> findAllProps(PropFindableResource resource) throws NotAuthorizedException, BadRequestException {
 		Set<QName> names = new LinkedHashSet<QName>();
 		for (PropertySource source : this.propertySources) {
 			List<QName> allprops = source.getAllPropertyNames(resource);

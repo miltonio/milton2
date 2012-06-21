@@ -15,6 +15,8 @@
 
 package io.milton.ldap;
 
+import io.milton.http.exceptions.BadRequestException;
+import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.resource.LdapContact;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -106,7 +108,7 @@ public class CompoundLdapFilter implements LdapFilter {
 	 * @return true if filter match
 	 */
 	@Override
-	public boolean isMatch(LdapContact person) {
+	public boolean isMatch(LdapContact person) throws NotAuthorizedException, BadRequestException {
 		if (type == Ldap.LDAP_FILTER_OR) {
 			for (LdapFilter child : criteria) {
 				if (!child.isFullSearch()) {
@@ -142,7 +144,7 @@ public class CompoundLdapFilter implements LdapFilter {
 	 * @throws IOException on error
 	 */
 	@Override
-	public List<LdapContact> findInGAL(LdapPrincipal user, Set<String> returningAttributes, int sizeLimit) throws IOException {
+	public List<LdapContact> findInGAL(LdapPrincipal user, Set<String> returningAttributes, int sizeLimit) throws IOException, NotAuthorizedException, BadRequestException {
 		List<LdapContact> persons = null;
 		for (LdapFilter child : criteria) {
 			int currentSizeLimit = sizeLimit;

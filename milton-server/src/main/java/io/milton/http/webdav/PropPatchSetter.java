@@ -15,6 +15,8 @@
 
 package io.milton.http.webdav;
 
+import io.milton.http.exceptions.BadRequestException;
+import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.resource.Resource;
 
 /**
@@ -41,7 +43,7 @@ public interface PropPatchSetter {
      * @return - response indicating success or otherwise for each field. Note
      * that success responses should not contain the value
      */
-    PropFindResponse setProperties(String href, PropPatchRequestParser.ParseResult parseResult, Resource r);
+    PropFindResponse setProperties(String href, PropPatchRequestParser.ParseResult parseResult, Resource r) throws NotAuthorizedException, BadRequestException;
 
     /**
      * Return whether the given resource can be proppatch'ed with this

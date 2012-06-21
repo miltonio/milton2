@@ -15,6 +15,8 @@
 
 package io.milton.ldap;
 
+import io.milton.http.exceptions.BadRequestException;
+import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.resource.LdapContact;
 import java.util.ArrayList;
 import java.util.List;
@@ -88,6 +90,7 @@ public class MultiCondition implements Condition {
 		}
 	}
 
+	@Override
 	public boolean isEmpty() {
 		boolean isEmpty = true;
 		for (Condition condition : conditions) {
@@ -99,7 +102,8 @@ public class MultiCondition implements Condition {
 		return isEmpty;
 	}
 
-	public boolean isMatch(LdapContact contact) {
+	@Override
+	public boolean isMatch(LdapContact contact) throws NotAuthorizedException, BadRequestException {
 		if (operator == Operator.And) {
 			for (Condition condition : conditions) {
 				if (!condition.isMatch(contact)) {

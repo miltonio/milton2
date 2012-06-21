@@ -15,6 +15,8 @@
 
 package io.milton.ldap;
 
+import io.milton.http.exceptions.BadRequestException;
+import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.resource.LdapContact;
 import java.io.IOException;
 import java.util.List;
@@ -28,12 +30,12 @@ public interface LdapFilter {
 
 	Condition getContactSearchFilter();
 
-	List<LdapContact> findInGAL(LdapPrincipal user, Set<String> returningAttributes, int sizeLimit) throws IOException;
+	List<LdapContact> findInGAL(LdapPrincipal user, Set<String> returningAttributes, int sizeLimit) throws IOException, NotAuthorizedException, BadRequestException;
 
 	void add(LdapFilter filter);
 
 	boolean isFullSearch();
 
-	boolean isMatch(LdapContact person);
+	boolean isMatch(LdapContact person) throws NotAuthorizedException, BadRequestException;
 
 }

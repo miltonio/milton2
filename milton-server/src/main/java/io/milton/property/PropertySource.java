@@ -18,6 +18,7 @@ package io.milton.property;
 import io.milton.resource.Resource;
 import io.milton.http.Response;
 import io.milton.http.Response.Status;
+import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import java.util.List;
 import javax.xml.namespace.QName;
@@ -106,7 +107,7 @@ public interface PropertySource {
      * @return - never null, contains an enum value indicating if the property is known
      * to this source, and if it is writable, and a class indicating the type of the property.
      */
-    PropertyMetaData getPropertyMetaData( QName name, Resource r );
+    PropertyMetaData getPropertyMetaData( QName name, Resource r )throws NotAuthorizedException, BadRequestException;
 
     /**
      * Remove the given property. There may be a semantic difference in some
@@ -126,7 +127,7 @@ public interface PropertySource {
      * This list should be exclusive. Ie only return properties not returned
      * by any other source
      */
-    List<QName> getAllPropertyNames( Resource r );
+    List<QName> getAllPropertyNames( Resource r ) throws NotAuthorizedException, BadRequestException;
 
     /**
      * Exception from setting a field

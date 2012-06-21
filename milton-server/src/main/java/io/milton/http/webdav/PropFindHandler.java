@@ -143,7 +143,7 @@ public class PropFindHandler implements ExistingEntityHandler, PropertyHandler {
         }
     }
 
-    private Set<QName> getAllFields( PropertiesRequest parseResult, PropFindableResource resource ) {
+    private Set<QName> getAllFields( PropertiesRequest parseResult, PropFindableResource resource ) throws NotAuthorizedException, BadRequestException {
         Set<QName> set = new HashSet<QName>();
         if( parseResult.isAllProp() ) {
             set.addAll( propertyBuilder.findAllProps( resource ) );

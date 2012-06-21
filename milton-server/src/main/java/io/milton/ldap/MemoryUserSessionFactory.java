@@ -20,6 +20,8 @@ import io.milton.common.LogUtils;
 import io.milton.http.Auth;
 import io.milton.http.Request;
 import io.milton.http.Request.Method;
+import io.milton.http.exceptions.BadRequestException;
+import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.property.BeanPropertyResource;
 import java.util.*;
 import org.slf4j.Logger;
@@ -83,7 +85,7 @@ public class MemoryUserSessionFactory implements UserFactory {
 	}
 
 	@Override
-	public List<LdapContact> galFind(Condition condition, int sizeLimit) {
+	public List<LdapContact> galFind(Condition condition, int sizeLimit) throws NotAuthorizedException, BadRequestException{
 		log.trace("galFind");
 		List<LdapContact> results = new ArrayList<LdapContact>();
 		for (MemoryUser user : users.values()) {

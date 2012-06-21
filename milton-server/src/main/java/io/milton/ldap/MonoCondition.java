@@ -15,6 +15,7 @@
 
 package io.milton.ldap;
 
+import io.milton.http.exceptions.BadRequestException;
 import io.milton.resource.LdapContact;
 
 /**
@@ -37,7 +38,7 @@ public class MonoCondition implements Condition {
 	}
 
 	@Override
-	public boolean isMatch(LdapContact contact) {
+	public boolean isMatch(LdapContact contact) throws BadRequestException {
 		String actualValue = propertyMapper.getLdapPropertyValue(attributeName, contact);
 		return (operator == Operator.IsNull && actualValue == null)
 				|| (operator == Operator.IsFalse && "false".equals(actualValue))

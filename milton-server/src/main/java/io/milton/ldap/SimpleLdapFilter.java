@@ -17,6 +17,8 @@ package io.milton.ldap;
 
 import io.milton.resource.LdapContact;
 import io.milton.common.LogUtils;
+import io.milton.http.exceptions.BadRequestException;
+import io.milton.http.exceptions.NotAuthorizedException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -132,7 +134,7 @@ class SimpleLdapFilter implements LdapFilter {
 	}
 
 	@Override
-	public boolean isMatch(LdapContact person) {
+	public boolean isMatch(LdapContact person) throws NotAuthorizedException, BadRequestException {
 		if (canIgnore) {
 			// Ignore this filter
 			return true;
@@ -156,7 +158,7 @@ class SimpleLdapFilter implements LdapFilter {
 	}
 
 	@Override
-	public List<LdapContact> findInGAL(LdapPrincipal user, Set<String> returningAttributes, int sizeLimit) throws IOException {
+	public List<LdapContact> findInGAL(LdapPrincipal user, Set<String> returningAttributes, int sizeLimit) throws IOException, NotAuthorizedException, BadRequestException {
 		if (canIgnore) {
 			return null;
 		}

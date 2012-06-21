@@ -96,6 +96,7 @@ public class HttpManagerBuilder {
 	private EventManager eventManager = new EventManagerImpl();
 	private PropertyAuthoriser propertyAuthoriser = new DefaultPropertyAuthoriser();
 	private List<PropertySource> propertySources;
+	private List<PropertySource> extraPropertySources;
 	private ETagGenerator eTagGenerator = new DefaultETagGenerator();
 	private Http11ResponseHandler http11ResponseHandler;
 	private ValueWriters valueWriters = new ValueWriters();
@@ -189,8 +190,15 @@ public class HttpManagerBuilder {
 			protocols = new ArrayList<HttpExtension>();
 			Http11Protocol http11Protocol = new Http11Protocol(http11ResponseHandler, handlerHelper, resourceHandlerHelper, enableOptionsAuth);
 			protocols.add(http11Protocol);
-			if (propertySources == null) {
+			if (propertySources == null) {				
 				propertySources = PropertySourceUtil.createDefaultSources(resourceTypeHelper);
+				showLog("propertySources", propertySources);
+			}
+			if( extraPropertySources != null ) {
+				for( PropertySource ps : extraPropertySources) {
+					log.info("Add extra property source: " + ps.getClass());
+					propertySources.add(ps);
+				}
 			}
 			if (propPatchSetter == null) {
 				propPatchSetter = new PropertySourcePatchSetter(propertySources);
@@ -547,6 +555,16 @@ public class HttpManagerBuilder {
 	public void setEnabledJson(boolean enabledJson) {
 		this.enabledJson = enabledJson;
 	}
+
+	public List<PropertySource> getExtraPropertySources() {
+		return extraPropertySources;
+	}
+
+	public void setExtraPropertySources(List<PropertySource> extraPropertySources) {
+		this.extraPropertySources = extraPropertySources;
+	}
+	
+	
 
 	/**
 	 * 

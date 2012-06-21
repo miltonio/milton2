@@ -37,7 +37,6 @@ import io.milton.http.Request.Method;
 import io.milton.http.Response.Status;
 import io.milton.common.ReadingException;
 import io.milton.common.WritingException;
-import io.milton.property.DefaultPropertyAuthoriser;
 import io.milton.property.PropertyHandler;
 import io.milton.property.PropertyAuthoriser;
 import io.milton.event.PropPatchEvent;
@@ -205,7 +204,7 @@ public class PropPatchHandler implements ExistingEntityHandler, PropertyHandler 
         }
     }
 
-    public PropFindResponse doPropPatch(Request request, Resource resource) throws NotAuthorizedException, IOException {
+    public PropFindResponse doPropPatch(Request request, Resource resource) throws NotAuthorizedException, IOException, BadRequestException {
         InputStream in = request.getInputStream();
         ParseResult parseResult = requestParser.getRequestedFields(in);
         // Check that the current user has permission to write requested fields

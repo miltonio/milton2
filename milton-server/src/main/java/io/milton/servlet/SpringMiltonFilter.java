@@ -28,6 +28,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
 
@@ -55,6 +57,8 @@ import org.springframework.context.support.StaticApplicationContext;
  */
 public class SpringMiltonFilter implements javax.servlet.Filter {
 
+	private static final Logger log = LoggerFactory.getLogger(SpringMiltonFilter.class);
+	
     private ClassPathXmlApplicationContext context;
     private HttpManager httpManager;
     private FilterConfig filterConfig;
@@ -82,6 +86,7 @@ public class SpringMiltonFilter implements javax.servlet.Filter {
         this.filterConfig = fc;
         servletContext = fc.getServletContext();
         String sExcludePaths = fc.getInitParameter("milton.exclude.paths");
+		log.info("init: exclude paths: " + sExcludePaths);
         excludeMiltonPaths = sExcludePaths.split(",");
     }
 

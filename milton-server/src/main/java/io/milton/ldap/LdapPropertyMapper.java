@@ -16,6 +16,7 @@
 package io.milton.ldap;
 
 import io.milton.common.LogUtils;
+import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.values.ValueAndType;
 import io.milton.http.webdav.PropFindPropertyBuilder;
@@ -64,7 +65,7 @@ public class LdapPropertyMapper {
 		mapLocalNameLdapToDav.put(ldapName, davName);
 	}
 	
-	public ValueAndType getProperty(QName field, Resource resource) throws NotAuthorizedException {
+	public ValueAndType getProperty(QName field, Resource resource) throws NotAuthorizedException, BadRequestException {
 		ValueAndType vt = propertyBuilder.getProperty(field, resource);
 		return vt;
 	}
@@ -95,7 +96,7 @@ public class LdapPropertyMapper {
 		}
 	}
 
-	public String getLdapPropertyValue(String prop, Resource resource) {
+	public String getLdapPropertyValue(String prop, Resource resource) throws BadRequestException {
 		QName qn = mapToDavProp(prop);
 		ValueAndType vt;
 		try {
@@ -113,7 +114,7 @@ public class LdapPropertyMapper {
 		return null;
 	}
 
-	public Set<LdapMappedProp> mapProperties(boolean returnAllAttributes, Set<String> returningAttributes, PropFindableResource res) {
+	public Set<LdapMappedProp> mapProperties(boolean returnAllAttributes, Set<String> returningAttributes, PropFindableResource res) throws NotAuthorizedException, BadRequestException {
 		if (returnAllAttributes) {
 			Set<QName> davProps = propertyBuilder.findAllProps(res);
 			Set<LdapMappedProp> mapped = new HashSet<LdapMappedProp>();
