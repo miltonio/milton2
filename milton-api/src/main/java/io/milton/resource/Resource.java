@@ -17,6 +17,8 @@ package io.milton.resource;
 
 import io.milton.http.Auth;
 import io.milton.http.Request;
+import io.milton.http.exceptions.BadRequestException;
+import io.milton.http.exceptions.NotAuthorizedException;
 import java.util.Date;
 
 
@@ -112,7 +114,7 @@ public interface Resource {
      *<P/>
      *  Return null for no redirect
      */
-    String checkRedirect(Request request);
+    String checkRedirect(Request request) throws NotAuthorizedException, BadRequestException;
 
 
 }
