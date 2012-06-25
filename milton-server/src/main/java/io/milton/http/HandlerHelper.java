@@ -26,6 +26,8 @@ import io.milton.http.quota.DefaultStorageChecker;
 import io.milton.http.quota.StorageChecker;
 import io.milton.http.quota.StorageChecker.StorageErrorReason;
 import io.milton.common.LogUtils;
+import io.milton.http.exceptions.BadRequestException;
+import io.milton.http.exceptions.NotAuthorizedException;
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
@@ -126,7 +128,7 @@ public class HandlerHelper {
 		}
 	}
 
-	public boolean doCheckRedirect(Http11ResponseHandler responseHandler, Request request, Response response, Resource resource) {
+	public boolean doCheckRedirect(Http11ResponseHandler responseHandler, Request request, Response response, Resource resource) throws NotAuthorizedException, BadRequestException {
 		String redirectUrl = resource.checkRedirect(request);
 		if (redirectUrl != null && redirectUrl.length() > 0) {
 			responseHandler.respondRedirect(response, request, redirectUrl);
