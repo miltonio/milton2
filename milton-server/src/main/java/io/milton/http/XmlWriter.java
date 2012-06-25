@@ -328,9 +328,13 @@ public class XmlWriter {
             return begin(null, name);
         }
 
-        public Element begin(String prefix, String name) {
+		public Element begin(String prefix, String name) {
+			return begin(prefix, name, true);
+		}
+		
+        public Element begin(String prefix, String name, boolean newLine) {
             if (!openEnded) {
-                open();
+                open(newLine);
             }
 
             Element el = new Element(this, prefix, name);
