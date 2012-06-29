@@ -15,39 +15,61 @@
 
 package io.milton.http.json;
 
-import io.milton.http.Range;
+import io.milton.http.*;
 import io.milton.http.Request.Method;
 import io.milton.http.exceptions.BadRequestException;
+import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.resource.GetableResource;
+import io.milton.resource.PostableResource;
+import io.milton.resource.Resource;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.util.Map;
+import net.sf.json.JSONObject;
 
 /**
  *
  * @author brad
  */
-public class AjaxLoginResource extends JsonResource implements GetableResource{
+public class AjaxLoginResource extends JsonResource implements GetableResource, PostableResource{
 
-    private final String name;
-
-    private final GetableResource wrapped;
-
-    public AjaxLoginResource( String name, GetableResource wrapped ) {
+    public AjaxLoginResource( String name, Resource wrapped ) {
         super(wrapped, name, null );
-        this.name = name;
-        this.wrapped = wrapped;
     }
 
     @Override
     public void sendContent( OutputStream out, Range range, Map<String, String> params, String contentType ) throws IOException, NotAuthorizedException, BadRequestException {
-        // nothing to send
+		JSONObject json = new JSONObject();
+		Request request = HttpManager.request();
+		Boolean loginResult = (Boolean) request.getAttributes().get("loginResult");
+		json.accumulate("loginResult", loginResult);
+		String userUrl = (String) request.getAttributes().get("userUrl");
+		if (userUrl != null) {
+			json.accumulate("userUrl", userUrl);
+		}
+		ByteArrayOutputStream bout = new ByteArrayOutputStream();
+		PrintWriter pw = new PrintWriter(bout);
+		json.write(pw);
+		pw.flush();
+		byte[] arr = bout.toByteArray();
+		try {
+			out.write(arr);
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
     }
 
     @Override
     public Method applicableMethod() {
         return Method.GET;
     }
+
+	@Override
+	public String processForm(Map<String, String> parameters, Map<String, FileItem> files) throws BadRequestException, NotAuthorizedException, ConflictException {
+		return null;
+	}
 
 }

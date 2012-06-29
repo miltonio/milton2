@@ -59,7 +59,7 @@ public class BasicAuthHandler implements AuthenticationHandler {
     }
 
 	@Override
-    public boolean isCompatible( Resource resource ) {
+    public boolean isCompatible( Resource resource, Request request ) {
         return true;
     }
 }

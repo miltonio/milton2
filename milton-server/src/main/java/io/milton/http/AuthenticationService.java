@@ -17,16 +17,9 @@ package io.milton.http;
 
 import io.milton.resource.GetableResource;
 import io.milton.resource.Resource;
-import io.milton.http.http11.auth.SimpleMemoryNonceProvider;
-import io.milton.http.http11.auth.ExpiredNonceRemover;
-import io.milton.http.http11.auth.DigestAuthenticationHandler;
-import io.milton.http.http11.auth.BasicAuthHandler;
-import io.milton.http.http11.auth.Nonce;
-import io.milton.http.http11.auth.NonceProvider;
 import io.milton.common.StringUtils;
 import io.milton.sso.ExternalIdentityProvider;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,10 +33,7 @@ public class AuthenticationService {
 	
 	
 	private List<AuthenticationHandler> authenticationHandlers;
-	private List<AuthenticationHandler> extraHandlers;
-	private List<AuthenticationHandler> allHandlers;
-	private boolean disableBasic;
-	private boolean disableDigest;
+
 	private List<ExternalIdentityProvider> externalIdentityProviders;
 	private boolean disableExternal;
 	private String[] browserIds = {"msie", "firefox", "chrome", "safari", "opera"};
@@ -56,78 +46,10 @@ public class AuthenticationService {
 	 */
 	public AuthenticationService(List<AuthenticationHandler> authenticationHandlers) {
 		this.authenticationHandlers = authenticationHandlers;
-		setAllHandlers();
 	}
 
-	/**
-	 * Creates basic and digest handlers with the given NonceProvider
-	 * 
-	 * @param nonceProvider
-	 */
-	public AuthenticationService(NonceProvider nonceProvider) {
-		AuthenticationHandler digest = new DigestAuthenticationHandler(nonceProvider);
-		AuthenticationHandler basic = new BasicAuthHandler();
 
-		authenticationHandlers = new ArrayList<AuthenticationHandler>();
-		authenticationHandlers.add(basic);
-		authenticationHandlers.add(digest);
-		setAllHandlers();
-	}
 
-	/**
-	 * Creates with Basic and Digest handlers. It also builds a SimpleMemoryNonceProvider
-	 * and a ExpiredNonceRemover which it starts
-	 *
-	 */
-	public AuthenticationService() {
-		Map<UUID, Nonce> nonces = new ConcurrentHashMap<UUID, Nonce>();
-		int nonceValiditySeconds = 60*60*24;
-		ExpiredNonceRemover expiredNonceRemover = new ExpiredNonceRemover(nonces, nonceValiditySeconds);
-		NonceProvider nonceProvider = new SimpleMemoryNonceProvider(nonceValiditySeconds, expiredNonceRemover, nonces);
-		AuthenticationHandler digest = new DigestAuthenticationHandler(nonceProvider);
-		AuthenticationHandler basic = new BasicAuthHandler();
-		authenticationHandlers = new ArrayList<AuthenticationHandler>();
-		authenticationHandlers.add(basic);
-		authenticationHandlers.add(digest);
-		setAllHandlers();
-		expiredNonceRemover.start();
-	}
-
-	public void setDisableBasic(boolean b) {
-		if (b) {
-			Iterator<AuthenticationHandler> it = this.authenticationHandlers.iterator();
-			while (it.hasNext()) {
-				AuthenticationHandler hnd = it.next();
-				if (hnd instanceof BasicAuthHandler) {
-					it.remove();
-				}
-			}
-		}
-		disableBasic = b;
-		setAllHandlers();
-	}
-
-	public boolean isDisableBasic() {
-		return disableBasic;
-	}
-
-	public void setDisableDigest(boolean b) {
-		if (b) {
-			Iterator<AuthenticationHandler> it = this.authenticationHandlers.iterator();
-			while (it.hasNext()) {
-				AuthenticationHandler hnd = it.next();
-				if (hnd instanceof DigestAuthenticationHandler) {
-					it.remove();
-				}
-			}
-		}
-		disableDigest = b;
-		setAllHandlers();
-	}
-
-	public boolean isDisableDigest() {
-		return disableDigest;
-	}
 
 	/**
 	 * Looks for an AuthenticationHandler which supports the given resource and
@@ -150,7 +72,7 @@ public class AuthenticationService {
 			log.trace("request is pre-authenticated");
 			return new AuthStatus(auth, false);
 		}
-		for (AuthenticationHandler h : allHandlers) {
+		for (AuthenticationHandler h : authenticationHandlers) {
 			if (h.supports(resource, request)) {
 				Object loginToken = h.authenticate(resource, request);
 				if (loginToken == null) {
@@ -187,8 +109,8 @@ public class AuthenticationService {
 	 */
 	public List<String> getChallenges(Resource resource, Request request) {
 		List<String> challenges = new ArrayList<String>();
-		for (AuthenticationHandler h : allHandlers) {
-			if (h.isCompatible(resource)) {
+		for (AuthenticationHandler h : authenticationHandlers) {
+			if (h.isCompatible(resource, request)) {
 				log.debug("challenge for auth: " + h.getClass());
 				String ch = h.getChallenge(resource, request);
 				if (ch != null) {
@@ -202,17 +124,9 @@ public class AuthenticationService {
 	}
 
 	public List<AuthenticationHandler> getAuthenticationHandlers() {
-		return allHandlers;
+		return authenticationHandlers;
 	}
 
-	public List<AuthenticationHandler> getExtraHandlers() {
-		return extraHandlers;
-	}
-
-	public void setExtraHandlers(List<AuthenticationHandler> extraHandlers) {
-		this.extraHandlers = extraHandlers;
-		setAllHandlers();
-	}
 
 	public List<ExternalIdentityProvider> getExternalIdentityProviders() {
 		return externalIdentityProviders;
@@ -230,19 +144,6 @@ public class AuthenticationService {
 		this.disableExternal = disableExternal;
 	}
 
-	/**
-	 * Merge standard and extra handlers into single list
-	 */
-	private void setAllHandlers() {
-		List<AuthenticationHandler> handlers = new ArrayList<AuthenticationHandler>();
-		if (authenticationHandlers != null) {
-			handlers.addAll(authenticationHandlers);
-		}
-		if (extraHandlers != null) {
-			handlers.addAll(extraHandlers);
-		}
-		this.allHandlers = Collections.unmodifiableList(handlers);
-	}
 
 	/**
 	 * Determine if we can use external identify providers to authenticate this

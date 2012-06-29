@@ -53,6 +53,7 @@ public class SecurityManagerDigestAuthenticationHandler implements Authenticatio
         digestHelper = new DigestHelper(nonceProvider);
     }
 
+	@Override
     public boolean supports( Resource r, Request request ) {
         Auth auth = request.getAuthorization();
         if( auth == null ) {
@@ -61,6 +62,7 @@ public class SecurityManagerDigestAuthenticationHandler implements Authenticatio
         return  Auth.Scheme.DIGEST.equals( auth.getScheme() );
     }
 
+	@Override
     public Object authenticate( Resource r, Request request ) {
         Auth auth = request.getAuthorization();
         DigestResponse resp = digestHelper.calculateResponse(auth, securityManager.getRealm(request.getHostHeader()), request.getMethod());
@@ -74,12 +76,14 @@ public class SecurityManagerDigestAuthenticationHandler implements Authenticatio
 
     }
 
+	@Override
     public String getChallenge( Resource resource, Request request ) {
         String nonceValue = nonceProvider.createNonce( resource, request );
         return digestHelper.getChallenge(nonceValue, request.getAuthorization(), securityManager.getRealm(request.getHostHeader()));
     }
 
-    public boolean isCompatible( Resource resource ) {
+	@Override
+    public boolean isCompatible( Resource resource, Request request ) {
         return true;
     }
 }

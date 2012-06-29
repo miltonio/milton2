@@ -87,7 +87,7 @@ public class DigestGenerator {
         return a2Md5;
     }
 
-    String md5( String... ss ) {
+    public String md5( String... ss ) {
         String d = "";
         for( int i = 0; i < ss.length; i++ ) {
             if( i > 0 ) d += ":";

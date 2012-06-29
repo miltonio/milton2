@@ -22,3 +22,5 @@
 /milton-server/target/
 /examples/caldav-non-spring-netbeans/nbproject/private/
 /external/cardme/target/
+/milton-mail-api/target/
+/milton-mail-server/target/

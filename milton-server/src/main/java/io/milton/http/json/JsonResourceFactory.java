@@ -47,7 +47,7 @@ public class JsonResourceFactory implements ResourceFactory {
 	private Long maxAgeSecsPropFind = null;
 	private static final String DAV_FOLDER = "_DAV";
 	private List<String> contentTypes = Arrays.asList("application/json", "application/x-javascript");
-	private String methodParamName = "METHOD";
+	private String ajaxLoginPath = "/.login";
 
 	public JsonResourceFactory(ResourceFactory wrapped, EventManager eventManager, JsonPropFindHandler propFindHandler, JsonPropPatchHandler propPatchHandler) {
 		this.wrapped = wrapped;
@@ -73,25 +73,6 @@ public class JsonResourceFactory implements ResourceFactory {
 		Request request = HttpManager.request();
 		String encodedPath = request.getAbsolutePath();
 
-		// This is to support a use case where a developer wants their resources to
-		// be accessible through milton-json, but don't want to use DAV urls. Instead
-		// they use a parameter and DO NOT implement PostableResource. 
-		if (request.getMethod().equals(Method.POST)) {
-			Resource wrappedResource = wrapped.getResource(host, sPath);
-			if (wrappedResource != null && !(wrappedResource instanceof PostableResource)) {
-				LogUtils.trace(log, "getResource: is post, and got a: ", wrappedResource.getClass());
-				return new PostJsonResource(host, encodedPath, wrappedResource, methodParamName, this);
-			}
-		}
-		if (request.getMethod().equals(Method.GET) && isMatchingContentType(request.getAcceptHeader())) {
-			Resource wrappedResource = wrapped.getResource(host, sPath);
-			if (wrappedResource != null) {
-				log.trace("getResource: matches content type, and found wrapped resource");
-				return wrapResource(host, wrappedResource, Method.PROPFIND.code, encodedPath);
-			} else {
-				LogUtils.trace(log, "getResource: is GET and matched type, but found no actual resource on", sPath);
-			}
-		}
 		if (isMatchingPath(parent)) {
 			log.trace("getResource: is matching path");
 			Path resourcePath = parent.getParent();
@@ -103,6 +84,14 @@ public class JsonResourceFactory implements ResourceFactory {
 					LogUtils.trace(log, "returning a", r.getClass());
 					return r;
 				}
+			}
+		} else if( isAjaxLoginPath(sPath)) {
+			Resource h = wrapped.getResource(host, "/");
+			if( h == null ) {
+				log.info("Found a login path, but couldnt get a root resource to delegate login to");
+				return null;
+			} else {
+				return new AjaxLoginResource(sPath, h);
 			}
 		} else {
 			log.trace("getResource: not matching path");
@@ -194,5 +183,9 @@ public class JsonResourceFactory implements ResourceFactory {
 
 	public void setContentTypes(List<String> contentTypes) {
 		this.contentTypes = contentTypes;
+	}
+
+	private boolean isAjaxLoginPath(String sPath) {
+		return sPath.equals(this.ajaxLoginPath);
 	}
 }

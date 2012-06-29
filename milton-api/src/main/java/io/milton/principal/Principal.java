@@ -53,7 +53,7 @@ public interface Principal {
 	 *  - type
 	 *  - value (optional)
 	 * 
-	 * The type says this identifier identifiers a physical resource or some construct
+	 * The type says this identifier identifies a physical resource or some construct
 	 * defined by the ACL protocol. If the principal is a physical resource the
 	 * type will be a Qualified Name with a namespace of D: (ie webdav) and a local
 	 * name of href (which means the id is a href).

@@ -108,14 +108,17 @@ public abstract class AbstractWrappingResponseHandler implements WebDavResponseH
 		wrapped.respondCreated(resource, response, request);
 	}
 
+	@Override
 	public void respondUnauthorised(Resource resource, Response response, Request request) {
 		wrapped.respondUnauthorised(resource, response, request);
 	}
 
+	@Override
 	public void respondMethodNotImplemented(Resource resource, Response response, Request request) {
 		wrapped.respondMethodNotImplemented(resource, response, request);
 	}
 
+	@Override
 	public void respondMethodNotAllowed(Resource res, Response response, Request request) {
 		wrapped.respondMethodNotAllowed(res, response, request);
 	}

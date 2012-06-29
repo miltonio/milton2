@@ -73,5 +73,5 @@ public interface AuthenticationHandler {
      * @return - true if this can authenticate the resource, and it should issue a
      * http challenge
      */
-    boolean isCompatible( Resource resource );
+    boolean isCompatible( Resource resource, Request request );
 }

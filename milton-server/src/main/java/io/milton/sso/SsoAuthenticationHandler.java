@@ -31,20 +31,24 @@ public class SsoAuthenticationHandler implements AuthenticationHandler {
 
 
 	
+	@Override
 	public boolean supports(Resource r, Request request) {
 		boolean b = request.getAttributes().get("_sso_user") != null;		
 		return b;
 	}
 
+	@Override
 	public Object authenticate(Resource resource, Request request) {
 		return request.getAttributes().get("_sso_user");
 	}
 
+	@Override
 	public String getChallenge(Resource resource, Request request) {
 		return null;
 	}
 
-	public boolean isCompatible(Resource resource) {
+	@Override
+	public boolean isCompatible(Resource resource, Request request) {
 		return true;
 	}	
 }

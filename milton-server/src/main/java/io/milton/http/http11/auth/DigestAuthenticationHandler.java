@@ -86,7 +86,7 @@ public class DigestAuthenticationHandler implements AuthenticationHandler {
     }
 
 	@Override
-    public boolean isCompatible( Resource resource ) {
+    public boolean isCompatible( Resource resource, Request request ) {
         if ( resource instanceof DigestResource ) {
 			DigestResource dr = (DigestResource) resource;
 			return dr.isDigestAllowed();

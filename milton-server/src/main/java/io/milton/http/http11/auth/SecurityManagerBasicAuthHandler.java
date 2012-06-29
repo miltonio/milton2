@@ -37,6 +37,7 @@ public class SecurityManagerBasicAuthHandler implements AuthenticationHandler {
         this.securityManager = securityManager;
     }
 
+	@Override
     public boolean supports(Resource r, Request request) {
         Auth auth = request.getAuthorization();
         if (auth == null) {
@@ -49,6 +50,7 @@ public class SecurityManagerBasicAuthHandler implements AuthenticationHandler {
         return auth.getScheme().equals(Scheme.BASIC);
     }
 
+	@Override
     public Object authenticate(Resource resource, Request request) {
         log.debug("authenticate");
         Auth auth = request.getAuthorization();
@@ -57,12 +59,14 @@ public class SecurityManagerBasicAuthHandler implements AuthenticationHandler {
         return o;
     }
 
+	@Override
     public String getChallenge(Resource resource, Request request) {
         String realm = securityManager.getRealm(request.getHostHeader());
         return "Basic realm=\"" + realm + "\"";
     }
 
-    public boolean isCompatible(Resource resource) {
+	@Override
+    public boolean isCompatible(Resource resource, Request request) {
         return true;
     }
 

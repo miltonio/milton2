@@ -28,10 +28,7 @@ import io.milton.http.entity.DefaultEntityTransport;
 import io.milton.http.entity.EntityTransport;
 import io.milton.http.http11.*;
 import io.milton.http.http11.DefaultHttp11ResponseHandler.BUFFERING;
-import io.milton.http.http11.auth.ExpiredNonceRemover;
-import io.milton.http.http11.auth.Nonce;
-import io.milton.http.http11.auth.NonceProvider;
-import io.milton.http.http11.auth.SimpleMemoryNonceProvider;
+import io.milton.http.http11.auth.*;
 import io.milton.http.json.JsonResourceFactory;
 import io.milton.http.quota.QuotaDataAccessor;
 import io.milton.http.values.ValueWriters;
@@ -73,13 +70,17 @@ import org.slf4j.LoggerFactory;
  * @author brad
  */
 public class HttpManagerBuilder {
-	
-	private static final Logger log = LoggerFactory.getLogger(HttpManager.class);
 
+	private static final Logger log = LoggerFactory.getLogger(HttpManager.class);
 	private ResourceFactory mainResourceFactory;
 	private ResourceFactory outerResourceFactory;
 	private DefaultHttp11ResponseHandler.BUFFERING buffering;
 	private List<AuthenticationHandler> authenticationHandlers;
+	private List<AuthenticationHandler> cookieDelegateHandlers;
+	private DigestAuthenticationHandler digestHandler;
+	private BasicAuthHandler basicHandler;
+	private CookieAuthenticationHandler cookieAuthenticationHandler;
+	private FormAuthenticationHandler formAuthenticationHandler;
 	private Map<UUID, Nonce> nonces = new ConcurrentHashMap<UUID, Nonce>();
 	private int nonceValiditySeconds = 60 * 60 * 24;
 	private NonceProvider nonceProvider;
@@ -112,6 +113,12 @@ public class HttpManagerBuilder {
 	private boolean enableCompression = true;
 	private boolean enableWellKnown = true;
 	private boolean enabledJson = true;
+	private boolean enableBasicAuth = true;
+	private boolean enableDigestAuth = true;
+	private boolean enableFormAuth = true;
+	private boolean enableCookieAuth = true;
+	private String loginPage = "/login.html";
+	private List<String> loginPageExcludePaths;
 
 	/**
 	 * This method creates instances of required objects which have not been set
@@ -131,24 +138,69 @@ public class HttpManagerBuilder {
 			throw new IllegalStateException("Please provide a resource factory"); // todo: defaul to FS?
 		}
 		if (authenticationService == null) {
-			if (nonceProvider == null) {
-				if (expiredNonceRemover == null) {
-					expiredNonceRemover = new ExpiredNonceRemover(nonces, nonceValiditySeconds);
-					showLog("expiredNonceRemover", expiredNonceRemover);
+			if (authenticationHandlers == null) {
+				authenticationHandlers = new ArrayList<AuthenticationHandler>();
+				if (basicHandler == null) {
+					if (enableBasicAuth) {
+						basicHandler = new BasicAuthHandler();
+					}
 				}
-				nonceProvider = new SimpleMemoryNonceProvider(nonceValiditySeconds, expiredNonceRemover, nonces);
-				showLog("nonceProvider", nonceProvider);
+				if (basicHandler != null) {
+					authenticationHandlers.add(basicHandler);
+				}
+				if (digestHandler == null) {
+					if (enableDigestAuth) {
+						if (nonceProvider == null) {
+							if (expiredNonceRemover == null) {
+								expiredNonceRemover = new ExpiredNonceRemover(nonces, nonceValiditySeconds);
+								showLog("expiredNonceRemover", expiredNonceRemover);
+							}
+							nonceProvider = new SimpleMemoryNonceProvider(nonceValiditySeconds, expiredNonceRemover, nonces);
+							showLog("nonceProvider", nonceProvider);
+						}
+						digestHandler = new DigestAuthenticationHandler(nonceProvider);
+					}
+				}
+				if (digestHandler != null) {
+					authenticationHandlers.add(digestHandler);
+				}
+				if (formAuthenticationHandler == null) {
+					if (enableFormAuth) {
+						formAuthenticationHandler = new FormAuthenticationHandler();
+					}
+				}
+				if (formAuthenticationHandler != null) {
+					authenticationHandlers.add(formAuthenticationHandler);
+				}
+				if (cookieAuthenticationHandler == null) {
+					if (enableCookieAuth) {
+						if (cookieDelegateHandlers == null) {
+							// Don't add digest!
+							cookieDelegateHandlers = new ArrayList<AuthenticationHandler>();
+							if (basicHandler != null) {
+								cookieDelegateHandlers.add(basicHandler);
+								authenticationHandlers.remove(basicHandler);
+							}
+							if (formAuthenticationHandler != null) {
+								cookieDelegateHandlers.add(formAuthenticationHandler);
+								authenticationHandlers.remove(formAuthenticationHandler);
+							}
+						}
+						cookieAuthenticationHandler = new CookieAuthenticationHandler(cookieDelegateHandlers, mainResourceFactory);
+						authenticationHandlers.add(cookieAuthenticationHandler);
+					}
+				}
 			}
-			authenticationService = new AuthenticationService(nonceProvider);
+			authenticationService = new AuthenticationService(authenticationHandlers);
 			showLog("authenticationService", authenticationService);
 		}
 
-		init( authenticationService);
+		init(authenticationService);
 		shutdownHandlers.add(expiredNonceRemover);
 		expiredNonceRemover.start();
 	}
 
-	private void init( AuthenticationService authenticationService) {
+	private void init(AuthenticationService authenticationService) {
 		// build a stack of resource type helpers
 		if (resourceTypeHelper == null) {
 			WebDavResourceTypeHelper webDavResourceTypeHelper = new WebDavResourceTypeHelper();
@@ -168,9 +220,16 @@ public class HttpManagerBuilder {
 				showLog("http11ResponseHandler", http11ResponseHandler);
 			}
 			webdavResponseHandler = new DefaultWebDavResponseHandler(http11ResponseHandler, resourceTypeHelper, propFindXmlGenerator);
-			if( enableCompression ) {
+			if (enableCompression) {
 				webdavResponseHandler = new CompressingResponseHandler(webdavResponseHandler);
 				showLog("webdavResponseHandler", webdavResponseHandler);
+			}
+			if (enableFormAuth) {
+				log.info("form authentication is enabled, so wrap response handler with " + LoginResponseHandler.class);
+				LoginResponseHandler loginResponseHandler = new LoginResponseHandler(webdavResponseHandler, mainResourceFactory);
+				loginResponseHandler.setExcludePaths(loginPageExcludePaths);
+				loginResponseHandler.setLoginPage(loginPage);
+				webdavResponseHandler = loginResponseHandler;
 			}
 		}
 		init(authenticationService, webdavResponseHandler, resourceTypeHelper);
@@ -190,12 +249,12 @@ public class HttpManagerBuilder {
 			protocols = new ArrayList<HttpExtension>();
 			Http11Protocol http11Protocol = new Http11Protocol(http11ResponseHandler, handlerHelper, resourceHandlerHelper, enableOptionsAuth);
 			protocols.add(http11Protocol);
-			if (propertySources == null) {				
+			if (propertySources == null) {
 				propertySources = PropertySourceUtil.createDefaultSources(resourceTypeHelper);
 				showLog("propertySources", propertySources);
 			}
-			if( extraPropertySources != null ) {
-				for( PropertySource ps : extraPropertySources) {
+			if (extraPropertySources != null) {
+				for (PropertySource ps : extraPropertySources) {
 					log.info("Add extra property source: " + ps.getClass());
 					propertySources.add(ps);
 				}
@@ -230,11 +289,11 @@ public class HttpManagerBuilder {
 
 		// wrap the real (ie main) resource factory to provide well-known support and ajax gateway
 		if (outerResourceFactory == null) {
-			 outerResourceFactory = mainResourceFactory; // in case nothing else enabled
-			if( enabledJson ) {
+			outerResourceFactory = mainResourceFactory; // in case nothing else enabled
+			if (enabledJson) {
 				outerResourceFactory = new JsonResourceFactory(outerResourceFactory, eventManager, propertySources, propPatchSetter, propertyAuthoriser);
 			}
-			if( enableWellKnown) {
+			if (enableWellKnown) {
 				outerResourceFactory = new WellKnownResourceFactory(outerResourceFactory, wellKnownHandlers);
 			}
 		}
@@ -563,17 +622,13 @@ public class HttpManagerBuilder {
 	public void setExtraPropertySources(List<PropertySource> extraPropertySources) {
 		this.extraPropertySources = extraPropertySources;
 	}
-	
-	
 
 	/**
-	 * 
+	 *
 	 * @param propertyName
-	 * @param defaultedTo 
+	 * @param defaultedTo
 	 */
 	private void showLog(String propertyName, Object defaultedTo) {
 		log.info("set property: " + propertyName + " to: " + defaultedTo);
 	}
-	
-	
 }
