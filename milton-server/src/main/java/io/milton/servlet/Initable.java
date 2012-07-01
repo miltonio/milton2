@@ -22,6 +22,6 @@ import io.milton.http.HttpManager;
  * @author brad
  */
 public interface Initable {
-    void init(ApplicationConfig config, HttpManager manager);
+    void init(Config config, HttpManager manager);
     void destroy(HttpManager manager);
 }

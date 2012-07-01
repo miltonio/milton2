@@ -663,6 +663,70 @@ public class HttpManagerBuilder {
 	public void setEnableFormAuth(boolean enableFormAuth) {
 		this.enableFormAuth = enableFormAuth;
 	}
+
+	public BasicAuthHandler getBasicHandler() {
+		return basicHandler;
+	}
+
+	public void setBasicHandler(BasicAuthHandler basicHandler) {
+		this.basicHandler = basicHandler;
+	}
+
+	public CookieAuthenticationHandler getCookieAuthenticationHandler() {
+		return cookieAuthenticationHandler;
+	}
+
+	public void setCookieAuthenticationHandler(CookieAuthenticationHandler cookieAuthenticationHandler) {
+		this.cookieAuthenticationHandler = cookieAuthenticationHandler;
+	}
+
+	public List<AuthenticationHandler> getCookieDelegateHandlers() {
+		return cookieDelegateHandlers;
+	}
+
+	public void setCookieDelegateHandlers(List<AuthenticationHandler> cookieDelegateHandlers) {
+		this.cookieDelegateHandlers = cookieDelegateHandlers;
+	}
+
+	public DigestAuthenticationHandler getDigestHandler() {
+		return digestHandler;
+	}
+
+	public void setDigestHandler(DigestAuthenticationHandler digestHandler) {
+		this.digestHandler = digestHandler;
+	}
+
+	public FormAuthenticationHandler getFormAuthenticationHandler() {
+		return formAuthenticationHandler;
+	}
+
+	public void setFormAuthenticationHandler(FormAuthenticationHandler formAuthenticationHandler) {
+		this.formAuthenticationHandler = formAuthenticationHandler;
+	}
+
+	public String getLoginPage() {
+		return loginPage;
+	}
+
+	public void setLoginPage(String loginPage) {
+		this.loginPage = loginPage;
+	}
+
+	public List<String> getLoginPageExcludePaths() {
+		return loginPageExcludePaths;
+	}
+
+	public void setLoginPageExcludePaths(List<String> loginPageExcludePaths) {
+		this.loginPageExcludePaths = loginPageExcludePaths;
+	}
+
+	public ResourceHandlerHelper getResourceHandlerHelper() {
+		return resourceHandlerHelper;
+	}
+
+	public void setResourceHandlerHelper(ResourceHandlerHelper resourceHandlerHelper) {
+		this.resourceHandlerHelper = resourceHandlerHelper;
+	}
 	
 	
 }

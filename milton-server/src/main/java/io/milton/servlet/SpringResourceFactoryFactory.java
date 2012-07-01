@@ -19,7 +19,6 @@ import io.milton.config.HttpManagerBuilder;
 import io.milton.http.HttpManager;
 import io.milton.http.ResourceFactory;
 import io.milton.http.webdav.WebDavResponseHandler;
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -75,7 +74,7 @@ public class SpringResourceFactoryFactory implements MiltonConfigurator{
     private HttpManager httpManager;
     
     @Override
-    public HttpManager configure(ServletConfig config) throws ServletException {
+    public HttpManager configure(Config config) throws ServletException {
         context = new ClassPathXmlApplicationContext(new String[] {"applicationContext.xml"});
         ResourceFactory rf = (ResourceFactory) context.getBean("milton.resource.factory");
         WebDavResponseHandler davResponseHandler = (WebDavResponseHandler) context.getBean("milton.response.handler");

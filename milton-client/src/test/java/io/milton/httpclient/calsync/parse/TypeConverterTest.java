@@ -35,7 +35,7 @@ public class TypeConverterTest extends TestCase {
     public void test_GetString() throws Exception{
         MyCalendarEventBean bean = new MyCalendarEventBean();
         bean.setSummary("XXX");
-        Method readMethod = bean.getClass().getMethod("getSummar");
+        Method readMethod = bean.getClass().getMethod("getSummary");
         String v = typeConverter.get(bean, readMethod, String.class);
         assertEquals("XXX", v);
     }

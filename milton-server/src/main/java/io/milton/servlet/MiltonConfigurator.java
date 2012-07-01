@@ -15,7 +15,6 @@
 package io.milton.servlet;
 
 import io.milton.http.HttpManager;
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 
 /**
@@ -24,7 +23,7 @@ import javax.servlet.ServletException;
  * @author brad
  */
 public interface MiltonConfigurator {
-    HttpManager configure(ServletConfig config) throws ServletException;
+    HttpManager configure(Config config) throws ServletException;
 
     /**
      * called on destroy from the servlet

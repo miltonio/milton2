@@ -21,7 +21,6 @@ import io.milton.http.HttpManager;
 import io.milton.http.ResourceFactory;
 import io.milton.http.webdav.WebDavResponseHandler;
 import java.util.*;
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 
 /**
@@ -37,7 +36,7 @@ public class DefaultMiltonConfigurator implements MiltonConfigurator {
     private HttpManager httpManager;
     
     @Override
-    public HttpManager configure(ServletConfig config) throws ServletException {
+    public HttpManager configure(Config config) throws ServletException {
 
         String authHandlers = config.getInitParameter("authenticationHandlers");
         if (authHandlers != null) {
@@ -76,9 +75,8 @@ public class DefaultMiltonConfigurator implements MiltonConfigurator {
         checkAddInitable(initables, configurer.getWebdavResponseHandler());
         checkAddInitable(initables, configurer.getFilters() );
         
-        ApplicationConfig applicationConfig = new ApplicationConfig(config);
         for( Initable i : initables ) {
-            i.init(applicationConfig, httpManager);
+            i.init(config, httpManager);
         }
         return httpManager;
     }
@@ -136,7 +134,7 @@ public class DefaultMiltonConfigurator implements MiltonConfigurator {
         return list;
     }
 
-    private List<String> allParams(ServletConfig config) {
+    private List<String> allParams(Config config) {
         Enumeration e = config.getInitParameterNames();
         List<String> list = new ArrayList<String>();
         while(e.hasMoreElements()) {

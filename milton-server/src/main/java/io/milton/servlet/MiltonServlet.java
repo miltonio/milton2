@@ -18,10 +18,7 @@ package io.milton.servlet;
 import io.milton.http.HttpManager;
 import io.milton.http.Request;
 import io.milton.http.Response;
-import io.milton.http.webdav.WebDavResponseHandler;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -76,7 +73,7 @@ public class MiltonServlet implements Servlet {
             throw new RuntimeException(ex);
         }
     }
-    private ServletConfig config;
+    private ServletConfigWrapper config;
     private ServletContext servletContext;
     protected HttpManager httpManager;
     protected MiltonConfigurator configurator;
@@ -84,7 +81,7 @@ public class MiltonServlet implements Servlet {
     @Override
     public void init(ServletConfig config) throws ServletException {
         try {
-            this.config = config;
+            this.config = new ServletConfigWrapper(config);
             this.servletContext = config.getServletContext();
             
             String configuratorClassName = config.getInitParameter("milton.configurator");
@@ -93,7 +90,7 @@ public class MiltonServlet implements Servlet {
             } else {
                 configurator = new DefaultMiltonConfigurator();
             }
-            httpManager = configurator.configure(config);
+            httpManager = configurator.configure(this.config);
             
         } catch (ServletException ex) {
             log.error("Exception starting milton servlet", ex);
@@ -120,7 +117,7 @@ public class MiltonServlet implements Servlet {
         HttpServletResponse resp = (HttpServletResponse) servletResponse;
         try {
             setThreadlocals(req, resp);
-            tlServletConfig.set(config);
+            tlServletConfig.set(config.getServletConfig());
             Request request = new ServletRequest(req, servletContext);
             Response response = new ServletResponse(resp);
             httpManager.process(request, response);
@@ -150,6 +147,6 @@ public class MiltonServlet implements Servlet {
 
     @Override
     public ServletConfig getServletConfig() {
-        return config;
+        return config.getServletConfig();
     }
 }

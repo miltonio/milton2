@@ -39,7 +39,7 @@ public class StaticResourceFactory implements ResourceFactory, Initable {
     /**
      * either this or root will be set
      */
-    private ApplicationConfig config;
+    private Config config;
     /**
      * either this or config will be set
      */
@@ -49,7 +49,7 @@ public class StaticResourceFactory implements ResourceFactory, Initable {
     public StaticResourceFactory() {
     }
 
-    public StaticResourceFactory( ApplicationConfig config ) {
+    public StaticResourceFactory( Config config ) {
         this.config = config;
     }
 
@@ -60,7 +60,7 @@ public class StaticResourceFactory implements ResourceFactory, Initable {
     }
 
 	@Override
-    public void init( ApplicationConfig config, HttpManager manager ) {
+    public void init( Config config, HttpManager manager ) {
         this.config = config;
     }
 
@@ -76,17 +76,17 @@ public class StaticResourceFactory implements ResourceFactory, Initable {
         } else {
             if( config == null )
                 throw new RuntimeException( "ResourceFactory was not configured. ApplicationConfig is null" );
-            if( config.servletContext == null )
+            if( config.getServletContext() == null )
                 throw new NullPointerException( "config.servletContext is null" );
             String path = "WEB-INF/static" + url;
-            path = config.servletContext.getRealPath( path );
+            path = config.getServletContext().getRealPath( path );
             file = new File( path );
         }
 
         if( file.exists() && !file.isDirectory() ) {
             String contentType;
             if( config != null ) {
-                contentType = MiltonUtils.getContentType( config.servletContext, file.getName() );
+                contentType = MiltonUtils.getContentType( config.getServletContext(), file.getName() );
             } else {
                 contentType = ContentTypeUtils.findContentTypes( file );
             }
