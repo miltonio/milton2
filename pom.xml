@@ -52,6 +52,8 @@
 		<module>milton-client</module>
 		<module>milton-proxy</module>
 		<module>milton-restlet</module>
+		<module>milton-mail-api</module>
+		<module>milton-mail-server</module>
 
         <!--
         <module>milton-filesystem-test</module>

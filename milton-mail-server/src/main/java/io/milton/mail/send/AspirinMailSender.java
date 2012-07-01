@@ -44,11 +44,9 @@ public class AspirinMailSender implements MailSender, AspirinListener {
      * @param postmaster - eg admin@ettrema.com
      * @param maxRetries - eg 3
      */
-    public AspirinMailSender(int retryInterval, int deliveryThreads, String postmaster, int maxRetries) {
+    public AspirinMailSender(QueueStore queueStore, MailStore mailStore) {
         listenerManager = new ListenerManager();
         Configuration configuration = new Configuration();
-        QueueStore queueStore = new SimpleQueueStore(configuration, listenerManager);
-        MailStore mailStore = new FileMailStore(configuration);
         deliveryManager = new DeliveryManager(configuration, queueStore, mailStore);
         listenerManager.setDeliveryManager(deliveryManager);
         aspirin = new AspirinInternal(configuration, deliveryManager, listenerManager);

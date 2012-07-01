@@ -631,4 +631,38 @@ public class HttpManagerBuilder {
 	private void showLog(String propertyName, Object defaultedTo) {
 		log.info("set property: " + propertyName + " to: " + defaultedTo);
 	}
+
+	public boolean isEnableBasicAuth() {
+		return enableBasicAuth;
+	}
+
+	public void setEnableBasicAuth(boolean enableBasicAuth) {
+		this.enableBasicAuth = enableBasicAuth;
+	}
+
+	public boolean isEnableCookieAuth() {
+		return enableCookieAuth;
+	}
+
+	public void setEnableCookieAuth(boolean enableCookieAuth) {
+		this.enableCookieAuth = enableCookieAuth;
+	}
+
+	public boolean isEnableDigestAuth() {
+		return enableDigestAuth;
+	}
+
+	public void setEnableDigestAuth(boolean enableDigestAuth) {
+		this.enableDigestAuth = enableDigestAuth;
+	}
+
+	public boolean isEnableFormAuth() {
+		return enableFormAuth;
+	}
+
+	public void setEnableFormAuth(boolean enableFormAuth) {
+		this.enableFormAuth = enableFormAuth;
+	}
+	
+	
 }

@@ -8,20 +8,49 @@ import javax.mail.internet.MimeMessage;
  */
 public interface Mailbox {
 
-    public boolean authenticate(String password);
+    /**
+     * Required for SMTP and pop command in POP
+     * 
+     * @param password
+     * @return 
+     */
+    boolean authenticate(String password);
     
-    public boolean authenticateMD5(byte[] passwordHash);
+    /**
+     * Required for apop command in POP protocol
+     * 
+     * @param passwordHash
+     * @return 
+     */
+    boolean authenticateMD5(byte[] passwordHash);
 
-    public MessageFolder getInbox();
+    /**
+     * Locate the primary folder to deliver mail to
+     * 
+     * @return 
+     */
+    MessageFolder getInbox();
     
-    public MessageFolder getMailFolder(String name);
+    /**
+     * Locate the named folder
+     * 
+     * @param name
+     * @return 
+     */
+    MessageFolder getMailFolder(String name);
 
     /**
      * 
      * @return - true iff this mailbox is enabled for sending and receiving emails
      */
-    public boolean isEmailDisabled();
+    boolean isEmailDisabled();
     
-    public void storeMail(MimeMessage mm);
+    /**
+     * Called when a message has been received for delivery to this user. The message
+     * should be stored in the user's inbox
+     * 
+     * @param mm 
+     */
+    void storeMail(MimeMessage mm);
 
 }

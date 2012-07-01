@@ -40,7 +40,6 @@ public class SubethaSmtpServer implements MessageListener, SmtpServer {
         this.enableTls = enableTls;
         this.resourceFactory = resourceFactory;
         this.filters = filters;
-        log.debug( "filters: " + filters.size());
     }
 
     public SubethaSmtpServer(MailResourceFactory resourceFactory, List<Filter> filters) {
@@ -48,6 +47,7 @@ public class SubethaSmtpServer implements MessageListener, SmtpServer {
     }
 
     
+    @Override
     public void start() {
         initSmtpReceiver();
 
@@ -60,6 +60,7 @@ public class SubethaSmtpServer implements MessageListener, SmtpServer {
         log.info("Geroa email server started.");
     }
 
+    @Override
     public void stop() {
         try {
             smtpReceivingServer.stop();
@@ -102,6 +103,7 @@ public class SubethaSmtpServer implements MessageListener, SmtpServer {
      * Subetha.MessageListener
      * 
      */
+    @Override
     public boolean accept(String sFrom, String sRecipient) {
         log.debug("accept? " + sFrom + " - " +sRecipient);
         if( sFrom == null || sFrom.length() == 0 ) {
@@ -111,6 +113,7 @@ public class SubethaSmtpServer implements MessageListener, SmtpServer {
         final AcceptEvent event = new AcceptEvent(sFrom, sRecipient);
         Filter terminal = new Filter() {
 
+            @Override
             public void doEvent(FilterChain chain, Event e) {
                 MailboxAddress recip = MailboxAddress.parse(event.getRecipient());
                 Mailbox recipMailbox = resourceFactory.getMailbox(recip);
@@ -130,12 +133,14 @@ public class SubethaSmtpServer implements MessageListener, SmtpServer {
      * be a send request from our domain or an email to our domain
      * 
      */
+    @Override
     public void deliver(String sFrom, String sRecipient, final InputStream data) throws TooMuchDataException, IOException {
         log.debug("deliver email from: " + sFrom + " to: " + sRecipient);
         log.debug("email from: " + sFrom + " to: " + sRecipient);
         final DeliverEvent event = new DeliverEvent(sFrom, sRecipient, data);
         Filter terminal = new Filter() {
 
+            @Override
             public void doEvent(FilterChain chain, Event e) {
                 MailboxAddress from = MailboxAddress.parse(event.getFrom());
                 MailboxAddress recip = MailboxAddress.parse(event.getRecipient());
@@ -177,6 +182,7 @@ public class SubethaSmtpServer implements MessageListener, SmtpServer {
         }
     }
 
+    @Override
     public int getSmtpPort() {
         return smtpPort;
     }
