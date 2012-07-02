@@ -17,7 +17,7 @@
         </init-param>
         <init-param>
             <param-name>resource.factory.class</param-name>
-            <param-name>com.mycompany.TResourceFactory</param-name>
+            <param-value>com.mycompany.TResourceFactory</param-value>
         </init-param>
         <!--
         <init-param>

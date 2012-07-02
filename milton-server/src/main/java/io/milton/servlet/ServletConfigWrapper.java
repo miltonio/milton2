@@ -46,13 +46,13 @@ public class ServletConfigWrapper extends Config {
 		return config.getInitParameter(string);
 	}
 
-	@Override
-	public Enumeration getInitParameterNames() {
-		return config.getInitParameterNames();
-	}
-
 	public ServletConfig getServletConfig() {
 		return config;
+	}
+
+	@Override
+	protected Enumeration initParamNames() {
+		return config.getInitParameterNames();
 	}
 	
 	

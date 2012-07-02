@@ -48,7 +48,6 @@
 	<modules>
 		<module>milton-api</module>
 		<module>milton-server</module>
-		<module>milton-filesystem</module>
 		<module>milton-client</module>
 		<module>milton-proxy</module>
 		<module>milton-restlet</module>

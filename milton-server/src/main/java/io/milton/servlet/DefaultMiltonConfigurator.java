@@ -50,6 +50,11 @@ public class DefaultMiltonConfigurator implements MiltonConfigurator {
     @Override
     public HttpManager configure(Config config) throws ServletException {
 
+		log.info("Listing all config parameters:");
+		for(String s : config.getInitParameterNames()) {
+			log.info(" " + s + " = " + config.getInitParameter(s));
+		}
+		
         String authHandlers = config.getInitParameter("authenticationHandlers");
         if (authHandlers != null) {
             initAuthHandlers(authHandlers);
@@ -58,14 +63,16 @@ public class DefaultMiltonConfigurator implements MiltonConfigurator {
         if (resourceFactoryClassName != null) {
             ResourceFactory rf = instantiate(resourceFactoryClassName);
             configurer.setMainResourceFactory(rf);
-        }
+        } else {
+			log.warn("No custom ResourceFactory class name provided in resource.factory.class");
+		}
         String responseHandlerClassName = config.getInitParameter("response.handler.class");
         if (responseHandlerClassName != null) {
             WebDavResponseHandler davResponseHandler = instantiate(responseHandlerClassName);
             configurer.setWebdavResponseHandler(davResponseHandler);
         }
         List<Filter> filters = null;
-        List<String> params = allParams(config);
+        List<String> params = config.getInitParameterNames();
         for (String paramName : params ) {
             if (paramName.startsWith("filter_")) {
                 String filterClass = config.getInitParameter(paramName);
@@ -142,15 +149,6 @@ public class DefaultMiltonConfigurator implements MiltonConfigurator {
             if (s.length() > 0) {
                 list.add(s);
             }
-        }
-        return list;
-    }
-
-    private List<String> allParams(Config config) {
-        Enumeration e = config.getInitParameterNames();
-        List<String> list = new ArrayList<String>();
-        while(e.hasMoreElements()) {
-            list.add((String)e.nextElement());
         }
         return list;
     }

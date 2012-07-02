@@ -15,7 +15,9 @@
 package io.milton.servlet;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import javax.servlet.ServletContext;
 
 /**
@@ -27,9 +29,9 @@ public abstract class Config {
     public abstract ServletContext getServletContext();
 
     public abstract String getInitParameter(String string);
-
-    public abstract Enumeration getInitParameterNames();	
+    
 	
+	protected abstract Enumeration initParamNames();
 
     public File getConfigFile(String path) {
         File f = new File( getWebInfDir(), path);
@@ -54,4 +56,14 @@ public abstract class Config {
         File file = new File(pth);
         return file;
     }	
+	
+	public List<String> getInitParameterNames() {
+		List<String> list = new ArrayList<String>();
+		Enumeration en = initParamNames();
+		while(en.hasMoreElements()) {
+			list.add((String)en.nextElement());
+		}
+		return list;
+	}
+	
 }

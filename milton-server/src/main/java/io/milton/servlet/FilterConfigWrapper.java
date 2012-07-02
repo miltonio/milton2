@@ -41,7 +41,7 @@ public class FilterConfigWrapper extends  Config {
 	}
 
 	@Override
-	public Enumeration getInitParameterNames() {
+	protected Enumeration initParamNames() {
 		return config.getInitParameterNames();
 	}
 }

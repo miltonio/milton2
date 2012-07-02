@@ -36,14 +36,6 @@
 			<optional>true</optional>
 			<scope>test</scope>
 		</dependency>
-        <!-- Some for this, it's for the "test" -->
-		<dependency>
-			<groupId>io.milton</groupId>
-			<artifactId>milton-filesystem</artifactId>
-			<version>${project.version}</version>
-			<optional>true</optional>
-			<scope>test</scope>
-		</dependency>
 
 	</dependencies>
 
