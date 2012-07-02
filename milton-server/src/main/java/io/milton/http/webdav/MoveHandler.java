@@ -42,8 +42,8 @@ public class MoveHandler implements ExistingEntityHandler {
 	private Logger log = LoggerFactory.getLogger(MoveHandler.class);
 	private final WebDavResponseHandler responseHandler;
 	private final ResourceHandlerHelper resourceHandlerHelper;
-	private DeleteHelper deleteHelper;
-	private UserAgentHelper userAgentHelper = new DefaultUserAgentHelper();
+	private final UserAgentHelper userAgentHelper;
+	private DeleteHelper deleteHelper;	
 	private boolean deleteExistingBeforeMove = true;
 
 	/**
@@ -56,7 +56,8 @@ public class MoveHandler implements ExistingEntityHandler {
 	 * @param handlerHelper
 	 * @param resourceHandlerHelper
 	 */
-	public MoveHandler(WebDavResponseHandler responseHandler, HandlerHelper handlerHelper, ResourceHandlerHelper resourceHandlerHelper) {
+	public MoveHandler(WebDavResponseHandler responseHandler, HandlerHelper handlerHelper, ResourceHandlerHelper resourceHandlerHelper, UserAgentHelper userAgentHelper) {
+		this.userAgentHelper = userAgentHelper;
 		this.responseHandler = responseHandler;
 		this.resourceHandlerHelper = resourceHandlerHelper;
 		this.deleteHelper = new DeleteHelperImpl(handlerHelper);
@@ -153,9 +154,8 @@ public class MoveHandler implements ExistingEntityHandler {
 		boolean bHasOverwriteHeader = (ow != null && request.getOverwriteHeader().booleanValue());
 		if (bHasOverwriteHeader) {
 			return true;
-		} else {
-			String us = request.getUserAgentHeader();
-			if (userAgentHelper.isMacFinder(us)) {
+		} else {			
+			if (userAgentHelper.isMacFinder(request)) {
 				log.debug("no overwrite header, but user agent is Finder so permit overwrite");
 				return true;
 			} else {
@@ -166,10 +166,6 @@ public class MoveHandler implements ExistingEntityHandler {
 
 	public UserAgentHelper getUserAgentHelper() {
 		return userAgentHelper;
-	}
-
-	public void setUserAgentHelper(UserAgentHelper userAgentHelper) {
-		this.userAgentHelper = userAgentHelper;
 	}
 
 	public DeleteHelper getDeleteHelper() {

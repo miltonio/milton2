@@ -56,12 +56,13 @@ public class DebugFilter implements Filter{
 
 
 
+	@Override
     public void process(FilterChain chain, Request request, Response response) {
+		log.info("process: " + request.getMethod() + " " + request.getAbsolutePath());
         DebugRequest req2 = new DebugRequest(request);
         final DebugResponse resp2 = new DebugResponse(response);
-        chain.process(req2, resp2);
-        record(req2, resp2);
-        response.setEntity(new Response.Entity() {
+		
+        resp2.setEntity(new Response.Entity() {
             @Override
             public void write(Response response, OutputStream outputStream) throws Exception {
                 try {
@@ -71,7 +72,12 @@ public class DebugFilter implements Filter{
                     log.error("", ex);
                 }
             }
-        });
+        });		
+		
+        chain.process(req2, resp2);
+        record(req2, resp2);
+		System.out.println("set response entity on: " + response.getClass());
+
     }
 
     private synchronized void record(DebugRequest req2, DebugResponse resp2) {
@@ -79,6 +85,7 @@ public class DebugFilter implements Filter{
         FileOutputStream fout = null;
         try {
             File f = new File(logDir, counter + "_" + req2.getMethod() + ".req");
+			log.info("Save request to: " + f.getAbsolutePath());
             fout = new FileOutputStream(f);
             req2.record(fout);
         } catch (FileNotFoundException ex) {
@@ -94,6 +101,7 @@ public class DebugFilter implements Filter{
 			} else {
 				f = new File(logDir, counter + "_UNKNOWN" + ".resp");
 			}
+			log.info("Save response to: " + f.getAbsolutePath());
             fout = new FileOutputStream(f);
             resp2.record(fout);
         } catch (FileNotFoundException ex) {
@@ -161,6 +169,7 @@ public class DebugFilter implements Filter{
                 writer.flush();
                 
                 // write to console
+				log.info("request---");
                 log.debug( out.toString());
 
                 fout.write(out.toByteArray());

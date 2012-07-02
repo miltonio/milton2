@@ -15,13 +15,23 @@
 
 package io.milton.http.webdav;
 
+import io.milton.http.Request;
+
 /**
  *
  * @author brad
  */
 public class DefaultUserAgentHelper implements UserAgentHelper {
 
-    public boolean isMacFinder( String userAgent ) {
+	@Override
+    public boolean isMacFinder( Request r ) {
+		String userAgent = r.getUserAgentHeader();
         return userAgent != null && userAgent.contains( "WebDAVFS" ) && userAgent.contains( "Darwin" );
     }
+
+	@Override
+	public boolean isNautilus(Request r) {
+		String userAgent = r.getUserAgentHeader();
+		return userAgent.startsWith("gvfs");
+	}
 }

@@ -48,7 +48,9 @@ public class StandardFilter implements Filter {
                 handler.process( manager, request, response );
                 if (response.getEntity() != null) {
                     manager.sendResponseEntity(response);
-                }
+                } else {
+					log.debug("No response entity to send to client");
+				}
             }
 
         } catch( BadRequestException ex ) {

@@ -15,6 +15,8 @@
 
 package io.milton.http.webdav;
 
+import io.milton.http.Request;
+
 /**
  * This will contain methods to broadly identify user agents.
  *
@@ -23,5 +25,6 @@ package io.milton.http.webdav;
  * @author brad
  */
 public interface UserAgentHelper {
-    boolean isMacFinder(String userAgent);
+    boolean isMacFinder(Request r);
+	boolean isNautilus(Request r);
 }

@@ -22,13 +22,25 @@ import io.milton.http.ResourceFactory;
 import io.milton.http.webdav.WebDavResponseHandler;
 import java.util.*;
 import javax.servlet.ServletException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
+ * The default means of configuring milton's HttpManager.
+ * 
+ * Provide init-params to the filter or servlet to configure it:
+ *	resource.factory.class - the class of your resource factory
+ *	response.handler.class - specify if you want a different response handler
+ *  authenticationHandlers - a list of class names for the authentication handlers
+ *  filter_X - define an ordered list of milton filters, where the name is in the form filter_1, filter_2, etc
+ *				and the value is the name of the filter class
  *
  * @author brad
  */
 public class DefaultMiltonConfigurator implements MiltonConfigurator {
 
+	private static final Logger log = LoggerFactory.getLogger(DefaultMiltonConfigurator.class);
+	
     private HttpManagerBuilder configurer = new HttpManagerBuilder();
 
     private List<Initable> initables;

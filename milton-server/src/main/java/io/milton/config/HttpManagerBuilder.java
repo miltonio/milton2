@@ -26,6 +26,8 @@ import io.milton.http.carddav.AddressBookResourceTypeHelper;
 import io.milton.http.carddav.CardDavProtocol;
 import io.milton.http.entity.DefaultEntityTransport;
 import io.milton.http.entity.EntityTransport;
+import io.milton.http.fs.FileSystemResourceFactory;
+import io.milton.http.fs.SimpleSecurityManager;
 import io.milton.http.http11.*;
 import io.milton.http.http11.DefaultHttp11ResponseHandler.BUFFERING;
 import io.milton.http.http11.auth.*;
@@ -36,7 +38,9 @@ import io.milton.http.webdav.*;
 import io.milton.property.DefaultPropertyAuthoriser;
 import io.milton.property.PropertyAuthoriser;
 import io.milton.property.PropertySource;
+import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -119,6 +123,14 @@ public class HttpManagerBuilder {
 	private boolean enableCookieAuth = true;
 	private String loginPage = "/login.html";
 	private List<String> loginPageExcludePaths;
+	private File rootDir = new File(System.getProperty("user.home"));
+	private io.milton.http.SecurityManager securityManager;
+	private String fsContextPath;
+	private String fsRealm = "milton";
+	private Map<String,String> mapOfNameAndPasswords;
+	private String defaultUser = "user";
+	private String defaultPassword = "password";
+	private UserAgentHelper userAgentHelper;
 
 	/**
 	 * This method creates instances of required objects which have not been set
@@ -135,8 +147,21 @@ public class HttpManagerBuilder {
 	 */
 	public final void init() {
 		if (mainResourceFactory == null) {
-			throw new IllegalStateException("Please provide a resource factory"); // todo: defaul to FS?
+			if( !rootDir.exists() || !rootDir.isDirectory()) {
+				throw new RuntimeException("Root directory is not valie: " + rootDir.getAbsolutePath());
+			}
+			if( securityManager == null ) {
+				if( mapOfNameAndPasswords == null ) {
+					mapOfNameAndPasswords = new HashMap<String, String>();
+					mapOfNameAndPasswords.put(defaultUser, defaultPassword);
+				}
+				securityManager = new SimpleSecurityManager(fsRealm, mapOfNameAndPasswords);
+			}
+			log.info("Using securityManager: " + securityManager.getClass());
+			mainResourceFactory = new FileSystemResourceFactory(rootDir, securityManager, fsContextPath);
+			log.info("Using file system with root directory: " + rootDir.getAbsolutePath());
 		}
+		log.info("Using mainResourceFactory: " + mainResourceFactory.getClass());
 		if (authenticationService == null) {
 			if (authenticationHandlers == null) {
 				authenticationHandlers = new ArrayList<AuthenticationHandler>();
@@ -247,7 +272,7 @@ public class HttpManagerBuilder {
 		}
 		if (protocols == null) {
 			protocols = new ArrayList<HttpExtension>();
-			Http11Protocol http11Protocol = new Http11Protocol(http11ResponseHandler, handlerHelper, resourceHandlerHelper, enableOptionsAuth);
+			Http11Protocol http11Protocol = new Http11Protocol(webdavResponseHandler, handlerHelper, resourceHandlerHelper, enableOptionsAuth);
 			protocols.add(http11Protocol);
 			if (propertySources == null) {
 				propertySources = PropertySourceUtil.createDefaultSources(resourceTypeHelper);
@@ -262,8 +287,11 @@ public class HttpManagerBuilder {
 			if (propPatchSetter == null) {
 				propPatchSetter = new PropertySourcePatchSetter(propertySources);
 			}
+			if( userAgentHelper == null ) {
+				userAgentHelper = new DefaultUserAgentHelper();
+			}
 
-			WebDavProtocol webDavProtocol = new WebDavProtocol(handlerHelper, resourceTypeHelper, webdavResponseHandler, propertySources, quotaDataAccessor, propPatchSetter, propertyAuthoriser, eTagGenerator, urlAdapter, resourceHandlerHelper);
+			WebDavProtocol webDavProtocol = new WebDavProtocol(handlerHelper, resourceTypeHelper, webdavResponseHandler, propertySources, quotaDataAccessor, propPatchSetter, propertyAuthoriser, eTagGenerator, urlAdapter, resourceHandlerHelper, userAgentHelper);
 			protocols.add(webDavProtocol);
 			CalDavProtocol calDavProtocol = new CalDavProtocol(mainResourceFactory, webdavResponseHandler, handlerHelper, webDavProtocol);
 			protocols.add(calDavProtocol);
@@ -727,6 +755,92 @@ public class HttpManagerBuilder {
 	public void setResourceHandlerHelper(ResourceHandlerHelper resourceHandlerHelper) {
 		this.resourceHandlerHelper = resourceHandlerHelper;
 	}
+
+	/**
+	 * used by FileSystemResourceFactory when its created as default resource factory 
+	 * 
+	 * @return 
+	 */
+	public File getRootDir() {
+		return rootDir;
+	}
+
+	public void setRootDir(File rootDir) {
+		this.rootDir = rootDir;
+	}
+
+	/**
+	 * Mainly used when creating filesystem resourcfe factory, but can also be used
+	 * by other resoruce factories that want to delegate security management
+	 * 
+	 * @return 
+	 */
+	public io.milton.http.SecurityManager getSecurityManager() {
+		return securityManager;
+	}
+
+	public void setSecurityManager(io.milton.http.SecurityManager securityManager) {
+		this.securityManager = securityManager;
+	}
+
+	/**
+	 * Passed to FilesystemResourceFactory when its created
+	 * 
+	 * @return 
+	 */
+	public String getFsContextPath() {
+		return fsContextPath;
+	}
+
+	public void setFsContextPath(String fsContextPath) {
+		this.fsContextPath = fsContextPath;
+	}
+
+	public UserAgentHelper getUserAgentHelper() {
+		return userAgentHelper;
+	}
+
+	public void setUserAgentHelper(UserAgentHelper userAgentHelper) {
+		this.userAgentHelper = userAgentHelper;
+	}
+
+	public String getDefaultPassword() {
+		return defaultPassword;
+	}
+
+	public void setDefaultPassword(String defaultPassword) {
+		this.defaultPassword = defaultPassword;
+	}
+
+	public String getDefaultUser() {
+		return defaultUser;
+	}
+
+	public void setDefaultUser(String defaultUser) {
+		this.defaultUser = defaultUser;
+	}
+
+	public String getFsRealm() {
+		return fsRealm;
+	}
+
+	public void setFsRealm(String fsRealm) {
+		this.fsRealm = fsRealm;
+	}
+
+	public Map<String, String> getMapOfNameAndPasswords() {
+		return mapOfNameAndPasswords;
+	}
+
+	public void setMapOfNameAndPasswords(Map<String, String> mapOfNameAndPasswords) {
+		this.mapOfNameAndPasswords = mapOfNameAndPasswords;
+	}
+	
+	
+	
+	
+
+	
 	
 	
 }

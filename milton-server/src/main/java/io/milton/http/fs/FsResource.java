@@ -54,10 +54,12 @@ public abstract class FsResource implements Resource, MoveableResource, Copyable
         return s.hashCode() + "";
     }
 
+	@Override
     public String getName() {
         return file.getName();
     }
 
+	@Override
     public Object authenticate(String user, String password) {
         return factory.getSecurityManager().authenticate(user, password);
     }

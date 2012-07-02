@@ -141,21 +141,21 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 
 	@Override
 	public String getChallenge(Resource resource, Request request) {
-		AuthenticationHandler delegateHandler = (AuthenticationHandler) request.getAttributes().get(HANDLER_ATT_NAME);
-		if (delegateHandler != null) {
-			return delegateHandler.getChallenge(resource, request);
-		}
-		// doesnt do http challenge
+		for( AuthenticationHandler h : handlers) {
+			if( h.isCompatible(resource, request)) {
+				return h.getChallenge(resource, request);				
+			}
+		}		
 		throw new UnsupportedOperationException("Not supported because no delegate handler accepted the request");
 	}
 
 	@Override
 	public boolean isCompatible(Resource resource, Request request) {
-		AuthenticationHandler delegateHandler = (AuthenticationHandler) request.getAttributes().get(HANDLER_ATT_NAME);
-		if (delegateHandler != null) {
-			return delegateHandler.isCompatible(resource, request);
-		}
-		// never issue challenge
+		for( AuthenticationHandler h : handlers) {
+			if( h.isCompatible(resource, request)) {
+				return true;
+			}
+		}		
 		return false;
 	}
 

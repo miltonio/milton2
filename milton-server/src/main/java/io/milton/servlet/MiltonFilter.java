@@ -54,6 +54,7 @@ public class MiltonFilter implements javax.servlet.Filter {
 			} else {
 				configurator = new DefaultMiltonConfigurator();
 			}
+			log.info("Using configurator: " + configurator.getClass());
 
 			String sExcludePaths = config.getInitParameter("milton.exclude.paths");
 			log.info("init: exclude paths: " + sExcludePaths);

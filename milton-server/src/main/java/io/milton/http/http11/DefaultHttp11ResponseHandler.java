@@ -91,7 +91,7 @@ public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Buff
 
 	@Override
 	public void respondWithOptions(Resource resource, Response response, Request request, List<String> methodsAllowed) {
-		response.setStatus(Response.Status.SC_OK);
+		setRespondCommonHeaders(response, resource, Status.SC_OK, request.getAuthorization());
 		response.setAllowHeader(methodsAllowed);
 		response.setContentLengthHeader((long) 0);
 	}
