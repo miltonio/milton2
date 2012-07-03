@@ -27,12 +27,6 @@
 			<version>1.4</version>
 		</dependency>
 		<dependency>
-			<groupId>eu.medsea.mimeutil</groupId>
-			<artifactId>mime-util</artifactId>
-			<version>${mime-util.version}</version>
-		</dependency>
-
-		<dependency>
 			<groupId>org.easymock</groupId>
 			<artifactId>easymock</artifactId>
 			<version>${easy-mock.version}</version>
@@ -50,6 +44,12 @@
 			<artifactId>cglib</artifactId>
 			<version>2.1_3</version>
 		</dependency>
+		<dependency>
+			<scope>test</scope>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.5.8</version>
+		</dependency>                
 	</dependencies>
 </project>
 

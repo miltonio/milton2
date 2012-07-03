@@ -20,6 +20,7 @@ import io.milton.http.Request;
 import io.milton.http.Response;
 import io.milton.mail.MailServer;
 import io.milton.mail.MailServerBuilder;
+import java.io.File;
 import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -75,6 +76,9 @@ public class SpringMiltonFilter implements javax.servlet.Filter {
 	public void init(FilterConfig fc) throws ServletException {
 		StaticApplicationContext parent = new StaticApplicationContext();
 		parent.getBeanFactory().registerSingleton("servletContext", fc.getServletContext());
+		File webRoot = new File(fc.getServletContext().getRealPath("/"));
+		parent.getBeanFactory().registerSingleton("webRoot", webRoot);
+		log.info("Registered root webapp path in: webroot=" + webRoot.getAbsolutePath());
 		parent.refresh();
 		context = new ClassPathXmlApplicationContext(new String[]{"applicationContext.xml"}, parent);
 		Object milton = context.getBean("milton.http.manager");
@@ -86,6 +90,7 @@ public class SpringMiltonFilter implements javax.servlet.Filter {
 		}
 		this.filterConfig = fc;
 		servletContext = fc.getServletContext();
+		System.out.println("servletContext: " + servletContext.getClass());
 		String sExcludePaths = fc.getInitParameter("milton.exclude.paths");
 		log.info("init: exclude paths: " + sExcludePaths);
 		excludeMiltonPaths = sExcludePaths.split(",");

@@ -12,36 +12,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package io.milton.servlet;
+package io.milton.common;
 
-import java.util.Enumeration;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
+import java.util.List;
 
 /**
  *
  * @author brad
  */
-public class FilterConfigWrapper extends Config {
-
-	private final FilterConfig config;
-
-	public FilterConfigWrapper(FilterConfig config) {
-		this.config = config;
-	}
-
-	@Override
-	public ServletContext getServletContext() {
-		return config.getServletContext();
-	}
-
-	@Override
-	public String getInitParameter(String string) {
-		return config.getInitParameter(string);
-	}
-
-	@Override
-	protected Enumeration initParamNames() {
-		return config.getInitParameterNames();
-	}
+public interface ContentTypeService {
+    public List<String> findContentTypes( String name );
+    
+    String getPreferedMimeType(String accept, List<String> canProvide);
+    
+    String getPreferedMimeType(List<String> accept, List<String> canProvide);
+       
 }

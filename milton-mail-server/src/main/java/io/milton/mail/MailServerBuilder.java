@@ -48,6 +48,8 @@ public class MailServerBuilder {
     private boolean enableMsa = true;
     private boolean enablePop = false;
     private List<Filter> filters;
+    private int smtpPort = 25;
+    private boolean enableSmtpTls = false;
 
     public MailServer build() {
         if (mailSender == null) {
@@ -67,7 +69,7 @@ public class MailServerBuilder {
         }
         if (smtpServer == null) {
             if (enableSmtp) {
-                smtpServer = new SubethaSmtpServer(mailResourceFactory, filters);
+                smtpServer = new SubethaSmtpServer(smtpPort, enableSmtpTls, mailResourceFactory, filters);
             }
         }
         if (msaSmtpServer == null) {
@@ -170,4 +172,22 @@ public class MailServerBuilder {
     public void setAspirinConfiguration(Configuration aspirinConfiguration) {
         this.aspirinConfiguration = aspirinConfiguration;
     }
+
+    public int getSmtpPort() {
+        return smtpPort;
+    }
+
+    public void setSmtpPort(int smtpPort) {
+        this.smtpPort = smtpPort;
+    }
+
+    public boolean isEnableSmtpTls() {
+        return enableSmtpTls;
+    }
+
+    public void setEnableSmtpTls(boolean enableSmtpTls) {
+        this.enableSmtpTls = enableSmtpTls;
+    }
+    
+    
 }

@@ -53,6 +53,7 @@ public class ClassPathResourceFactory implements ResourceFactory {
 	private io.milton.http.SecurityManager securityManager;
 	private Date modifiedDate = new Date();
 
+	@Override
 	public Resource getResource(String host, String path) {
 		Path p = Path.path(path);
 		if (basePath != null) {

@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  * and file root.
  *
  * If a URL resolves to a file (not a directory) this ResourceFactory will return
- * a new StaticResource which will server the file content
+ * a new StaticResource which will serve the file content
  *
  * @author brad
  */
@@ -56,9 +56,15 @@ public class StaticResourceFactory implements ResourceFactory, Initable {
     public StaticResourceFactory( String context, File root ) {
         this.root = root;
         this.contextPath = context;
-        log.debug( "root: " + root.getAbsolutePath() + " - context:" + context );
+        log.info( "root: " + root.getAbsolutePath() + " - context:" + context );
     }
 
+    public StaticResourceFactory( File root ) {
+        this.root = root;
+        this.contextPath = "";
+        log.info( "root: " + root.getAbsolutePath() );
+    }
+	
 	@Override
     public void init( Config config, HttpManager manager ) {
         this.config = config;
@@ -68,10 +74,7 @@ public class StaticResourceFactory implements ResourceFactory, Initable {
     public Resource getResource( String host, String url ) {
         File file;
         if( root != null ) {
-            // strip the context
-            log.debug( "url: " + url );
             String s = stripContext( url );
-            log.debug( "url: " + s );
             file = new File( root, s );
         } else {
             if( config == null )
