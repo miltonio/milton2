@@ -44,6 +44,12 @@ public class ContentTypeUtils {
         return contentTypeService.getPreferedMimeType(accepts, toList(canProvide));
     }
 
+    public static String findAcceptableContentTypeForName(String name, String accepts) {
+        String canProvide = findContentTypes(name);
+        return contentTypeService.getPreferedMimeType(accepts, toList(canProvide));
+    }
+    
+    
     private static String buildContentTypeText(List<String> mimeTypes) {
         return Utils.toCsv(mimeTypes);
     }

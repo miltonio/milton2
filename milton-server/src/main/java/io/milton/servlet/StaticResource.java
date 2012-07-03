@@ -15,7 +15,7 @@
 
 package io.milton.servlet;
 
-import eu.medsea.mimeutil.MimeType;
+import io.milton.common.ContentTypeUtils;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,14 +24,12 @@ import java.io.OutputStream;
 import java.util.Date;
 import java.util.Map;
 
-import eu.medsea.mimeutil.MimeUtil;
 import io.milton.http.Auth;
 import io.milton.http.LockToken;
 import io.milton.http.Range;
 import io.milton.http.Request;
 import io.milton.resource.GetableResource;
 import io.milton.resource.Resource;
-import java.util.Collection;
 
 
 /**
@@ -107,21 +105,7 @@ public class StaticResource implements GetableResource {
 
 	@Override
     public String getContentType(String preferredList) {
-        Collection mimeTypes = MimeUtil.getMimeTypes( file );
-        StringBuilder sb = null;
-        for( Object o : mimeTypes ) {
-            MimeType mt = (MimeType) o;
-            if( sb == null) {
-                sb = new StringBuilder();
-            } else {
-                sb.append( ",");
-            }
-            sb.append(mt.toString());
-        }
-        if( sb == null ) return null;
-        String mime = sb.toString();
-        MimeType mt = MimeUtil.getPreferedMimeType(preferredList, mime);
-        return mt.toString();
+		return ContentTypeUtils.findAcceptableContentTypeForName(getName(), contentType);
     }
 
     @Override
