@@ -27,9 +27,7 @@ import io.milton.http.webdav.PropFindResponse;
 import io.milton.http.webdav.PropFindResponse.NameAndError;
 import io.milton.http.webdav.PropPatchRequestParser.ParseResult;
 import io.milton.http.webdav.PropPatchSetter;
-import io.milton.http.webdav.PropertySourcePatchSetter;
 import io.milton.http.webdav.WebDavProtocol;
-import io.milton.property.DefaultPropertyAuthoriser;
 import io.milton.property.PropertyAuthoriser;
 import io.milton.property.PropertyAuthoriser.CheckResult;
 import io.milton.resource.Resource;
@@ -56,15 +54,6 @@ public class JsonPropPatchHandler {
         this.patchSetter = patchSetter;
         this.permissionService = permissionService;
         this.eventManager = eventManager;
-    }
-
-    /**
-     * Uses a PropPatchableSetter
-     */
-    public JsonPropPatchHandler(PropPatchSetter patchSetter) {
-        this.patchSetter = patchSetter;
-        this.permissionService = new DefaultPropertyAuthoriser();
-        this.eventManager = null;
     }
 
     public PropFindResponse process(Resource wrappedResource, String encodedUrl, Map<String, String> params) throws NotAuthorizedException, ConflictException, BadRequestException {
@@ -94,7 +83,7 @@ public class JsonPropPatchHandler {
         }
         Set<PropertyAuthoriser.CheckResult> errorFields = permissionService.checkPermissions(HttpManager.request(), Method.PROPPATCH, PropertyAuthoriser.PropertyPermission.WRITE, fields.keySet(), wrappedResource);
         if (errorFields != null && errorFields.size() > 0) {
-            log.info("authorisation errors: " + errorFields.size());
+            log.info("authorisation errors: " + errorFields.size() + " from permissionService: " + permissionService.getClass());
             if (log.isTraceEnabled()) {
                 for (CheckResult e : errorFields) {
                     LogUtils.trace(log, " - field error: ", e.getField(), e.getStatus(), e.getDescription());

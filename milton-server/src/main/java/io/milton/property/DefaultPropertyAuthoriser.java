@@ -36,6 +36,10 @@ import org.slf4j.LoggerFactory;
 public class DefaultPropertyAuthoriser implements PropertyAuthoriser {
 
 	private static final Logger log = LoggerFactory.getLogger(DefaultPropertyAuthoriser.class);
+
+	public DefaultPropertyAuthoriser() {
+	}
+		
 	
 	@Override
     public Set<CheckResult> checkPermissions( Request request, Method method, PropertyPermission perm, Set<QName> fields, Resource resource ) {
