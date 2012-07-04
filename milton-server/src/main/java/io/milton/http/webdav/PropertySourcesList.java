@@ -38,16 +38,6 @@ public class PropertySourcesList extends ArrayList<PropertySource> {
 		log.info("Created PropertySourcesList");
     }
 
-    /**
-     * Adds all default property sources
-     * 
-     * @param resourceTypeHelper
-     */
-    public PropertySourcesList( ResourceTypeHelper resourceTypeHelper ) {
-        this.addAll( PropertySourceUtil.createDefaultSources( resourceTypeHelper ) );
-		log.info("Created propertysourceslist, hashcode: " + hashCode() + " size: " + size());		
-    }
-
 	@Override
 	public boolean add(PropertySource e) {
 		log.info("adding property source: " + e.getClass() + " to PropertySourcesList: " + hashCode());

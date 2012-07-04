@@ -17,17 +17,13 @@ package io.milton.property;
 import io.milton.resource.Resource;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.common.LogUtils;
-import io.milton.http.Request;
-import io.milton.http.Response.Status;
+import io.milton.property.PropertyAuthoriser.PropertyPermission;
 import io.milton.resource.AccessControlledResource;
 import io.milton.resource.AccessControlledResource.Priviledge;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import javax.management.relation.Role;
 import javax.xml.namespace.QName;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.slf4j.Logger;
@@ -42,11 +38,18 @@ import org.slf4j.LoggerFactory;
  *
  * @author brad
  */
-public class BeanPropertySource implements PropertySource, PropertyAuthoriser {
+public class BeanPropertySource implements PropertySource {
 
 	private static final Logger log = LoggerFactory.getLogger(BeanPropertySource.class);
 	private static final Object[] NOARGS = new Object[0];
 
+	
+	
+	public BeanPropertySource() {
+	}
+
+	
+	
 	@Override
 	public Object getProperty(QName name, Resource r) throws NotAuthorizedException {
 		PropertyDescriptor pd = getPropertyDescriptor(r, name.getLocalPart());
@@ -158,95 +161,13 @@ public class BeanPropertySource implements PropertySource, PropertyAuthoriser {
 		return list;
 	}
 
-	@Override
-	public Set<CheckResult> checkPermissions(Request request, Request.Method method, PropertyPermission perm, Set<QName> fields, Resource resource) {
-		log.trace("checkPermissions");
-		Set<CheckResult> results = null;
-		BeanPropertyResource anno = getAnnotation(resource);
-		if (anno == null) {
-			return results;
-		}
-		if( !(resource instanceof AccessControlledResource)) {
-			return results;
-		}
-		AccessControlledResource acr = (AccessControlledResource) resource;
-		List<Priviledge> actualPrivs = acr.getPriviledges(request.getAuthorization());
-		if( actualPrivs == null ) {
-			return results;
-		}
-		for (QName name : fields) {
-			if (!name.getNamespaceURI().equals(anno.value())) {
-				log.debug("different namespace", anno.value(), name.getNamespaceURI());
-			} else {
-				PropertyDescriptor pd = getPropertyDescriptor(resource, name.getLocalPart());
-				if (pd != null) {					
-					Priviledge role = getRequiredRole(name, resource, perm);
-					if (role != null) {						
-						if (log.isTraceEnabled()) {
-							log.trace("requires Priviledge: " + role + "  for field: " + name);
-						}
-						// Now check if user has that priviledge on the resource						
-						if (!actualPrivs.contains(role)) {
-							log.debug("not authorised to access field: " + name);
-							if (results == null) {
-								results = new HashSet<CheckResult>();
-							}
-							results.add(new CheckResult(name, Status.SC_UNAUTHORIZED, "Not authorised to edit field: " + name.getLocalPart(), resource));
-						}
-					}
-				}
-			}
-		}
-		if (log.isTraceEnabled()) {
-			if (results == null) {
-				log.trace("no field errors");
-			} else {
-				log.trace("field errors: " + results.size());
-			}
-		}
-		return results;
-	}
 	
 
-    private Priviledge getRequiredRole(QName name, Resource resource, PropertyPermission propertyPermission) {
-        if (log.isTraceEnabled()) {
-            log.trace("getRequiredRole: " + name);
-        }
-
-        PropertyDescriptor pd = getPropertyDescriptor(resource, name.getLocalPart());
-        if (pd == null || pd.getReadMethod() == null) {
-            log.trace("property not found, so use default role");
-            return defaultRequiredRole(resource, propertyPermission);
-        } else {
-            BeanProperty anno = pd.getReadMethod().getAnnotation(BeanProperty.class);
-            if (anno == null) {
-                log.trace("no annotation");
-                return defaultRequiredRole(resource, propertyPermission);
-            }
-            log.trace("got annotation");
-
-            if (propertyPermission == PropertyPermission.READ) {
-                return anno.readRole();
-            } else {
-                return anno.writeRole();
-            }
-        }
-    }	
-	
-    private AccessControlledResource.Priviledge defaultRequiredRole(Resource resource, PropertyPermission propertyPermission) {
-        if (propertyPermission == PropertyPermission.READ) {
-            return AccessControlledResource.Priviledge.READ;
-        } else {
-			return AccessControlledResource.Priviledge.WRITE;
-        }
-
-    }		
-
-	private BeanPropertyResource getAnnotation(Resource r) {
+	public BeanPropertyResource getAnnotation(Resource r) {
 		return r.getClass().getAnnotation(BeanPropertyResource.class);
 	}
 
-	private PropertyDescriptor getPropertyDescriptor(Resource r, String name) {
+	public PropertyDescriptor getPropertyDescriptor(Resource r, String name) {
 		try {
 			PropertyDescriptor pd = PropertyUtils.getPropertyDescriptor(r, name);
 			return pd;

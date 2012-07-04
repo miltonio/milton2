@@ -35,9 +35,7 @@ import io.milton.http.json.JsonResourceFactory;
 import io.milton.http.quota.QuotaDataAccessor;
 import io.milton.http.values.ValueWriters;
 import io.milton.http.webdav.*;
-import io.milton.property.DefaultPropertyAuthoriser;
-import io.milton.property.PropertyAuthoriser;
-import io.milton.property.PropertySource;
+import io.milton.property.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -99,7 +97,7 @@ public class HttpManagerBuilder {
 	private EntityTransport entityTransport = new DefaultEntityTransport();
 	private List<WellKnownResourceFactory.WellKnownHandler> wellKnownHandlers;
 	private EventManager eventManager = new EventManagerImpl();
-	private PropertyAuthoriser propertyAuthoriser = new DefaultPropertyAuthoriser();
+	private PropertyAuthoriser propertyAuthoriser;
 	private List<PropertySource> propertySources;
 	private List<PropertySource> extraPropertySources;
 	private ETagGenerator eTagGenerator = new DefaultETagGenerator();
@@ -127,10 +125,12 @@ public class HttpManagerBuilder {
 	private io.milton.http.SecurityManager securityManager;
 	private String fsContextPath;
 	private String fsRealm = "milton";
-	private Map<String,String> mapOfNameAndPasswords;
+	private Map<String, String> mapOfNameAndPasswords;
 	private String defaultUser = "user";
 	private String defaultPassword = "password";
 	private UserAgentHelper userAgentHelper;
+	private MultiNamespaceCustomPropertySource multiNamespaceCustomPropertySource;
+	private BeanPropertySource beanPropertySource;
 
 	/**
 	 * This method creates instances of required objects which have not been set
@@ -147,11 +147,11 @@ public class HttpManagerBuilder {
 	 */
 	public final void init() {
 		if (mainResourceFactory == null) {
-			if( !rootDir.exists() || !rootDir.isDirectory()) {
+			if (!rootDir.exists() || !rootDir.isDirectory()) {
 				throw new RuntimeException("Root directory is not valie: " + rootDir.getAbsolutePath());
 			}
-			if( securityManager == null ) {
-				if( mapOfNameAndPasswords == null ) {
+			if (securityManager == null) {
+				if (mapOfNameAndPasswords == null) {
 					mapOfNameAndPasswords = new HashMap<String, String>();
 					mapOfNameAndPasswords.put(defaultUser, defaultPassword);
 				}
@@ -270,12 +270,13 @@ public class HttpManagerBuilder {
 			resourceHandlerHelper = new ResourceHandlerHelper(handlerHelper, urlAdapter, webdavResponseHandler);
 			showLog("resourceHandlerHelper", resourceHandlerHelper);
 		}
+
 		if (protocols == null) {
 			protocols = new ArrayList<HttpExtension>();
 			Http11Protocol http11Protocol = new Http11Protocol(webdavResponseHandler, handlerHelper, resourceHandlerHelper, enableOptionsAuth);
 			protocols.add(http11Protocol);
 			if (propertySources == null) {
-				propertySources = PropertySourceUtil.createDefaultSources(resourceTypeHelper);
+				propertySources = initDefaultPropertySources(resourceTypeHelper);
 				showLog("propertySources", propertySources);
 			}
 			if (extraPropertySources != null) {
@@ -287,11 +288,11 @@ public class HttpManagerBuilder {
 			if (propPatchSetter == null) {
 				propPatchSetter = new PropertySourcePatchSetter(propertySources);
 			}
-			if( userAgentHelper == null ) {
+			if (userAgentHelper == null) {
 				userAgentHelper = new DefaultUserAgentHelper();
 			}
 
-			WebDavProtocol webDavProtocol = new WebDavProtocol(handlerHelper, resourceTypeHelper, webdavResponseHandler, propertySources, quotaDataAccessor, propPatchSetter, propertyAuthoriser, eTagGenerator, urlAdapter, resourceHandlerHelper, userAgentHelper);
+			WebDavProtocol webDavProtocol = new WebDavProtocol(handlerHelper, resourceTypeHelper, webdavResponseHandler, propertySources, quotaDataAccessor, propPatchSetter, initPropertyAuthoriser(), eTagGenerator, urlAdapter, resourceHandlerHelper, userAgentHelper);
 			protocols.add(webDavProtocol);
 			CalDavProtocol calDavProtocol = new CalDavProtocol(mainResourceFactory, webdavResponseHandler, handlerHelper, webDavProtocol);
 			protocols.add(calDavProtocol);
@@ -319,7 +320,7 @@ public class HttpManagerBuilder {
 		if (outerResourceFactory == null) {
 			outerResourceFactory = mainResourceFactory; // in case nothing else enabled
 			if (enabledJson) {
-				outerResourceFactory = new JsonResourceFactory(outerResourceFactory, eventManager, propertySources, propPatchSetter, propertyAuthoriser);
+				outerResourceFactory = new JsonResourceFactory(outerResourceFactory, eventManager, propertySources, propPatchSetter, initPropertyAuthoriser());
 			}
 			if (enableWellKnown) {
 				outerResourceFactory = new WellKnownResourceFactory(outerResourceFactory, wellKnownHandlers);
@@ -338,6 +339,35 @@ public class HttpManagerBuilder {
 			init();
 		}
 		return new HttpManager(outerResourceFactory, webdavResponseHandler, protocolHandlers, entityTransport, filters, eventManager, shutdownHandlers);
+	}
+
+	private PropertyAuthoriser initPropertyAuthoriser() {
+		if (propertyAuthoriser == null) {
+			propertyAuthoriser = new DefaultPropertyAuthoriser();
+			if (beanPropertySource != null) {
+				propertyAuthoriser = new BeanPropertyAuthoriser(beanPropertySource, propertyAuthoriser);
+			}
+		}
+		return propertyAuthoriser;
+	}
+
+	private List<PropertySource> initDefaultPropertySources(ResourceTypeHelper resourceTypeHelper) {
+		List<PropertySource> list = new ArrayList<PropertySource>();
+		if (multiNamespaceCustomPropertySource == null) {
+			multiNamespaceCustomPropertySource = new MultiNamespaceCustomPropertySource();
+		}
+		list.add(multiNamespaceCustomPropertySource);
+		if (initBeanPropertySource() != null) {
+			list.add(beanPropertySource);
+		}
+		return list;
+	}
+
+	private BeanPropertySource initBeanPropertySource() {
+		if (beanPropertySource == null) {
+			beanPropertySource = new BeanPropertySource();
+		}
+		return beanPropertySource;
 	}
 
 	public BUFFERING getBuffering() {
@@ -757,9 +787,10 @@ public class HttpManagerBuilder {
 	}
 
 	/**
-	 * used by FileSystemResourceFactory when its created as default resource factory 
-	 * 
-	 * @return 
+	 * used by FileSystemResourceFactory when its created as default resource
+	 * factory
+	 *
+	 * @return
 	 */
 	public File getRootDir() {
 		return rootDir;
@@ -770,10 +801,11 @@ public class HttpManagerBuilder {
 	}
 
 	/**
-	 * Mainly used when creating filesystem resourcfe factory, but can also be used
-	 * by other resoruce factories that want to delegate security management
-	 * 
-	 * @return 
+	 * Mainly used when creating filesystem resourcfe factory, but can also be
+	 * used by other resoruce factories that want to delegate security
+	 * management
+	 *
+	 * @return
 	 */
 	public io.milton.http.SecurityManager getSecurityManager() {
 		return securityManager;
@@ -785,8 +817,8 @@ public class HttpManagerBuilder {
 
 	/**
 	 * Passed to FilesystemResourceFactory when its created
-	 * 
-	 * @return 
+	 *
+	 * @return
 	 */
 	public String getFsContextPath() {
 		return fsContextPath;
@@ -835,12 +867,20 @@ public class HttpManagerBuilder {
 	public void setMapOfNameAndPasswords(Map<String, String> mapOfNameAndPasswords) {
 		this.mapOfNameAndPasswords = mapOfNameAndPasswords;
 	}
-	
-	
-	
-	
 
-	
-	
-	
+	public MultiNamespaceCustomPropertySource getMultiNamespaceCustomPropertySource() {
+		return multiNamespaceCustomPropertySource;
+	}
+
+	public void setMultiNamespaceCustomPropertySource(MultiNamespaceCustomPropertySource multiNamespaceCustomPropertySource) {
+		this.multiNamespaceCustomPropertySource = multiNamespaceCustomPropertySource;
+	}
+
+	public BeanPropertySource getBeanPropertySource() {
+		return beanPropertySource;
+	}
+
+	public void setBeanPropertySource(BeanPropertySource beanPropertySource) {
+		this.beanPropertySource = beanPropertySource;
+	}
 }
