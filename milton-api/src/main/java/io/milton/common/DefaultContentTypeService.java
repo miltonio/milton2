@@ -20,6 +20,19 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * This implementation of ContentTypeService just uses a map of file extension
+ * to mime types. It supports multiple mimetypes per extension, but does not support
+ * qos.
+ * 
+ * The default constructor reads a properties file /mime-types.properties, which 
+ * should be a series of lines in the form:
+ * 
+ * ext=contentType1,contentType2
+ * 
+ * Eg:
+ * arj=application/arj,application/octet-stream
+ * 
+ * 
  *
  * @author brad
  */

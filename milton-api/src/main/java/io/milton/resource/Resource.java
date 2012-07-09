@@ -35,7 +35,9 @@ public interface Resource {
      * Returning a null value is allowed, and disables the ETag field.
      * <P/>
      * If a unique id is returned it will be combined with the modified date (if available)
-     * to produce an ETag which identifies this version of this resource.
+     * to produce an ETag which identifies this version of this resource. Note that this
+     * behaviour can be changed by injecting an alternative EtagGenerator instance into
+     * the HttpManagerBuilder
      * 
      * @return - a string which uniquely identifies this resource. This will be
      * used in the ETag header field, and affects caching of resources. 

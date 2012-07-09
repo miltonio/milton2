@@ -40,6 +40,17 @@ public class ContentTypeUtilsTest extends TestCase {
         assertEquals( "text/plain", ContentTypeUtils.findContentTypes( "abc.txt"));
     }
 
+    public void testfindAcceptableContentTypeForName() {
+        String s = ContentTypeUtils.findAcceptableContentTypeForName("x.mpg", "video");
+        assertNotNull(s);
+        assertTrue(s.contains("video"));
+        
+        s = ContentTypeUtils.findAcceptableContentTypeForName("x.flv", "video");
+        assertNotNull(s);
+        assertTrue(s.contains("video"));
+        
+        assertNull(ContentTypeUtils.findAcceptableContentTypeForName("x.mpg", "text"));
+    }
 
     public void testFindContentTypes_File() {
     }

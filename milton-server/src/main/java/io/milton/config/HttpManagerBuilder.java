@@ -26,6 +26,7 @@ import io.milton.http.carddav.AddressBookResourceTypeHelper;
 import io.milton.http.carddav.CardDavProtocol;
 import io.milton.http.entity.DefaultEntityTransport;
 import io.milton.http.entity.EntityTransport;
+import io.milton.http.fck.FckResourceFactory;
 import io.milton.http.fs.FileSystemResourceFactory;
 import io.milton.http.fs.SimpleSecurityManager;
 import io.milton.http.http11.*;
@@ -119,6 +120,7 @@ public class HttpManagerBuilder {
 	private boolean enableDigestAuth = true;
 	private boolean enableFormAuth = true;
 	private boolean enableCookieAuth = true;
+	private boolean enabledCkBrowser = false;
 	private String loginPage = "/login.html";
 	private List<String> loginPageExcludePaths;
 	private File rootDir = new File(System.getProperty("user.home"));
@@ -321,9 +323,15 @@ public class HttpManagerBuilder {
 			outerResourceFactory = mainResourceFactory; // in case nothing else enabled
 			if (enabledJson) {
 				outerResourceFactory = new JsonResourceFactory(outerResourceFactory, eventManager, propertySources, propPatchSetter, initPropertyAuthoriser());
+				log.info("Enabled json/ajax gatewayw with: " + outerResourceFactory.getClass());
 			}
-			if (enableWellKnown) {
+			if (enableWellKnown) {				
 				outerResourceFactory = new WellKnownResourceFactory(outerResourceFactory, wellKnownHandlers);
+				log.info("Enabled well-known protocol support with: " + outerResourceFactory.getClass());
+			}
+			if( enabledCkBrowser ) {				
+				outerResourceFactory = new FckResourceFactory(outerResourceFactory);
+				log.info("Enabled CK Editor support with: " + outerResourceFactory.getClass());
 			}
 		}
 		if (filters != null) {
@@ -883,4 +891,23 @@ public class HttpManagerBuilder {
 	public void setBeanPropertySource(BeanPropertySource beanPropertySource) {
 		this.beanPropertySource = beanPropertySource;
 	}
+
+	/**
+	 * Whether to enable support for CK Editor server browser support. If enabled
+	 * this will inject the FckResourceFactory into your ResourceFactory stack.
+	 * 
+	 * Note this will have no effect if outerResourceFactory is already set, as
+	 * that is the top of the stack.
+	 * 
+	 * @return 
+	 */
+	public boolean isEnabledCkBrowser() {
+		return enabledCkBrowser;
+	}
+
+	public void setEnabledCkBrowser(boolean enabledCkBrowser) {
+		this.enabledCkBrowser = enabledCkBrowser;
+	}
+	
+	
 }
