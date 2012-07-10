@@ -26,12 +26,10 @@
         </init-param>        
         -->
         <!-- By default the DefaultMiltonConfigurator will be used to configure milton, but you provide your own configurator here -->
-        <!--
         <init-param>
             <param-name>milton.configurator</param-name>
-            <param-value>com.mycompany.MyConfigurator</param-value>
+            <param-value>com.mycompany.MyMiltonConfigurator</param-value>
         </init-param>
-        -->
     </filter>
 
     <filter-mapping>
