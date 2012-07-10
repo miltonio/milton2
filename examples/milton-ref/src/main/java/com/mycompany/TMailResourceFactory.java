@@ -19,32 +19,32 @@
 
 package com.mycompany;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Map;
+import io.milton.mail.MailResourceFactory;
+import io.milton.mail.Mailbox;
+import io.milton.mail.MailboxAddress;
 
-import io.milton.http.Range;
 
 /**
+ * This adds email support to the CalDAV demo application
  *
+ * NOTE THAT MILTON CALDAV DOES NOT DEPEND ON THE GEROA PROJECT!
+ *
+ * This is just here because it can be convenient to test some caldav clients
+ * with an integrated email and caldav server
+ *
+ *
+ * @author brad
  */
-public class TTempResource extends TResource{
+public class TMailResourceFactory implements MailResourceFactory{
 
-    public TTempResource(TFolderResource parent, String name) {
-        super(parent, name);
+    private final TResourceFactory resourceFactory;
+
+    public TMailResourceFactory(TResourceFactory resourceFactory) {
+        this.resourceFactory = resourceFactory;
     }
 
-    @Override
-    protected Object clone(TFolderResource newParent) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void sendContent(OutputStream out, Range range, Map<String, String> params, String contentType) throws IOException {
-        // none
-    }
-
-    public String getContentType(String accepts) {
-        return "";
+    public Mailbox getMailbox(MailboxAddress add) {
+        return resourceFactory.findUser(add.user);
     }
 
 }

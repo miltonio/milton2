@@ -1,108 +1,235 @@
 /*
-* Licensed to the Apache Software Foundation (ASF) under one
-* or more contributor license agreements.  See the NOTICE file
-* distributed with this work for additional information
-* regarding copyright ownership.  The ASF licenses this file
-* to you under the Apache License, Version 2.0 (the
-* "License"); you may not use this file except in compliance
-* with the License.  You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing,
-* software distributed under the License is distributed on an
-* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-* KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations
-* under the License.
-*/
-
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package com.mycompany;
 
 import io.milton.common.Path;
 import io.milton.http.ResourceFactory;
+import io.milton.http.values.HrefList;
 import io.milton.resource.Resource;
+import java.util.Calendar;
+import java.util.List;
 
-
+/**
+ * For iCal, start off by opening a calendar at
+ *
+ * http://localhost:8080/users/userA/ - iCal will discover the calendar inside
+ * that user.
+ *
+ * For Mozilla clients (eg thunderbird) connect directory to the calendar url,
+ * eg
+ *
+ * http://localhost:8080/users/userA/calendars/cal1/
+ *
+ * @author brad
+ */
 public class TResourceFactory implements ResourceFactory {
 
     private static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(TResourceFactory.class);
-    
-    public static final TFolderResource ROOT = new TFolderResource((TFolderResource)null,"");
-    
-    static {        
-        String user = "Mufasa";
-        //String password = "Circle Of Life";
-        String password = "pwd";
+    public static final TFolderResource ROOT = new TFolderResource((TFolderResource) null, "http://localhost:8080");
+    static TFolderResource users;
+    static TFolderResource principals;
 
-//        ROOT.setSecure(user,password);
-
-        TFolderResource folder;
-        TResource file;
-        file = new TTextResource(ROOT,"index.html","Hi there");
-        folder = new TFolderResource(ROOT,"folder1");
-        file = new TTextResource(folder,"index.html","i am a web page in folder1");
-        folder = new TFolderResource(ROOT,"folder2");
-        new TFolderResource(folder,"folder2a");
-        folder = new TFolderResource(ROOT,"folder3");
-        TFolderResource fSpecial = new TFolderResource(ROOT,"special chars");
-        TFolderResource fSpecialSub = new TFolderResource(ROOT,"folder with ampersand &");
-        new TFolderResource(fSpecial,"folder with percentage %");
-        new TFolderResource(fSpecial,"folder with speci�l chars"); // contains ae character
-        file = new TTextResource(folder,"index.html","i am a web page");
-        file = new TTextResource(folder,"stuff.html","");
-        folder = new TFolderResource(folder,"subfolder1");
-        file = new TTextResource(folder,"index.html","");
-        folder = new TFolderResource(ROOT,"secure");
-
-        folder.setSecure(user,password);
-        file = new TTextResource(folder,"index.html","");
-    }
-    
-    
-	@Override
-    public Resource getResource(String host, String url) {
-        log.debug("getResource: url: " + url );
-        Path path = Path.path(url);
-        Resource r = find(path);
-		if( r == null ) {
-			log.warn("getResource: not found: " + url);
-		} else {
-			log.debug("getResource: found: " + r.getName() + " for url: " + url);
-		}
-        return r;
+    static {
+        principals = new TFolderResource(ROOT, "p");
+        users = principals; // same as sabresav demo
+        //users = new TFolderResource( principals, "users" );        
+        addUser(users, "userA", "password", "userA@somewhere.com", "ACME", "555 1111");
+        addUser(users, "userB", "password", "userB@somewhere.com", "ACME", "555 1121");
+        addUser(users, "userC", "password", "userC@somewhere.com", "ACME", "555 1131");
     }
 
-    private TResource find(Path path) {
-		System.out.println("find: " + path);
-        if( isRoot(path) ) {
-			System.out.println("found root at: " + path);
-			return ROOT;
-		}
-        TResource parent = find(path.getParent());
-        if( parent == null ) {
-			System.out.println("found null at");
-			return null;
-		}
-        if( parent instanceof TFolderResource ) {
-            TFolderResource folder = (TFolderResource)parent;
-			TResource child = (TResource)folder.child(path.getName());
-			if( child != null ) {
-				System.out.println("found res: " + child.getName());
-				return child;
-			}
+    private static void addUser(TFolderResource users, String name, String password, String email, String org, String phone) {
+        TCalDavPrincipal user = new TCalDavPrincipal(users, name, password, null, null, null, null, null);
+        user.setGivenName("joe");
+        user.setSurName("blogs" + users.children.size());
+        user.setMail(email);
+        user.setOrganizationName(org);
+        user.setTelephonenumber(phone);
+
+        TFolderResource calendars = new TFolderResource(user, "calendars");
+        TCalendarResource cal1 = new TCalendarResource(calendars, "cal1");
+        TEvent e = new TEvent(cal1, "event1.ics");
+        e.setiCalData(createICalData());
+
+        TFolderResource addressBooks = new TFolderResource(user, "abs");
+        user.setAddressBookHome(addressBooks);
+        TAddressBookResource addressBook1 = new TAddressBookResource(addressBooks, "addressbook");
+        System.out.println("created address book: " + addressBook1.getHref());
+        addContact(addressBook1, "ed@blah.com", "ed", "ward", "111 222 333", "contact1.vcf");
+        addContact(addressBook1, "sam@blah.com", "sam", "smith", "111 222 444", "contact2.vcf");
+        addContact(addressBook1, "john@blah.com", "john", "long", "111 222 555", "contact3.vcf");
+
+
+        TScheduleInboxResource scheduleInbox = new TScheduleInboxResource(calendars, "inbox");
+        TScheduleOutboxResource scheduleOutbox = new TScheduleOutboxResource(calendars, "outbox");
+        user.setCalendarHome(calendars);
+        user.setScheduleInboxResource(scheduleInbox);
+        user.setScheduleOutboxResource(scheduleOutbox);
+    }
+
+    private static void addContact(TAddressBookResource ab, String email, String givenName, String surName, String phone, String filename) {
+        TContact c1 = new TContact(ab, filename);
+        c1.setData(getCardDavData(givenName, surName, phone, email));
+    }
+
+    public static TCalDavPrincipal findUser(String name) {
+        if (name.contains("@")) {
+            name = name.substring(0, name.indexOf("@"));
         }
-        log.debug("not found: " + path);
+        System.out.println("find user:" + name);
+        for (Resource r : users.children) {
+            if (r.getName().equals(name)) {
+                return (TCalDavPrincipal) r;
+            }
+        }
         return null;
     }
 
-    public String getSupportedLevels() {
-        //return "1,2";
-				return "1";
+    static HrefList getPrincipalCollectionHrefs() {
+        HrefList list = new HrefList();
+        list.add("/users/");
+        return list;
     }
 
-    private boolean isRoot( Path path ) {
-        return ( path == null || path.isRoot() );
+    @Override
+    public Resource getResource(String host, String url) {
+        log.debug("getResource: url: " + url);
+        Path path = Path.path(url);
+        Resource r = find(path);
+        log.debug("_found: " + r + " for url: " + url + " and path: " + path);
+        return r;
     }
 
+    public List<Resource> getUsers() {
+        return users.children;
+    }
+
+    private Resource find(Path path) {
+        if (path.isRoot()) {
+            return ROOT;
+        }
+        Resource rParent = find(path.getParent());
+        if (rParent == null) {
+            return null;
+        }
+        if (rParent instanceof TFolderResource) {
+            TFolderResource folder = (TFolderResource) rParent;
+            for (Resource rChild : folder.getChildren()) {
+                if (rChild.getName().equals(path.getName())) {
+                    return rChild;
+                }
+            }
+            log.warn("Resource: " + path.getName() + " not found in collection: " + path.getParent() + " of type: " + rParent.getClass());
+        } else {
+            if (rParent != null) {
+                log.warn("parent is not a folder: " + path.getParent() + " is a: " + rParent.getClass());
+            } else {
+                log.warn("parent not found: " + path.getParent());
+            }
+        }
+        return null;
+    }
+
+    public static String createICalData() {
+        Calendar cal = Calendar.getInstance();
+
+        String start = format(cal);
+        cal.add(Calendar.HOUR, 2);
+        String finish = format(cal);
+
+        String s = "";
+        s += "BEGIN:VCALENDAR\n";
+        s += "PRODID:-//MailEnable.com MailEnable Calendar V1.1//EN\n";
+        s += "VERSION:2.0\n";
+        s += "METHOD:PUBLISH\n";
+        s += "BEGIN:VTIMEZONE\n";
+        s += "TZID:America/New_York\n";
+        s += "X-LIC-LOCATION:America/New_York\n";
+        s += "BEGIN:DAYLIGHT\n";
+        s += "TZOFFSETFROM:-0500\n";
+        s += "TZOFFSETTO:-0400\n";
+        s += "TZNAME:EDT\n";
+        s += "DTSTART:19700308T020000\n";
+        s += "RRULE:FREQ=YEARLY;BYDAY=2SU;BYMONTH=3\n";
+        s += "END:DAYLIGHT\n";
+        s += "BEGIN:STANDARD\n";
+        s += "TZOFFSETFROM:-0400\n";
+        s += "TZOFFSETTO:-0500\n";
+        s += "TZNAME:EST\n";
+        s += "DTSTART:19701101T020000\n";
+        s += "RRULE:FREQ=YEARLY;BYDAY=1SU;BYMONTH=11\n";
+        s += "END:STANDARD\n";
+        s += "END:VTIMEZONE\n";
+        s += "BEGIN:VEVENT\n";
+        s += "CREATED:20091113T212858Z\n";
+        s += "LAST-MODIFIED:20090814T231840Z\n";
+        s += "DTSTAMP:20090814T231840Z\n";
+        s += "UID:0C4DBFA762A44E359A373562C9DE463A.CAL\n";
+        s += "SUMMARY:consona\n";
+        s += "PRIORITY:5\n";
+        s += "ORGANIZER:mailto:vvvvv@zzzz.com\n";
+        s += "DTSTART:" + start + "\n";
+        s += "DTEND:" + finish + "\n";
+        s += "CLASS:PUBLIC\n";
+        s += "TRANSP:OPAQUE\n";
+        s += "SEQUENCE:0\n";
+        s += "X-MICROSOFT-CDO-ALLDAYEVENT:FALSE\n";
+        s += "X-MICROSOFT-CDO-IMPORTANCE:0\n";
+        s += "X-MICROSOFT-CDO-BUSYSTATUS:1\n";
+        s += "END:VEVENT\n";
+        s += "END:VCALENDAR\n";
+        return s;
+    }
+
+    private static String getCardDavData(String givenName, String surName, String phone, String email) {
+        String s = "";
+        s += "BEGIN:VCARD\n";
+        s += "VERSION:3.0\n";
+        s += "N:" + givenName + ";" + surName + ";;;\n";
+        s += "FN:" + givenName + " " + surName + "\n";
+        s += "TEL;type=WORK;type=pref:" + phone + "\n";
+        s += "ADR;type=WORK;type=pref;LABEL=\"42 Plantation St.\nBaytown, LA 30314\nUnited States of America\"\n";
+        s += "EMAIL:" + email + "\n";
+        s += "UID:95490BEA-5793-4E3B-8788-054C8B394F68-ABSPlugin\n";
+        s += "REV:2011-12-15T01:04:25Z\n";
+        s += "END:VCARD\n";
+        return s;
+    }
+
+    private static String format(Calendar cal) {
+        // "20090820T180000Z";
+        String s = "" + cal.get(Calendar.YEAR);
+        s += pad2(cal.get(Calendar.MONTH) + 1);
+        s += pad2(cal.get(Calendar.DATE));
+        s += "T";
+        s += pad2(cal.get(Calendar.HOUR_OF_DAY));
+        s += pad2(cal.get(Calendar.MINUTE));
+        s += pad2(cal.get(Calendar.SECOND));
+        s += "Z";
+        return s;
+    }
+
+    private static String pad2(int i) {
+        if (i < 10) {
+            return "0" + i;
+        } else {
+            return i + "";
+        }
+    }
 }

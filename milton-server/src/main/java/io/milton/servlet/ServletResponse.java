@@ -59,7 +59,11 @@ public class ServletResponse extends AbstractResponse {
      */
     @Override
     protected void setAnyDateHeader(Header name, Date date) {
-        r.setDateHeader(name.code, date.getTime());
+		if( date != null ) {
+			r.setDateHeader(name.code, date.getTime());
+		} else {
+			r.setHeader(name.code, null);
+		}
     }
 
     @Override
