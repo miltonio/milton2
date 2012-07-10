@@ -21,6 +21,8 @@ package com.mycompany;
 import io.milton.ldap.LdapServer;
 import io.milton.ldap.LdapTransactionManager;
 import io.milton.ldap.NullLdapTransactionManager;
+import io.milton.mail.MailServer;
+import io.milton.mail.MailServerBuilder;
 import io.milton.servlet.DefaultMiltonConfigurator;
 
 /**
@@ -30,21 +32,38 @@ import io.milton.servlet.DefaultMiltonConfigurator;
  */
 public class MyMiltonConfigurator extends DefaultMiltonConfigurator {
 
+    private TResourceFactory resourceFactory;
     private TLdapUserFactory userFactory;
     private LdapServer ldapServer;
+    private TMailResourceFactory mailResourceFactory;
+    private MailServer mailServer;
 
     @Override
     protected void build() {
         super.build();
-        userFactory = new TLdapUserFactory((TResourceFactory) configurer.getMainResourceFactory());
+        
+        resourceFactory = (TResourceFactory) builder.getMainResourceFactory(); // get our resource factory from the builder
+        userFactory = new TLdapUserFactory(resourceFactory);
         LdapTransactionManager transactionManager = new NullLdapTransactionManager();
-        ldapServer = new LdapServer(transactionManager, userFactory, configurer.getWebDavProtocol());
+        ldapServer = new LdapServer(transactionManager, userFactory, builder.getWebDavProtocol());
         ldapServer.setPort(8369);
         ldapServer.start();
+        
+        mailResourceFactory = new TMailResourceFactory(resourceFactory);
+        MailServerBuilder msb = new MailServerBuilder();
+        msb.setSmtpPort(2525);
+        msb.setMsaSmtpPort(8587);
+        msb.setMailResourceFactory(mailResourceFactory);
+        mailServer = msb.build();
+        mailServer.start();
+        
+        
     }
 
     @Override
     public void shutdown() {
         super.shutdown();
+        ldapServer.interrupt();
+        mailServer.stop();
     }
 }

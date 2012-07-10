@@ -58,18 +58,13 @@ public class PutHandler implements Handler {
 	private final Http11ResponseHandler responseHandler;
 	private final HandlerHelper handlerHelper;
 	private final PutHelper putHelper;
+	private final MatchHelper matchHelper;
 
-	public PutHandler(Http11ResponseHandler responseHandler, HandlerHelper handlerHelper) {
-		this.responseHandler = responseHandler;
-		this.handlerHelper = handlerHelper;
-		this.putHelper = new PutHelper();
-		checkResponseHandler();
-	}
-
-	public PutHandler(Http11ResponseHandler responseHandler, HandlerHelper handlerHelper, PutHelper putHelper) {
+	public PutHandler(Http11ResponseHandler responseHandler, HandlerHelper handlerHelper, PutHelper putHelper, MatchHelper matchHelper) {
 		this.responseHandler = responseHandler;
 		this.handlerHelper = handlerHelper;
 		this.putHelper = putHelper;
+		this.matchHelper = matchHelper;
 		checkResponseHandler();
 	}
 
@@ -114,6 +109,12 @@ public class PutHandler implements Handler {
 				respondLocked(request, response, existingResource);
 				return;
 			}
+			// Check if the resource has been modified based on etags
+			if( !matchHelper.checkIfMatch(existingResource, request)) {
+				log.info("if-match comparison failed, aborting PUT request");
+				responseHandler.respondPreconditionFailed(request, response, existingResource); 
+				return ;
+			}			
 			Resource parent = manager.getResourceFactory().getResource(host, path.getParent().toString());
 			if (parent instanceof CollectionResource) {
 				CollectionResource parentCol = (CollectionResource) parent;

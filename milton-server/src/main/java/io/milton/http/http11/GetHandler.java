@@ -18,7 +18,6 @@ package io.milton.http.http11;
 import io.milton.http.ResourceHandlerHelper;
 import io.milton.http.Response;
 import io.milton.resource.Resource;
-import io.milton.http.HandlerHelper;
 import io.milton.http.ExistingEntityHandler;
 import io.milton.http.HttpManager;
 import io.milton.resource.GetableResource;
@@ -42,11 +41,13 @@ public class GetHandler implements ExistingEntityHandler {
     private final Http11ResponseHandler responseHandler;
     private final ResourceHandlerHelper resourceHandlerHelper;
 	private final PartialGetHelper partialGetHelper;
+	private final MatchHelper matchHelper;
 
-    public GetHandler( Http11ResponseHandler responseHandler, ResourceHandlerHelper resourceHandlerHelper ) {
+    public GetHandler( Http11ResponseHandler responseHandler, ResourceHandlerHelper resourceHandlerHelper, MatchHelper matchHelper, PartialGetHelper partialGetHelper ) {
         this.responseHandler = responseHandler;
         this.resourceHandlerHelper = resourceHandlerHelper;
-		partialGetHelper = new PartialGetHelper(responseHandler);
+		this.matchHelper = matchHelper;
+		this.partialGetHelper = partialGetHelper;
     }
 
     @Override
@@ -87,14 +88,13 @@ public class GetHandler implements ExistingEntityHandler {
             log.trace( "resource has null max age, so not modified response is disabled" );
             return false;
         }
-        if( checkIfMatch( resource, request ) ) {
-            return true;
-        }
         if( checkIfModifiedSince( resource, request ) ) {
             log.trace( "is not modified since" );
             return true;
         }
-        if( checkIfNoneMatch( resource, request ) ) {
+		// only proceed with the GET (ie return false) if there is no match
+        if( matchHelper.checkIfNoneMatch(resource, request) ) {
+			log.trace("conditional check, if-none-match returned true");
             return true;
         }
         return false;

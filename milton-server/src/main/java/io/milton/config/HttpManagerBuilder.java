@@ -133,6 +133,16 @@ public class HttpManagerBuilder {
 	private UserAgentHelper userAgentHelper;
 	private MultiNamespaceCustomPropertySource multiNamespaceCustomPropertySource;
 	private BeanPropertySource beanPropertySource;
+	private WebDavProtocol webDavProtocol;
+	private CalDavProtocol calDavProtocol;
+	private CardDavProtocol cardDavProtocol;
+	private ACLProtocol aclProtocol;
+	private boolean webdavEnabled = true;
+	private boolean caldavEnabled = true;
+	private boolean carddavEnabled = true;
+	private boolean aclEnabled = true;
+	private MatchHelper matchHelper;
+	private PartialGetHelper partialGetHelper;
 
 	/**
 	 * This method creates instances of required objects which have not been set
@@ -275,7 +285,15 @@ public class HttpManagerBuilder {
 
 		if (protocols == null) {
 			protocols = new ArrayList<HttpExtension>();
-			Http11Protocol http11Protocol = new Http11Protocol(webdavResponseHandler, handlerHelper, resourceHandlerHelper, enableOptionsAuth);
+			
+			if( matchHelper == null ) {
+				matchHelper = new MatchHelper(eTagGenerator);
+			}
+			if( partialGetHelper == null ) {
+				partialGetHelper = new PartialGetHelper(webdavResponseHandler);
+			}
+			
+			Http11Protocol http11Protocol = new Http11Protocol(webdavResponseHandler, handlerHelper, resourceHandlerHelper, enableOptionsAuth, matchHelper, partialGetHelper);
 			protocols.add(http11Protocol);
 			if (propertySources == null) {
 				propertySources = initDefaultPropertySources(resourceTypeHelper);
@@ -294,14 +312,33 @@ public class HttpManagerBuilder {
 				userAgentHelper = new DefaultUserAgentHelper();
 			}
 
-			WebDavProtocol webDavProtocol = new WebDavProtocol(handlerHelper, resourceTypeHelper, webdavResponseHandler, propertySources, quotaDataAccessor, propPatchSetter, initPropertyAuthoriser(), eTagGenerator, urlAdapter, resourceHandlerHelper, userAgentHelper);
-			protocols.add(webDavProtocol);
-			CalDavProtocol calDavProtocol = new CalDavProtocol(mainResourceFactory, webdavResponseHandler, handlerHelper, webDavProtocol);
-			protocols.add(calDavProtocol);
-			ACLProtocol acl = new ACLProtocol(webDavProtocol);
-			protocols.add(acl);
-			CardDavProtocol cardDavProtocol = new CardDavProtocol(mainResourceFactory, webdavResponseHandler, handlerHelper, webDavProtocol);
-			protocols.add(cardDavProtocol);
+			if (webDavProtocol == null && webdavEnabled) {
+				webDavProtocol = new WebDavProtocol(handlerHelper, resourceTypeHelper, webdavResponseHandler, propertySources, quotaDataAccessor, propPatchSetter, initPropertyAuthoriser(), eTagGenerator, urlAdapter, resourceHandlerHelper, userAgentHelper);
+			}
+			if (webDavProtocol != null) {
+				protocols.add(webDavProtocol);
+			}
+
+			if (calDavProtocol == null && caldavEnabled) {
+				calDavProtocol = new CalDavProtocol(mainResourceFactory, webdavResponseHandler, handlerHelper, webDavProtocol);
+			}
+			if (calDavProtocol != null) {
+				protocols.add(calDavProtocol);
+			}
+
+			if (aclProtocol == null && aclEnabled) {
+				aclProtocol = new ACLProtocol(webDavProtocol);
+			}
+			if (aclProtocol != null) {
+				protocols.add(aclProtocol);
+			}
+
+			if (cardDavProtocol == null && carddavEnabled) {
+				cardDavProtocol = new CardDavProtocol(mainResourceFactory, webdavResponseHandler, handlerHelper, webDavProtocol);
+			}
+			if (calDavProtocol != null) {
+				protocols.add(cardDavProtocol);
+			}
 		}
 
 		if (protocolHandlers == null) {
@@ -325,11 +362,11 @@ public class HttpManagerBuilder {
 				outerResourceFactory = new JsonResourceFactory(outerResourceFactory, eventManager, propertySources, propPatchSetter, initPropertyAuthoriser());
 				log.info("Enabled json/ajax gatewayw with: " + outerResourceFactory.getClass());
 			}
-			if (enableWellKnown) {				
+			if (enableWellKnown) {
 				outerResourceFactory = new WellKnownResourceFactory(outerResourceFactory, wellKnownHandlers);
 				log.info("Enabled well-known protocol support with: " + outerResourceFactory.getClass());
 			}
-			if( enabledCkBrowser ) {				
+			if (enabledCkBrowser) {
 				outerResourceFactory = new FckResourceFactory(outerResourceFactory);
 				log.info("Enabled CK Editor support with: " + outerResourceFactory.getClass());
 			}
@@ -893,13 +930,14 @@ public class HttpManagerBuilder {
 	}
 
 	/**
-	 * Whether to enable support for CK Editor server browser support. If enabled
-	 * this will inject the FckResourceFactory into your ResourceFactory stack.
-	 * 
+	 * Whether to enable support for CK Editor server browser support. If
+	 * enabled this will inject the FckResourceFactory into your ResourceFactory
+	 * stack.
+	 *
 	 * Note this will have no effect if outerResourceFactory is already set, as
 	 * that is the top of the stack.
-	 * 
-	 * @return 
+	 *
+	 * @return
 	 */
 	public boolean isEnabledCkBrowser() {
 		return enabledCkBrowser;
@@ -908,6 +946,84 @@ public class HttpManagerBuilder {
 	public void setEnabledCkBrowser(boolean enabledCkBrowser) {
 		this.enabledCkBrowser = enabledCkBrowser;
 	}
-	
-	
+
+	public WebDavProtocol getWebDavProtocol() {
+		return webDavProtocol;
+	}
+
+	public void setWebDavProtocol(WebDavProtocol webDavProtocol) {
+		this.webDavProtocol = webDavProtocol;
+	}
+
+	public CalDavProtocol getCalDavProtocol() {
+		return calDavProtocol;
+	}
+
+	public void setCalDavProtocol(CalDavProtocol calDavProtocol) {
+		this.calDavProtocol = calDavProtocol;
+	}
+
+	public CardDavProtocol getCardDavProtocol() {
+		return cardDavProtocol;
+	}
+
+	public void setCardDavProtocol(CardDavProtocol cardDavProtocol) {
+		this.cardDavProtocol = cardDavProtocol;
+	}
+
+	public ACLProtocol getAclProtocol() {
+		return aclProtocol;
+	}
+
+	public void setAclProtocol(ACLProtocol aclProtocol) {
+		this.aclProtocol = aclProtocol;
+	}
+
+	public boolean isAclEnabled() {
+		return aclEnabled;
+	}
+
+	public void setAclEnabled(boolean aclEnabled) {
+		this.aclEnabled = aclEnabled;
+	}
+
+	public boolean isCaldavEnabled() {
+		return caldavEnabled;
+	}
+
+	public void setCaldavEnabled(boolean caldavEnabled) {
+		this.caldavEnabled = caldavEnabled;
+	}
+
+	public boolean isCarddavEnabled() {
+		return carddavEnabled;
+	}
+
+	public void setCarddavEnabled(boolean carddavEnabled) {
+		this.carddavEnabled = carddavEnabled;
+	}
+
+	public boolean isWebdavEnabled() {
+		return webdavEnabled;
+	}
+
+	public void setWebdavEnabled(boolean webdavEnabled) {
+		this.webdavEnabled = webdavEnabled;
+	}
+
+	public MatchHelper getMatchHelper() {
+		return matchHelper;
+	}
+
+	public void setMatchHelper(MatchHelper matchHelper) {
+		this.matchHelper = matchHelper;
+	}
+
+	public PartialGetHelper getPartialGetHelper() {
+		return partialGetHelper;
+	}
+
+	public void setPartialGetHelper(PartialGetHelper partialGetHelper) {
+		this.partialGetHelper = partialGetHelper;
+	}	
 }

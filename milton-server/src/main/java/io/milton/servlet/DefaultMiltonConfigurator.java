@@ -41,11 +41,11 @@ public class DefaultMiltonConfigurator implements MiltonConfigurator {
 
 	private static final Logger log = LoggerFactory.getLogger(DefaultMiltonConfigurator.class);
 	
-    private HttpManagerBuilder configurer = new HttpManagerBuilder();
+    protected HttpManagerBuilder builder = new HttpManagerBuilder();
 
-    private List<Initable> initables;
+    protected List<Initable> initables;
     
-    private HttpManager httpManager;
+    protected HttpManager httpManager;
     
     @Override
     public HttpManager configure(Config config) throws ServletException {
@@ -62,14 +62,14 @@ public class DefaultMiltonConfigurator implements MiltonConfigurator {
         String resourceFactoryClassName = config.getInitParameter("resource.factory.class");
         if (resourceFactoryClassName != null) {
             ResourceFactory rf = instantiate(resourceFactoryClassName);
-            configurer.setMainResourceFactory(rf);
+            builder.setMainResourceFactory(rf);
         } else {
 			log.warn("No custom ResourceFactory class name provided in resource.factory.class");
 		}
         String responseHandlerClassName = config.getInitParameter("response.handler.class");
         if (responseHandlerClassName != null) {
             WebDavResponseHandler davResponseHandler = instantiate(responseHandlerClassName);
-            configurer.setWebdavResponseHandler(davResponseHandler);
+            builder.setWebdavResponseHandler(davResponseHandler);
         }
         List<Filter> filters = null;
         List<String> params = config.getInitParameterNames();
@@ -84,21 +84,28 @@ public class DefaultMiltonConfigurator implements MiltonConfigurator {
             }
         }
         if( filters != null ) {
-            configurer.setFilters(filters);
+            builder.setFilters(filters);
         }
-        httpManager = configurer.buildHttpManager();
+        build();
         initables = new ArrayList<Initable>();
         
-        checkAddInitable(initables, configurer.getAuthenticationHandlers());
-        checkAddInitable(initables, configurer.getMainResourceFactory());
-        checkAddInitable(initables, configurer.getWebdavResponseHandler());
-        checkAddInitable(initables, configurer.getFilters() );
+        checkAddInitable(initables, builder.getAuthenticationHandlers());
+        checkAddInitable(initables, builder.getMainResourceFactory());
+        checkAddInitable(initables, builder.getWebdavResponseHandler());
+        checkAddInitable(initables, builder.getFilters() );
         
         for( Initable i : initables ) {
             i.init(config, httpManager);
         }
         return httpManager;
     }
+	
+	/**
+	 * Actually builds the httpManager. Can be overridden by subclasses
+	 */
+	protected void build() {
+		httpManager = builder.buildHttpManager();
+	}
 
     @Override
     public void shutdown() {
@@ -125,7 +132,7 @@ public class DefaultMiltonConfigurator implements MiltonConfigurator {
                 throw new ServletException("Class: " + authHandlerClassName + " is not a: " + AuthenticationHandler.class.getCanonicalName());
             }
         }
-        configurer.setAuthenticationHandlers(list);
+        builder.setAuthenticationHandlers(list);
     }
 
     public static <T> T instantiate(String className) throws ServletException {

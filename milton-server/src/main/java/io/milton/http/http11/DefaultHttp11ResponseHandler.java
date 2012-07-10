@@ -347,6 +347,11 @@ public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Buff
 		response.setStatus(status);
 	}
 
+	@Override
+    public void respondPreconditionFailed( Request request, Response response, Resource resource ) {
+        response.setStatus( Status.SC_PRECONDITION_FAILED );
+    }	
+	
 	public AuthenticationService getAuthenticationService() {
 		return authenticationService;
 	}

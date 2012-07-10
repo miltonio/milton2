@@ -27,9 +27,11 @@ public abstract class AbstractRequest implements Request {
     private Logger log = LoggerFactory.getLogger( AbstractRequest.class );
     public static final int INFINITY = 3; // To limit tree browsing a bit
 
+	@Override
     public abstract String getRequestHeader( Request.Header header );
     private final Map<String, Object> attributes = new HashMap<String, Object>();
 
+	@Override
     public Date getIfModifiedHeader() {
         String s = getRequestHeader( Request.Header.IF_MODIFIED );
         if( s == null || s.length() == 0 ) return null;
@@ -42,32 +44,39 @@ public abstract class AbstractRequest implements Request {
         }
     }
 
+	@Override
     public String getExpectHeader() {
         return getRequestHeader( Request.Header.EXPECT );
     }
 
+	@Override
     public String getAcceptHeader() {
         return getRequestHeader( Request.Header.ACCEPT );
     }
 
+	@Override
     public String getRefererHeader() {
         return getRequestHeader( Request.Header.REFERER );
     }
 
+	@Override
     public String getContentTypeHeader() {
         return getRequestHeader( Request.Header.CONTENT_TYPE );
     }
 
+	@Override
     public String getAcceptEncodingHeader() {
         return getRequestHeader( Request.Header.ACCEPT_ENCODING );
     }
 
+	@Override
     public String getUserAgentHeader() {
         return getRequestHeader( Header.USER_AGENT );
     }
 
 
 
+	@Override
     public int getDepthHeader() {
         String depthStr = getRequestHeader( Request.Header.DEPTH );
         if( depthStr == null ) {
@@ -86,14 +95,17 @@ public abstract class AbstractRequest implements Request {
         }
     }
 
+	@Override
     public String getHostHeader() {
         return getRequestHeader( Header.HOST );
     }
 
+	@Override
     public String getDestinationHeader() {
         return getRequestHeader( Header.DESTINATION );
     }
 
+	@Override
     public Long getContentLengthHeader() {
         String s = getRequestHeader( Header.CONTENT_LENGTH );
         if( s == null || s.length() == 0 ) return null;
@@ -106,33 +118,51 @@ public abstract class AbstractRequest implements Request {
         }
     }
 
+	@Override
     public String getTimeoutHeader() {
         return getRequestHeader( Header.TIMEOUT );
     }
 
+	@Override
     public String getIfHeader() {
         return getRequestHeader( Header.IF );
     }
 
+	@Override
     public String getLockTokenHeader() {
         return getRequestHeader( Header.LOCK_TOKEN );
     }
 
+	@Override
     public String getRangeHeader() {
         return getRequestHeader( Header.RANGE );
     }
 
+	@Override
     public String getContentRangeHeader() {
         return getRequestHeader( Header.CONTENT_RANGE );
     }
 
 
+	@Override
     public Boolean getOverwriteHeader() {
         String s = getRequestHeader( Header.OVERWRITE );
         if( s == null || s.length() == 0 ) return null;
         return "T".equals( s );
     }
 
+	@Override
+	public String getIfMatchHeader() {
+		return getRequestHeader( Header.IF_MATCH );
+	}
+
+	@Override
+	public String getIfNoneMatchHeader() {
+		return getRequestHeader( Header.IF_NONE_MATCH ); 
+	}
+		
+	
+	@Override
     public String getAbsolutePath() {
         return stripToPath( getAbsoluteUrl() );
     }
@@ -149,14 +179,17 @@ public abstract class AbstractRequest implements Request {
         return url;
     }
 
+	@Override
     public Map<String, Object> getAttributes() {
         return attributes;
     }
 
+	@Override
     public Map<String, String> getParams() {
         return (Map<String, String>) attributes.get( "_params" );
     }
 
+	@Override
     public Map<String, FileItem> getFiles() {
         return (Map<String, FileItem>) attributes.get( "_files" );
     }

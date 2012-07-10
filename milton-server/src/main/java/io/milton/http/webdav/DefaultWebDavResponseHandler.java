@@ -208,7 +208,7 @@ public class DefaultWebDavResponseHandler implements WebDavResponseHandler, Buff
 
 	@Override
     public void respondPreconditionFailed( Request request, Response response, Resource resource ) {
-        response.setStatus( Status.SC_PRECONDITION_FAILED );
+        wrapped.respondPreconditionFailed(request, response, resource);
     }
 
 	@Override

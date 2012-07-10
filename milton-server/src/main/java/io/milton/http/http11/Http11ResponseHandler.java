@@ -128,5 +128,12 @@ public interface Http11ResponseHandler extends ETagGenerator {
     void respondServerError( Request request, Response response, String reason);
 
 
-    
+    /**
+     * Generate a 412 response, 
+     * 
+     * @param request
+     * @param response
+     * @param resource
+     */
+    void respondPreconditionFailed( Request request, Response response, Resource resource );      
 }

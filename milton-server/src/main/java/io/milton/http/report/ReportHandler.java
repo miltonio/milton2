@@ -83,6 +83,7 @@ public class ReportHandler implements ExistingEntityHandler {
 				log.trace("process report: " + reportName + " with : " + r.getClass());
 				String xml = r.process(request.getHostHeader(), request.getAbsolutePath(), resource, doc);
 				response.setStatus(Response.Status.SC_MULTI_STATUS);
+				response.setContentTypeHeader("text/xml");
 				response.setEntity(new ByteArrayEntity(xml.getBytes()));
 			}
 		} catch (JDOMException ex) {

@@ -49,8 +49,17 @@ public class MailServerBuilder {
     private boolean enablePop = false;
     private List<Filter> filters;
     private int smtpPort = 25;
+    private int msaSmtpPort = 587;
     private boolean enableSmtpTls = false;
+    private boolean enableMsaSmtpTls = false;
 
+    /**
+     * Builds the MailServer from supplied options, but does not start it.
+     * 
+     * To start it, call start on the MailServer
+     * 
+     * @return 
+     */
     public MailServer build() {
         if (mailSender == null) {
             if (enableSender) {
@@ -74,7 +83,7 @@ public class MailServerBuilder {
         }
         if (msaSmtpServer == null) {
             if (enableMsa) {
-                msaSmtpServer = new AuthenticatedSmtpServer(mailResourceFactory, mailSender, filters);
+                msaSmtpServer = new AuthenticatedSmtpServer(msaSmtpPort, enableMsaSmtpTls, mailResourceFactory, mailSender, filters);
             }
         }
         if (popServer == null) {
@@ -187,6 +196,38 @@ public class MailServerBuilder {
 
     public void setEnableSmtpTls(boolean enableSmtpTls) {
         this.enableSmtpTls = enableSmtpTls;
+    }
+
+    public int getMsaSmtpPort() {
+        return msaSmtpPort;
+    }
+
+    public void setMsaSmtpPort(int msaSmtpPort) {
+        this.msaSmtpPort = msaSmtpPort;
+    }
+
+    public boolean isEnableMsaSmtpTls() {
+        return enableMsaSmtpTls;
+    }
+
+    public void setEnableMsaSmtpTls(boolean enableMsaSmtpTls) {
+        this.enableMsaSmtpTls = enableMsaSmtpTls;
+    }
+
+    public MailStore getMailStore() {
+        return mailStore;
+    }
+
+    public void setMailStore(MailStore mailStore) {
+        this.mailStore = mailStore;
+    }
+
+    public QueueStore getQueueStore() {
+        return queueStore;
+    }
+
+    public void setQueueStore(QueueStore queueStore) {
+        this.queueStore = queueStore;
     }
     
     
