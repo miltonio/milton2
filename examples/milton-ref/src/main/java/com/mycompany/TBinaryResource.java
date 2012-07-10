@@ -19,9 +19,17 @@
 package com.mycompany;
 
 import io.milton.http.Range;
+import io.milton.http.exceptions.BadRequestException;
+import io.milton.http.exceptions.ConflictException;
+import io.milton.http.exceptions.NotAuthorizedException;
+import io.milton.resource.ReplaceableResource;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 
 /**
  * Holds binary files like PDFs, jpeg, etc
@@ -30,7 +38,7 @@ import java.util.Map;
  *
  * @author brad
  */
-public class TBinaryResource extends TResource {
+public class TBinaryResource extends TResource implements ReplaceableResource{
 
     private static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(TBinaryResource.class);
     byte[] bytes;
@@ -61,5 +69,15 @@ public class TBinaryResource extends TResource {
     @Override
     public String getContentType(String accept) {
         return contentType;
+    }
+
+    @Override
+    public void replaceContent(InputStream in, Long length) throws BadRequestException, ConflictException, NotAuthorizedException {
+        try {
+            ByteArrayOutputStream bos = TFolderResource.readStream(in);
+            this.bytes = bos.toByteArray();
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 }

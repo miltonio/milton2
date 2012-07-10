@@ -116,10 +116,6 @@ public class TResourceFactory implements ResourceFactory {
         return r;
     }
 
-    public List<Resource> getUsers() {
-        return users.children;
-    }
-
     private Resource find(Path path) {
         if (path.isRoot()) {
             return ROOT;
@@ -145,6 +141,10 @@ public class TResourceFactory implements ResourceFactory {
         }
         return null;
     }
+    
+    public List<Resource> getUsers() {
+        return users.children;
+    }    
 
     public static String createICalData() {
         Calendar cal = Calendar.getInstance();
