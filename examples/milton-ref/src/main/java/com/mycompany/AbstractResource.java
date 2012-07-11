@@ -1,30 +1,29 @@
 /*
-* Licensed to the Apache Software Foundation (ASF) under one
-* or more contributor license agreements.  See the NOTICE file
-* distributed with this work for additional information
-* regarding copyright ownership.  The ASF licenses this file
-* to you under the Apache License, Version 2.0 (the
-* "License"); you may not use this file except in compliance
-* with the License.  You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing,
-* software distributed under the License is distributed on an
-* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-* KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations
-* under the License.
-*/
-
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package com.mycompany;
-
 
 import io.milton.http.Auth;
 import io.milton.http.Request;
 import io.milton.http.Request.Method;
 import io.milton.http.http11.auth.DigestGenerator;
 import io.milton.http.http11.auth.DigestResponse;
+import io.milton.resource.DigestResource;
 import io.milton.resource.ReportableResource;
 import io.milton.resource.Resource;
 import java.util.Date;
@@ -35,7 +34,7 @@ import java.util.UUID;
  *
  * @author alex
  */
-public class AbstractResource implements Resource, ReportableResource {
+public class AbstractResource implements Resource, ReportableResource, DigestResource {
 
     private static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(AbstractResource.class);
     protected UUID id;
@@ -56,78 +55,79 @@ public class AbstractResource implements Resource, ReportableResource {
         }
     }
 
-	TCalDavPrincipal getUser() {
-		TFolderResource p = parent;
-		while( p != null ) {
-			if( p instanceof TCalDavPrincipal ) {
-				return (TCalDavPrincipal) p;
-			} else {
-				p = p.parent;
-			}
-		}
-		return null;
-	}
-	
-	@Override
+    TCalDavPrincipal getUser() {
+        TFolderResource p = parent;
+        while (p != null) {
+            if (p instanceof TCalDavPrincipal) {
+                return (TCalDavPrincipal) p;
+            } else {
+                p = p.parent;
+            }
+        }
+        return null;
+    }
+
+    @Override
     public Object authenticate(String user, String requestedPassword) {
-		TCalDavPrincipal p = TResourceFactory.findUser(user);
-		if( p != null ) {
-			if( p.getPassword().equals(requestedPassword)) {
-				return p;
-			} else {
-				log.warn("that password is incorrect. Try 'password'");
-			}
-		} else {
-			log.warn("user not found: " + user + " - try 'userA'");
-		}
-		return null;
-			
+        TCalDavPrincipal p = TResourceFactory.findUser(user);
+        if (p != null) {
+            if (p.getPassword().equals(requestedPassword)) {
+                return p;
+            } else {
+                log.warn("that password is incorrect. Try 'password'");
+            }
+        } else {
+            log.warn("user not found: " + user + " - try 'userA'");
+        }
+        return null;
+
     }
 
+    @Override
     public Object authenticate(DigestResponse digestRequest) {
-		TCalDavPrincipal p = TResourceFactory.findUser(digestRequest.getUser());
-		if( p != null ) {
-			DigestGenerator gen = new DigestGenerator();
-			String actual = gen.generateDigest(digestRequest, p.getPassword());
-			if( actual.equals(digestRequest.getResponseDigest())) {
-				return p;
-			} else {
-				log.warn("that password is incorrect. Try 'password'");
-			}
-		} else {
-			log.warn("user not found: " + digestRequest.getUser() + " - try 'userA'");
-		}
-		return null;
+        TCalDavPrincipal p = TResourceFactory.findUser(digestRequest.getUser());
+        if (p != null) {
+            DigestGenerator gen = new DigestGenerator();
+            String actual = gen.generateDigest(digestRequest, p.getPassword());
+            if (actual.equals(digestRequest.getResponseDigest())) {
+                return p;
+            } else {
+                log.warn("that password is incorrect. Try 'password'");
+            }
+        } else {
+            log.warn("user not found: " + digestRequest.getUser() + " - try 'userA'");
+        }
+        return null;
 
     }
 
-	@Override
+    @Override
     public String getUniqueId() {
         return this.id.toString();
     }
 
-	@Override
+    @Override
     public String checkRedirect(Request request) {
         return null;
     }
 
-	@Override
+    @Override
     public String getName() {
         return name;
     }
 
-	@Override
+    @Override
     public boolean authorise(Request request, Method method, Auth auth) {
         log.debug("authorise");
         return auth != null;
     }
 
-	@Override
+    @Override
     public String getRealm() {
         return "testrealm@host.com";
     }
 
-	@Override
+    @Override
     public Date getModifiedDate() {
         return modDate;
     }
@@ -139,4 +139,8 @@ public class AbstractResource implements Resource, ReportableResource {
         }
     }
 
+    @Override
+    public boolean isDigestAllowed() {
+        return true;
+    }
 }
