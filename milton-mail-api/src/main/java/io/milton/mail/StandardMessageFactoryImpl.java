@@ -315,7 +315,7 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
 
 
         List<Attachment> htmlInline = findInlineAttachments(sm);
-        if (htmlInline == null || htmlInline.size() == 0) {
+        if (htmlInline == null || htmlInline.isEmpty()) {
             part.setContent(sm.getHtml(), "text/html");
         } else {
             MimeMultipart related = new MimeMultipart("related");
@@ -476,10 +476,12 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
         return mm;
     }
 
+    @Override
     public void toMimeMessage(StandardMessage sm, MimeMessage mm) {
         try {
+            //mm.setS
             mm.setFrom(sm.getFrom().toInternetAddress());
-
+            mm.setSender(sm.getFrom().toInternetAddress());
             fillReplyTo(sm, mm);
             fillTo(sm.getTo(), mm);
             fillCC(sm.getCc(), mm);
@@ -507,19 +509,23 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
             this.att = att;
         }
 
+        @Override
         public InputStream getInputStream() throws IOException {
             return att.getInputStream();
         }
 
+        @Override
         public OutputStream getOutputStream() throws IOException {
             throw new UnsupportedOperationException("Not supported yet.");
         }
 
+        @Override
         public String getContentType() {
             log.debug( "attachment conte type: " + att.getContentType());
             return att.getContentType();
         }
 
+        @Override
         public String getName() {
             return att.getName();
         }

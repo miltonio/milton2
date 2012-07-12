@@ -22,7 +22,9 @@ import io.milton.mail.receive.SubethaSmtpServer;
 import io.milton.mail.send.AspirinMailSender;
 import io.milton.mail.send.MailSender;
 import java.util.List;
+import org.masukomi.aspirin.core.AspirinInternal;
 import org.masukomi.aspirin.core.config.Configuration;
+import org.masukomi.aspirin.core.delivery.DeliveryManager;
 import org.masukomi.aspirin.core.listener.ListenerManager;
 import org.masukomi.aspirin.core.store.mail.MailStore;
 import org.masukomi.aspirin.core.store.mail.FileMailStore;
@@ -40,7 +42,10 @@ public class MailServerBuilder {
     private SmtpServer smtpServer;
     private SmtpServer msaSmtpServer;
     private PopServer popServer;
+    private AspirinInternal aspirinInternal;
     private Configuration aspirinConfiguration;
+    private ListenerManager listenerManager;
+    private DeliveryManager deliveryManager;
     private QueueStore queueStore;
     private MailStore mailStore;
     private boolean enableSender = true;
@@ -55,15 +60,17 @@ public class MailServerBuilder {
 
     /**
      * Builds the MailServer from supplied options, but does not start it.
-     * 
+     *
      * To start it, call start on the MailServer
-     * 
-     * @return 
+     *
+     * @return
      */
     public MailServer build() {
         if (mailSender == null) {
             if (enableSender) {
-                ListenerManager listenerManager = new ListenerManager();
+                if (listenerManager != null) {
+                    listenerManager = new ListenerManager();
+                }
                 if (aspirinConfiguration == null) {
                     aspirinConfiguration = new Configuration();
                 }
@@ -73,7 +80,14 @@ public class MailServerBuilder {
                 if (mailStore == null) {
                     mailStore = new FileMailStore(aspirinConfiguration);
                 }
-                mailSender = new AspirinMailSender(queueStore, mailStore);
+                if( deliveryManager == null ) {
+                    deliveryManager = new DeliveryManager(aspirinConfiguration, queueStore, mailStore);
+                }
+                listenerManager.setDeliveryManager(deliveryManager);
+                if( aspirinInternal == null ) {
+                    aspirinInternal = new AspirinInternal(aspirinConfiguration, deliveryManager, listenerManager);
+                }
+                mailSender = new AspirinMailSender(aspirinInternal, deliveryManager, listenerManager);
             }
         }
         if (smtpServer == null) {
@@ -228,6 +242,30 @@ public class MailServerBuilder {
 
     public void setQueueStore(QueueStore queueStore) {
         this.queueStore = queueStore;
+    }
+
+    public ListenerManager getListenerManager() {
+        return listenerManager;
+    }
+
+    public void setListenerManager(ListenerManager listenerManager) {
+        this.listenerManager = listenerManager;
+    }
+
+    public AspirinInternal getAspirinInternal() {
+        return aspirinInternal;
+    }
+
+    public void setAspirinInternal(AspirinInternal aspirinInternal) {
+        this.aspirinInternal = aspirinInternal;
+    }
+
+    public DeliveryManager getDeliveryManager() {
+        return deliveryManager;
+    }
+
+    public void setDeliveryManager(DeliveryManager deliveryManager) {
+        this.deliveryManager = deliveryManager;
     }
     
     

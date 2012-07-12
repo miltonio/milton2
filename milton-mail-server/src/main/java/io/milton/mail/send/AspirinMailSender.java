@@ -44,12 +44,10 @@ public class AspirinMailSender implements MailSender, AspirinListener {
      * @param postmaster - eg admin@ettrema.com
      * @param maxRetries - eg 3
      */
-    public AspirinMailSender(QueueStore queueStore, MailStore mailStore) {
-        listenerManager = new ListenerManager();
-        Configuration configuration = new Configuration();
-        deliveryManager = new DeliveryManager(configuration, queueStore, mailStore);
-        listenerManager.setDeliveryManager(deliveryManager);
-        aspirin = new AspirinInternal(configuration, deliveryManager, listenerManager);
+    public AspirinMailSender(AspirinInternal aspirinInternal, DeliveryManager deliveryManager, ListenerManager listenerManager) {
+        this.listenerManager = listenerManager;
+        this.deliveryManager = deliveryManager;        
+        this.aspirin = aspirinInternal;
     }
 
     @Override
@@ -114,6 +112,7 @@ public class AspirinMailSender implements MailSender, AspirinListener {
     public void start() {
         this.started = true;
         listenerManager.add(this);
+        aspirin.start();
     }
 
     @Override
@@ -121,6 +120,7 @@ public class AspirinMailSender implements MailSender, AspirinListener {
         this.started = false;
         listenerManager.remove(this);
         deliveryManager.shutdown();
+        aspirin.shutdown();
     }
 
     @Override

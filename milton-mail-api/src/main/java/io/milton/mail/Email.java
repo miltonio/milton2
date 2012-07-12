@@ -229,7 +229,6 @@ public class Email {
         @Override
         public String getContentType() {
             return contentType;
-        }                       
-        
+        }                               
     }
 }
