@@ -18,7 +18,7 @@ package io.milton.http.quota;
 import io.milton.common.Path;
 import io.milton.resource.CollectionResource;
 import io.milton.resource.GetableResource;
-import io.milton.http.QuotaResource;
+import io.milton.resource.QuotaResource;
 import io.milton.http.Request;
 import io.milton.resource.Resource;
 import org.slf4j.Logger;

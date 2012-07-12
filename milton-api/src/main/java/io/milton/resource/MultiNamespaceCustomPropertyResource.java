@@ -13,9 +13,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.milton.property;
+package io.milton.resource;
 
 import io.milton.http.exceptions.NotAuthorizedException;
+import io.milton.property.PropertySource;
 import io.milton.property.PropertySource.PropertyMetaData;
 import io.milton.resource.Resource;
 import java.util.List;

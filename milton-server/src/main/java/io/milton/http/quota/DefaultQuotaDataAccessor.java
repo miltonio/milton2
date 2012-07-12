@@ -15,7 +15,7 @@
 
 package io.milton.http.quota;
 
-import io.milton.http.QuotaResource;
+import io.milton.resource.QuotaResource;
 import io.milton.resource.Resource;
 
 /**

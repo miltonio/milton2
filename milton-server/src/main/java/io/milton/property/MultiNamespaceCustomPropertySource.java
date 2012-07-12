@@ -15,6 +15,7 @@
 
 package io.milton.property;
 
+import io.milton.resource.MultiNamespaceCustomPropertyResource;
 import io.milton.resource.Resource;
 import io.milton.http.exceptions.NotAuthorizedException;
 import java.util.ArrayList;

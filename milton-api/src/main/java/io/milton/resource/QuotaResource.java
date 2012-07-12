@@ -13,7 +13,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.milton.http;
+package io.milton.resource;
 
 import io.milton.resource.Resource;
 

@@ -14,6 +14,7 @@
  */
 package io.milton.config;
 
+import io.milton.property.PropertySource;
 import io.milton.common.Stoppable;
 import io.milton.event.EventManager;
 import io.milton.event.EventManagerImpl;
