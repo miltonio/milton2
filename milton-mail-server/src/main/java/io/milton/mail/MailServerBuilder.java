@@ -68,7 +68,7 @@ public class MailServerBuilder {
     public MailServer build() {
         if (mailSender == null) {
             if (enableSender) {
-                if (listenerManager != null) {
+                if (listenerManager == null) {
                     listenerManager = new ListenerManager();
                 }
                 if (aspirinConfiguration == null) {
