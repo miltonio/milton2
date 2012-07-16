@@ -77,7 +77,7 @@ public class MatchHelperTest extends TestCase {
 		replay(request);
 		boolean result = matchHelper.checkIfMatch(resource, request);
 		verify(request);
-		assertFalse(result);
+		assertTrue(result); // should be true because we want processing to continue
 	}
 
 	public void testCheckIfMatch_NullUniqueId() {

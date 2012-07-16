@@ -38,6 +38,9 @@ public class MatchHelper {
 	 *
 	 * Returns true if the match comparison indicates that the resource has NOT
 	 * been modified
+	 * 
+	 * Ie, returning "true" means to continue with PUT processing. Returning "false"
+	 * means that the comparison indicates that processing should not continue
 	 *
 	 * @param r
 	 * @param req
@@ -45,20 +48,20 @@ public class MatchHelper {
 	 */
 	public boolean checkIfMatch(Resource r, Request req) {
 		String h = req.getIfMatchHeader();
-		if (h == null) {
-			return false;
+		if (h == null || h.length()==0) {
+			return true; // no if-match header, return true so processing continues
 		}
 		String currentEtag = eTagGenerator.generateEtag(r);
-		if (currentEtag == null) {
-			return false;
+		if (currentEtag == null || currentEtag.length()==0) {
+			return false; // no etag on the resource, but an etag was given in header, so fail
 		}
 		List<String> etags = splitToList(h);
 		for (String requestedEtag : etags) {
 			if (requestedEtag.equals(currentEtag)) {
-				return true;
+				return true; // found a matching tag, return true to continue
 			}
 		}
-		return false;
+		return false; // a if-match header was sent, but a matching tag is not present, so return false
 	}
 
 	/**
