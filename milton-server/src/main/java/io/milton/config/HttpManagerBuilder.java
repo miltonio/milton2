@@ -133,6 +133,7 @@ public class HttpManagerBuilder {
 	private String defaultPassword = "password";
 	private UserAgentHelper userAgentHelper;
 	private MultiNamespaceCustomPropertySource multiNamespaceCustomPropertySource;
+	private boolean multiNamespaceCustomPropertySourceEnabled = true;
 	private BeanPropertySource beanPropertySource;
 	private WebDavProtocol webDavProtocol;
 	private CalDavProtocol calDavProtocol;
@@ -400,9 +401,13 @@ public class HttpManagerBuilder {
 	private List<PropertySource> initDefaultPropertySources(ResourceTypeHelper resourceTypeHelper) {
 		List<PropertySource> list = new ArrayList<PropertySource>();
 		if (multiNamespaceCustomPropertySource == null) {
-			multiNamespaceCustomPropertySource = new MultiNamespaceCustomPropertySource();
+			if( multiNamespaceCustomPropertySourceEnabled ) {
+				multiNamespaceCustomPropertySource = new MultiNamespaceCustomPropertySource();
+			}
 		}
-		list.add(multiNamespaceCustomPropertySource);
+		if( multiNamespaceCustomPropertySource != null ) {
+			list.add(multiNamespaceCustomPropertySource);
+		}
 		if (initBeanPropertySource() != null) {
 			list.add(beanPropertySource);
 		}
@@ -1026,5 +1031,15 @@ public class HttpManagerBuilder {
 
 	public void setPartialGetHelper(PartialGetHelper partialGetHelper) {
 		this.partialGetHelper = partialGetHelper;
-	}	
+	}
+
+	public boolean isMultiNamespaceCustomPropertySourceEnabled() {
+		return multiNamespaceCustomPropertySourceEnabled;
+	}
+
+	public void setMultiNamespaceCustomPropertySourceEnabled(boolean multiNamespaceCustomPropertySourceEnabled) {
+		this.multiNamespaceCustomPropertySourceEnabled = multiNamespaceCustomPropertySourceEnabled;
+	}
+	
+	
 }
