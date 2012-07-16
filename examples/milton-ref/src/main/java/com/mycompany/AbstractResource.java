@@ -74,7 +74,7 @@ public class AbstractResource implements Resource, ReportableResource, DigestRes
             if (p.getPassword().equals(requestedPassword)) {
                 return p;
             } else {
-                log.warn("that password is incorrect. Try 'password'");
+                log.warn("that password is incorrect. Try:" + p.getPassword());
             }
         } else {
             log.warn("user not found: " + user + " - try 'userA'");
