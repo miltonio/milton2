@@ -52,7 +52,7 @@ public class TMessageResource extends TFolderResource{
     }
     
     @Override
-    protected Object clone(TFolderResource newParent) {
+    protected Object clone(TFolderResource newParent, String newName) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

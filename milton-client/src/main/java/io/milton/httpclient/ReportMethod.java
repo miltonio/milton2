@@ -23,6 +23,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.http.protocol.HttpContext;
 import org.jdom.Document;
 import org.jdom.JDOMException;
 import org.slf4j.Logger;
@@ -45,9 +46,9 @@ public class ReportMethod extends HttpEntityEnclosingRequestBase {
         return "REPORT";
     }
 
-    public Document getResponseAsDocument(HttpClient client) throws IOException {
+    public Document getResponseAsDocument(HttpClient client, HttpContext context) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        Utils.executeHttpWithStatus(client, this, out);
+        Utils.executeHttpWithStatus(client, this, out, context);
         String xml = out.toString();
         try {
             Document document = RespUtils.getJDomDocument( new ByteArrayInputStream( xml.getBytes() ) );

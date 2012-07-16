@@ -86,7 +86,7 @@ public class ZSyncClient implements FileSyncer{
                         throw ex;
                     }
                 }
-            }, null, listener);
+            }, null, listener, null);
         } catch (BadRequestException e) {
             notExisting = true;
         }
@@ -133,7 +133,7 @@ public class ZSyncClient implements FileSyncer{
                     OutputStream fout = new FileOutputStream(fRemoteMeta);
                     Utils.writeBuffered(in, fout, listener);
                 }
-            }, null, listener);
+            }, null, listener, null);
         } catch (BadRequestException e) {
             throw new NotFoundException(url);
         } catch (HttpException e) {
@@ -145,7 +145,7 @@ public class ZSyncClient implements FileSyncer{
         InputStream uploadIn = null;
         try {
             uploadIn = umx.makeUpload();
-            transferService.put(url, uploadIn, null, null, listener);
+            transferService.put(url, uploadIn, null, null, listener, null);
         } finally {
             IOUtils.closeQuietly(uploadIn);
             FileUtils.deleteQuietly(fRemoteMeta);

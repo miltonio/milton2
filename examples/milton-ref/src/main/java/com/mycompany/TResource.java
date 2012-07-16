@@ -45,7 +45,7 @@ public abstract class TResource extends AbstractResource implements GetableResou
         super(parent, name);
     }
 
-    protected abstract Object clone(TFolderResource newParent);
+    protected abstract Object clone(TFolderResource newParent, String newName);
 
     @Override
     public String getPrincipalURL() {
@@ -116,10 +116,11 @@ public abstract class TResource extends AbstractResource implements GetableResou
     }
 
     @Override
-    public void copyTo(CollectionResource toCollection, String name) {
+    public void copyTo(CollectionResource toCollection, String destName) {
+        System.out.println("COPY: " + parent.name + "/" + this.name + " --->>>" + toCollection.getName() + "/" + destName);
         TResource rClone;
-        rClone = (TResource) this.clone((TFolderResource) toCollection);
-        rClone.name = name;
+        rClone = (TResource) this.clone((TFolderResource) toCollection, destName);
+        rClone.name = destName;
     }
 
     public int compareTo(Resource o) {

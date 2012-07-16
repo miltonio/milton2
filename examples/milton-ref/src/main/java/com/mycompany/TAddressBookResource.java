@@ -46,8 +46,8 @@ public class TAddressBookResource extends TFolderResource implements AddressBook
     }
 
     @Override
-    protected Object clone(TFolderResource newParent) {
-        return new TCalendarResource(newParent, name);
+    protected Object clone(TFolderResource newParent, String newName) {
+        return new TCalendarResource(newParent, newName);
     }
 
     @Override

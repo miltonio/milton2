@@ -156,7 +156,7 @@ public class PropFindResponse {
 
     public Long getContentLength() {
         String s = (String) getDavProperty("getcontentlength");
-        if (s == null) {
+        if (s == null || s.trim().length() == 0) {
             return null;
         }
         return Long.parseLong(s);
@@ -164,7 +164,7 @@ public class PropFindResponse {
 
     public Long getQuotaAvailableBytes() {
         String s = (String) getDavProperty("quota-available-bytes");
-        if (s == null) {
+        if (s == null || s.trim().length() == 0) {
             return null;
         }
         return Long.parseLong(s);
@@ -172,7 +172,7 @@ public class PropFindResponse {
 
     public Long getQuotaUsedBytes() {
         String s = (String) getDavProperty("quota-used-bytes");
-        if (s == null) {
+        if (s == null || s.trim().length() == 0) {
             return null;
         }
         return Long.parseLong(s);

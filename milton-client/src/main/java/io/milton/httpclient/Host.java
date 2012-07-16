@@ -62,12 +62,11 @@ import org.apache.http.conn.ConnectionKeepAliveStrategy;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.conn.routing.HttpRoutePlanner;
 import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.auth.DigestScheme;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.ExecutionContext;
-import org.apache.http.protocol.HttpContext;
-import org.apache.http.protocol.HttpProcessor;
-import org.apache.http.protocol.HttpRequestExecutor;
+import org.apache.http.protocol.*;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -110,6 +109,7 @@ public class Host extends Folder {
     private final FileSyncer fileSyncer;
     private final List<ConnectionListener> connectionListeners = new ArrayList<ConnectionListener>();
     private boolean secure; // use HTTPS if true
+    private boolean useDigestForPreemptiveAuth = true; // if true we will do pre-emptive auth with Digest, otherwise will use Basic
 
     static {
 //    System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
@@ -159,7 +159,7 @@ public class Host extends Folder {
         if (user != null) {
             client.getCredentialsProvider().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(user, password));
             PreemptiveAuthInterceptor interceptor = new PreemptiveAuthInterceptor();
-            client.addRequestInterceptor(interceptor);
+            client.addRequestInterceptor(interceptor, 0);
         }
 
 
@@ -273,7 +273,7 @@ public class Host extends Folder {
         notifyStartRequest();
         MkColMethod p = new MkColMethod(newUri);
         try {
-            int result = Utils.executeHttpWithStatus(client, p, null);
+            int result = Utils.executeHttpWithStatus(client, p, null, newContext());
             if (result == 409) {
                 // probably means the folder already exists
                 p.abort();
@@ -326,7 +326,7 @@ public class Host extends Folder {
         notifyStartRequest();
         UnLockMethod p = new UnLockMethod(uri, lockToken);
         try {
-            int result = Utils.executeHttpWithStatus(client, p, null);
+            int result = Utils.executeHttpWithStatus(client, p, null, newContext());
             Utils.processResultCode(result, uri);
             return result;
         } catch (IOException ex) {
@@ -360,7 +360,7 @@ public class Host extends Folder {
             ByteArrayEntity requestEntity = new ByteArrayEntity(data);
             requestEntity.setContentType(contentType);
             p.setEntity(requestEntity);
-            HttpResult result = Utils.executeHttpWithResult(client, p, null);
+            HttpResult result = Utils.executeHttpWithResult(client, p, null, newContext());
             return result;
         } catch (IOException ex) {
             throw new RuntimeException(ex);
@@ -413,7 +413,7 @@ public class Host extends Folder {
      */
     public synchronized HttpResult doPut(String newUri, InputStream content, Long contentLength, String contentType, ProgressListener listener) {
         LogUtils.trace(log, "doPut", newUri);
-        return transferService.put(newUri, content, contentLength, contentType, listener);
+        return transferService.put(newUri, content, contentLength, contentType, listener, newContext());
     }
 
     /**
@@ -426,8 +426,9 @@ public class Host extends Folder {
     public synchronized int doCopy(String from, String newUri) throws io.milton.httpclient.HttpException, NotAuthorizedException, ConflictException, BadRequestException, NotFoundException, URISyntaxException {
         notifyStartRequest();
         CopyMethod m = new CopyMethod(from, newUri);
+        m.addHeader("Overwrite", "T");
         try {
-            int res = Utils.executeHttpWithStatus(client, m, null);
+            int res = Utils.executeHttpWithStatus(client, m, null, newContext());
             Utils.processResultCode(res, from);
             return res;
         } catch (HttpException ex) {
@@ -469,7 +470,7 @@ public class Host extends Folder {
         notifyStartRequest();
         HttpDelete m = new HttpDelete(url);
         try {
-            int res = Utils.executeHttpWithStatus(client, m, null);
+            int res = Utils.executeHttpWithStatus(client, m, null, newContext());
             Utils.processResultCode(res, url);
             return res;
         } catch (HttpException ex) {
@@ -491,7 +492,7 @@ public class Host extends Folder {
         notifyStartRequest();
         MoveMethod m = new MoveMethod(sourceUrl, newUri);
         try {
-            int res = Utils.executeHttpWithStatus(client, m, null);
+            int res = Utils.executeHttpWithStatus(client, m, null, newContext());
             Utils.processResultCode(res, sourceUrl);
             return res;
         } finally {
@@ -636,7 +637,7 @@ public class Host extends Folder {
      * @throws com.ettrema.httpclient.Utils.CancelledException
      */
     public synchronized void doGet(String url, StreamReceiver receiver, List<Range> rangeList, ProgressListener listener) throws io.milton.httpclient.HttpException, Utils.CancelledException, NotAuthorizedException, BadRequestException, ConflictException, NotFoundException {
-        transferService.get(url, receiver, rangeList, listener);
+        transferService.get(url, receiver, rangeList, listener, newContext());
     }
 
     /**
@@ -675,7 +676,7 @@ public class Host extends Folder {
                     }
 
                 }
-            }, null, listener);
+            }, null, listener, newContext());
         }
     }
 
@@ -704,7 +705,7 @@ public class Host extends Folder {
             public void receive(InputStream in) throws IOException {
                 IOUtils.copy(in, out);
             }
-        }, null, null);
+        }, null, null, newContext());
     }
 
     /**
@@ -735,7 +736,7 @@ public class Host extends Folder {
         HttpOptions m = new HttpOptions(uri);
         InputStream in = null;
         try {
-            int res = Utils.executeHttpWithStatus(client, m, null);
+            int res = Utils.executeHttpWithStatus(client, m, null, newContext());
             log.trace("result code: " + res);
             if (res == 301 || res == 302) {
                 return;
@@ -777,7 +778,7 @@ public class Host extends Folder {
                         throw new RuntimeException(ex);
                     }
                 }
-            }, null, null);
+            }, null, null, newContext());
         } catch (CancelledException ex) {
             throw new RuntimeException("Should never happen because no progress listener is set", ex);
         }
@@ -806,7 +807,7 @@ public class Host extends Folder {
                         throw new RuntimeException(ex);
                     }
                 }
-            }, null, null);
+            }, null, null, newContext());
         } catch (CancelledException ex) {
             throw new RuntimeException("Should never happen because no progress listener is set", ex);
         }
@@ -836,7 +837,7 @@ public class Host extends Folder {
         m.setEntity(entity);
         try {
             ByteArrayOutputStream bout = new ByteArrayOutputStream();
-            int res = Utils.executeHttpWithStatus(client, m, bout);
+            int res = Utils.executeHttpWithStatus(client, m, bout, newContext());
             Utils.processResultCode(res, url);
             return bout.toString();
         } catch (HttpException ex) {
@@ -1047,7 +1048,35 @@ public class Host extends Folder {
         }
     }
 
+    public boolean isUseDigestForPreemptiveAuth() {
+        return useDigestForPreemptiveAuth;
+    }
+
+    public void setUseDigestForPreemptiveAuth(boolean useDigestForPreemptiveAuth) {
+        this.useDigestForPreemptiveAuth = useDigestForPreemptiveAuth;
+    }
+
+    
+    
+    protected HttpContext newContext() {
+        HttpContext context = new BasicHttpContext();
+        AuthScheme authScheme;
+        if (useDigestForPreemptiveAuth) {
+            authScheme = new DigestScheme();
+        } else {
+            authScheme = new BasicScheme();
+        }
+        context.setAttribute("preemptive-auth", authScheme);
+        return context;
+    }
+
     static class PreemptiveAuthInterceptor implements HttpRequestInterceptor {
+
+        private String nonce;
+        private String realm;
+
+        public PreemptiveAuthInterceptor() {
+        }
 
         @Override
         public void process(final HttpRequest request, final HttpContext context) {
@@ -1057,7 +1086,17 @@ public class Host extends Folder {
             // preemptively
             if (authState.getAuthScheme() == null) {
                 AuthScheme authScheme = (AuthScheme) context.getAttribute("preemptive-auth");
+                //AuthScheme authScheme = cachedAuthScheme;
                 if (authScheme != null) {
+                    if (authScheme instanceof DigestScheme) {
+                        DigestScheme d = (DigestScheme) authScheme;
+                        if (nonce != null) {
+                            d.overrideParamter("nonce", nonce);
+                        }
+                        if (realm != null) {
+                            d.overrideParamter("realm", realm);
+                        }
+                    }
                     CredentialsProvider credsProvider = (CredentialsProvider) context.getAttribute(ClientContext.CREDS_PROVIDER);
                     HttpHost targetHost = (HttpHost) context.getAttribute(ExecutionContext.HTTP_TARGET_HOST);
                     Credentials creds = credsProvider.getCredentials(new AuthScope(targetHost.getHostName(), targetHost.getPort()));
@@ -1067,6 +1106,13 @@ public class Host extends Folder {
                     authState.setAuthScheme(authScheme);
                     authState.setCredentials(creds);
                 }
+            } else {
+                if (authState.getAuthScheme() instanceof DigestScheme) {
+                    DigestScheme scheme = (DigestScheme) authState.getAuthScheme();
+                    nonce = scheme.getParameter("nonce");
+                    realm = scheme.getParameter("realm");
+                }
+
             }
 
         }

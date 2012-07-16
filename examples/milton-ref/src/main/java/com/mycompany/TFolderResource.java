@@ -48,11 +48,11 @@ public class TFolderResource extends TResource implements PutableResource, MakeC
     }
 
     @Override
-    protected Object clone(TFolderResource newParent) {
-        TFolderResource newFolder = new TFolderResource(newParent, name);
+    protected Object clone(TFolderResource newParent, String newName) {
+        TFolderResource newFolder = new TFolderResource(newParent, newName);
         for (Resource child : parent.getChildren()) {
             TResource res = (TResource) child;
-            res.clone(newFolder); // will auto-add to folder
+            res.clone(newFolder, child.getName()); // will auto-add to folder
         }
         return newFolder;
     }

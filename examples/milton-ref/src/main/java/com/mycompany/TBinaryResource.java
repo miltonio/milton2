@@ -27,8 +27,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 
 /**
@@ -50,8 +48,8 @@ public class TBinaryResource extends TResource implements ReplaceableResource{
     }
 
     @Override
-    protected Object clone(TFolderResource newParent) {
-        return new TBinaryResource(newParent, name, bytes, contentType);
+    protected Object clone(TFolderResource newParent, String destName) {
+        return new TBinaryResource(newParent, destName, bytes, contentType);
     }
 
     @Override

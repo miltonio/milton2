@@ -33,6 +33,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.protocol.HttpContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +53,7 @@ public class TransferService {
         this.connectionListeners = connectionListeners;
     }
 
-    public synchronized void get(String url, StreamReceiver receiver, List<Range> rangeList, ProgressListener listener) throws io.milton.httpclient.HttpException, Utils.CancelledException, NotAuthorizedException, BadRequestException, ConflictException, NotFoundException {
+    public synchronized void get(String url, StreamReceiver receiver, List<Range> rangeList, ProgressListener listener, HttpContext context) throws io.milton.httpclient.HttpException, Utils.CancelledException, NotAuthorizedException, BadRequestException, ConflictException, NotFoundException {
         LogUtils.trace(log, "get: ", url);
         notifyStartRequest();
         HttpRequestBase m;
@@ -66,9 +67,9 @@ public class TransferService {
             m = new HttpGet(url);
         }
         InputStream in = null;
-        NotifyingFileInputStream nin = null;
+        NotifyingFileInputStream nin;
         try {
-            HttpResponse resp = client.execute(m);
+            HttpResponse resp = client.execute(m, context);
             if( resp.getEntity() == null ) {
                 log.warn("Did not receive a response entity for GET");
                 return ;
@@ -90,7 +91,7 @@ public class TransferService {
         }
     }
 
-    public HttpResult put(String encodedUrl, InputStream content, Long contentLength, String contentType, ProgressListener listener) {
+    public HttpResult put(String encodedUrl, InputStream content, Long contentLength, String contentType, ProgressListener listener, HttpContext context) {
         LogUtils.trace(log, "put: ", encodedUrl);
         notifyStartRequest();
         String s = encodedUrl;
@@ -106,7 +107,7 @@ public class TransferService {
                 requestEntity = new InputStreamEntity(notifyingIn, contentLength);
             }
             p.setEntity(requestEntity);
-            return Utils.executeHttpWithResult(client, p, null);
+            return Utils.executeHttpWithResult(client, p, null, context);
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         } finally {

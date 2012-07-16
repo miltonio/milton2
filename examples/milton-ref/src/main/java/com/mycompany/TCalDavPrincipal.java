@@ -240,8 +240,8 @@ public class TCalDavPrincipal extends TFolderResource implements CalDavPrincipal
     }
 
     @Override
-    protected Object clone(TFolderResource newParent) {
-        return new TCalDavPrincipal(newParent, name, password, calendarHome, scheduleInboxResource, scheduleOutboxResource, dropBox, addressBookHome);
+    protected Object clone(TFolderResource newParent, String newName) {
+        return new TCalDavPrincipal(newParent, newName, password, calendarHome, scheduleInboxResource, scheduleOutboxResource, dropBox, addressBookHome);
     }
 
     /**

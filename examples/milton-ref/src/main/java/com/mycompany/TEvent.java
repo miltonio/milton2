@@ -43,8 +43,8 @@ public class TEvent extends TResource implements ICalResource {
     }
 
     @Override
-    protected Object clone( TFolderResource newParent ) {
-        TEvent e = new TEvent( (TCalendarResource) newParent, name );
+    protected Object clone( TFolderResource newParent, String newName ) {
+        TEvent e = new TEvent( (TCalendarResource) newParent, newName );
         e.setiCalData( iCalData );
         return e;
     }

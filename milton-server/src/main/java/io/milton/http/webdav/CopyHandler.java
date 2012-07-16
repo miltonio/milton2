@@ -99,12 +99,13 @@ public class CopyHandler implements ExistingEntityHandler {
 				if (rExisting != null) {
 					if (!canOverwrite(request)) {
 						// Exists, and overwrite = F, disallow - http://www.webdav.org/specs/rfc4918.html#rfc.section.9.8.4
+						log.info("destination resource exists, and overwrite header is not set. dest name: " + dest.name + " dest folder: " + colDest.getName());
 						responseHandler.respondPreconditionFailed(request, response, resource);
 						return;
 					} else {
 						// Overwrite is absent or T, so continue
 						if (deleteHelper.isLockedOut(request, rExisting)) {
-							log.info("copy destination exists but is locked");
+							log.info("destination resource exists, and overwrite header IS set, but destination is locked. dest name: " + dest.name + " dest folder: " + colDest.getName());
 							responseHandler.respondPreconditionFailed(request, response, resource);
 							return;
 						} else {

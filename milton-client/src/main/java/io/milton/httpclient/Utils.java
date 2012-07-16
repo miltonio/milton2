@@ -32,6 +32,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.protocol.HTTP;
+import org.apache.http.protocol.HttpContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,13 +75,13 @@ public class Utils {
      * @throws IOException 
      * 
      */
-    public static int executeHttpWithStatus(HttpClient client, HttpUriRequest m, OutputStream out) throws IOException {
-        HttpResult result = executeHttpWithResult(client, m, out);
+    public static int executeHttpWithStatus(HttpClient client, HttpUriRequest m, OutputStream out, HttpContext context) throws IOException {
+        HttpResult result = executeHttpWithResult(client, m, out, context);
         return result.getStatusCode();
     }
     
-    public static HttpResult executeHttpWithResult(HttpClient client, HttpUriRequest m, OutputStream out) throws IOException {
-        HttpResponse resp = client.execute(m);
+    public static HttpResult executeHttpWithResult(HttpClient client, HttpUriRequest m, OutputStream out, HttpContext context) throws IOException {
+        HttpResponse resp = client.execute(m, context);
         HttpEntity entity = resp.getEntity();
         if( entity != null ) {
             InputStream in = null;

@@ -49,8 +49,8 @@ public class TCalendarResource extends TFolderResource implements CalendarResour
     }
 
     @Override
-    protected Object clone(TFolderResource newParent) {
-        return new TCalendarResource(newParent, name);
+    protected Object clone(TFolderResource newParent, String newName) {
+        return new TCalendarResource(newParent, newName);
     }
 
     @Override
