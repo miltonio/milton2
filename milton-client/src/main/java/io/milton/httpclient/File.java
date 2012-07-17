@@ -12,13 +12,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package io.milton.httpclient;
 
 import io.milton.common.Path;
 import io.milton.httpclient.Utils.CancelledException;
 import io.milton.common.LogUtils;
 import io.milton.http.Range;
+import io.milton.http.Response;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
@@ -39,22 +39,33 @@ public class File extends Resource {
 
     private static final Logger log = LoggerFactory.getLogger(File.class);
     public final String contentType;
-    public final Long contentLength;
+    public Long contentLength;
+    private String etag;
 
     public File(Folder parent, PropFindResponse resp) {
         super(parent, resp);
         this.contentType = resp.getContentType();
         this.contentLength = resp.getContentLength();
+        etag = resp.getEtag();
     }
 
-    public File(Folder parent, String name, String contentType, Long contentLength) {
+    public File(Folder parent, String name, String contentType, Long contentLength, String etag) {
         super(parent, name);
         this.contentType = contentType;
         this.contentLength = contentLength;
+        this.etag = etag;
     }
 
-    public void setContent(InputStream in, Long contentLength) throws IOException, HttpException, NotAuthorizedException, ConflictException, BadRequestException, NotFoundException {
-        this.parent.upload(this.name, in, contentLength, null);
+    public void setContent(InputStream in, Long contentLength, ProgressListener listener) throws IOException, HttpException, NotAuthorizedException, ConflictException, BadRequestException, NotFoundException {
+        String newUri = this.encodedUrl();
+        log.trace("upload: " + newUri);
+        System.out.println("upload: etag: " + etag);
+        HttpResult result = host().doPut(newUri, in, contentLength, contentType, etag, listener);
+        etag = result.getHeaders().get(Response.Header.ETAG.code);
+        int resultCode = result.getStatusCode();
+        Utils.processResultCode(resultCode, newUri);
+
+        this.contentLength = contentLength;
     }
 
     @Override
@@ -108,7 +119,7 @@ public class File extends Resource {
         }
         final long[] bytesArr = new long[1];
         try {
-            host().doGet(encodedUrl(), new StreamReceiver() { 
+            host().doGet(encodedUrl(), new StreamReceiver() {
 
                 @Override
                 public void receive(InputStream in) throws IOException {
@@ -125,7 +136,7 @@ public class File extends Resource {
                     }
                 }
             }, rangeList, listener);
-        } catch (CancelledException e) { 
+        } catch (CancelledException e) {
             throw e;
         } catch (Throwable e) {
         } finally {
@@ -141,5 +152,9 @@ public class File extends Resource {
     @Override
     public String encodedUrl() {
         return parent.encodedUrl() + encodedName(); // assume parent is correctly suffixed with a slash
+    }
+
+    public String getEtag() {
+        return etag;
     }
 }

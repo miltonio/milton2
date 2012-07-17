@@ -55,13 +55,11 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.client.methods.HttpOptions;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.ConnectionKeepAliveStrategy;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.conn.routing.HttpRoutePlanner;
-import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.auth.DigestScheme;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -82,6 +80,7 @@ public class Host extends Folder {
 
     public static List<QName> defaultFields = Arrays.asList(
             RespUtils.davName("resourcetype"),
+            RespUtils.davName("etag"),
             RespUtils.davName("displayname"),
             RespUtils.davName("getcontentlength"),
             RespUtils.davName("creationdate"),
@@ -344,29 +343,15 @@ public class Host extends Folder {
      * @param contentType
      * @return
      */
-    public HttpResult doPut(Path path, InputStream content, Long contentLength, String contentType) {
+    public HttpResult doPut(Path path, InputStream content, Long contentLength, String contentType, String etag) {
         String dest = buildEncodedUrl(path);
-        return doPut(dest, content, contentLength, contentType, null);
+        return doPut(dest, content, contentLength, contentType, etag, null);
     }
 
-    public HttpResult doPut(Path path, byte[] data, String contentType) {
-        String dest = buildEncodedUrl(path);
-        LogUtils.trace(log, "doPut: ", dest);
-        notifyStartRequest();
-        HttpPut p = new HttpPut(dest);
-
-        // Dont use transferService so we can use byte array
-        try {
-            ByteArrayEntity requestEntity = new ByteArrayEntity(data);
-            requestEntity.setContentType(contentType);
-            p.setEntity(requestEntity);
-            HttpResult result = Utils.executeHttpWithResult(client, p, null, newContext());
-            return result;
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        } finally {
-            notifyFinishRequest();
-        }
+    public HttpResult doPut(Path path, byte[] data, String contentType, String etag) {
+        String dest = buildEncodedUrl(path);        
+        ByteArrayInputStream bin = new ByteArrayInputStream(data);
+        return transferService.put(dest, bin, (long)data.length, contentType, etag, null, newContext());        
     }
 
     /**
@@ -378,7 +363,7 @@ public class Host extends Folder {
      * @throws FileNotFoundException
      * @throws HttpException
      */
-    public HttpResult doPut(Path remotePath, java.io.File file, ProgressListener listener) throws FileNotFoundException, HttpException, CancelledException, NotAuthorizedException, ConflictException {
+    public HttpResult doPut(Path remotePath, java.io.File file, String etag, ProgressListener listener) throws FileNotFoundException, HttpException, CancelledException, NotAuthorizedException, ConflictException {
         if (fileSyncer != null) {
             try {
                 fileSyncer.upload(this, file, remotePath, listener);
@@ -395,7 +380,7 @@ public class Host extends Folder {
         try {
             in = new FileInputStream(file);
             String dest = buildEncodedUrl(remotePath);
-            return doPut(dest, in, file.length(), null, listener);
+            return doPut(dest, in, file.length(), null, etag, listener);
         } finally {
             IOUtils.closeQuietly(in);
         }
@@ -409,11 +394,12 @@ public class Host extends Folder {
      * @param content
      * @param contentLength
      * @param contentType
+     * @param etag - expected etag on the server, or null if a new file
      * @return - the result code
      */
-    public synchronized HttpResult doPut(String newUri, InputStream content, Long contentLength, String contentType, ProgressListener listener) {
+    public synchronized HttpResult doPut(String newUri, InputStream content, Long contentLength, String contentType, String etag, ProgressListener listener) {
         LogUtils.trace(log, "doPut", newUri);
-        return transferService.put(newUri, content, contentLength, contentType, listener, newContext());
+        return transferService.put(newUri, content, contentLength, contentType, etag, listener, newContext());
     }
 
     /**
@@ -1056,8 +1042,6 @@ public class Host extends Folder {
         this.useDigestForPreemptiveAuth = useDigestForPreemptiveAuth;
     }
 
-    
-    
     protected HttpContext newContext() {
         HttpContext context = new BasicHttpContext();
         AuthScheme authScheme;

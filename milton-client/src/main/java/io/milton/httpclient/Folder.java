@@ -12,7 +12,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package io.milton.httpclient;
 
 import io.milton.common.Path;
@@ -22,6 +21,7 @@ import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.exceptions.NotFoundException;
 import com.ettrema.cache.Cache;
 import io.milton.common.LogUtils;
+import io.milton.http.Response;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -205,14 +205,30 @@ public class Folder extends Resource {
         return uploadFile(f.getName(), f, listener);
     }
 
+    /**
+     * Upload a new file
+     *
+     * @param newName
+     * @param f
+     * @param listener
+     * @return
+     * @throws FileNotFoundException
+     * @throws IOException
+     * @throws HttpException
+     * @throws NotAuthorizedException
+     * @throws ConflictException
+     * @throws BadRequestException
+     * @throws NotFoundException
+     */
     public io.milton.httpclient.File uploadFile(String newName, File f, ProgressListener listener) throws FileNotFoundException, IOException, HttpException, NotAuthorizedException, ConflictException, BadRequestException, NotFoundException {
         Path newPath = path().child(newName);
         children(); // ensure children are loaded
-        HttpResult result = host().doPut(newPath, f, listener);
+        HttpResult result = host().doPut(newPath, f, null, listener);
         int resultCode = result.getStatusCode();
         LogUtils.trace(log, "uploadFile", newPath, " result", resultCode);
         Utils.processResultCode(resultCode, newPath.toString());
-        io.milton.httpclient.File child = new io.milton.httpclient.File(this, newName, null, f.length());
+        String newEtag = result.getHeaders().get(Response.Header.ETAG.code);
+        io.milton.httpclient.File child = new io.milton.httpclient.File(this, newName, null, f.length(), newEtag);
         flush();
         notifyOnChildAdded(child);
         return child;
@@ -237,19 +253,52 @@ public class Folder extends Resource {
         return upload(name, content, length, listener);
     }
 
+    /**
+     * Upload a new file
+     *
+     * @param name
+     * @param content
+     * @param contentLength
+     * @param listener
+     * @return
+     * @throws IOException
+     * @throws HttpException
+     * @throws NotAuthorizedException
+     * @throws ConflictException
+     * @throws BadRequestException
+     * @throws NotFoundException
+     */
     public io.milton.httpclient.File upload(String name, InputStream content, Long contentLength, ProgressListener listener) throws IOException, HttpException, NotAuthorizedException, ConflictException, BadRequestException, NotFoundException {
         String contentType = URLConnection.guessContentTypeFromName(name);
-        return upload(name, content, contentLength, contentType, listener);
+        return upload(name, content, contentLength, contentType, null, listener);
     }
 
-    public io.milton.httpclient.File upload(String name, InputStream content, Long contentLength, String contentType, ProgressListener listener) throws IOException, HttpException, NotAuthorizedException, ConflictException, BadRequestException, NotFoundException {
+    /**
+     *
+     * @param name
+     * @param content
+     * @param contentLength
+     * @param contentType
+     * @param etag - the expected etag of the file being overwritten, or null if
+     * expecting to create new
+     * @param listener
+     * @return
+     * @throws IOException
+     * @throws HttpException
+     * @throws NotAuthorizedException
+     * @throws ConflictException
+     * @throws BadRequestException
+     * @throws NotFoundException
+     */
+    public io.milton.httpclient.File upload(String name, InputStream content, Long contentLength, String contentType, String etag, ProgressListener listener) throws IOException, HttpException, NotAuthorizedException, ConflictException, BadRequestException, NotFoundException {
         children(); // ensure children are loaded
         String newUri = encodedUrl() + io.milton.common.Utils.percentEncode(name);
         log.trace("upload: " + newUri);
-        HttpResult result = host().doPut(newUri, content, contentLength, contentType, listener);
+        HttpResult result = host().doPut(newUri, content, contentLength, contentType, etag, listener);
         int resultCode = result.getStatusCode();
         Utils.processResultCode(resultCode, newUri);
-        io.milton.httpclient.File child = new io.milton.httpclient.File(this, name, contentType, contentLength);
+        String newEtag = result.getHeaders().get(Response.Header.ETAG.code);
+        io.milton.httpclient.File child = new io.milton.httpclient.File(this, name, contentType, contentLength, newEtag);
         io.milton.httpclient.Resource oldChild = this.child(child.name);
         flush();
         notifyOnChildAdded(child);

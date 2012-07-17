@@ -149,6 +149,10 @@ public class PropFindResponse {
     public Date getModifiedDate() {
         return (Date) getDavProperty("getlastmodified");
     }
+    
+    public String getEtag() {
+        return (String) getDavProperty("getetag");
+    }
 
     public String getContentType() {
         return (String) getDavProperty("getcontenttype");

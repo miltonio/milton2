@@ -115,6 +115,12 @@ public class PutHandler implements Handler {
 				responseHandler.respondPreconditionFailed(request, response, existingResource); 
 				return ;
 			}			
+			if( matchHelper.checkIfNoneMatch(existingResource, request)) {
+				log.info("if-none-match comparison failed, aborting PUT request");
+				responseHandler.respondPreconditionFailed(request, response, existingResource);
+				return ;
+			}
+			
 			Resource parent = manager.getResourceFactory().getResource(host, path.getParent().toString());
 			if (parent instanceof CollectionResource) {
 				CollectionResource parentCol = (CollectionResource) parent;
@@ -123,6 +129,17 @@ public class PutHandler implements Handler {
 				log.warn("parent exists but is not a collection resource: " + path.getParent());
 			}
 		} else {
+			if( !matchHelper.checkIfMatch(null, request)) {
+				log.info("if-match comparison failed on null resource, aborting PUT request");
+				responseHandler.respondPreconditionFailed(request, response, existingResource);
+				return ;
+			}
+			if( matchHelper.checkIfNoneMatch(null, request)) {
+				log.info("if-none-match comparison failed on null resource, aborting PUT request");
+				responseHandler.respondPreconditionFailed(request, response, existingResource);
+				return ;
+			}
+			
 			CollectionResource parentCol = putHelper.findNearestParent(manager, host, path);
 			storageErr = handlerHelper.checkStorageOnAdd(request, parentCol, path.getParent(), host);
 		}

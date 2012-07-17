@@ -145,7 +145,7 @@ public class ZSyncClient implements FileSyncer{
         InputStream uploadIn = null;
         try {
             uploadIn = umx.makeUpload();
-            transferService.put(url, uploadIn, null, null, listener, null);
+            transferService.put(url, uploadIn, null, null, null, listener, null);
         } finally {
             IOUtils.closeQuietly(uploadIn);
             FileUtils.deleteQuietly(fRemoteMeta);

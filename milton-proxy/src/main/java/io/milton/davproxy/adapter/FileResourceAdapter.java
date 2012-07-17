@@ -104,7 +104,7 @@ public class FileResourceAdapter extends AbstractRemoteAdapter implements FileRe
     @Override
     public void replaceContent(InputStream in, Long length) throws BadRequestException, ConflictException, NotAuthorizedException {
         try {
-            file.setContent(in, length);
+            file.setContent(in, length, null);
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         } catch (HttpException ex) {

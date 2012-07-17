@@ -54,6 +54,24 @@ public class MatchHelperTest extends TestCase {
 		assertTrue(result);
 	}
 
+	public void testCheckIfMatch_DoesMatch_Star() {
+		expect(resource.getUniqueId()).andReturn("X");
+		expect(request.getIfMatchHeader()).andReturn("*");
+		replay(resource, request);
+		boolean result = matchHelper.checkIfMatch(resource, request);
+		verify(resource, request);
+		assertTrue(result);
+	}
+
+	public void testCheckIfMatch_DoesMatch_Star_NullResource() {
+		expect(request.getIfMatchHeader()).andReturn("*");
+		replay(resource, request);
+		boolean result = matchHelper.checkIfMatch(null, request);
+		verify(resource, request);
+		assertFalse(result);
+	}
+	
+	
 	public void testCheckIfMatch_DoesMatch_MultiValues() {
 		expect(resource.getUniqueId()).andReturn("X");
 		expect(request.getIfMatchHeader()).andReturn("X, Y");
@@ -96,6 +114,28 @@ public class MatchHelperTest extends TestCase {
 		replay(resource, request);
 		boolean result = matchHelper.checkIfNoneMatch(resource, request);
 		verify(resource, request);
+		assertFalse(result);
+	}
+
+	/**
+	 * If-none-match with a star is intended to ensure that there is no resource
+	 * at the given url. If there is any resource the the process should fail,
+	 * ie
+	 *
+	 */
+	public void testCheckIfNoneMatch_DoesNotMatch_Star_TrueIfResource() {
+		expect(request.getIfNoneMatchHeader()).andReturn("*");
+		replay(request);
+		boolean result = matchHelper.checkIfNoneMatch(resource, request);
+		verify(request);
+		assertTrue(result);
+	}
+
+	public void testCheckIfNoneMatch_DoesNotMatch_Star_FalseIfNoResource() {
+		expect(request.getIfNoneMatchHeader()).andReturn("*");
+		replay(request);
+		boolean result = matchHelper.checkIfNoneMatch(null, request);
+		verify(request);
 		assertFalse(result);
 	}
 

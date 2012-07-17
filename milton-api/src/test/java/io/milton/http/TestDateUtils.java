@@ -55,4 +55,16 @@ public class TestDateUtils extends TestCase {
         Date dt = DateUtils.parseDate("2010-04-11 12:00:00");
         System.out.println("dt: " + dt);
     }
+    
+
+    public void testParseWebdavDate_LongFormat() throws DateParseException {
+        Date dt = DateUtils.parseWebDavDate("Wed, 27 Jun 2012 02:08:54 GMT");
+        System.out.println("dt: " + dt);
+    }    
+    
+    public void testParseWebdavDate_ExpectedFormat() throws DateParseException {
+        Date dt = DateUtils.parseWebDavDate("2010-09-03T09:29:43Z");
+        System.out.println("dt: " + dt);
+    }    
+        
 }

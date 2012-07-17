@@ -17,6 +17,7 @@ package io.milton.httpclient;
 
 import io.milton.common.LogUtils;
 import io.milton.http.Range;
+import io.milton.http.Request;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
@@ -91,11 +92,38 @@ public class TransferService {
         }
     }
 
-    public HttpResult put(String encodedUrl, InputStream content, Long contentLength, String contentType, ProgressListener listener, HttpContext context) {
+    /**
+     * Attempt to PUT a file to the server.
+     * 
+     * Now includes an etag check. If you intend to overwrite a file then include a non-null
+     * etag. This will do an if-match check on the server to ensure you're not overwriting
+     * someone else's changes. If the file in new, the etag given should be null, this will
+     * result in an if-none-match: * check, which will fail if a file already exists
+     * 
+     * 
+     * 
+     * @param encodedUrl
+     * @param content
+     * @param contentLength
+     * @param contentType
+     * @param etag - expected etag on the server if overwriting, or null if a new file
+     * @param listener
+     * @param context
+     * @return 
+     */
+    public HttpResult put(String encodedUrl, InputStream content, Long contentLength, String contentType, String etag, ProgressListener listener, HttpContext context) {
         LogUtils.trace(log, "put: ", encodedUrl);
         notifyStartRequest();
         String s = encodedUrl;
         HttpPut p = new HttpPut(s);
+        if( etag != null ) {
+            p.addHeader(Request.Header.IF_MATCH.code, etag);
+            p.addHeader(Request.Header.OVERWRITE.code, "T");
+            System.out.println(Request.Header.IF_MATCH.code + "=" + etag);
+        } else {
+            p.addHeader(Request.Header.IF_NONE_MATCH.code, "*"); // this will fail if there is a file with the same name
+            System.out.println(Request.Header.IF_NONE_MATCH.code + "=*");
+        }
 
         NotifyingFileInputStream notifyingIn = null;
         try {
