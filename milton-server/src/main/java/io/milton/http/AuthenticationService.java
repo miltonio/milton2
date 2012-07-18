@@ -12,7 +12,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package io.milton.http;
 
 import io.milton.resource.GetableResource;
@@ -30,26 +29,21 @@ import org.slf4j.LoggerFactory;
 public class AuthenticationService {
 
 	private static final Logger log = LoggerFactory.getLogger(AuthenticationService.class);
-	
-	
 	private List<AuthenticationHandler> authenticationHandlers;
-
 	private List<ExternalIdentityProvider> externalIdentityProviders;
 	private boolean disableExternal;
 	private String[] browserIds = {"msie", "firefox", "chrome", "safari", "opera"};
 
 	/**
-	 * Creates a AuthenticationService using the given handlers. Use this if
-	 * you don't want the default of a BasicAuthHandler and a DigestAuthenticationHandler
+	 * Creates a AuthenticationService using the given handlers. Use this if you
+	 * don't want the default of a BasicAuthHandler and a
+	 * DigestAuthenticationHandler
 	 *
 	 * @param authenticationHandlers
 	 */
 	public AuthenticationService(List<AuthenticationHandler> authenticationHandlers) {
 		this.authenticationHandlers = authenticationHandlers;
 	}
-
-
-
 
 	/**
 	 * Looks for an AuthenticationHandler which supports the given resource and
@@ -60,9 +54,9 @@ public class AuthenticationService {
 	 *
 	 * @param resource
 	 * @param request
-	 * @return - null if no authentication was attempted. Otherwise, an AuthStatus
-	 * object containing the Auth object and a boolean indicating whether the
-	 * login succeeded
+	 * @return - null if no authentication was attempted. Otherwise, an
+	 * AuthStatus object containing the Auth object and a boolean indicating
+	 * whether the login succeeded
 	 */
 	public AuthStatus authenticate(Resource resource, Request request) {
 		log.trace("authenticate");
@@ -127,7 +121,6 @@ public class AuthenticationService {
 		return authenticationHandlers;
 	}
 
-
 	public List<ExternalIdentityProvider> getExternalIdentityProviders() {
 		return externalIdentityProviders;
 	}
@@ -144,14 +137,13 @@ public class AuthenticationService {
 		this.disableExternal = disableExternal;
 	}
 
-
 	/**
 	 * Determine if we can use external identify providers to authenticate this
 	 * request
-	 * 
+	 *
 	 * @param resource
 	 * @param request
-	 * @return 
+	 * @return
 	 */
 	public boolean canUseExternalAuth(Resource resource, Request request) {
 		if (isDisableExternal()) {
@@ -184,7 +176,7 @@ public class AuthenticationService {
 		// This can only be done for user agents which support displaying forms and redirection
 		// Ie typical web browsers are ok, webdav clients are generally not ok
 		String ua = request.getUserAgentHeader();
-		if( StringUtils.contains(ua.toLowerCase(), browserIds) ) {
+		if (StringUtils.contains(ua.toLowerCase(), browserIds)) {
 			log.trace("is a known web browser, so can offer external auth");
 			return true;
 		} else {
@@ -194,7 +186,6 @@ public class AuthenticationService {
 
 	}
 
-
 	public static class AuthStatus {
 
 		public final Auth auth;
@@ -203,6 +194,18 @@ public class AuthenticationService {
 		public AuthStatus(Auth auth, boolean loginFailed) {
 			this.auth = auth;
 			this.loginFailed = loginFailed;
+		}
+
+		@Override
+		public String toString() {
+			if (auth == null) {
+				return "AuthStatus: no creds";
+			}
+			if (loginFailed) {
+				return "AuthStatus: login failed: " + auth.getUser();
+			} else {
+				return "AuthStatus: logged in: " + auth.getUser();
+			}
 		}
 	}
 }

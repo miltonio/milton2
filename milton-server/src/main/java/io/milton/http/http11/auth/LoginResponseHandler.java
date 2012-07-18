@@ -37,12 +37,15 @@ public class LoginResponseHandler extends AbstractWrappingResponseHandler {
 	private static final Logger log = LoggerFactory.getLogger(LoginResponseHandler.class);
 	private String loginPage = "/login.html";
 	private final ResourceFactory resourceFactory;
+	private final LoginPageTypeHandler loginPageTypeHandler;
 	private List<String> excludePaths;
 	private boolean enabled = true;
+	
 
-	public LoginResponseHandler(WebDavResponseHandler wrapped, ResourceFactory resourceFactory) {
+	public LoginResponseHandler(WebDavResponseHandler wrapped, ResourceFactory resourceFactory, LoginPageTypeHandler loginPageTypeHandler) {
 		super(wrapped);
 		this.resourceFactory = resourceFactory;
+		this.loginPageTypeHandler = loginPageTypeHandler;
 	}
 
 	/**
@@ -60,10 +63,10 @@ public class LoginResponseHandler extends AbstractWrappingResponseHandler {
 		log.info("respondUnauthorised");
 		String acceptHeader = request.getAcceptHeader();
 		if (isEnabled() && !excluded(request) && isGetOrPost(request)) {
-			if (isPage(resource, acceptHeader)) {
+			if (loginPageTypeHandler.canLogin(resource, request)) {
 				attemptRespondLoginPage(request, resource, response);
 				return;
-			} else if (isAjax(acceptHeader)) {
+			} else if (loginPageTypeHandler.isAjax(resource, request)) {
 				respondJson(request, response, resource);
 				return;
 			}
@@ -107,30 +110,6 @@ public class LoginResponseHandler extends AbstractWrappingResponseHandler {
 			} catch (NotFoundException ex) {
 				throw new RuntimeException(ex);
 			}
-		}
-	}
-
-	private boolean isPage(Resource resource, String ctHeader) {
-		if (resource instanceof GetableResource) {
-			GetableResource gr = (GetableResource) resource;
-			String ctResource = gr.getContentType("text/html");
-			if (ctResource == null) {
-				if (ctHeader != null) {
-					boolean b = ctHeader.contains("html");
-					log.trace("isPage: resource has no content type, depends on requested content type: " + b);
-					return b;
-				} else {
-					log.trace("isPage: resource has no content type, and no requeted content type, so assume false");
-					return false;
-				}
-			} else {
-				boolean b = ctResource.contains("html");
-				log.trace("isPage: resource has content type. is html? " + b);
-				return b;
-			}
-		} else {
-			log.trace("isPage: resource is not getable");
-			return false;
 		}
 	}
 
@@ -178,10 +157,6 @@ public class LoginResponseHandler extends AbstractWrappingResponseHandler {
 		this.enabled = enabled;
 	}
 
-	private boolean isAjax(String acceptHeader) {
-		return acceptHeader != null && (acceptHeader.contains("application/json") || acceptHeader.contains("text/javascript"));
-	}
-
 	private void respondJson(Request request, Response response, Resource resource) {
 		JSONObject json = new JSONObject();
 		Boolean loginResult = (Boolean) request.getAttributes().get("loginResult");
@@ -208,6 +183,67 @@ public class LoginResponseHandler extends AbstractWrappingResponseHandler {
 			response.getOutputStream().write(arr);
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
+		}
+	}
+
+	public interface LoginPageTypeHandler {
+
+		/**
+		 * Return true if the given resource and request is suitable for presenting
+		 * a web browser login page
+		 * 
+		 * @param r
+		 * @param request
+		 * @return 
+		 */
+		boolean canLogin(Resource r, Request request);
+		
+		/**
+		 * Return true if the request indicates that the login response should
+		 * be given as json data (ie response to an ajax login)
+		 * 
+		 * @param acceptHeader
+		 * @return 
+		 */
+		boolean isAjax(Resource r, Request request);
+	}
+
+	
+	/**
+	 * Default implementation which uses some sensible rules about content types etc
+	 */
+	public static class ContentTypeLoginPageTypeHandler implements LoginPageTypeHandler {
+
+		@Override
+		public boolean canLogin(Resource resource, Request request) {
+			if (resource instanceof GetableResource) {
+				String ctHeader = request.getAcceptHeader();
+				GetableResource gr = (GetableResource) resource;
+				String ctResource = gr.getContentType("text/html");
+				if (ctResource == null) {
+					if (ctHeader != null) {
+						boolean b = ctHeader.contains("html");
+						log.trace("isPage: resource has no content type, depends on requested content type: " + b);
+						return b;
+					} else {
+						log.trace("isPage: resource has no content type, and no requeted content type, so assume false");
+						return false;
+					}
+				} else {
+					boolean b = ctResource.contains("html");
+					log.trace("isPage: resource has content type. is html? " + b);
+					return b;
+				}
+			} else {
+				log.trace("isPage: resource is not getable");
+				return false;
+			}
+		}
+
+		@Override
+		public boolean isAjax(Resource r, Request request) {
+			String acceptHeader = request.getAcceptHeader();
+			return acceptHeader != null && (acceptHeader.contains("application/json") || acceptHeader.contains("text/javascript"));
 		}
 	}
 }

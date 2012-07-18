@@ -290,11 +290,11 @@ public class Folder extends Resource {
      * @throws BadRequestException
      * @throws NotFoundException
      */
-    public io.milton.httpclient.File upload(String name, InputStream content, Long contentLength, String contentType, String etag, ProgressListener listener) throws IOException, HttpException, NotAuthorizedException, ConflictException, BadRequestException, NotFoundException {
+    public io.milton.httpclient.File upload(String name, InputStream content, Long contentLength, String contentType, IfMatchCheck matchCheck, ProgressListener listener) throws IOException, HttpException, NotAuthorizedException, ConflictException, BadRequestException, NotFoundException {
         children(); // ensure children are loaded
         String newUri = encodedUrl() + io.milton.common.Utils.percentEncode(name);
         log.trace("upload: " + newUri);
-        HttpResult result = host().doPut(newUri, content, contentLength, contentType, etag, listener);
+        HttpResult result = host().doPut(newUri, content, contentLength, contentType, matchCheck, listener);
         int resultCode = result.getStatusCode();
         Utils.processResultCode(resultCode, newUri);
         String newEtag = result.getHeaders().get(Response.Header.ETAG.code);

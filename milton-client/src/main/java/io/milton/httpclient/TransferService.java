@@ -12,7 +12,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package io.milton.httpclient;
 
 import io.milton.common.LogUtils;
@@ -33,6 +32,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.protocol.HttpContext;
 import org.slf4j.Logger;
@@ -71,9 +71,9 @@ public class TransferService {
         NotifyingFileInputStream nin;
         try {
             HttpResponse resp = client.execute(m, context);
-            if( resp.getEntity() == null ) {
+            if (resp.getEntity() == null) {
                 log.warn("Did not receive a response entity for GET");
-                return ;
+                return;
             }
             HttpEntity entity = resp.getEntity();
             in = entity.getContent();
@@ -94,35 +94,38 @@ public class TransferService {
 
     /**
      * Attempt to PUT a file to the server.
-     * 
-     * Now includes an etag check. If you intend to overwrite a file then include a non-null
-     * etag. This will do an if-match check on the server to ensure you're not overwriting
-     * someone else's changes. If the file in new, the etag given should be null, this will
-     * result in an if-none-match: * check, which will fail if a file already exists
-     * 
-     * 
-     * 
+     *
+     * Now includes an etag check. If you intend to overwrite a file then
+     * include a non-null etag. This will do an if-match check on the server to
+     * ensure you're not overwriting someone else's changes. If the file in new,
+     * the etag given should be null, this will result in an if-none-match: *
+     * check, which will fail if a file already exists
+     *
+     *
+     *
      * @param encodedUrl
      * @param content
      * @param contentLength
      * @param contentType
-     * @param etag - expected etag on the server if overwriting, or null if a new file
+     * @param etag - expected etag on the server if overwriting, or null if a
+     * new file
      * @param listener
      * @param context
-     * @return 
+     * @return
      */
-    public HttpResult put(String encodedUrl, InputStream content, Long contentLength, String contentType, String etag, ProgressListener listener, HttpContext context) {
+    public HttpResult put(String encodedUrl, InputStream content, Long contentLength, String contentType, IfMatchCheck etagMatch, ProgressListener listener, HttpContext context) {
         LogUtils.trace(log, "put: ", encodedUrl);
         notifyStartRequest();
         String s = encodedUrl;
         HttpPut p = new HttpPut(s);
-        if( etag != null ) {
-            p.addHeader(Request.Header.IF_MATCH.code, etag);
-            p.addHeader(Request.Header.OVERWRITE.code, "T");
-            System.out.println(Request.Header.IF_MATCH.code + "=" + etag);
-        } else {
-            p.addHeader(Request.Header.IF_NONE_MATCH.code, "*"); // this will fail if there is a file with the same name
-            System.out.println(Request.Header.IF_NONE_MATCH.code + "=*");
+        p.addHeader(Request.Header.CONTENT_TYPE.code, contentType);
+        p.addHeader(Request.Header.OVERWRITE.code, "T"); // we always allow overwrites
+        if (etagMatch != null) {
+            if (etagMatch.getEtag() != null) {
+                p.addHeader(Request.Header.IF_MATCH.code, etagMatch.getEtag());                
+            } else {
+                p.addHeader(Request.Header.IF_NONE_MATCH.code, "*"); // this will fail if there is a file with the same name
+            }
         }
 
         NotifyingFileInputStream notifyingIn = null;
@@ -130,9 +133,10 @@ public class TransferService {
             notifyingIn = new NotifyingFileInputStream(content, contentLength, s, listener);
             HttpEntity requestEntity;
             if (contentLength == null) {
-                throw new RuntimeException("Content length for input stream is null, you must provide a length");                
+                throw new RuntimeException("Content length for input stream is null, you must provide a length");
             } else {
                 requestEntity = new InputStreamEntity(notifyingIn, contentLength);
+                requestEntity = new BufferedHttpEntity(requestEntity); // wrap in a buffering thingo to allow repeated requests
             }
             p.setEntity(requestEntity);
             return Utils.executeHttpWithResult(client, p, null, context);

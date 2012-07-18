@@ -33,6 +33,7 @@ import io.milton.http.fs.SimpleSecurityManager;
 import io.milton.http.http11.*;
 import io.milton.http.http11.DefaultHttp11ResponseHandler.BUFFERING;
 import io.milton.http.http11.auth.*;
+import io.milton.http.http11.auth.LoginResponseHandler.LoginPageTypeHandler;
 import io.milton.http.json.JsonResourceFactory;
 import io.milton.http.quota.QuotaDataAccessor;
 import io.milton.http.values.ValueWriters;
@@ -145,6 +146,8 @@ public class HttpManagerBuilder {
 	private boolean aclEnabled = true;
 	private MatchHelper matchHelper;
 	private PartialGetHelper partialGetHelper;
+	private LoginResponseHandler loginResponseHandler;
+	private LoginResponseHandler.LoginPageTypeHandler loginPageTypeHandler = new LoginResponseHandler.ContentTypeLoginPageTypeHandler();
 
 	/**
 	 * This method creates instances of required objects which have not been set
@@ -265,10 +268,12 @@ public class HttpManagerBuilder {
 			}
 			if (enableFormAuth) {
 				log.info("form authentication is enabled, so wrap response handler with " + LoginResponseHandler.class);
-				LoginResponseHandler loginResponseHandler = new LoginResponseHandler(webdavResponseHandler, mainResourceFactory);
-				loginResponseHandler.setExcludePaths(loginPageExcludePaths);
-				loginResponseHandler.setLoginPage(loginPage);
-				webdavResponseHandler = loginResponseHandler;
+				if( loginResponseHandler == null ) {
+					loginResponseHandler = new LoginResponseHandler(webdavResponseHandler, mainResourceFactory, loginPageTypeHandler);
+					loginResponseHandler.setExcludePaths(loginPageExcludePaths);
+					loginResponseHandler.setLoginPage(loginPage);
+					webdavResponseHandler = loginResponseHandler;
+				}
 			}
 		}
 		init(authenticationService, webdavResponseHandler, resourceTypeHelper);
@@ -1039,6 +1044,22 @@ public class HttpManagerBuilder {
 
 	public void setMultiNamespaceCustomPropertySourceEnabled(boolean multiNamespaceCustomPropertySourceEnabled) {
 		this.multiNamespaceCustomPropertySourceEnabled = multiNamespaceCustomPropertySourceEnabled;
+	}
+
+	public LoginPageTypeHandler getLoginPageTypeHandler() {
+		return loginPageTypeHandler;
+	}
+
+	public void setLoginPageTypeHandler(LoginPageTypeHandler loginPageTypeHandler) {
+		this.loginPageTypeHandler = loginPageTypeHandler;
+	}
+
+	public LoginResponseHandler getLoginResponseHandler() {
+		return loginResponseHandler;
+	}
+
+	public void setLoginResponseHandler(LoginResponseHandler loginResponseHandler) {
+		this.loginResponseHandler = loginResponseHandler;
 	}
 	
 	

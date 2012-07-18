@@ -91,9 +91,9 @@ public class HandlerHelper {
 		}
 	}
 
-	public boolean checkAuthorisation(HttpManager manager, Resource resource, Request request) {
-		log.trace("checkAuthorisation");
+	public boolean checkAuthorisation(HttpManager manager, Resource resource, Request request) {		
 		AuthStatus authStatus = checkAuthentication(manager, resource, request);
+		log.trace("checkAuthorisation: " + authStatus);
 
 		// a null authStatus means that no authentication was attempted, eg an anonymous request
 		// it is up to the implementation to decide whether or not to allow anonymous access
@@ -120,10 +120,11 @@ public class HandlerHelper {
 					log.trace("  - auth: " + auth.getUser() + " tag: " + auth.getTag());
 				}
 			} else {
-				log.trace("  - anonymous request");
+				log.trace("  - anonymous request rejected");
 			}
 			return false;
 		} else {
+			log.trace("checkAuthorisation: request permitted");
 			return true;
 		}
 	}

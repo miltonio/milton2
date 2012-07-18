@@ -59,12 +59,12 @@ public class TestDateUtils extends TestCase {
 
     public void testParseWebdavDate_LongFormat() throws DateParseException {
         Date dt = DateUtils.parseWebDavDate("Wed, 27 Jun 2012 02:08:54 GMT");
-        System.out.println("dt: " + dt);
+        System.out.println("testParseWebdavDate_LongFormat: " + dt);
     }    
     
     public void testParseWebdavDate_ExpectedFormat() throws DateParseException {
         Date dt = DateUtils.parseWebDavDate("2010-09-03T09:29:43Z");
-        System.out.println("dt: " + dt);
+        System.out.println("testParseWebdavDate_ExpectedFormat: " + dt);
     }    
         
 }

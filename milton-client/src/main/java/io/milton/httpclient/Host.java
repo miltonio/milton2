@@ -343,15 +343,15 @@ public class Host extends Folder {
      * @param contentType
      * @return
      */
-    public HttpResult doPut(Path path, InputStream content, Long contentLength, String contentType, String etag) {
+    public HttpResult doPut(Path path, InputStream content, Long contentLength, String contentType, IfMatchCheck matchCheck) {
         String dest = buildEncodedUrl(path);
-        return doPut(dest, content, contentLength, contentType, etag, null);
+        return doPut(dest, content, contentLength, contentType, matchCheck, null);
     }
 
-    public HttpResult doPut(Path path, byte[] data, String contentType, String etag) {
-        String dest = buildEncodedUrl(path);        
+    public HttpResult doPut(Path path, byte[] data, String contentType) {
+        String dest = buildEncodedUrl(path);
         ByteArrayInputStream bin = new ByteArrayInputStream(data);
-        return transferService.put(dest, bin, (long)data.length, contentType, etag, null, newContext());        
+        return transferService.put(dest, bin, (long) data.length, contentType, null, null, newContext());
     }
 
     /**
@@ -363,7 +363,7 @@ public class Host extends Folder {
      * @throws FileNotFoundException
      * @throws HttpException
      */
-    public HttpResult doPut(Path remotePath, java.io.File file, String etag, ProgressListener listener) throws FileNotFoundException, HttpException, CancelledException, NotAuthorizedException, ConflictException {
+    public HttpResult doPut(Path remotePath, java.io.File file, IfMatchCheck matchCheck, ProgressListener listener) throws FileNotFoundException, HttpException, CancelledException, NotAuthorizedException, ConflictException {
         if (fileSyncer != null) {
             try {
                 fileSyncer.upload(this, file, remotePath, listener);
@@ -380,7 +380,7 @@ public class Host extends Folder {
         try {
             in = new FileInputStream(file);
             String dest = buildEncodedUrl(remotePath);
-            return doPut(dest, in, file.length(), null, etag, listener);
+            return doPut(dest, in, file.length(), null, matchCheck, listener);
         } finally {
             IOUtils.closeQuietly(in);
         }
@@ -397,9 +397,9 @@ public class Host extends Folder {
      * @param etag - expected etag on the server, or null if a new file
      * @return - the result code
      */
-    public synchronized HttpResult doPut(String newUri, InputStream content, Long contentLength, String contentType, String etag, ProgressListener listener) {
+    public synchronized HttpResult doPut(String newUri, InputStream content, Long contentLength, String contentType, IfMatchCheck matchCheck, ProgressListener listener) {
         LogUtils.trace(log, "doPut", newUri);
-        return transferService.put(newUri, content, contentLength, contentType, etag, listener, newContext());
+        return transferService.put(newUri, content, contentLength, contentType, matchCheck, listener, newContext());
     }
 
     /**
@@ -1072,29 +1072,41 @@ public class Host extends Folder {
                 AuthScheme authScheme = (AuthScheme) context.getAttribute("preemptive-auth");
                 //AuthScheme authScheme = cachedAuthScheme;
                 if (authScheme != null) {
+                    System.out.println("found a cached scheme: " + authScheme);
+                    boolean canDoAuth = false;
                     if (authScheme instanceof DigestScheme) {
                         DigestScheme d = (DigestScheme) authScheme;
                         if (nonce != null) {
                             d.overrideParamter("nonce", nonce);
                         }
+                        System.out.println("use cached realm: " + realm);
                         if (realm != null) {
                             d.overrideParamter("realm", realm);
+                            canDoAuth = true;
                         }
+                    } else if (authScheme instanceof BasicScheme) {
+                        canDoAuth = true;
                     }
-                    CredentialsProvider credsProvider = (CredentialsProvider) context.getAttribute(ClientContext.CREDS_PROVIDER);
-                    HttpHost targetHost = (HttpHost) context.getAttribute(ExecutionContext.HTTP_TARGET_HOST);
-                    Credentials creds = credsProvider.getCredentials(new AuthScope(targetHost.getHostName(), targetHost.getPort()));
-                    if (creds == null) {
-                        throw new RuntimeException("No credentials for preemptive authentication");
+                    if (canDoAuth) {
+                        System.out.println("can do auth...");
+                        CredentialsProvider credsProvider = (CredentialsProvider) context.getAttribute(ClientContext.CREDS_PROVIDER);
+                        HttpHost targetHost = (HttpHost) context.getAttribute(ExecutionContext.HTTP_TARGET_HOST);
+                        Credentials creds = credsProvider.getCredentials(new AuthScope(targetHost.getHostName(), targetHost.getPort()));
+                        if (creds == null) {
+                            throw new RuntimeException("No credentials for preemptive authentication");
+                        }
+                        authState.setAuthScheme(authScheme);
+                        authState.setCredentials(creds);
+                    } else {
+                        System.out.println("cannot do auth");
                     }
-                    authState.setAuthScheme(authScheme);
-                    authState.setCredentials(creds);
                 }
             } else {
                 if (authState.getAuthScheme() instanceof DigestScheme) {
                     DigestScheme scheme = (DigestScheme) authState.getAuthScheme();
                     nonce = scheme.getParameter("nonce");
                     realm = scheme.getParameter("realm");
+                    log.info("PreemptiveAuthInterceptor: record cached realm: " + realm + " and nonce: " + nonce);
                 }
 
             }

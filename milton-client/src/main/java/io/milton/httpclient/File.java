@@ -59,8 +59,7 @@ public class File extends Resource {
     public void setContent(InputStream in, Long contentLength, ProgressListener listener) throws IOException, HttpException, NotAuthorizedException, ConflictException, BadRequestException, NotFoundException {
         String newUri = this.encodedUrl();
         log.trace("upload: " + newUri);
-        System.out.println("upload: etag: " + etag);
-        HttpResult result = host().doPut(newUri, in, contentLength, contentType, etag, listener);
+        HttpResult result = host().doPut(newUri, in, contentLength, contentType, new IfMatchCheck(etag), listener);
         etag = result.getHeaders().get(Response.Header.ETAG.code);
         int resultCode = result.getStatusCode();
         Utils.processResultCode(resultCode, newUri);
