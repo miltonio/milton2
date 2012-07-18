@@ -1072,14 +1072,12 @@ public class Host extends Folder {
                 AuthScheme authScheme = (AuthScheme) context.getAttribute("preemptive-auth");
                 //AuthScheme authScheme = cachedAuthScheme;
                 if (authScheme != null) {
-                    System.out.println("found a cached scheme: " + authScheme);
                     boolean canDoAuth = false;
                     if (authScheme instanceof DigestScheme) {
                         DigestScheme d = (DigestScheme) authScheme;
                         if (nonce != null) {
                             d.overrideParamter("nonce", nonce);
                         }
-                        System.out.println("use cached realm: " + realm);
                         if (realm != null) {
                             d.overrideParamter("realm", realm);
                             canDoAuth = true;
@@ -1088,7 +1086,6 @@ public class Host extends Folder {
                         canDoAuth = true;
                     }
                     if (canDoAuth) {
-                        System.out.println("can do auth...");
                         CredentialsProvider credsProvider = (CredentialsProvider) context.getAttribute(ClientContext.CREDS_PROVIDER);
                         HttpHost targetHost = (HttpHost) context.getAttribute(ExecutionContext.HTTP_TARGET_HOST);
                         Credentials creds = credsProvider.getCredentials(new AuthScope(targetHost.getHostName(), targetHost.getPort()));
@@ -1097,8 +1094,6 @@ public class Host extends Folder {
                         }
                         authState.setAuthScheme(authScheme);
                         authState.setCredentials(creds);
-                    } else {
-                        System.out.println("cannot do auth");
                     }
                 }
             } else {
@@ -1106,7 +1101,7 @@ public class Host extends Folder {
                     DigestScheme scheme = (DigestScheme) authState.getAuthScheme();
                     nonce = scheme.getParameter("nonce");
                     realm = scheme.getParameter("realm");
-                    log.info("PreemptiveAuthInterceptor: record cached realm: " + realm + " and nonce: " + nonce);
+//                    log.info("PreemptiveAuthInterceptor: record cached realm: " + realm + " and nonce: " + nonce);
                 }
 
             }

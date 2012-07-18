@@ -110,7 +110,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 					throw new RuntimeException(ex);
 				}
 				if (r == null) {
-					log.warn("User not found host: " + host + " userUrl: " + userUrl);
+					log.warn("User not found host: " + host + " userUrl: " + userUrl + " with resourcefactory: " + principalResourceFactory);
 				}
 				return r;
 			}
