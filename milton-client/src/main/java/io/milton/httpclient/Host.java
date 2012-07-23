@@ -289,16 +289,26 @@ public class Host extends Folder {
     }
 
     /**
-     * Returns the lock token, which must be retained to unlock the resource
+     * Attempts to lock a resource with infinite timeout and returns the lock token, which must be retained to unlock the resource
      *
      * @param uri - must be encoded
-     * @param owner
+     * @return
+     */
+    public synchronized String doLock(String uri) throws io.milton.httpclient.HttpException, NotAuthorizedException, ConflictException, BadRequestException, NotFoundException, URISyntaxException {
+        doLock(uri, -1);
+    }
+
+   /**
+     * Attempts to lock a resource with the specified timeout and returns the lock token, which must be retained to unlock the resource
+     *
+     * @param uri - must be encoded
+     * @param timeout lock timeout in seconds, or -1 if infinite
      * @return
      * @throws com.ettrema.httpclient.HttpException
      */
-    public synchronized String doLock(String uri) throws io.milton.httpclient.HttpException, NotAuthorizedException, ConflictException, BadRequestException, NotFoundException, URISyntaxException {
+    public synchronized String doLock(String uri, int timeout) throws io.milton.httpclient.HttpException, NotAuthorizedException, ConflictException, BadRequestException, NotFoundException, URISyntaxException {
         notifyStartRequest();
-        LockMethod p = new LockMethod(uri);
+        LockMethod p = new LockMethod(uri, timeout);
         try {
             String lockXml = LOCK_XML.replace("${owner}", user);
             HttpEntity requestEntity = new StringEntity(lockXml, "UTF-8");
@@ -529,11 +539,9 @@ public class Host extends Folder {
         m.addHeader("Accept", "text/xml");
 
         try {
-            if (fields != null) {
-                String propFindXml = buildPropFindXml(fields);
-                HttpEntity requestEntity = new StringEntity(propFindXml, "text/xml", "UTF-8");
-                m.setEntity(requestEntity);
-            }
+            String propFindXml = buildPropFindXml(fields);
+            HttpEntity requestEntity = new StringEntity(propFindXml, "text/xml", "UTF-8");
+            m.setEntity(requestEntity);
 
             final ByteArrayOutputStream bout = new ByteArrayOutputStream();
             final List<PropFindResponse> responses = new ArrayList<PropFindResponse>();
