@@ -295,7 +295,7 @@ public class Host extends Folder {
      * @return
      */
     public synchronized String doLock(String uri) throws io.milton.httpclient.HttpException, NotAuthorizedException, ConflictException, BadRequestException, NotFoundException, URISyntaxException {
-        doLock(uri, -1);
+        return doLock(uri, -1);
     }
 
    /**
