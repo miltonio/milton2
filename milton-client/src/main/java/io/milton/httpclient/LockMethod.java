@@ -21,6 +21,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
@@ -33,9 +34,11 @@ import org.jdom.JDOMException;
  * @author mcevoyb
  */
 public class LockMethod extends HttpEntityEnclosingRequestBase {
+    private final int timeout;
 
-    public LockMethod(String uri) throws URISyntaxException {
+    public LockMethod(String uri, int timeout) throws URISyntaxException {
         setURI(new URI(uri));
+        this.timeout = timeout;
     }
 
     @Override
@@ -82,4 +85,16 @@ public class LockMethod extends HttpEntityEnclosingRequestBase {
             IOUtils.closeQuietly(in);
         }
     }
+
+    public Header[] getAllHeaders() {
+        addHeader("Timeout", getTimeoutValue());
+        return super.getAllHeaders();
+    }
+
+    private String getTimeoutValue() {
+        if (timeout == -1) {
+            return "Infinite";
+        }
+        return "Second-" + timeout;
+    } 
 }
