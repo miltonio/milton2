@@ -12,7 +12,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package io.milton.http.http11;
 
 import io.milton.http.Range;
@@ -32,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.exceptions.NotFoundException;
+import io.milton.resource.BufferingControlResource;
 import io.milton.sso.ExternalIdentityProvider;
 import java.io.IOException;
 import java.util.Properties;
@@ -41,7 +41,7 @@ import java.util.Properties;
  */
 public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Bufferable {
 
-	private static String miltonVerson;	
+	private static String miltonVerson;
 	{
 		Properties props = new Properties();
 		try {
@@ -51,7 +51,7 @@ public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Buff
 		}
 		miltonVerson = props.getProperty("milton.version");
 	}
-	
+
 	
 	public enum BUFFERING {
 
@@ -104,7 +104,7 @@ public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Buff
 	}
 
 	@Override
-	public void respondUnauthorised(Resource resource, Response response, Request request) {		
+	public void respondUnauthorised(Resource resource, Response response, Request request) {
 		if (authenticationService.canUseExternalAuth(resource, request)) {
 			log.info("respondUnauthorised: use external authentication");
 			initiateExternalAuth(resource, request, response);
@@ -194,7 +194,7 @@ public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Buff
 		if (ct != null) {
 			response.setContentTypeHeader(ct);
 		}
-        response.setEntity(new GetableResourceEntity(resource, range, params, ct));
+		response.setEntity(new GetableResourceEntity(resource, range, params, ct));
 	}
 
 	@Override
@@ -215,7 +215,7 @@ public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Buff
 		String ct = gr.getContentType(acc);
 		if (ct != null) {
 			ct = pickBestContentType(ct);
-			if( ct != null ) {
+			if (ct != null) {
 				response.setContentTypeHeader(ct);
 			}
 		}
@@ -237,24 +237,27 @@ public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Buff
 			cacheControlHelper.setCacheControl(gr, response, request.getAuthorization());
 
 			Long contentLength = gr.getContentLength();
-			boolean doBuffering;
-			if (buffering == null || buffering == BUFFERING.whenNeeded) {
-				doBuffering = (contentLength == null); // if no content length then we buffer content to find content length
-			} else {
-				doBuffering = (buffering == BUFFERING.always); // if not null or whenNeeded then buffering is explicitly enabled or disabled
+			Boolean doBuffering = null;
+			if (resource instanceof BufferingControlResource) {
+				BufferingControlResource bcr = (BufferingControlResource) resource;
+				doBuffering = bcr.isBufferingRequired();
+			}
+			if (doBuffering == null) {
+				if (buffering == null || buffering == BUFFERING.whenNeeded) {
+					doBuffering = (contentLength == null); // if no content length then we buffer content to find content length
+				} else {
+					doBuffering = (buffering == BUFFERING.always); // if not null or whenNeeded then buffering is explicitly enabled or disabled
+				}
 			}
 			if (!doBuffering) {
 				log.trace("sending content with known content length: " + contentLength);
 				if (contentLength != null) {
 					response.setContentLengthHeader(contentLength);
 				}
-                response.setEntity(new GetableResourceEntity(
-                   gr, params, ct
-                ));
+				response.setEntity(new GetableResourceEntity(gr, params, ct));
 			} else {
-                response.setEntity(new BufferingGetableResourceEntity(
-                   gr, params, ct, contentLength, getMaxMemorySize()
-                ));
+				BufferingGetableResourceEntity e = new BufferingGetableResourceEntity(gr, params, ct, contentLength, getMaxMemorySize());
+				response.setEntity(e);
 			}
 		}
 	}
@@ -296,8 +299,7 @@ public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Buff
 			response.setEtag(etag);
 		}
 	}
-	
-	
+
 	/**
 	 * The modified date response header is used by the client for content
 	 * caching. It seems obvious that if we have a modified date on the resource
@@ -348,10 +350,10 @@ public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Buff
 	}
 
 	@Override
-    public void respondPreconditionFailed( Request request, Response response, Resource resource ) {
-        response.setStatus( Status.SC_PRECONDITION_FAILED );
-    }	
-	
+	public void respondPreconditionFailed(Request request, Response response, Resource resource) {
+		response.setStatus(Status.SC_PRECONDITION_FAILED);
+	}
+
 	public AuthenticationService getAuthenticationService() {
 		return authenticationService;
 	}
