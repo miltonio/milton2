@@ -13,7 +13,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.milton.http.carddav;
+package io.milton.principal;
 
 import io.milton.http.values.HrefList;
 import io.milton.principal.DiscretePrincipal;
