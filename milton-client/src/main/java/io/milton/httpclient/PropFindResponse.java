@@ -60,7 +60,7 @@ public class PropFindResponse {
                 QName qn = new QName(ns.getURI(), localName, ns.getPrefix());
                 if (localName.equals("resourcetype")) {
                     colElement = elProp.getChild("collection", RespUtils.NS_DAV);  
-                } else if (localName.equals("lockdisovery")) {
+                } else if (localName.equals("lockdiscovery")) {
                     Element elActiveLock = elProp.getChild("activelock", RespUtils.NS_DAV);
                     String token;
                     String owner;
@@ -118,7 +118,7 @@ public class PropFindResponse {
     }
 
     public LockDiscovery getLock() {
-        return (LockDiscovery) getDavProperty("lockdisovery");
+        return (LockDiscovery) getDavProperty("lockdiscovery");
     }
 
     public String getName() {

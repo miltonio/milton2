@@ -125,7 +125,7 @@ public class HttpManagerBuilder {
 	private boolean enabledCkBrowser = false;
 	private String loginPage = "/login.html";
 	private List<String> loginPageExcludePaths;
-	private File rootDir = new File(System.getProperty("user.home"));
+	private File rootDir = null;
 	private io.milton.http.SecurityManager securityManager;
 	private String fsContextPath;
 	private String fsRealm = "milton";
@@ -164,6 +164,7 @@ public class HttpManagerBuilder {
 	 */
 	public final void init() {
 		if (mainResourceFactory == null) {
+			rootDir = new File(System.getProperty("user.home"));
 			if (!rootDir.exists() || !rootDir.isDirectory()) {
 				throw new RuntimeException("Root directory is not valie: " + rootDir.getAbsolutePath());
 			}
