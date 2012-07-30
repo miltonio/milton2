@@ -57,7 +57,12 @@ public class BeanPropertyAuthoriser implements PropertyAuthoriser{
 		AccessControlledResource acr = (AccessControlledResource) resource;
 		List<AccessControlledResource.Priviledge> actualPrivs = acr.getPriviledges(request.getAuthorization());
 		if( actualPrivs == null ) {
+			log.trace("got null priviledges");
 			return results;
+		} else {
+			if( log.isTraceEnabled() ) {
+				log.trace("found priviledges: " + actualPrivs + " from resource: " + acr.getClass());
+			}
 		}
 		for (QName name : fields) {
 			if (!name.getNamespaceURI().equals(anno.value())) {
