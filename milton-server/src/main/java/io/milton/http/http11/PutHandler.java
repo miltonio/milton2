@@ -163,6 +163,7 @@ public class PutHandler implements Handler {
 			try {
 				manager.onProcessResourceStart(request, response, replacee);
 				processReplace(manager, request, response, replacee);
+				manager.getEventManager().fireEvent(new PutEvent(replacee));
 			} finally {
 				t = System.currentTimeMillis() - t;
 				manager.onProcessResourceFinish(request, response, replacee, t);
