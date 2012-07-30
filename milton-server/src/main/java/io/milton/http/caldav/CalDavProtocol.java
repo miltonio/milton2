@@ -15,6 +15,7 @@
 
 package io.milton.http.caldav;
 
+import io.milton.principal.CalDavPrincipal;
 import io.milton.common.LogUtils;
 import io.milton.http.Auth;
 import io.milton.http.Handler;

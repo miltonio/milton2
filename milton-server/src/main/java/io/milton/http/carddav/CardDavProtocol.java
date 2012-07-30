@@ -15,6 +15,7 @@
 
 package io.milton.http.carddav;
 
+import io.milton.principal.CardDavPrincipal;
 import io.milton.http.Auth;
 import io.milton.http.Handler;
 import io.milton.http.HandlerHelper;
