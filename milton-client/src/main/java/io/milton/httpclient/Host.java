@@ -39,9 +39,11 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import javax.xml.namespace.QName;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -63,6 +65,7 @@ import org.apache.http.conn.routing.HttpRoutePlanner;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.auth.DigestScheme;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.*;
 import org.jdom.Document;
@@ -93,6 +96,8 @@ public class Host extends Folder {
             + "<D:locktype><D:write/></D:locktype>"
             + "<D:owner>${owner}</D:owner>"
             + "</D:lockinfo>";
+    private static final Set<String> WEBDAV_REDIRECTABLE = new HashSet<String>(Arrays.asList(new String[] {"PROPFIND", "LOCK", "UNLOCK", "DELETE"}));
+
     private static final Logger log = LoggerFactory.getLogger(Host.class);
     public final String server;
     public final Integer port;
@@ -151,6 +156,29 @@ public class Host extends Folder {
         client = new MyDefaultHttpClient();
         HttpRequestRetryHandler handler = new NoRetryHttpRequestRetryHandler();
         client.setHttpRequestRetryHandler(handler);
+        client.setRedirectStrategy(new DefaultRedirectStrategy() {
+            public boolean isRedirected(
+                final HttpRequest request,
+                final HttpResponse response,
+                final HttpContext context) throws ProtocolException {
+             
+                if (super.isRedirected(request, response, context)) {
+                    return true;
+                }
+                int statusCode = response.getStatusLine().getStatusCode();
+                String method = request.getRequestLine().getMethod();
+                Header locationHeader = response.getFirstHeader("location");
+                switch (statusCode) {
+                case HttpStatus.SC_MOVED_TEMPORARILY:
+                    return locationHeader != null && WEBDAV_REDIRECTABLE.contains(method);
+                case HttpStatus.SC_MOVED_PERMANENTLY:
+                case HttpStatus.SC_TEMPORARY_REDIRECT:
+                    return WEBDAV_REDIRECTABLE.contains(method);
+                default:
+                    return false;
+                }
+            }
+        });
         HttpParams params = client.getParams();
         HttpConnectionParams.setConnectionTimeout(params, 10000);
         HttpConnectionParams.setSoTimeout(params, 10000);
