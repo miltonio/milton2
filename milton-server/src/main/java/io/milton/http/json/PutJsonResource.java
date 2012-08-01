@@ -18,6 +18,8 @@ package io.milton.http.json;
 import io.milton.resource.ReplaceableResource;
 import io.milton.common.FileUtils;
 import io.milton.common.Utils;
+import io.milton.event.EventManager;
+import io.milton.event.PutEvent;
 import io.milton.http.*;
 import io.milton.http.Request.Method;
 import io.milton.http.exceptions.BadRequestException;
@@ -64,12 +66,14 @@ public class PutJsonResource extends JsonResource implements PostableResource {
     public static final String PARAM_AUTONAME = "_autoname";
     public static final String PARAM_NAME = "name";
     public static final String PARAM_OVERWRITE = "overwrite";
+	private final EventManager eventManager;
     private final PutableResource wrapped;
     private final String href;
     private List<NewFile> newFiles;
 
-    public PutJsonResource(PutableResource putableResource, String href) {
+    public PutJsonResource(PutableResource putableResource, String href, EventManager eventManager) {
         super(putableResource, Request.Method.PUT.code, null);
+		this.eventManager = eventManager;
         this.wrapped = putableResource;
         this.href = href;
     }
@@ -85,6 +89,7 @@ public class PutJsonResource extends JsonResource implements PostableResource {
     
 	@Override
     public String processForm(Map<String, String> parameters, Map<String, FileItem> files) throws ConflictException, NotAuthorizedException, BadRequestException {
+		log.info("processForm: " + wrapped.getClass());
         if (files.isEmpty()) {
             log.debug("no files uploaded");
             return null;
@@ -112,19 +117,25 @@ public class PutJsonResource extends JsonResource implements PostableResource {
                         log.trace("existing resource is replaceable, so replace content");
                         ReplaceableResource rr = (ReplaceableResource) existing;
                         rr.replaceContent(in, null);
+						log.trace("completed POST processing for file. Updated: " + existing.getName());
+						eventManager.fireEvent(new PutEvent(rr));
                     } else {
                         log.trace("existing resource is not replaceable, will be deleted");
                         if( existing instanceof DeletableResource ) {
                             DeletableResource dr = (DeletableResource) existing;
                             dr.delete();
+							newResource = wrapped.createNew(newName, in, file.getSize(), file.getContentType());							
+							log.trace("completed POST processing for file. Deleted, then created: " + newResource.getName());
+							eventManager.fireEvent(new PutEvent(newResource));
                         } else {
-                            log.trace("existing resource could not be deleted, is not deletable");
+                            throw new BadRequestException(existing, "existing resource could not be deleted, is not deletable");
                         }
-                    }
+                    }					
                 } else {
-                    log.trace("not overwriting");
-                }
-                newResource = wrapped.createNew(newName, in, file.getSize(), file.getContentType());
+                    newResource = wrapped.createNew(newName, in, file.getSize(), file.getContentType());
+					log.trace("completed POST processing for file. Created: " + newResource.getName());
+					eventManager.fireEvent(new PutEvent(newResource));
+                }                
             } catch (NotAuthorizedException ex) {
                 throw new RuntimeException(ex);
             } catch (BadRequestException ex) {
@@ -135,8 +146,7 @@ public class PutJsonResource extends JsonResource implements PostableResource {
                 throw new RuntimeException("Exception creating resource", ex);
             } finally {
                 FileUtils.close(in);
-            }
-            log.trace("completed POST processing for file. Created: " + newResource.getName());
+            }            
         }
         log.trace("completed all POST processing");
         return null;

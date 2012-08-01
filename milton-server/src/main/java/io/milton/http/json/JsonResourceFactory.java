@@ -118,7 +118,7 @@ public class JsonResourceFactory implements ResourceFactory {
 		}
 		if (Request.Method.PUT.code.equals(method)) {
 			if (wrappedResource instanceof PutableResource) {
-				return new PutJsonResource((PutableResource) wrappedResource, href);
+				return new PutJsonResource((PutableResource) wrappedResource, href, eventManager);
 			}
 		}
 		if (Request.Method.MKCOL.code.equals(method)) {

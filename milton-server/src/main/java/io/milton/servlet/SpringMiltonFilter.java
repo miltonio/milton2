@@ -75,6 +75,8 @@ public class SpringMiltonFilter implements javax.servlet.Filter {
 	@Override
 	public void init(FilterConfig fc) throws ServletException {
 		StaticApplicationContext parent = new StaticApplicationContext();
+		FilterConfigWrapper configWrapper = new FilterConfigWrapper(fc);
+		parent.getBeanFactory().registerSingleton("config", configWrapper);
 		parent.getBeanFactory().registerSingleton("servletContext", fc.getServletContext());
 		File webRoot = new File(fc.getServletContext().getRealPath("/"));
 		parent.getBeanFactory().registerSingleton("webRoot", webRoot);
