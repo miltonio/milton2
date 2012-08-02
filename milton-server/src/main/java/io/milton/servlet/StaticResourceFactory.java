@@ -16,63 +16,67 @@ package io.milton.servlet;
 
 import io.milton.common.ContentTypeUtils;
 import io.milton.common.Path;
-import io.milton.http.HttpManager;
 import io.milton.http.ResourceFactory;
 import io.milton.resource.Resource;
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This can either be initialised with the old
- * servlet/ApplicationConfig/Initable approach, or with directly setting
- * constructor args for the web context and file root.
+ * Used for providing simple readonly access to resources which are files in a
+ * conventional file system.
  *
- * If a URL resolves to a file (not a directory) this ResourceFactory will
- * return a new StaticResource which will serve the file content
+ * Can be provided with a single or multiple root directories. If multiple they
+ * are searched in turn for a matching resource
+ *
+ * Will check for a system property static.resource.roots which, if present, is
+ * expected to be a comma delimited list of absolute paths to root locations. An
+ * exception will be thrown if a path is given which does not exist
  *
  * @author brad
  */
-public class StaticResourceFactory implements ResourceFactory, Initable {
+public class StaticResourceFactory implements ResourceFactory {
 
 	private static final Logger log = LoggerFactory.getLogger(StaticResourceFactory.class);
-	/**
-	 * either this or root will be set
-	 */
-	private Config config;
-	/**
-	 * either this or config will be set
-	 */
-	private File root;
+	public static final String FILE_ROOTS_SYS_PROP_NAME = "static.resource.roots";
+	private final List<File> roots;
 	private String contextPath;
-	private String basePath = "WEB-INF/static";
 	private Date modDate = new Date();
 
 	public StaticResourceFactory() {
-	}
+		roots = new ArrayList<File>();
+		String sRoots = System.getProperty(FILE_ROOTS_SYS_PROP_NAME);
+		if (sRoots != null && sRoots.length() > 0) {
+			for (String s : sRoots.split(",")) {
+				s = s.trim();
+				if (s.length() > 0) {
+					File root = new File(s);
+					if (root.exists()) {
+						if (root.isDirectory()) {
+							roots.add(root);
+						} else {
+							throw new RuntimeException("Extra file root is not a directory: " + root.getAbsolutePath());
+						}
+					} else {
+						throw new RuntimeException("Extra file root does not exist: " + root.getAbsolutePath());
+					}
+				}
+			}
 
-	public StaticResourceFactory(Config config) {
-		this.config = config;
-	}
-
-	public StaticResourceFactory(String context, File root) {
-		this.root = root;
-		this.contextPath = context;
-		log.info("root: " + root.getAbsolutePath() + " - context:" + context);
+		}
 	}
 
 	public StaticResourceFactory(File root) {
-		this.root = root;
-		this.contextPath = "";
-		log.info("root: " + root.getAbsolutePath());
+		this();
+		roots.add(root);
 	}
 
-	@Override
-	public void init(Config config, HttpManager manager) {
-		this.config = config;
+	public StaticResourceFactory(List<File> roots) {
+		this();
+		this.roots.addAll(roots);
 	}
 
 	@Override
@@ -80,50 +84,16 @@ public class StaticResourceFactory implements ResourceFactory, Initable {
 		System.out.println("getResource: " + url);
 
 		Path p = Path.path(url);
-		String contentType;
-		if (config != null) {
-			contentType = MiltonUtils.getContentType(config.getServletContext(), p.getName());
-		} else {
-			contentType = ContentTypeUtils.findContentTypes(p.getName());
-		}
+		String contentType = ContentTypeUtils.findContentTypes(p.getName());
+		String s = stripContext(url);
 
-		File file;
-		if (root != null) {
-			String s = stripContext(url);
-			file = new File(root, s);
-		} else {
-			if (config == null) {
-				throw new RuntimeException("ResourceFactory was not configured. ApplicationConfig is null");
-			}
-			if (config.getServletContext() == null) {
-				throw new NullPointerException("config.servletContext is null");
-			}
-			String path = basePath + url;
-			String realPath = config.getServletContext().getRealPath(path);
-			if (realPath != null) {
-				file = new File(path);
-			} else {
-				file = null;
-			}
-			if (file == null || !file.exists()) {
-				URL resource;
-				try {
-					resource = config.getServletContext().getResource(path);
-				} catch (MalformedURLException ex) {
-					throw new RuntimeException(ex);
-				}
-				if (resource != null) {
-					return new UrlResource(p.getName(), resource, contentType, modDate);
-				}
+		for (File root : roots) {
+			File file = new File(root, s);
+			if (file.exists() && file.isFile()) {
+				return new StaticResource(file, url, contentType);
 			}
 		}
-
-		if (file != null && file.exists() && !file.isDirectory()) {
-			return new StaticResource(file, url, contentType);
-		} else {
-			return null;
-		}
-
+		return null;
 	}
 
 	private String stripContext(String url) {
@@ -136,15 +106,23 @@ public class StaticResourceFactory implements ResourceFactory, Initable {
 		}
 	}
 
-	@Override
-	public void destroy(HttpManager manager) {
+	public String getContextPath() {
+		return contextPath;
 	}
 
-	public String getBasePath() {
-		return basePath;
+	public void setContextPath(String contextPath) {
+		this.contextPath = contextPath;
 	}
 
-	public void setBasePath(String basePath) {
-		this.basePath = basePath;
+	public Date getModDate() {
+		return modDate;
+	}
+
+	public void setModDate(Date modDate) {
+		this.modDate = modDate;
+	}
+
+	public List<File> getRoots() {
+		return roots;
 	}
 }

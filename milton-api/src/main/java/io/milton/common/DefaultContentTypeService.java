@@ -72,6 +72,7 @@ public class DefaultContentTypeService implements ContentTypeService {
         if( ext == null || ext.length() == 0 ) {
             return null;
         }
+        ext = ext.toLowerCase();
         return mapOfContentTypes.get(ext);
     }
 

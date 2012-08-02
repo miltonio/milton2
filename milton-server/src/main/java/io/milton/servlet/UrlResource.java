@@ -86,7 +86,7 @@ public class UrlResource implements GetableResource {
 
 	@Override
 	public String getRealm() {
-		return "ettrema";   //TODO
+		return "milton.io"; // will never be used because authorise is always true
 	}
 
 	@Override

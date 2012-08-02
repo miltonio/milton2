@@ -98,9 +98,9 @@ public class PutHandler implements Handler {
 		Path path = Path.path(urlToCreateOrUpdate);
 		urlToCreateOrUpdate = path.toString();
 
-		Resource existingResource = manager.getResourceFactory().getResource(host, urlToCreateOrUpdate);
-		ReplaceableResource replacee;
-
+		System.out.println("PutHandler: look for existing: " + urlToCreateOrUpdate);
+		Resource existingResource = manager.getResourceFactory().getResource(host, urlToCreateOrUpdate);		
+		System.out.println("PutHandler: got: " + existingResource);
 		StorageErrorReason storageErr = null;
 		if (existingResource != null) {
 			//Make sure the parent collection is not locked by someone else
@@ -148,7 +148,8 @@ public class PutHandler implements Handler {
 			respondInsufficientStorage(request, response, storageErr);
 			return;
 		}
-
+		
+		ReplaceableResource replacee;
 		if (existingResource != null && existingResource instanceof ReplaceableResource) {
 			replacee = (ReplaceableResource) existingResource;
 		} else {

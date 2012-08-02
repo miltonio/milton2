@@ -53,7 +53,7 @@ public class StaticResource implements GetableResource {
 
 	@Override
     public String getUniqueId() {
-        return file.hashCode() + "";
+        return file.getName() + "_ " + file.lastModified();
     }
     
     public int compareTo(Resource res) {
@@ -88,7 +88,7 @@ public class StaticResource implements GetableResource {
 
     @Override
     public String getRealm() {
-        return "ettrema";   //TODO
+        return "milton.io"; // will never be used because authorise is always true
     }
 
 	@Override

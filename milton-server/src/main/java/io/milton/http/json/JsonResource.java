@@ -33,6 +33,9 @@ import org.slf4j.LoggerFactory;
 public abstract class JsonResource implements DigestResource {
 
     private static final Logger log = LoggerFactory.getLogger(JsonResource.class);
+	
+	public static String CONTENT_TYPE = "application/json; charset=utf-8";
+	
     private final Resource wrappedResource;
     private final String name;
     private final Long maxAgeSecs;
@@ -50,8 +53,9 @@ public abstract class JsonResource implements DigestResource {
     }
 
     public String getContentType(String accepts) {
-        String s = "application/x-javascript; charset=utf-8";
-        return s;
+		return CONTENT_TYPE;
+        //String s = "application/x-javascript; charset=utf-8";
+        //return s;
         //return "application/json";
     }
 
