@@ -12,7 +12,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package io.milton.http.http11;
 
 import io.milton.http.Handler;
@@ -99,7 +98,7 @@ public class PutHandler implements Handler {
 		urlToCreateOrUpdate = path.toString();
 
 		System.out.println("PutHandler: look for existing: " + urlToCreateOrUpdate);
-		Resource existingResource = manager.getResourceFactory().getResource(host, urlToCreateOrUpdate);		
+		Resource existingResource = manager.getResourceFactory().getResource(host, urlToCreateOrUpdate);
 		System.out.println("PutHandler: got: " + existingResource);
 		StorageErrorReason storageErr = null;
 		if (existingResource != null) {
@@ -110,17 +109,17 @@ public class PutHandler implements Handler {
 				return;
 			}
 			// Check if the resource has been modified based on etags
-			if( !matchHelper.checkIfMatch(existingResource, request)) {
+			if (!matchHelper.checkIfMatch(existingResource, request)) {
 				log.info("if-match comparison failed, aborting PUT request");
-				responseHandler.respondPreconditionFailed(request, response, existingResource); 
-				return ;
-			}			
-			if( matchHelper.checkIfNoneMatch(existingResource, request)) {
+				responseHandler.respondPreconditionFailed(request, response, existingResource);
+				return;
+			}
+			if (matchHelper.checkIfNoneMatch(existingResource, request)) {
 				log.info("if-none-match comparison failed, aborting PUT request");
 				responseHandler.respondPreconditionFailed(request, response, existingResource);
-				return ;
+				return;
 			}
-			
+
 			Resource parent = manager.getResourceFactory().getResource(host, path.getParent().toString());
 			if (parent instanceof CollectionResource) {
 				CollectionResource parentCol = (CollectionResource) parent;
@@ -129,17 +128,17 @@ public class PutHandler implements Handler {
 				log.warn("parent exists but is not a collection resource: " + path.getParent());
 			}
 		} else {
-			if( !matchHelper.checkIfMatch(null, request)) {
+			if (!matchHelper.checkIfMatch(null, request)) {
 				log.info("if-match comparison failed on null resource, aborting PUT request");
 				responseHandler.respondPreconditionFailed(request, response, existingResource);
-				return ;
+				return;
 			}
-			if( matchHelper.checkIfNoneMatch(null, request)) {
+			if (matchHelper.checkIfNoneMatch(null, request)) {
 				log.info("if-none-match comparison failed on null resource, aborting PUT request");
 				responseHandler.respondPreconditionFailed(request, response, existingResource);
-				return ;
+				return;
 			}
-			
+
 			CollectionResource parentCol = putHelper.findNearestParent(manager, host, path);
 			storageErr = handlerHelper.checkStorageOnAdd(request, parentCol, path.getParent(), host);
 		}
@@ -148,7 +147,7 @@ public class PutHandler implements Handler {
 			respondInsufficientStorage(request, response, storageErr);
 			return;
 		}
-		
+
 		ReplaceableResource replacee;
 		if (existingResource != null && existingResource instanceof ReplaceableResource) {
 			replacee = (ReplaceableResource) existingResource;
@@ -172,7 +171,7 @@ public class PutHandler implements Handler {
 		} else {
 			// either no existing resource, or its not replaceable. check for folder
 			String nameToCreate = path.getName();
-			CollectionResource folderResource = findOrCreateFolders(manager, host, path.getParent());
+			CollectionResource folderResource = findOrCreateFolders(manager, host, path.getParent(), request);
 			if (folderResource != null) {
 				long t = System.currentTimeMillis();
 				try {
@@ -220,13 +219,13 @@ public class PutHandler implements Handler {
 				manager.getResponseHandler().respondCreated(newlyCreated, response, request);
 			} else {
 				throw new RuntimeException("createNew method on: " + folder.getClass() + " returned a null resource. Must return a reference to the newly created or modified resource");
-			}			
+			}
 		} catch (IOException ex) {
 			throw new RuntimeException("IOException reading input stream. Probably interrupted upload", ex);
-		}		
+		}
 	}
 
-	private CollectionResource findOrCreateFolders(HttpManager manager, String host, Path path) throws NotAuthorizedException, ConflictException, BadRequestException {
+	private CollectionResource findOrCreateFolders(HttpManager manager, String host, Path path, Request request) throws NotAuthorizedException, ConflictException, BadRequestException {
 		if (path == null) {
 			return null;
 		}
@@ -246,7 +245,7 @@ public class PutHandler implements Handler {
 			}
 		}
 
-		CollectionResource parent = findOrCreateFolders(manager, host, path.getParent());
+		CollectionResource parent = findOrCreateFolders(manager, host, path.getParent(), request);
 		if (parent == null) {
 			log.warn("couldnt find parent: " + path);
 			return null;
@@ -257,6 +256,9 @@ public class PutHandler implements Handler {
 		if (r == null) {
 			if (parent instanceof MakeCollectionableResource) {
 				MakeCollectionableResource mkcol = (MakeCollectionableResource) parent;
+				if (!handlerHelper.checkAuthorisation(manager, mkcol, request)) {
+					throw new NotAuthorizedException(mkcol);
+				}
 				LogUtils.debug(log, "autocreating new folder: ", path.getName());
 				CollectionResource newCol = mkcol.createCollection(path.getName());
 				manager.getEventManager().fireEvent(new NewFolderEvent(newCol));
@@ -274,8 +276,10 @@ public class PutHandler implements Handler {
 	}
 
 	/**
-	 * "If an existing resource is modified, either the 200 (OK) or 204 (No Content) response codes SHOULD be sent to indicate successful completion of the request."
-	 * 
+	 * "If an existing resource is modified, either the 200 (OK) or 204 (No
+	 * Content) response codes SHOULD be sent to indicate successful completion
+	 * of the request."
+	 *
 	 * @param request
 	 * @param response
 	 * @param replacee
@@ -382,7 +386,7 @@ public class PutHandler implements Handler {
 			// either no existing resource, or its not replaceable. check for folder
 			String urlFolder = path.getParent().toString();
 			String nameToCreate = path.getName();
-			CollectionResource folderResource = findOrCreateFolders(manager, host, path.getParent());
+			CollectionResource folderResource = findOrCreateFolders(manager, host, path.getParent(), request);
 			if (folderResource != null) {
 				if (log.isDebugEnabled()) {
 					log.debug("found folder: " + urlFolder + " - " + folderResource.getClass());

@@ -59,8 +59,6 @@ public class WebResourceFactory implements ResourceFactory, Initable {
 
 	@Override
 	public Resource getResource(String host, String url) {
-		System.out.println("getResource: " + url);
-
 		Path p = Path.path(url);
 		String contentType;
 		if (config != null) {

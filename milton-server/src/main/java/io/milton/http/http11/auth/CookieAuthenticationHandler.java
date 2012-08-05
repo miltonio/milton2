@@ -128,10 +128,14 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 	 * @param request
 	 */
 	public void setLoginCookies(DiscretePrincipal user, Request request) {
+		String userUrl = user.getIdenitifer().getValue();
+		setLoginCookies(userUrl, request);
+	}
+	public void setLoginCookies(String userUrl, Request request) {
 		if (request == null) {
 			return;
 		}
-		String userUrl = user.getIdenitifer().getValue();
+		
 		Response response = HttpManager.response();
 		String salt = Math.random() + "";
 		String signing = salt + ":" + DigestUtils.md5Hex(userUrl + ":" + salt);

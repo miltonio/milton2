@@ -77,6 +77,7 @@ import org.slf4j.LoggerFactory;
 public class HttpManagerBuilder {
 
 	private static final Logger log = LoggerFactory.getLogger(HttpManager.class);
+	private List<InitListener> listeners;
 	private ResourceFactory mainResourceFactory;
 	private ResourceFactory outerResourceFactory;
 	private DefaultHttp11ResponseHandler.BUFFERING buffering;
@@ -163,6 +164,12 @@ public class HttpManagerBuilder {
 	 *
 	 */
 	public final void init() {
+		if( listeners != null ) {
+			for( InitListener l : listeners ) {
+				l.beforeInit(this);
+			}
+		}
+		
 		if (mainResourceFactory == null) {
 			rootDir = new File(System.getProperty("user.home"));
 			if (!rootDir.exists() || !rootDir.isDirectory()) {
@@ -391,7 +398,18 @@ public class HttpManagerBuilder {
 		if (!initDone) {
 			init();
 		}
-		return new HttpManager(outerResourceFactory, webdavResponseHandler, protocolHandlers, entityTransport, filters, eventManager, shutdownHandlers);
+		if( listeners != null ) {
+			for( InitListener l : listeners ) {
+				l.afterInit(this);
+			}
+		}		
+		HttpManager httpManager = new HttpManager(outerResourceFactory, webdavResponseHandler, protocolHandlers, entityTransport, filters, eventManager, shutdownHandlers);
+		if( listeners != null ) {
+			for( InitListener l : listeners ) {
+				l.afterBuild(this, httpManager);
+			}
+		}		
+		return httpManager;
 	}
 
 	private PropertyAuthoriser initPropertyAuthoriser() {
@@ -1061,6 +1079,14 @@ public class HttpManagerBuilder {
 
 	public void setLoginResponseHandler(LoginResponseHandler loginResponseHandler) {
 		this.loginResponseHandler = loginResponseHandler;
+	}
+
+	public List<InitListener> getListeners() {
+		return listeners;
+	}
+
+	public void setListeners(List<InitListener> listeners) {
+		this.listeners = listeners;
 	}
 	
 	

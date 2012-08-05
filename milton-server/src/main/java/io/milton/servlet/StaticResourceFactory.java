@@ -81,8 +81,6 @@ public class StaticResourceFactory implements ResourceFactory {
 
 	@Override
 	public Resource getResource(String host, String url) {
-		System.out.println("getResource: " + url);
-
 		Path p = Path.path(url);
 		String contentType = ContentTypeUtils.findContentTypes(p.getName());
 		String s = stripContext(url);

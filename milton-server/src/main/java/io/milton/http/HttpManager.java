@@ -56,28 +56,27 @@ public class HttpManager {
 	public static Response response() {
 		return tlResponse.get();
 	}
-	private final ProtocolHandlers handlers;	
+	private final ProtocolHandlers handlers;
 	private final List<Filter> filters;
 	private final List<EventListener> eventListeners = new ArrayList<EventListener>();
 	private final ResourceFactory resourceFactory;
-	private final Http11ResponseHandler responseHandler;	
+	private final Http11ResponseHandler responseHandler;
 	private final EventManager eventManager;
 	private final List<Stoppable> shutdownHandlers;
 	private final EntityTransport entityTransport;
-	
 	private Map<String, Handler> methodHandlers;
 
 	/**
-	 * Instead of using this constructor directly, consider using the HttpManagerConfig
-	 * builder class
-	 * 
+	 * Instead of using this constructor directly, consider using the
+	 * HttpManagerConfig builder class
+	 *
 	 * @param resourceFactory
 	 * @param responseHandler
 	 * @param handlers
 	 * @param entityTransport
 	 * @param filters
 	 * @param eventManager
-	 * @param shutdownHandlers 
+	 * @param shutdownHandlers
 	 */
 	public HttpManager(ResourceFactory resourceFactory, WebDavResponseHandler responseHandler, ProtocolHandlers handlers, EntityTransport entityTransport, List<Filter> filters, EventManager eventManager, List<Stoppable> shutdownHandlers) {
 		this.responseHandler = responseHandler;
@@ -122,18 +121,20 @@ public class HttpManager {
 		if (log.isInfoEnabled()) {
 			log.info(request.getMethod() + " :: " + request.getAbsoluteUrl() + " - " + request.getAbsoluteUrl());
 		}
-		tlRequest.set(request);
-		tlResponse.set(response);
+
 		try {
-			fireRequestEvent(request);
-		} catch (ConflictException ex) {
-			responseHandler.respondConflict(null, response, request, null);
-		} catch (BadRequestException ex) {
-			responseHandler.respondBadRequest(null, response, request);
-		} catch (NotAuthorizedException ex) {
-			responseHandler.respondUnauthorised(null, response, request);
-		}
-		try {
+			tlRequest.set(request);
+			tlResponse.set(response);
+			try {
+				fireRequestEvent(request);
+			} catch (ConflictException ex) {
+				responseHandler.respondConflict(null, response, request, null);
+			} catch (BadRequestException ex) {
+				responseHandler.respondBadRequest(null, response, request);
+			} catch (NotAuthorizedException ex) {
+				responseHandler.respondUnauthorised(null, response, request);
+			}
+			
 			FilterChain chain = new FilterChain(this);
 			chain.process(request, response);
 			try {
