@@ -136,9 +136,11 @@ public class HttpManager {
 			}
 			
 			FilterChain chain = new FilterChain(this);
+			long tm = System.currentTimeMillis();
 			chain.process(request, response);
 			try {
-				fireResponseEvent(request, response);
+				tm = System.currentTimeMillis() - tm;
+				fireResponseEvent(request, response, tm);
 			} catch (ConflictException ex) {
 				log.warn("exception thrown from event handler after response is complete", ex);
 			} catch (BadRequestException ex) {
@@ -220,11 +222,11 @@ public class HttpManager {
 		eventManager.fireEvent(new RequestEvent(request));
 	}
 
-	private void fireResponseEvent(Request request, Response response) throws ConflictException, BadRequestException, NotAuthorizedException {
+	private void fireResponseEvent(Request request, Response response, long duration) throws ConflictException, BadRequestException, NotAuthorizedException {
 		if (eventManager == null) {
 			return;
 		}
-		eventManager.fireEvent(new ResponseEvent(request, response));
+		eventManager.fireEvent(new ResponseEvent(request, response, duration));
 
 	}
 

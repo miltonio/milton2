@@ -20,9 +20,7 @@
 package com.mycompany;
 
 import io.milton.common.StreamUtils;
-import io.milton.http.caldav.CalDavPrincipal;
 import io.milton.http.caldav.ICalFormatter;
-import io.milton.http.carddav.CardDavPrincipal;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.values.HrefList;
@@ -30,6 +28,8 @@ import io.milton.ldap.Condition;
 import io.milton.ldap.LdapPrincipal;
 import io.milton.mail.Mailbox;
 import io.milton.mail.MessageFolder;
+import io.milton.principal.CalDavPrincipal;
+import io.milton.principal.CardDavPrincipal;
 import io.milton.principal.HrefPrincipleId;
 import io.milton.principal.Principal.PrincipleId;
 import io.milton.property.BeanPropertyResource;

@@ -85,7 +85,7 @@ public class LoginResponseHandler extends AbstractWrappingResponseHandler {
 			throw new RuntimeException(ex);
 		}
 		if (rLogin == null || !(rLogin instanceof GetableResource)) {
-			log.info("Couldnt find login resource: " + request.getHostHeader() + loginPage);
+			log.info("Couldnt find login resource: " + request.getHostHeader() + loginPage + " with resource factory: " + resourceFactory.getClass());
 			wrapped.respondUnauthorised(resource, response, request);
 		} else {
 			log.trace("respond with 200 to suppress login prompt, using resource: " + rLogin.getName() + " - " + rLogin.getClass());

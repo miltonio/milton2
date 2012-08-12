@@ -12,7 +12,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package io.milton.http;
 
 import io.milton.resource.CollectionResource;
@@ -28,6 +27,8 @@ import io.milton.http.quota.StorageChecker.StorageErrorReason;
 import io.milton.common.LogUtils;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
+import io.milton.resource.AccessControlledResource;
+import io.milton.resource.AccessControlledResource.Priviledge;
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
@@ -61,11 +62,12 @@ public class HandlerHelper {
 	 * @param resource
 	 * @param request
 	 * @param response
-	 * @return - true if the expect header is ok. ie process normally. false means that we
-	 * have sent a CONTINUE status and processing should stop until the request body is sent
+	 * @return - true if the expect header is ok. ie process normally. false
+	 * means that we have sent a CONTINUE status and processing should stop
+	 * until the request body is sent
 	 */
 	public boolean checkExpects(Http11ResponseHandler responseHandler, Request request, Response response) {
-		if (enableExpectContinue) {			
+		if (enableExpectContinue) {
 			String s = request.getExpectHeader();
 			LogUtils.trace(log, "checkExpects", s);
 			if (s != null && s.length() > 0) {
@@ -91,7 +93,7 @@ public class HandlerHelper {
 		}
 	}
 
-	public boolean checkAuthorisation(HttpManager manager, Resource resource, Request request) {		
+	public boolean checkAuthorisation(HttpManager manager, Resource resource, Request request) {
 		AuthStatus authStatus = checkAuthentication(manager, resource, request);
 		log.trace("checkAuthorisation: " + authStatus);
 
@@ -110,23 +112,45 @@ public class HandlerHelper {
 			log.trace("checkAuthorisation: authStatus is null, no authentication was attempted");
 			auth = null;
 		}
-		boolean authorised = resource.authorise(request, request.getMethod(), auth);
-		if (!authorised) {
-			if (log.isWarnEnabled()) {
-				log.warn("authorisation declined, requesting authentication: " + request.getAbsolutePath() + ". resource type: " + resource.getClass().getCanonicalName());
-			}
-			if (auth != null) {
-				if (log.isTraceEnabled()) {
-					log.trace("  - auth: " + auth.getUser() + " tag: " + auth.getTag());
+		return checkAuthorisation(manager, resource, request, request.getMethod(), auth);
+	}
+
+	/**
+	 * Check that the user has the priviledge to perform the requested operation
+	 * on the primary resource, ie that which is specified or implied in the URL
+	 *
+	 * Note that for a PUT we can
+	 *
+	 * @param manager
+	 * @param resource
+	 * @param request
+	 * @param auth
+	 * @return
+	 */
+	public boolean checkAuthorisation(HttpManager manager, Resource resource, Request request, Method method, Auth auth) {
+//		if (resource instanceof AccessControlledResource) {
+//			AccessControlledResource acr = (AccessControlledResource) resource;
+//			List<Priviledge> privs = acr.getPriviledges(auth);
+//			Priviledge required = findRequiredPriviledge(method, resource);
+//		} else {
+			boolean authorised = resource.authorise(request, method, auth);
+			if (!authorised) {
+				if (log.isWarnEnabled()) {
+					log.warn("authorisation declined, requesting authentication: " + request.getAbsolutePath() + ". resource type: " + resource.getClass().getCanonicalName());
 				}
+				if (auth != null) {
+					if (log.isTraceEnabled()) {
+						log.trace("  - auth: " + auth.getUser() + " tag: " + auth.getTag());
+					}
+				} else {
+					log.trace("  - anonymous request rejected");
+				}
+				return false;
 			} else {
-				log.trace("  - anonymous request rejected");
+				log.trace("checkAuthorisation: request permitted");
+				return true;
 			}
-			return false;
-		} else {
-			log.trace("checkAuthorisation: request permitted");
-			return true;
-		}
+//		}
 	}
 
 	public boolean doCheckRedirect(Http11ResponseHandler responseHandler, Request request, Response response, Resource resource) throws NotAuthorizedException, BadRequestException {
@@ -141,7 +165,7 @@ public class HandlerHelper {
 
 	/**
 	 * TODO: move to webdav
-	 * 
+	 *
 	 * @param inRequest
 	 * @param inResource
 	 * @return
@@ -152,13 +176,13 @@ public class HandlerHelper {
 		}
 		LockableResource lr = (LockableResource) inResource;
 		LockToken token = lr.getCurrentLock();
-		if (token != null ) {
+		if (token != null) {
 			Auth auth = inRequest.getAuthorization();
 			Object sUser = null;
 			if (auth != null) {
 				sUser = auth.getUser();
 			}
-			if( token.info == null ) {
+			if (token.info == null) {
 				log.warn("Found a lock on this resource, but it has no info property so is ignored");
 				return false;
 			}
@@ -223,11 +247,11 @@ public class HandlerHelper {
 	}
 
 	/**
-	 * Returns true to indicate that the given resource MUST NOT handle the 
+	 * Returns true to indicate that the given resource MUST NOT handle the
 	 * given method.
-	 * 
+	 *
 	 * A return value of false indicates that it might.
-	 * 
+	 *
 	 * @param r - the resource to check
 	 * @param m - the HTTP request method
 	 * @return - true to indicate the resource must not handle method m
@@ -247,4 +271,6 @@ public class HandlerHelper {
 	public void setEnableExpectContinue(boolean enableExpectContinue) {
 		this.enableExpectContinue = enableExpectContinue;
 	}
+
+
 }

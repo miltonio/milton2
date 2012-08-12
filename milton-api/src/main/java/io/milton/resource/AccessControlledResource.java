@@ -18,8 +18,11 @@ package io.milton.resource;
 import io.milton.http.Auth;
 import io.milton.http.values.HrefList;
 import io.milton.principal.Principal;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 5.4.1. Example: Retrieving the User's Current Set of Assigned Privileges
@@ -65,20 +68,43 @@ import java.util.Map;
  * @author alex
  */
 public interface AccessControlledResource extends Resource {
-
+  
+    
     public enum Priviledge {
+        /**
+         * READ the content of resources, but this does not permit reading PROPFIND (milton extension)
+         */
+        READ_CONTENT(Collections.EMPTY_LIST),
+        /**
+         * Permits PROPFIND (milton extension)
+         */
+        READ_PROPERTIES(Collections.EMPTY_LIST),
+        READ_CURRENT_USER_PRIVILEDGE(Collections.EMPTY_LIST),        
+        READ_ACL(Collections.EMPTY_LIST),        
+        /**
+         * READ permits all other READ operations
+         */
+        READ(Arrays.asList(READ_CONTENT, READ_PROPERTIES, READ_ACL, READ_CURRENT_USER_PRIVILEDGE)),
+        WRITE_PROPERTIES(Collections.EMPTY_LIST),
+        WRITE_CONTENT(Collections.EMPTY_LIST),        
+        WRITE_ACL(Collections.EMPTY_LIST),
+        /**
+         * Includes all other WRITE privs
+         */
+        WRITE(Arrays.asList(WRITE_CONTENT, WRITE_PROPERTIES, WRITE_ACL)),
+        
+        UNLOCK(Collections.EMPTY_LIST),
+        BIND(Collections.EMPTY_LIST),
+        UNBIND(Collections.EMPTY_LIST),
+        ALL(Arrays.asList(READ, WRITE, BIND, UNBIND));
+        
+        public List<Priviledge> contains;
 
-        READ,
-        WRITE,
-        READ_ACL,
-        WRITE_ACL,
-        UNLOCK,
-        READ_CURRENT_USER_PRIVILEDGE,
-        WRITE_PROPERTIES,
-        WRITE_CONTENT,
-        BIND,
-        UNBIND,
-        ALL
+        private Priviledge(List<Priviledge>contains) {
+            this.contains = contains;
+        }
+        
+        
     }
 
     /**

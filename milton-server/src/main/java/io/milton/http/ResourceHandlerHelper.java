@@ -51,8 +51,9 @@ public class ResourceHandlerHelper {
     private final UrlAdapter urlAdapter;
 
     public ResourceHandlerHelper( HandlerHelper handlerHelper, UrlAdapter urlAdapter, Http11ResponseHandler responseHandler ) {
-        if( handlerHelper == null )
-            throw new IllegalArgumentException( "handlerHelper may not be null" );
+        if( handlerHelper == null ) {
+			throw new IllegalArgumentException( "handlerHelper may not be null" );
+		}
 		this.responseHandler = responseHandler;
 		this.urlAdapter = urlAdapter;
         this.handlerHelper = handlerHelper;

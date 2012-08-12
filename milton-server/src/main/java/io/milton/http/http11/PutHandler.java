@@ -97,9 +97,7 @@ public class PutHandler implements Handler {
 		Path path = Path.path(urlToCreateOrUpdate);
 		urlToCreateOrUpdate = path.toString();
 
-		System.out.println("PutHandler: look for existing: " + urlToCreateOrUpdate);
 		Resource existingResource = manager.getResourceFactory().getResource(host, urlToCreateOrUpdate);
-		System.out.println("PutHandler: got: " + existingResource);
 		StorageErrorReason storageErr = null;
 		if (existingResource != null) {
 			//Make sure the parent collection is not locked by someone else
@@ -254,23 +252,24 @@ public class PutHandler implements Handler {
 		Resource r = parent.child(path.getName());
 
 		if (r == null) {
+			log.info("Could not find child: " + path.getName() + " in parent: " + parent.getName() + " - " + parent.getClass());
 			if (parent instanceof MakeCollectionableResource) {
 				MakeCollectionableResource mkcol = (MakeCollectionableResource) parent;
 				if (!handlerHelper.checkAuthorisation(manager, mkcol, request)) {
 					throw new NotAuthorizedException(mkcol);
 				}
-				LogUtils.debug(log, "autocreating new folder: ", path.getName());
+				log.info( "autocreating new folder: " + path.getName());
 				CollectionResource newCol = mkcol.createCollection(path.getName());
 				manager.getEventManager().fireEvent(new NewFolderEvent(newCol));
 				return newCol;
 			} else {
-				log.debug("parent folder isnt a MakeCollectionableResource: " + parent.getName());
+				log.info("parent folder isnt a MakeCollectionableResource: " + parent.getName() + " - " + parent.getClass());
 				return null;
 			}
 		} else if (r instanceof CollectionResource) {
 			return (CollectionResource) r;
 		} else {
-			log.debug("parent in URL is not a collection: " + r.getName());
+			log.info("parent in URL is not a collection: " + r.getName());
 			return null;
 		}
 	}

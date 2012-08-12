@@ -42,6 +42,7 @@ public class MoveHandler implements ExistingEntityHandler {
 	private Logger log = LoggerFactory.getLogger(MoveHandler.class);
 	private final WebDavResponseHandler responseHandler;
 	private final ResourceHandlerHelper resourceHandlerHelper;
+	private final HandlerHelper handlerHelper;
 	private final UserAgentHelper userAgentHelper;
 	private DeleteHelper deleteHelper;	
 	private boolean deleteExistingBeforeMove = true;
@@ -60,6 +61,7 @@ public class MoveHandler implements ExistingEntityHandler {
 		this.userAgentHelper = userAgentHelper;
 		this.responseHandler = responseHandler;
 		this.resourceHandlerHelper = resourceHandlerHelper;
+		this.handlerHelper = handlerHelper;
 		this.deleteHelper = new DeleteHelperImpl(handlerHelper);
 	}
 
@@ -87,8 +89,6 @@ public class MoveHandler implements ExistingEntityHandler {
 	@Override
 	public void processExistingResource(HttpManager manager, Request request, Response response, Resource resource) throws NotAuthorizedException, BadRequestException, ConflictException {
 		MoveableResource r = (MoveableResource) resource;
-		String xpUserAgent = "Microsoft Data Access Internet Publishing Provider DAV 1.1";
-		// TODO: investigating some weird character encoding issues for non english character sets on XP
 
 		Dest dest = Utils.getDecodedDestination(request.getDestinationHeader());
 		Resource rDest = manager.getResourceFactory().getResource(dest.host, dest.url);
@@ -133,6 +133,10 @@ public class MoveHandler implements ExistingEntityHandler {
 			}
 			log.debug("process: moving resource to: " + rDest.getName());
 			try {
+				if( !handlerHelper.checkAuthorisation(manager, colDest, request, request.getMethod(), request.getAuthorization()) ) {
+					responseHandler.respondUnauthorised( colDest, response, request );
+					return ;
+				}
 				manager.getEventManager().fireEvent(new MoveEvent(resource, colDest, dest.name));
 				r.moveTo(colDest, dest.name);
 				// See http://www.ettrema.com:8080/browse/MIL-87

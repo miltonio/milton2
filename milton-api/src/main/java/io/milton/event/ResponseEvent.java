@@ -15,7 +15,6 @@
 
 package io.milton.event;
 
-import io.milton.event.Event;
 import io.milton.http.Request;
 import io.milton.http.Response;
 
@@ -27,10 +26,12 @@ import io.milton.http.Response;
 public class ResponseEvent implements Event {
     private final Request request;
     private final Response response;
+    private final long duration;
 
-    public ResponseEvent(Request request, Response response) {
+    public ResponseEvent(Request request, Response response, long duration) {
         this.request = request;
         this.response = response;
+        this.duration = duration;
     }
 
 
@@ -40,5 +41,9 @@ public class ResponseEvent implements Event {
 
     public Response getResponse() {
         return response;
+    }        
+
+    public long getDuration() {
+        return duration;
     }        
 }

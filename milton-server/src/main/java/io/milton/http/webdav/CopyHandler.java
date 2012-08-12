@@ -113,6 +113,13 @@ public class CopyHandler implements ExistingEntityHandler {
 								if (rExisting instanceof DeletableResource) {
 									log.debug("copy destination exists and is deletable, delete it..");
 									DeletableResource dr = (DeletableResource) rExisting;
+									
+									// Check the user can delete
+									if (!handlerHelper.checkAuthorisation(manager, dr, request, Method.DELETE, request.getAuthorization())) {
+										responseHandler.respondUnauthorised(colDest, response, request);
+										return;
+									}
+
 									deleteHelper.delete(dr, manager.getEventManager());
 									wasDeleted = true;
 								} else {
@@ -123,6 +130,13 @@ public class CopyHandler implements ExistingEntityHandler {
 							}
 						}
 					}
+				}
+				
+				// The initial authorisation check is on the resource identified by the request URL. Now we need to check
+				// the resource identified in the dest header
+				if (!handlerHelper.checkAuthorisation(manager, colDest, request, request.getMethod(), request.getAuthorization())) {
+					responseHandler.respondUnauthorised(colDest, response, request);
+					return;
 				}
 				r.copyTo(colDest, dest.name);
 
