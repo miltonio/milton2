@@ -14,6 +14,7 @@
  */
 package io.milton.property;
 
+import io.milton.http.AclUtils;
 import io.milton.http.Request;
 import io.milton.http.Response;
 import io.milton.resource.AccessControlledResource;
@@ -75,8 +76,8 @@ public class BeanPropertyAuthoriser implements PropertyAuthoriser{
 						if (log.isTraceEnabled()) {
 							log.trace("requires Priviledge: " + role + "  for field: " + name);
 						}
-						// Now check if user has that priviledge on the resource						
-						if (!actualPrivs.contains(role)) {
+						// Now check if user has that priviledge on the resource												
+						if( !AclUtils.containsPriviledge(role, actualPrivs)) {
 							log.debug("not authorised to access field: " + name);
 							if (results == null) {
 								results = new HashSet<CheckResult>();
