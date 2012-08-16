@@ -105,12 +105,15 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 				try {
 					r = principalResourceFactory.getResource(host, userUrl);
 				} catch (NotAuthorizedException ex) {
-					throw new RuntimeException(ex);
+					log.error("Couldnt check userUrl in cookie", ex);
+					r = null;
 				} catch (BadRequestException ex) {
-					throw new RuntimeException(ex);
+					log.error("Couldnt check userUrl in cookie", ex);
+					r = null;
 				}
 				if (r == null) {
 					log.warn("User not found host: " + host + " userUrl: " + userUrl + " with resourcefactory: " + principalResourceFactory);
+					clearCookieValue(HttpManager.response());
 				}
 				return r;
 			}
