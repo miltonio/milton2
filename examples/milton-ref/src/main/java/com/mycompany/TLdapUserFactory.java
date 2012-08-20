@@ -69,7 +69,7 @@ public class TLdapUserFactory implements UserFactory {
 
     @Override
     public List<LdapContact> galFind(Condition condition, int sizeLimit) throws NotAuthorizedException, BadRequestException {
-        log.trace("galFind");
+        log.info("galFind: " + condition);
         List<LdapContact> results = new ArrayList<LdapContact>();
 
         for (Resource r : resourceFactory.getUsers()) {

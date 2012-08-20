@@ -252,6 +252,7 @@ public class LdapConnection extends Thread {
                 reqBer.parseSeq(null);
                 responseHandler.setVersion(reqBer.parseInt());
                 userName = reqBer.parseString(responseHandler.isLdapV3());
+				log.info("Bind user name: " + userName);
                 if (reqBer.peekByte() == (Ber.ASN_CONTEXT | Ber.ASN_CONSTRUCTOR | 3)) {
                     // SASL authentication
                     reqBer.parseSeq(null);
@@ -291,7 +292,11 @@ public class LdapConnection extends Thread {
 
                         LogUtils.debug(log, "LOG_LDAP_REQ_BIND_USER", currentMessageId, userName);
                         user = userFactory.getUser(userName, password);
-                        LogUtils.debug(log, "LOG_LDAP_REQ_BIND_SUCCESS");
+						if( user != null ) {
+							LogUtils.debug(log, "LOG_LDAP_REQ_BIND_SUCCESS");
+						} else {
+							LogUtils.debug(log, "LOG_LDAP_REQ_BIND", "No user! " + userName);
+						}
 
                     } else {
                         Map<String, String> properties = new HashMap<String, String>();
@@ -330,6 +335,7 @@ public class LdapConnection extends Thread {
             } else if (requestOperation == Ldap.LDAP_REQ_SEARCH) {
                 reqBer.parseSeq(null);
                 String dn = reqBer.parseString(responseHandler.isLdapV3());
+				log.info("Parsed DN: " + dn);
                 int scope = reqBer.parseEnumeration();
                 /*
                  * int derefAliases =

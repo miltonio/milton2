@@ -12,7 +12,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package io.milton.http.webdav;
 
 import io.milton.http.Request;
@@ -24,14 +23,22 @@ import io.milton.http.Request;
 public class DefaultUserAgentHelper implements UserAgentHelper {
 
 	@Override
-    public boolean isMacFinder( Request r ) {
-		String userAgent = r.getUserAgentHeader();
-        return userAgent != null && userAgent.contains( "WebDAVFS" ) && userAgent.contains( "Darwin" );
-    }
+	public boolean isMacFinder(Request r) {
+		if (r != null) {
+			String userAgent = r.getUserAgentHeader();
+			return userAgent != null && userAgent.contains("WebDAVFS") && userAgent.contains("Darwin");
+		} else {
+			return false;
+		}
+	}
 
 	@Override
 	public boolean isNautilus(Request r) {
-		String userAgent = r.getUserAgentHeader();
-		return userAgent.startsWith("gvfs");
+		if (r != null) {
+			String userAgent = r.getUserAgentHeader();
+			return userAgent.startsWith("gvfs");
+		} else {
+			return false;
+		}
 	}
 }

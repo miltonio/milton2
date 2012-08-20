@@ -143,6 +143,7 @@ public class TResourceFactory implements ResourceFactory {
     }
     
     public List<Resource> getUsers() {
+        System.out.println("TResourcEFactory: " + users.children);
         return users.children;
     }    
 

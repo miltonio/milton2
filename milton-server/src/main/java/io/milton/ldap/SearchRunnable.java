@@ -79,13 +79,16 @@ public class SearchRunnable implements Runnable {
 			int size = 0;
 			LogUtils.debug(log, "LOG_LDAP_REQ_SEARCH", currentMessageId, dn, scope, sizeLimit, timelimit, ldapFilter.toString(), returningAttributes);
 			if (scope == Ldap.SCOPE_BASE_OBJECT) {
+				log.debug("Check type of search... scope is BASE OBJECT" );
 				if ("".equals(dn)) {
 					size = 1;
+					log.info("send root DSE");
 					responseHandler.sendRootDSE(currentMessageId);
 				} else if (Ldap.BASE_CONTEXT.equals(dn)) {
 					size = 1;
 					// root
 					// root
+					log.info("send base context");
 					responseHandler.sendBaseContext(currentMessageId);
 				} else if (dn.startsWith("uid=") && dn.indexOf(',') > 0) {
 					if (user != null) {
@@ -106,6 +109,7 @@ public class SearchRunnable implements Runnable {
 						if (persons == null || persons.isEmpty()) {
 							List<LdapContact> galContacts = null;
 							try {
+								log.info("do GAL search: " + uid);
 								galContacts = userFactory.galFind(conditions.isEqualTo("imapUid", uid), sizeLimit);
 							} catch (NotAuthorizedException ex) {
 								log.error("not auth", ex);
@@ -137,15 +141,20 @@ public class SearchRunnable implements Runnable {
 			} else if (Ldap.COMPUTER_CONTEXT.equals(dn) || Ldap.COMPUTER_CONTEXT_LION.equals(dn)) {
 				size = 1;
 				// computer context for iCal
+				log.info("send computer context");
 				responseHandler.sendComputerContext(currentMessageId, returningAttributes);
-			} else if ((Ldap.BASE_CONTEXT.equalsIgnoreCase(dn)
+			} else if (( dn.equals("")  // Outlook 2010 by default sends no DN
+					|| Ldap.BASE_CONTEXT.equalsIgnoreCase(dn)
 					|| Ldap.OD_USER_CONTEXT.equalsIgnoreCase(dn))
 					|| Ldap.MSLIVE_BASE_CONTEXT.equals(dn)
 					|| Ldap.OD_USER_CONTEXT_LION.equalsIgnoreCase(dn)) {
+				log.info("not a weird search... check for normal conditions");
 				if (user != null) {
+					log.debug("we have a user...");
 					Set<LdapContact> persons = new HashSet<LdapContact>();
 					if (ldapFilter.isFullSearch()) {
 						// append personal contacts first
+						log.info("do personcal contact search");
 						Set<LdapContact> contacts = contactFind(null, returningAttributes, sizeLimit);
 						LogUtils.debug(log, "fullSearch: results:", contacts.size());
 						for (LdapContact person : contacts) {
@@ -161,6 +170,7 @@ public class SearchRunnable implements Runnable {
 								Condition startsWith = conditions.startsWith("cn", String.valueOf(c));
 								Collection<LdapContact> galContacts = null;
 								try {
+									log.info("now do GAL search");
 									galContacts = userFactory.galFind(startsWith, sizeLimit);
 								} catch (NotAuthorizedException ex) {
 									log.error("not auth", ex);
@@ -183,6 +193,7 @@ public class SearchRunnable implements Runnable {
 						}
 					} else {
 						// append only personal contacts
+						log.info("do personcal contact search only");
 						Condition filter = ldapFilter.getContactSearchFilter();
 						LogUtils.debug(log, "not full search:", filter);
 						//if ldapfilter is not a full search and filter is null,
@@ -235,12 +246,15 @@ public class SearchRunnable implements Runnable {
 			} else if (dn != null && dn.length() > 0 && !Ldap.OD_CONFIG_CONTEXT.equals(dn) && !Ldap.OD_GROUP_CONTEXT.equals(dn)) {
 				LogUtils.debug(log, "LOG_LDAP_REQ_SEARCH_INVALID_DN (2)", currentMessageId, dn);
 				log.debug("DN is not equal to: " + Ldap.OD_CONFIG_CONTEXT + " or " + Ldap.OD_GROUP_CONTEXT + " or any other valid pattern. Is: " + dn);
+			} else {
+				log.warn("Search criteria didnt match any of the expected patterns. Perhaps the user name is missing a context? DN=" + dn + ", expected something like: " + Ldap.OD_USER_CONTEXT);
 			}
 			// iCal: do not send LDAP_SIZE_LIMIT_EXCEEDED on apple-computer search by cn with sizelimit 1
 			if (size > 1 && size == sizeLimit) {
 				LogUtils.debug(log, "LOG_LDAP_REQ_SEARCH_SIZE_LIMIT_EXCEEDED", currentMessageId);
 				responseHandler.sendClient(currentMessageId, Ldap.LDAP_REP_RESULT, Ldap.LDAP_SIZE_LIMIT_EXCEEDED, "");
 			} else {
+				log.debug("No search results");
 				LogUtils.debug(log, "LOG_LDAP_REQ_SEARCH_SUCCESS", currentMessageId);
 				responseHandler.sendClient(currentMessageId, Ldap.LDAP_REP_RESULT, Ldap.LDAP_SUCCESS, "");
 			}
@@ -254,6 +268,7 @@ public class SearchRunnable implements Runnable {
 				LogUtils.debug(log, "LOG_EXCEPTION_SENDING_ERROR_TO_CLIENT", e2);
 			}
 		} finally {
+			log.debug("search complete");
 			searchManager.searchComplete(uuid, currentMessageId);
 		}
 	}
