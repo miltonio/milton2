@@ -146,6 +146,9 @@ public class DefaultContentTypeService implements ContentTypeService {
                 return cp;
             }
         }
+        if( !canProvideList.isEmpty()) {
+            return canProvideList.get(0);
+        }
         return null;
     }
 }

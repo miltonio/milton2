@@ -145,6 +145,7 @@ public class ClassPathResourceFactory implements ResourceFactory {
 			}
 		}
 
+		@Override
 		public void sendContent(OutputStream out, Range range, Map<String, String> params, String contentType) throws IOException, NotAuthorizedException, BadRequestException {
 			try {
 				IOUtils.copy(content, out);
@@ -153,10 +154,12 @@ public class ClassPathResourceFactory implements ResourceFactory {
 			}
 		}
 
+		@Override
 		public Long getMaxAgeSeconds(Auth auth) {
 			return maxAgeSeconds;
 		}
 
+		@Override
 		public String getContentType(String preferredList) {
 			String mime = ContentTypeUtils.findContentTypes(path.getName());
 			String s = ContentTypeUtils.findAcceptableContentType(mime, preferredList);
@@ -166,18 +169,22 @@ public class ClassPathResourceFactory implements ResourceFactory {
 			return s;
 		}
 
+		@Override
 		public Long getContentLength() {
 			return null;
 		}
 
+		@Override
 		public String getUniqueId() {
 			return null;
 		}
 
+		@Override
 		public String getName() {
 			return path.getName();
 		}
 
+		@Override
 		public Object authenticate(String user, String password) {
 			if (securityManager != null) {
 				return securityManager.authenticate(user, password);
@@ -186,6 +193,7 @@ public class ClassPathResourceFactory implements ResourceFactory {
 			}
 		}
 
+		@Override
 		public boolean authorise(Request request, Method method, Auth auth) {
 			if (securityManager != null) {
 				return securityManager.authorise(request, method, auth, this);
@@ -195,6 +203,7 @@ public class ClassPathResourceFactory implements ResourceFactory {
 
 		}
 
+		@Override
 		public String getRealm() {
 			if (securityManager != null) {
 				return securityManager.getRealm(host);

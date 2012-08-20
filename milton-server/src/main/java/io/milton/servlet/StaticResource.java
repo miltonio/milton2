@@ -12,7 +12,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package io.milton.servlet;
 
 import io.milton.common.ContentTypeUtils;
@@ -31,97 +30,97 @@ import io.milton.http.Request;
 import io.milton.resource.GetableResource;
 import io.milton.resource.Resource;
 
-
 /**
  * Used to provide access to static files via Milton
- * 
+ *
  * For a full implementation of webdav on a filesystem use the milton-filesysten
  * project
- * 
+ *
  * @author brad
  */
 public class StaticResource implements GetableResource {
-    
-    private final File file;
-    private String contentType;
-    
-    public StaticResource(File file, String url, String contentType) {
-        if( file.isDirectory() ) throw new IllegalArgumentException("Static resource must be a file, this is a directory: " + file.getAbsolutePath());
-        this.file = file;
-        this.contentType = contentType;
-    }
+
+	private final File file;
+	private String contentType;
+
+	public StaticResource(File file, String url, String contentType) {
+		if (file.isDirectory()) {
+			throw new IllegalArgumentException("Static resource must be a file, this is a directory: " + file.getAbsolutePath());
+		}
+		this.file = file;
+		this.contentType = contentType;
+	}
 
 	@Override
-    public String getUniqueId() {
-        return file.getName() + "_ " + file.lastModified();
-    }
-    
-    public int compareTo(Resource res) {
-        return this.getName().compareTo(res.getName());
-    }    
-    
-	@Override
-    public void sendContent(OutputStream out, Range range, Map<String, String> params, String contentType) throws IOException {
-        FileInputStream fis = new FileInputStream(file);
-        BufferedInputStream bin = new BufferedInputStream(fis);
-        final byte[] buffer = new byte[ 1024 ];
-        int n = 0;
-        while( -1 != (n = bin.read( buffer )) ) {
-            out.write( buffer, 0, n );
-        }        
-    }
+	public String getUniqueId() {
+		return file.getName() + "_ " + file.lastModified();
+	}
+
+	public int compareTo(Resource res) {
+		return this.getName().compareTo(res.getName());
+	}
 
 	@Override
-    public String getName() {
-        return file.getName();
-    }
+	public void sendContent(OutputStream out, Range range, Map<String, String> params, String contentType) throws IOException {
+		FileInputStream fis = new FileInputStream(file);
+		BufferedInputStream bin = new BufferedInputStream(fis);
+		final byte[] buffer = new byte[1024];
+		int n = 0;
+		while (-1 != (n = bin.read(buffer))) {
+			out.write(buffer, 0, n);
+		}
+	}
 
 	@Override
-    public Object authenticate(String user, String password) {
-        return "ok";
-    }
+	public String getName() {
+		return file.getName();
+	}
 
 	@Override
-    public boolean authorise(Request request, Request.Method method, Auth auth) {
-        return true;
-    }
-
-    @Override
-    public String getRealm() {
-        return "milton.io"; // will never be used because authorise is always true
-    }
+	public Object authenticate(String user, String password) {
+		return "ok";
+	}
 
 	@Override
-    public Date getModifiedDate() {        
-        Date dt = new Date(file.lastModified());
+	public boolean authorise(Request request, Request.Method method, Auth auth) {
+		return true;
+	}
+
+	@Override
+	public String getRealm() {
+		return "milton.io"; // will never be used because authorise is always true
+	}
+
+	@Override
+	public Date getModifiedDate() {
+		Date dt = new Date(file.lastModified());
 //        log.debug("static resource modified: " + dt);
-        return dt;
-    }
+		return dt;
+	}
 
 	@Override
-    public Long getContentLength() {
-        return file.length();
-    }
+	public Long getContentLength() {
+		return file.length();
+	}
 
 	@Override
-    public String getContentType(String preferredList) {
-		return ContentTypeUtils.findAcceptableContentTypeForName(getName(), contentType);
-    }
+	public String getContentType(String preferredList) {
+		String s = ContentTypeUtils.findAcceptableContentType(getName(), preferredList);
+		return s;
+	}
 
-    @Override
-    public String checkRedirect(Request request) {
-        return null;
-    }
-
-    @Override
-    public Long getMaxAgeSeconds(Auth auth) {
-        Long ll = 315360000l; // immutable
-        return ll;
-    }
-
-	public LockToken getLockToken()
-	{
+	@Override
+	public String checkRedirect(Request request) {
 		return null;
 	}
 
+	@Override
+	public Long getMaxAgeSeconds(Auth auth) {
+		Long ll = 315360000l; // immutable
+		return ll;
+	}
+
+	public LockToken getLockToken() {
+		return null;
+	}
 }
