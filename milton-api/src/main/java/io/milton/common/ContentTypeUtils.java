@@ -46,7 +46,9 @@ public class ContentTypeUtils {
 
     public static String findAcceptableContentTypeForName(String name, String accepts) {
         String canProvide = findContentTypes(name);
-        return contentTypeService.getPreferedMimeType(accepts, toList(canProvide));
+        List<String> canProvideList = toList(canProvide);
+        String s = contentTypeService.getPreferedMimeType(accepts, canProvideList);
+        return s;
     }
     
     

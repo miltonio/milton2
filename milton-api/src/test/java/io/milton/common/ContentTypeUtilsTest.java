@@ -49,7 +49,8 @@ public class ContentTypeUtilsTest extends TestCase {
         assertNotNull(s);
         assertTrue(s.contains("video"));
         
-        assertNull(ContentTypeUtils.findAcceptableContentTypeForName("x.mpg", "text"));
+        // we always want to return our content type, even if not acceptable
+        assertEquals("video/mpeg", ContentTypeUtils.findAcceptableContentTypeForName("x.mpg", "text"));
     }
 
     public void testFindContentTypes_File() {

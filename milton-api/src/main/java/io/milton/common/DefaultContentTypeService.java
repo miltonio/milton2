@@ -95,7 +95,15 @@ public class DefaultContentTypeService implements ContentTypeService {
         // eg  text/html; q=0.4 -> text/html
         accept = stripQop(accept);
 
-        return getBestMatch(accept, canProvide);
+        String s = getBestMatch(accept, canProvide);
+        if( s != null ) {
+            return s;
+        }
+        if( canProvide.isEmpty() ) {
+            return null;
+        }
+        String ct = canProvide.get(0);
+        return stripQop(ct);
     }
 
     @Override
@@ -145,9 +153,6 @@ public class DefaultContentTypeService implements ContentTypeService {
             if (cp.contains(accept) || cp.equals(accept) ) {
                 return cp;
             }
-        }
-        if( !canProvideList.isEmpty()) {
-            return canProvideList.get(0);
         }
         return null;
     }
