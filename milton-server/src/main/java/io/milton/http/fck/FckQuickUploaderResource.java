@@ -161,7 +161,7 @@ public class FckQuickUploaderResource extends FckCommon {
         s = s.replace( "[code]", code + "" );
         String f = filename == null ? "" : filename;
         s = s.replace( "[name]", f );
-        out.write( s.getBytes() );
+        out.write( s.getBytes("UTF-8") );
     }
 
     @Override

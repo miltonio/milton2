@@ -234,8 +234,21 @@ public interface Response {
 
     void setDateHeader( Date date );
 
+    /**
+     * Called to indicate that the request is completed. Some response implementations
+     * might choose to close the http connection, while others which implement pipelining
+     * might not
+     */
     void close();
 
+    /**
+     * Called by milton when an error occurs. The underlying HTTP provider should
+     * choose to close the HTTP connection, because the amount of data already sent
+     * might not be consistent with the content length header which may have already
+     * been sent
+     */
+    void sendError(Status status, String message);
+    
     /**
      * Will set the status to moved_temporaruly and set the location header
      * to the given url

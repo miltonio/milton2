@@ -84,7 +84,7 @@ public class ReportHandler implements ExistingEntityHandler {
 				String xml = r.process(request.getHostHeader(), request.getAbsolutePath(), resource, doc);
 				response.setStatus(Response.Status.SC_MULTI_STATUS);
 				response.setContentTypeHeader("text/xml");
-				response.setEntity(new ByteArrayEntity(xml.getBytes()));
+				response.setEntity(new ByteArrayEntity(xml.getBytes("UTF-8")));
 			}
 		} catch (JDOMException ex) {
 			java.util.logging.Logger.getLogger(ReportHandler.class.getName()).log(Level.SEVERE, null, ex);

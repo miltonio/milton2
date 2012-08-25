@@ -148,6 +148,13 @@ public class DebugFilter implements Filter{
         }
 
 		@Override
+		public void sendError(Status status, String message) {
+			r.sendError(status, message);
+		}
+		
+		
+
+		@Override
         public  Map<String,String> getHeaders() {
             return r.getHeaders();
         }

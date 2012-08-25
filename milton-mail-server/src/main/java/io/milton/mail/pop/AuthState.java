@@ -2,6 +2,8 @@ package io.milton.mail.pop;
 
 import io.milton.mail.Mailbox;
 import io.milton.mail.MailboxAddress;
+import java.io.UnsupportedEncodingException;
+import java.util.logging.Level;
 import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,7 +88,7 @@ public class AuthState extends BaseState {
             mbox = popSession.resourceFactory.getMailbox(add);
             if (mbox != null) {
                 String md5Pass = args[2];
-                if (mbox.authenticateMD5(md5Pass.getBytes())) {
+                if (mbox.authenticateMD5(md5Pass.getBytes("UTF-8"))) {
                     popSession.reply(session, "+OK");
                     popSession.auth = this;
                     popSession.transitionTo(session, new TransactionState(popSession));
@@ -96,6 +98,8 @@ public class AuthState extends BaseState {
             } else {
                 popSession.reply(session, "-ERR mailbox not found");
             }
+        } catch (UnsupportedEncodingException ex) {
+            throw new RuntimeException(ex);
         } catch (IllegalArgumentException ex) {
             popSession.reply(session, "-ERR Could not parse user name. Use form: user@domain.com");
         }

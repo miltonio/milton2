@@ -32,7 +32,18 @@ import io.milton.http.Response;
  * @author brad
  */
 public interface EntityTransport {
+	/**
+	 * Transmit the response to the client
+	 * 
+	 * @param response
+	 * @throws Exception 
+	 */
 	public void sendResponseEntity(Response response) throws Exception;
 
+	/**
+	 * Called after sending
+	 * 
+	 * @param response 
+	 */
 	public void closeResponse(Response response);
 }

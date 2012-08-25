@@ -130,7 +130,7 @@ public class SchedulingXmlHelper {
         void write(ByteArrayOutputStream out, OutputStream outputStream) {
             try {
                 String xml = out.toString("UTF-8");
-                outputStream.write(xml.getBytes()); // note: this can and should write to the outputstream directory. but if it aint broke, dont fix it...
+                outputStream.write(xml.getBytes("UTF-8")); // note: this can and should write to the outputstream directory. but if it aint broke, dont fix it...
             } catch (UnsupportedEncodingException ex) {
                 throw new RuntimeException(ex);
             } catch (IOException ex) {

@@ -5,6 +5,7 @@ package io.milton.simpleton;
 import io.milton.http.AbstractResponse;
 import io.milton.http.Cookie;
 import io.milton.http.Response.Status;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
@@ -34,8 +35,12 @@ public class SimpleMiltonResponse extends AbstractResponse{
 
     @Override
     public void setContentLengthHeader(Long totalLength) {
-        String s = totalLength==null ? null : totalLength.toString();
-        setResponseHeader( Header.CONTENT_LENGTH,s);
+		if( totalLength != null ) {
+			int i = (int) totalLength.longValue();
+			baseResponse.setContentLength(i);		
+		}
+//        String s = totalLength==null ? null : totalLength.toString();		
+//        setResponseHeader( Header.CONTENT_LENGTH,s);
     }
 
     @Override
@@ -78,7 +83,7 @@ public class SimpleMiltonResponse extends AbstractResponse{
             baseResponse.close();
             log.debug("request completed in: " + (System.currentTimeMillis()-started));
         } catch (Exception ex) {
-            ex.printStackTrace();
+            log.error("exception closing response", ex);
         }
     }
 
@@ -136,5 +141,25 @@ public class SimpleMiltonResponse extends AbstractResponse{
         org.simpleframework.http.Cookie c = baseResponse.setCookie( name, value );
         return new SimpletonCookie( c );
     }
+
+	/**
+	 * Just set the status and content, and close the connection
+	 * 
+	 * @param status
+	 * @param message 
+	 */
+	@Override
+	public void sendError(Status status, String message) {
+		try {
+			setStatus(status);
+			getOutputStream().write(message.getBytes("UTF-8"));
+		} catch (IOException iOException) {
+			log.error("Exception sending error", iOException);
+		} finally {
+			closeReally();
+		}
+				
+		
+	}
 
 }

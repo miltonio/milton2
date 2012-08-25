@@ -62,16 +62,13 @@ public class StandardFilter implements Filter {
         } catch( NotAuthorizedException ex ) {
             log.warn( "NotAuthorizedException", ex );
             manager.getResponseHandler().respondUnauthorised( ex.getResource(), response, request );			
-        } catch( Throwable e ) {
-            log.error( "process", e );
-            try {
-                manager.getResponseHandler().respondServerError( request, response, INTERNAL_SERVER_ERROR_HTML );
-            } catch( Throwable ex ) {
-                log.error( "Exception generating server error response, setting response status to 500", ex );
-                response.setStatus( Response.Status.SC_INTERNAL_SERVER_ERROR );
-            }
+        } catch( Throwable e ) {            
+			// Looks like in some cases we can be left with a connection in an indeterminate state
+			// due to the content length not being equal to the content length header, so
+			// fall back on the udnerlying connection provider to manage the error
+			response.sendError(Response.Status.SC_INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR_HTML);
         } finally {
-            manager.closeResponse(response);
+            //manager.closeResponse(response);
         }
     }
 }

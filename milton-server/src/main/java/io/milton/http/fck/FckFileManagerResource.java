@@ -87,7 +87,7 @@ public class FckFileManagerResource extends FckCommon implements GetableResource
                 uploadParams.newName = "";
             }
             s = s.replace( "[name]", uploadParams.newName );
-            out.write( s.getBytes() );
+            out.write( s.getBytes("UTF-8") );
         } else {
             FckGetParams getParams = new FckGetParams( out, params );
             try {
@@ -276,7 +276,7 @@ public class FckFileManagerResource extends FckCommon implements GetableResource
             sb.append( "</script>\n" );
             String s = sb.toString();
             try {
-                out.write( s.getBytes() );
+                out.write( s.getBytes("UTF-8") );
                 out.flush();
             } catch( IOException e ) {
                 log.warn( "ioexception writing response to upload", e );

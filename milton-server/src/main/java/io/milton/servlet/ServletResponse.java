@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,6 +112,20 @@ public class ServletResponse extends AbstractResponse {
         }
     }
 
+	@Override
+	public void sendError(Status status, String message) {
+		log.warn("sendError: " + status);
+		try {
+			r.sendError(status.code, message);
+		} catch (IOException ex) {
+			log.error("Failed to send error", ex);
+		}
+	}
+
+
+	
+	
+
     @Override
     public void sendRedirect(String url) {
         String u = r.encodeRedirectURL(url);
@@ -121,16 +136,19 @@ public class ServletResponse extends AbstractResponse {
         }
     }
 
+	@Override
     public Map<String, String> getHeaders() {
         return Collections.unmodifiableMap(headers);
     }
 
+	@Override
     public void setAuthenticateHeader(List<String> challenges) {
         for (String ch : challenges) {
             r.addHeader(Response.Header.WWW_AUTHENTICATE.code, ch);
         }
     }
 
+	@Override
     public Cookie setCookie(Cookie cookie) {
         if (cookie instanceof ServletCookie) {
             ServletCookie sc = (ServletCookie) cookie;

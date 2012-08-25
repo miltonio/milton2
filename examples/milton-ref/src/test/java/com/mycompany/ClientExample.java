@@ -50,7 +50,7 @@ public class ClientExample extends TestCase {
 
         // And upload something to it
         String helloWorld = "Hello world!!!";
-        byte[] arr = helloWorld.getBytes();
+        byte[] arr = helloWorld.getBytes("UTF-8");
         ByteArrayInputStream bin = new ByteArrayInputStream(arr);
         File newFile = newFolder.upload("hello-world.txt", bin, (long) arr.length, "text/plain", null, null);
         System.out.println("Done upload, new directory:");
@@ -58,7 +58,7 @@ public class ClientExample extends TestCase {
 
         // Update the new file
         helloWorld = "Hello world222!!!";
-        arr = helloWorld.getBytes();
+        arr = helloWorld.getBytes("UTF-8");
         bin = new ByteArrayInputStream(arr);
         System.out.println("Now update the file..");
         newFile.setContent(bin, (long) arr.length, null);

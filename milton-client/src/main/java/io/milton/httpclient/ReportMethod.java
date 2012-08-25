@@ -51,7 +51,7 @@ public class ReportMethod extends HttpEntityEnclosingRequestBase {
         Utils.executeHttpWithStatus(client, this, out, context);
         String xml = out.toString();
         try {
-            Document document = RespUtils.getJDomDocument( new ByteArrayInputStream( xml.getBytes() ) );
+            Document document = RespUtils.getJDomDocument( new ByteArrayInputStream( xml.getBytes("UTF-8") ) );
             return document;
         } catch( JDOMException ex ) {
             throw new RuntimeException(xml, ex );
