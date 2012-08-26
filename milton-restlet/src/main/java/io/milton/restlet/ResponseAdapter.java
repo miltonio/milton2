@@ -51,6 +51,19 @@ public class ResponseAdapter extends AbstractResponse {
         getTarget().setStatus(org.restlet.data.Status.valueOf(status.code));
     }
 
+    /**
+     * Just does setStatus
+     * 
+     * @param status
+     * @param message 
+     */
+    @Override
+    public void sendError(Status status, String message) {
+        setStatus(status);
+    }
+    
+    
+
     @Override
     public Status getStatus() {
         return Status.SC_OK.fromCode(getTarget().getStatus().getCode());
