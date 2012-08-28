@@ -105,7 +105,8 @@ public class StaticResource implements GetableResource {
 
 	@Override
 	public String getContentType(String preferredList) {
-		String s = ContentTypeUtils.findAcceptableContentType(getName(), preferredList);
+		String mime = ContentTypeUtils.findContentTypes(getName());
+		String s = ContentTypeUtils.findAcceptableContentType(mime, preferredList);
 		return s;
 	}
 
