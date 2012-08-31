@@ -52,7 +52,7 @@ public class DefaultETagGenerator implements ETagGenerator {
             } else {
                 log.trace("no modDate, so etag is just unique id");
             }
-            return s;
+            return "\"" + s + "\"";
         }
     }
 }
