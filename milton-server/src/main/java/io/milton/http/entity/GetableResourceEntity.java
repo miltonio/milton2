@@ -12,7 +12,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package io.milton.http.entity;
 
 import io.milton.resource.GetableResource;
@@ -27,55 +26,61 @@ import java.util.Map;
 
 public class GetableResourceEntity implements Response.Entity {
 
-    private static final Logger log = LoggerFactory.getLogger(GetableResourceEntity.class);
+	private static final Logger log = LoggerFactory.getLogger(GetableResourceEntity.class);
+	private GetableResource resource;
+	private Range range;
+	private Map<String, String> params;
+	private String contentType;
 
-    private GetableResource resource;
-    private Range range;
-    private Map<String, String> params;
-    private String contentType;
+	public GetableResourceEntity(GetableResource resource, Map<String, String> params, String contentType) {
+		this(resource, null, params, contentType);
+	}
 
-    public GetableResourceEntity(GetableResource resource, Map<String, String> params, String contentType) {
-        this(resource, null, params, contentType);
-    }
+	public GetableResourceEntity(GetableResource resource, Range range, Map<String, String> params, String contentType) {
+		this.resource = resource;
+		this.range = range;
+		this.params = params;
+		this.contentType = contentType;
+	}
 
-    public GetableResourceEntity(GetableResource resource, Range range, Map<String, String> params, String contentType) {
-        this.resource = resource;
-        this.range = range;
-        this.params = params;
-        this.contentType = contentType;
-    }
+	public GetableResource getResource() {
+		return resource;
+	}
 
-    public GetableResource getResource() {
-        return resource;
-    }
+	public Range getRange() {
+		return range;
+	}
 
-    public Range getRange() {
-        return range;
-    }
+	public Map<String, String> getParams() {
+		return params;
+	}
 
-    public Map<String, String> getParams() {
-        return params;
-    }
+	public String getContentType() {
+		return contentType;
+	}
 
-    public String getContentType() {
-        return contentType;
-    }
+	@Override
+	public void write(Response response, OutputStream outputStream) throws Exception {
+		long l = System.currentTimeMillis();
+		log.trace("sendContent");
+		try {
+			resource.sendContent(outputStream, range, params, contentType);
+			// TODO: The original code didn't flush for partial responses, not sure why...
 
-    @Override
-    public void write(Response response, OutputStream outputStream) throws Exception {
-        long l = System.currentTimeMillis();
-        log.trace("sendContent");
-        try {
-            resource.sendContent(outputStream, range, params, contentType);
-            // TODO: The original code didn't flush for partial responses, not sure why...
-            outputStream.flush();
-            if (log.isTraceEnabled()) {
-                l = System.currentTimeMillis() - l;
-                log.trace("sendContent finished in " + l + "ms");
-            }
-        } catch (IOException ex) {
-            log.warn("IOException writing to output, probably client terminated connection", ex);
-        }
-    }
-
+			// BM: not sure, but i think flushing might be interfering with some connection management stuff
+			//outputStream.flush();
+			if (log.isTraceEnabled()) {
+				l = System.currentTimeMillis() - l;
+				log.trace("sendContent finished in " + l + "ms");
+			}
+		} catch (IOException ex) {
+			log.warn("IOException writing to output, probably client terminated connection", ex);
+			try {
+				outputStream.close(); // attempt to close the stream
+			} catch (Exception e) {
+				// ignore
+			}
+			//throw new RuntimeException("IOException", ex); // throw so the container can catch and clean up the connection
+		}
+	}
 }
