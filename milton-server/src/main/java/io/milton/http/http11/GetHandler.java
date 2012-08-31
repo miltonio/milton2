@@ -114,6 +114,15 @@ public class GetHandler implements ExistingEntityHandler {
         log.trace( "checkIfModifiedSince" );
         Long maxAgeSecs = resource.getMaxAgeSeconds( requestInfo.getAuthorization() );
 
+		// Sometimes we can receive an if-modified-since header and a cache-control: no-cache header
+		// I'm not sure why, since the two appear contradictory. But no-cache should win
+		String cacheControl = requestInfo.getRequestHeader(Request.Header.CACHE_CONTROL);
+		if( cacheControl != null ) {
+			if( cacheControl.toLowerCase().equals("no-cache")) {
+				return false;
+			}
+		}
+		
 		// Null maxAge indicates that the resource implementor does not want
 		// this resource to be cached
         if( maxAgeSecs == null ) {
