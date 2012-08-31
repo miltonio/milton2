@@ -90,6 +90,19 @@ public class ServletRequest extends AbstractRequest {
         url = s;
         tlRequest.set(r);
         tlServletContext.set(servletContext);
+		
+		if( log.isTraceEnabled()) {
+			log.trace("Dumping headers ---- " + r.getMethod() + " " + r.getRequestURL() + " -----");
+			log.trace("Request class: " + r.getClass());
+			log.trace("Response class: " + r.getClass());
+			Enumeration names = r.getHeaderNames();
+			while( names.hasMoreElements() ) {
+				String name = (String) names.nextElement();
+				String value = r.getHeader(name);
+				log.trace("  " + name + "=" + value);
+			}
+			log.trace("-------------------------------------------");
+		}
     }
 
     public HttpSession getSession() {
