@@ -34,7 +34,9 @@ public abstract class AbstractRequest implements Request {
 	@Override
     public Date getIfModifiedHeader() {
         String s = getRequestHeader( Request.Header.IF_MODIFIED );
-        if( s == null || s.length() == 0 ) return null;
+        if( s == null || s.length() == 0 ) {
+			return null;
+		}
 
         try {
             return DateUtils.parseDate( s );
