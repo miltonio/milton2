@@ -31,8 +31,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,11 +58,8 @@ public class PartialGetHelper {
 			String[] arr = rangeHeader.split(",");
 			List<Range> list = new ArrayList<Range>();
 			for (String s : arr) {
-				final Matcher matcher = Pattern.compile("\\s*(\\d+)-(\\d+)").matcher(s);
-				if (matcher.matches()) {
-					Range r = new Range(Long.parseLong(matcher.group(1)), Long.parseLong(matcher.group(2)));
-					list.add(r);
-				}
+				Range r = Range.parse(s);
+				list.add(r);
 			}
 			if (log.isTraceEnabled()) {
 				log.trace("getRanges: header: " + rangeHeader + " parsed ranges: " + list.size());

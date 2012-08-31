@@ -15,15 +15,7 @@
 
 package io.milton.http.http11;
 
-import io.milton.http.http11.Http11ResponseHandler;
-import io.milton.http.http11.PartialGetHelper;
 import io.milton.http.Range;
-import io.milton.http.entity.PartialEntity;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -56,27 +48,44 @@ public class PartialGetHelperTest extends TestCase {
 		assertNull(ranges);
 	}
 	
+	public void testGetRange_first_half() {
+		List<Range> ranges = partialGetHelper.getRanges("bytes=100-");
+		assertNotNull(ranges);
+		assertEquals(1, ranges.size());
+		Range r = ranges.get(0);
+		assertEquals(100, r.getStart().intValue());
+		assertNull(r.getFinish());
+	}	
+
+	public void testGetRange_second_half() {
+		List<Range> ranges = partialGetHelper.getRanges("bytes=-100");
+		assertNotNull(ranges);
+		assertEquals(1, ranges.size());
+		Range r = ranges.get(0);
+		assertNull(r.getStart());
+		assertEquals(100, r.getFinish().intValue());		
+	}	
+	
+	
 	public void testGetRange_single() {
 		List<Range> ranges = partialGetHelper.getRanges("bytes=0-499");
 		assertNotNull(ranges);
 		assertEquals(1, ranges.size());
 		Range r = ranges.get(0);
-		assertEquals(0, r.getStart());
-		assertEquals(499, r.getFinish());
+		assertEquals(0l, r.getStart().longValue());
+		assertEquals(499l, r.getFinish().longValue());
 	}
 	
 	public void testGetRange_multi() {
 		List<Range> ranges = partialGetHelper.getRanges("bytes=0-499,1000-1500,2000-2500");
 		assertNotNull(ranges);
 		assertEquals(3, ranges.size());
-		assertEquals(0, ranges.get(0).getStart());
-		assertEquals(499, ranges.get(0).getFinish());
-		assertEquals(1000, ranges.get(1).getStart());
-		assertEquals(1500, ranges.get(1).getFinish());
-		assertEquals(2000, ranges.get(2).getStart());
-		assertEquals(2500, ranges.get(2).getFinish());
-
-		
+		assertEquals(0, ranges.get(0).getStart().intValue());
+		assertEquals(499, ranges.get(0).getFinish().intValue());
+		assertEquals(1000, ranges.get(1).getStart().intValue());
+		assertEquals(1500, ranges.get(1).getFinish().intValue());
+		assertEquals(2000, ranges.get(2).getStart().intValue());
+		assertEquals(2500, ranges.get(2).getFinish().intValue());	
 	}
 
 	public void testGetRanges() {

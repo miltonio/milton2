@@ -183,7 +183,22 @@ public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Buff
 	public void respondPartialContent(GetableResource resource, Response response, Request request, Map<String, String> params, Range range) throws NotAuthorizedException, BadRequestException, NotFoundException {
 		log.debug("respondPartialContent: " + range.getStart() + " - " + range.getFinish());
 		response.setStatus(Response.Status.SC_PARTIAL_CONTENT);
-		response.setContentRangeHeader(range.getStart(), range.getFinish(), resource.getContentLength());
+		long st = range.getStart() == null ? 0 : range.getStart();
+		long fn;
+		Long cl = resource.getContentLength();
+		if( range.getFinish() == null ) {			
+			if( cl != null ) {
+				fn = cl.longValue() - 1; // position is one less then length
+			} else {
+				log.warn("Couldnt calculate range end position because the resource is not reporting a content length, and no end position was requested by the client: " + resource.getName() + " - " + resource.getClass());
+				fn = -1;
+			}
+		} else {
+			fn = range.getFinish();
+		}
+		response.setContentRangeHeader(st, fn, cl);
+		long contentLength = fn - st + 1;
+		response.setContentLengthHeader(contentLength);
 		response.setDateHeader(new Date());
 		String etag = eTagGenerator.generateEtag(resource);
 		if (etag != null) {
@@ -294,6 +309,7 @@ public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Buff
 		response.setStatus(status);
 		response.setNonStandardHeader("Server", "milton.io-" + miltonVerson);
 		response.setDateHeader(new Date());
+		response.setNonStandardHeader("Accept-Ranges", "bytes");
 		String etag = eTagGenerator.generateEtag(resource);
 		if (etag != null) {
 			response.setEtag(etag);
