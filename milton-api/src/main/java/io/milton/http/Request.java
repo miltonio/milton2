@@ -51,6 +51,7 @@ public interface Request {
         CACHE_CONTROL("Cache-Control"),
         WWW_AUTHENTICATE("WWW-Authenticate"),
         IF("If"),
+        IF_RANGE("If-Range"),
         IF_MATCH("If-Match"),
         IF_NONE_MATCH("If-None-Match"),
         IF_MODIFIED("If-Modified-Since"),
@@ -137,6 +138,8 @@ public interface Request {
 
     String getIfHeader();
 
+    String getIfRangeHeader();
+    
     String getIfMatchHeader();
 
     String getIfNoneMatchHeader();

@@ -47,6 +47,13 @@ public abstract class AbstractRequest implements Request {
     }
 
 	@Override
+	public String getIfRangeHeader() {
+		return getRequestHeader(Header.IF_RANGE);
+	}
+
+	
+	
+	@Override
     public String getExpectHeader() {
         return getRequestHeader( Request.Header.EXPECT );
     }

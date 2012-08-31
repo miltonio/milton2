@@ -173,4 +173,31 @@ public class MatchHelperTest extends TestCase {
 		verify(resource, request);
 		assertFalse(result);
 	}
+	
+	
+	public void test_CheckIfRange_NoHeader() {	
+		expect(request.getIfRangeHeader() ).andReturn(null);
+		replay(resource, request);
+		boolean result = matchHelper.checkIfRange(resource, request);
+		verify(resource, request);
+		assertTrue(result);
+	}	
+	
+	public void test_CheckIfRange_Matches() {
+		expect(resource.getUniqueId()).andReturn("X");
+		expect(request.getIfRangeHeader() ).andReturn("X");
+		replay(resource, request);
+		boolean result = matchHelper.checkIfRange(resource, request);
+		verify(resource, request);
+		assertTrue(result);
+	}		
+	
+	public void test_CheckIfRange_NotMatches() {
+		expect(resource.getUniqueId()).andReturn("X");
+		expect(request.getIfRangeHeader() ).andReturn("Y");
+		replay(resource, request);
+		boolean result = matchHelper.checkIfRange(resource, request);
+		verify(resource, request);
+		assertFalse(result);
+	}		
 }
