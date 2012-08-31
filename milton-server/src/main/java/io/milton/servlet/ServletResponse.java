@@ -25,7 +25,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,9 +115,15 @@ public class ServletResponse extends AbstractResponse {
 	public void sendError(Status status, String message) {
 		log.warn("sendError: " + status);
 		try {
-			r.sendError(status.code, message);
+			r.sendError(status.code, message);			
 		} catch (IOException ex) {
 			log.error("Failed to send error", ex);
+		}
+		try {
+			r.getOutputStream().close();
+			log.info("Closed outputstream after sendError");
+		} catch (IOException e) {
+			log.warn("Failed to close outputstream after sendError");
 		}
 	}
 
