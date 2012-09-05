@@ -12,7 +12,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package io.milton.http;
 
 import io.milton.resource.DeletableCollectionResource;
@@ -32,9 +31,10 @@ import org.slf4j.LoggerFactory;
 /**
  * Default implementation of DeleteHelper
  *
- * It will delegate to the resource if it implements DeletableCollectionResource,
- * otherwise it will walk the collection if its a CollectionResource, and finally
- * will just call handlerHelper.isLockedOut otherwise
+ * It will delegate to the resource if it implements
+ * DeletableCollectionResource, otherwise it will walk the collection if its a
+ * CollectionResource, and finally will just call handlerHelper.isLockedOut
+ * otherwise
  *
  */
 public class DeleteHelperImpl implements DeleteHelper {
@@ -91,6 +91,10 @@ public class DeleteHelperImpl implements DeleteHelper {
 	public void delete(DeletableResource r, EventManager eventManager) throws NotAuthorizedException, ConflictException, BadRequestException {
 		if (r instanceof DeletableCollectionResource) {
 			r.delete();
+			if (eventManager != null) {
+				eventManager.fireEvent(new DeleteEvent(r));
+			}
+
 
 		} else if (r instanceof CollectionResource) {
 			CollectionResource col = (CollectionResource) r;
@@ -102,9 +106,6 @@ public class DeleteHelperImpl implements DeleteHelper {
 				} else {
 					if (rChild instanceof DeletableResource) {
 						DeletableResource rChildDel = (DeletableResource) rChild;
-						if (eventManager != null) {
-							eventManager.fireEvent(new DeleteEvent(rChildDel));
-						}
 						delete(rChildDel, eventManager);
 					} else {
 						log.warn("Couldnt delete child resource: " + rChild.getName() + " of type; " + rChild.getClass().getName() + " because it does not implement: " + DeletableResource.class.getCanonicalName());
@@ -113,9 +114,16 @@ public class DeleteHelperImpl implements DeleteHelper {
 				}
 			}
 			r.delete();
+			if (eventManager != null) {
+				eventManager.fireEvent(new DeleteEvent(r));
+			}
 
 		} else {
 			r.delete();
+			if (eventManager != null) {
+				eventManager.fireEvent(new DeleteEvent(r));
+			}
+
 		}
 	}
 }

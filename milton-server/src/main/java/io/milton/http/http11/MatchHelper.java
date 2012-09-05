@@ -54,18 +54,23 @@ public class MatchHelper {
 			return true; // no if-match header, return true so processing continues
 		}
 		if (r == null) {
+			System.out.println("checkIfMatch: resource is null");
 			return false; // etag given, but no resource. Definitely not a match
 		}
 		String currentEtag = eTagGenerator.generateEtag(r);
 		if (currentEtag == null || currentEtag.length() == 0) {
+			System.out.println("checkIfMatch: no etag");
 			return false; // no etag on the resource, but an etag was given in header, so fail
 		}
 		List<String> etags = splitToList(h);
 		for (String requestedEtag : etags) {
+			requestedEtag = cleanUp(requestedEtag);
+			System.out.println("checkIfMatch: compare: " + requestedEtag + " = " + currentEtag);
 			if (requestedEtag.equals(currentEtag) || requestedEtag.equals("*")) {
 				return true; // found a matching tag, return true to continue
 			}
 		}
+		System.out.println("checkIfMatch: did not find matching etag");
 		return false; // a if-match header was sent, but a matching tag is not present, so return false
 	}
 
@@ -144,5 +149,17 @@ public class MatchHelper {
 			}
 		}
 		return list;
+	}
+
+	/**
+	 * Some user agents encode the quotes we send them in the etag
+	 * 
+	 * @param s
+	 * @return 
+	 */
+	private String cleanUp(String s) {
+		s = s.replace("&quot;", "");
+		s = s.replace("\"\"", "\"");
+		return s;
 	}
 }

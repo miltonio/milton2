@@ -195,7 +195,7 @@ public class GetHandler implements ExistingEntityHandler {
 					if( matchHelper.checkIfRange(resource, request)) {
 						partialGetHelper.sendPartialContent(resource, request, response, ranges, params);
 						return;
-					}					
+					}
 				}
 
 				if (log.isTraceEnabled()) {

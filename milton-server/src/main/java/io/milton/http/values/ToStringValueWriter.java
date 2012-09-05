@@ -21,15 +21,25 @@ import java.util.Map;
 
 public class ToStringValueWriter implements ValueWriter {
 
+	@Override
     public boolean supports( String nsUri, String localName, Class c ) {
         return true;
     }
 
     private String nameEncode( String s ) {
         //return Utils.encode(href, false); // see MIL-31
-        return Utils.escapeXml( s );
-    }
+		
+		// Must not escape quotes because they're used in the getetag property
+        //return Utils.escapeXml( s );
+//		s = s.replaceAll("\"", "&quot;");
+		s = s.replaceAll("&", "&amp;");
+//		s = s.replaceAll("'", "&apos;");
+		s = s.replaceAll("<", "&lt;");
+		s = s.replaceAll(">", "&gt;");		
+		return s;
+	}
 
+	@Override
     public void writeValue( XmlWriter writer, String nsUri, String prefix, String localName, Object val, String href, Map<String, String> nsPrefixes ) {
         if( val == null ) {
             writer.writeProperty( prefix, localName );
@@ -39,6 +49,7 @@ public class ToStringValueWriter implements ValueWriter {
         }
     }
 
+	@Override
     public Object parse( String namespaceURI, String localPart, String value ) {
         return value;
     }
