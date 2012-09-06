@@ -58,7 +58,9 @@ public class MiltonFilter implements javax.servlet.Filter {
 
 			String sExcludePaths = config.getInitParameter("milton.exclude.paths");
 			log.info("init: exclude paths: " + sExcludePaths);
-			excludeMiltonPaths = sExcludePaths.split(",");
+			if (sExcludePaths != null) {
+				excludeMiltonPaths = sExcludePaths.split(",");
+			}
 
 			httpManager = configurator.configure(this.config);
 
@@ -86,10 +88,12 @@ public class MiltonFilter implements javax.servlet.Filter {
 			HttpServletRequest hsr = (HttpServletRequest) req;
 			String url = hsr.getRequestURI();
 			// Allow certain paths to be excluded from milton, these might be other servlets, for example
-			for (String s : excludeMiltonPaths) {
-				if (url.startsWith(s)) {
-					fc.doFilter(req, resp);
-					return;
+			if (excludeMiltonPaths != null) {
+				for (String s : excludeMiltonPaths) {
+					if (url.startsWith(s)) {
+						fc.doFilter(req, resp);
+						return;
+					}
 				}
 			}
 			doMiltonProcessing((HttpServletRequest) req, (HttpServletResponse) resp);

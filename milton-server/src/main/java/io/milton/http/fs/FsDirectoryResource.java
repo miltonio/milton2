@@ -99,15 +99,8 @@ public class FsDirectoryResource extends FsResource implements MakeCollectionabl
 
     @Override
     public Resource createNew(String name, InputStream in, Long length, String contentType) throws IOException {
-        File dest = new File(this.getFile(), name);
-        FileOutputStream out = null;
-        try {
-            out = new FileOutputStream(dest);
-            IOUtils.copy(in, out);
-        } finally {
-            IOUtils.closeQuietly(out);
-        }
-        // todo: ignores contentType
+		File dest = new File(this.getFile(), name);
+		contentService.setFileContent(dest, in);        
         return factory.resolveFile(this.host, dest);
 
     }

@@ -14,6 +14,7 @@
  */
 package io.milton.config;
 
+import io.milton.common.ContentTypeService;
 import io.milton.property.PropertySource;
 import io.milton.common.Stoppable;
 import io.milton.event.EventManager;
@@ -28,7 +29,9 @@ import io.milton.http.carddav.CardDavProtocol;
 import io.milton.http.entity.DefaultEntityTransport;
 import io.milton.http.entity.EntityTransport;
 import io.milton.http.fck.FckResourceFactory;
+import io.milton.http.fs.FileContentService;
 import io.milton.http.fs.FileSystemResourceFactory;
+import io.milton.http.fs.SimpleFileContentService;
 import io.milton.http.fs.SimpleSecurityManager;
 import io.milton.http.http11.*;
 import io.milton.http.http11.DefaultHttp11ResponseHandler.BUFFERING;
@@ -80,6 +83,7 @@ public class HttpManagerBuilder {
 	private List<InitListener> listeners;
 	private ResourceFactory mainResourceFactory;
 	private ResourceFactory outerResourceFactory;
+	private FileContentService fileContentService = new SimpleFileContentService(); // Used for FileSystemResourceFactory
 	private DefaultHttp11ResponseHandler.BUFFERING buffering;
 	private List<AuthenticationHandler> authenticationHandlers;
 	private List<AuthenticationHandler> cookieDelegateHandlers;
@@ -183,7 +187,9 @@ public class HttpManagerBuilder {
 				securityManager = new SimpleSecurityManager(fsRealm, mapOfNameAndPasswords);
 			}
 			log.info("Using securityManager: " + securityManager.getClass());
-			mainResourceFactory = new FileSystemResourceFactory(rootDir, securityManager, fsContextPath);
+			FileSystemResourceFactory fsResourceFactory = new FileSystemResourceFactory(rootDir, securityManager, fsContextPath);
+			fsResourceFactory.setContentService(fileContentService);
+			mainResourceFactory = fsResourceFactory;
 			log.info("Using file system with root directory: " + rootDir.getAbsolutePath());
 		}
 		log.info("Using mainResourceFactory: " + mainResourceFactory.getClass());
@@ -1087,6 +1093,14 @@ public class HttpManagerBuilder {
 
 	public void setListeners(List<InitListener> listeners) {
 		this.listeners = listeners;
+	}
+
+	public FileContentService getFileContentService() {
+		return fileContentService;
+	}
+
+	public void setFileContentService(FileContentService fileContentService) {
+		this.fileContentService = fileContentService;
 	}
 	
 	

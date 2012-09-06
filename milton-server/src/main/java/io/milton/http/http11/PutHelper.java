@@ -167,7 +167,9 @@ public class PutHelper {
 
 
     public CollectionResource findNearestParent( HttpManager manager, String host, Path path ) throws NotAuthorizedException, ConflictException, BadRequestException {
-        if( path == null ) return null;
+        if( path == null ) {
+			return null;
+		}
 
         Resource thisResource = manager.getResourceFactory().getResource( host, path.toString() );
         if( thisResource != null ) {

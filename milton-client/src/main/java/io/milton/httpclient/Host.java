@@ -157,6 +157,7 @@ public class Host extends Folder {
         HttpRequestRetryHandler handler = new NoRetryHttpRequestRetryHandler();
         client.setHttpRequestRetryHandler(handler);
         client.setRedirectStrategy(new DefaultRedirectStrategy() {
+            @Override
             public boolean isRedirected(
                 final HttpRequest request,
                 final HttpResponse response,

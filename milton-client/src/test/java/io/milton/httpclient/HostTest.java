@@ -16,6 +16,7 @@
  */
 package io.milton.httpclient;
 
+import io.milton.common.Path;
 import junit.framework.TestCase;
 
 /**
@@ -74,4 +75,12 @@ public class HostTest extends TestCase {
         Host h = new Host("localhost", 80, null, null, null, null);
         assertEquals("http://localhost/", h.href());
     }       
+    
+//    public void testPut() throws Exception{
+//        Host h = new Host("localhost", 8085, "admin", "password8", null, null);
+//        h.setUseDigestForPreemptiveAuth(false);
+//        byte[] arr = new byte[1024];
+//        Path p = Path.path("/blobs/606afba38bd84e1838a4e2621076003338c4f6c8");
+//        h.doPut(p, arr, "text/plain");
+//    }
 }

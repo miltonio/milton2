@@ -22,10 +22,14 @@ import io.milton.common.WritingException;
 import io.milton.http.Auth;
 import io.milton.http.Range;
 import io.milton.http.Request;
+import io.milton.http.exceptions.BadRequestException;
+import io.milton.http.exceptions.ConflictException;
+import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.exceptions.NotFoundException;
 import io.milton.resource.*;
 import java.io.*;
 import java.util.Map;
+import java.util.logging.Level;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -34,7 +38,7 @@ import org.slf4j.LoggerFactory;
 /**
  *
  */
-public class FsFileResource extends FsResource implements CopyableResource, DeletableResource, GetableResource, MoveableResource, PropFindableResource {
+public class FsFileResource extends FsResource implements CopyableResource, DeletableResource, GetableResource, MoveableResource, PropFindableResource, ReplaceableResource {
 
     private static final Logger log = LoggerFactory.getLogger(FsFileResource.class);
     
@@ -114,4 +118,13 @@ public class FsFileResource extends FsResource implements CopyableResource, Dele
             throw new RuntimeException("Failed doing copy to: " + dest.getAbsolutePath(), ex);
         }
     }
+
+	@Override
+	public void replaceContent(InputStream in, Long length) throws BadRequestException, ConflictException, NotAuthorizedException {
+		try {
+			contentService.setFileContent(file, in);
+		} catch (IOException ex) {
+			throw new BadRequestException("Couldnt write to: " + file.getAbsolutePath(), ex);
+		}
+	}
 }

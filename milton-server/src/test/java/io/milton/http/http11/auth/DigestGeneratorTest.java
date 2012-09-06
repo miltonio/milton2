@@ -65,25 +65,6 @@ public class DigestGeneratorTest extends TestCase {
 		System.out.println("----");
 	}
 
-	public void testGenerateDigest_WithAtSymbol() {
-		System.out.println("testGenerateDigest_WithAtSymbol");
-		DigestResponse dr = new DigestResponse(Method.PUT, "a2@bradmcevoy.com", "spliffy", "Yzc5ZWM0NmYtMWI5Ny00Mjk1LThjZmMtOWI2NGFhMzlkYmQy", "/_hashes/blobs/b1a0c2d299c7ab730364c4c57ded5148b19fd00d", "", "auth", "00000001", "1de6e471d6f31165");
-		// First, check with plain text password
-		String resp = generator.generateDigest(dr, "fredfred1");
-		System.out.println("server resp: " + resp); //64cdbb06ffb4d809ba3f4c7428af47a6
-		System.out.println("expected: " + "a436f09166a4dee57444b2079ea41af6");
-		assertEquals("a436f09166a4dee57444b2079ea41af6", resp);
-
-		// Now, check with hashed password
-		String checka1md5 = generator.encodePasswordInA1Format(dr.getUser(), dr.getRealm(), "fredfred1");
-		String a1md5 = "49b2d093c4741ede5924a392911bd4e3";
-		assertEquals(a1md5, checka1md5);
-		resp = generator.generateDigestWithEncryptedPassword(dr, a1md5);
-		System.out.println("server resp: " + resp); //64cdbb06ffb4d809ba3f4c7428af47a6
-		System.out.println("expected: " + "a436f09166a4dee57444b2079ea41af6");
-		assertEquals("a436f09166a4dee57444b2079ea41af6", resp);
-		
-	}
 
 	public void testGenerateDigestWithEncryptedPassword() {
 	}
