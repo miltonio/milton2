@@ -96,11 +96,10 @@ public class CalendarResourceTypeHelper implements ResourceTypeHelper {
         log.debug("getSupportedLevels");
         List<String> list = wrapped.getSupportedLevels(r);
 //        if (r instanceof CalendarResource) {
-			list.add("3");
-			list.add("addressbook");
+			addIfNotPresent(list,"3");			
             list.add("calendar-access");
 			list.add("calendar-schedule");
-			list.add("extended-mkcol"); //adding a bunch of others here in an attempt to get ical5 to work
+			addIfNotPresent(list,"extended-mkcol");			
 			list.add("calendar-proxy");
 //        }
         if (r instanceof SchedulingInboxResource) {
@@ -111,4 +110,10 @@ public class CalendarResourceTypeHelper implements ResourceTypeHelper {
         }
         return list;
     }
+	
+	private void addIfNotPresent(List<String> list, String s) {
+		if( !list.contains(s)) {
+			list.add(s);
+		}
+	}
 }

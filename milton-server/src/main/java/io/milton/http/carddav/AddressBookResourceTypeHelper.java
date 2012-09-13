@@ -45,7 +45,7 @@ public class AddressBookResourceTypeHelper implements ResourceTypeHelper {
         }
         QName qn;
         List<QName> list = wrapped.getResourceTypes(r);
-
+		
         if (r instanceof AddressBookResource) {
             log.trace("getResourceTypes: is a calendar");
             qn = new QName(CardDavProtocol.CARDDAV_NS, "addressbook");
@@ -67,9 +67,18 @@ public class AddressBookResourceTypeHelper implements ResourceTypeHelper {
     public List<String> getSupportedLevels(Resource r) {
         log.debug("getSupportedLevels");
         List<String> list = wrapped.getSupportedLevels(r);
-        if (r instanceof AddressBookResource) {
-            list.add("addressbook");
-        }
+//        if (r instanceof AddressBookResource) {
+		addIfNotPresent(list,"3");			
+		addIfNotPresent(list,"addressbook");	
+		addIfNotPresent(list,"extended-mkcol");			
+//        }
         return list;
     }
+	
+	
+	private void addIfNotPresent(List<String> list, String s) {
+		if( !list.contains(s)) {
+			list.add(s);
+		}
+	}	
 }
