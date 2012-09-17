@@ -86,6 +86,8 @@ public interface GetableResource extends Resource {
      *  See - http://www.iana.org/assignments/media-types/ for a list of content types
      *  See - http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html for details about the accept header
      * <P/>
+     * See here for a fun discussion of using content type and accepts for XHTML - http://stackoverflow.com/questions/348736/is-writing-self-closing-tags-for-elements-not-traditionally-empty-bad-practice
+     * <P/>
      *  If you can't handle accepts interpretation, just return a single content type - E.g. text/html
      * <P/>
      * But typically you should do something like this:

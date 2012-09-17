@@ -99,6 +99,8 @@ public class HttpManagerBuilder {
 	private List<Stoppable> shutdownHandlers = new CopyOnWriteArrayList<Stoppable>();
 	private ResourceTypeHelper resourceTypeHelper;
 	private WebDavResponseHandler webdavResponseHandler;
+	private ContentGenerator contentGenerator = new SimpleContentGenerator();
+	private CacheControlHelper cacheControlHelper = new DefaultCacheControlHelper();
 	private HandlerHelper handlerHelper;
 	private ArrayList<HttpExtension> protocols;
 	private ProtocolHandlers protocolHandlers;
@@ -272,7 +274,10 @@ public class HttpManagerBuilder {
 				showLog("propFindXmlGenerator", propFindXmlGenerator);
 			}
 			if (http11ResponseHandler == null) {
-				http11ResponseHandler = new DefaultHttp11ResponseHandler(authenticationService, eTagGenerator);
+				DefaultHttp11ResponseHandler rh = new DefaultHttp11ResponseHandler(authenticationService, eTagGenerator);
+				rh.setContentGenerator(contentGenerator);
+				rh.setCacheControlHelper(cacheControlHelper);
+				http11ResponseHandler = rh;
 				showLog("http11ResponseHandler", http11ResponseHandler);
 			}
 			webdavResponseHandler = new DefaultWebDavResponseHandler(http11ResponseHandler, resourceTypeHelper, propFindXmlGenerator);
@@ -1102,6 +1107,23 @@ public class HttpManagerBuilder {
 	public void setFileContentService(FileContentService fileContentService) {
 		this.fileContentService = fileContentService;
 	}
+
+	public CacheControlHelper getCacheControlHelper() {
+		return cacheControlHelper;
+	}
+
+	public void setCacheControlHelper(CacheControlHelper cacheControlHelper) {
+		this.cacheControlHelper = cacheControlHelper;
+	}
+
+	public ContentGenerator getContentGenerator() {
+		return contentGenerator;
+	}
+
+	public void setContentGenerator(ContentGenerator contentGenerator) {
+		this.contentGenerator = contentGenerator;
+	}
+	
 	
 	
 }

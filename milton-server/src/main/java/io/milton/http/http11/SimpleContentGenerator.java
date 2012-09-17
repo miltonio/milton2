@@ -85,31 +85,6 @@ public class SimpleContentGenerator implements ContentGenerator {
 		return template;
 	}
 
-	@Override
-	public void generateLogin(Resource resource, Request request, Response response, AuthenticationService authenticationService) {
-		if (authenticationService.canUseExternalAuth(resource, request)) {
-			String template = loginExternal;
-			applyTemplates(template, request);
-			StringBuilder sb = new StringBuilder();
-			sb.append("<ul>");
-			for (ExternalIdentityProvider ip : authenticationService.getExternalIdentityProviders()) {
-				sb.append("<li>").append("<a href='").append(resource.getName()).append("?_ip=").append(ip.getName()).append("'>").append(ip.getName()).append("</a>").append("</li>");
-			}
-			sb.append("</ul>");
-            final String finalTemplate = applyTemplates(template, request);
-            response.setEntity(new Response.Entity() {
-                @Override
-                public void write(Response response, OutputStream outputStream) throws Exception {
-                    PrintWriter pw = new PrintWriter(outputStream, true);
-                    pw.print(finalTemplate);
-                    pw.flush();
-                }
-            });
-		} else {
-			generate(resource, request, response, Status.SC_UNAUTHORIZED);
-		}
-	}
-
 	/**
 	 * @return the methodNotAllowed
 	 */

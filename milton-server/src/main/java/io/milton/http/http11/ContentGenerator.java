@@ -15,7 +15,6 @@
 
 package io.milton.http.http11;
 
-import io.milton.http.AuthenticationService;
 import io.milton.http.Request;
 import io.milton.resource.Resource;
 import io.milton.http.Response;
@@ -38,12 +37,4 @@ public interface ContentGenerator {
 	 */
 	void generate(Resource resource, Request request, Response response, Status status);
 	
-	/**
-	 * Generate content for a login page, generally when unauthorised
-	 * 
-	 * @param request
-	 * @param response
-	 * @param authenticationService 
-	 */
-	void generateLogin(Resource resource, Request request, Response response, AuthenticationService authenticationService);
 }
