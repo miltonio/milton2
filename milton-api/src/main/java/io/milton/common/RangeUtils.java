@@ -1,6 +1,3 @@
-
-package io.milton.common;
-
 /*
  * Copyright 2012 McEvoy Software Ltd.
  *
@@ -16,6 +13,7 @@ package io.milton.common;
  * You should have received a copy of the GNU General Public License
  * along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
  */
+package io.milton.common;
 
 import io.milton.common.StreamUtils;
 import io.milton.http.Range;
@@ -26,16 +24,14 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
- /**
+/**
  *
  * @author brad
  */
-
 public class RangeUtils {
 
     private static final Logger log = LoggerFactory.getLogger(RangeUtils.class);
-    
+
     public static void writeRanges(InputStream in, List<Range> ranges, OutputStream responseOut) throws IOException {
         try {
             InputStream bufIn = in; //new BufferedInputStream(in);
@@ -74,5 +70,5 @@ public class RangeUtils {
         in.skip(skip);
         long length = r.getFinish() - r.getStart();
         sendBytes(in, responseOut, length);
-    }    
+    }
 }
