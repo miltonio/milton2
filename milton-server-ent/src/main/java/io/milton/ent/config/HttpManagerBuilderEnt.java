@@ -26,7 +26,14 @@ import io.milton.http.carddav.CardDavProtocol;
 import io.milton.http.fck.FckResourceFactory;
 import io.milton.http.http11.*;
 import io.milton.http.json.JsonResourceFactory;
-import io.milton.http.webdav.*;
+import io.milton.http.webdav.DefaultUserAgentHelper;
+import io.milton.http.webdav.PropertySourcePatchSetter;
+import io.milton.http.webdav.ResourceTypeHelper;
+import io.milton.http.webdav.WebDavProtocol;
+import io.milton.http.webdav.WebDavResourceTypeHelper;
+import io.milton.http.webdav.WebDavResponseHandler;
+import io.milton.http.webdav2.WebDavLevel2Protocol;
+import io.milton.http.webdav2.WebDavLevel2ResourceTypeHelper;
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
@@ -67,6 +74,8 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
     private boolean carddavEnabled = true;
     private boolean aclEnabled = true;
     private boolean enableWellKnown = true;
+    private WebDavLevel2Protocol webDavLevel2Protocol;
+    private boolean webdavLevel2Enabled = true;
 
     @Override
     protected void buildOuterResourceFactory() {
@@ -96,12 +105,12 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
             }
         }
     }
-    
 
     @Override
     protected void buildResourceTypeHelper() {
         WebDavResourceTypeHelper webDavResourceTypeHelper = new WebDavResourceTypeHelper();
-        AccessControlledResourceTypeHelper accessControlledResourceTypeHelper = new AccessControlledResourceTypeHelper(webDavResourceTypeHelper);
+        WebDavLevel2ResourceTypeHelper davLevel2ResourceTypeHelper = new WebDavLevel2ResourceTypeHelper(webDavResourceTypeHelper);
+        AccessControlledResourceTypeHelper accessControlledResourceTypeHelper = new AccessControlledResourceTypeHelper(davLevel2ResourceTypeHelper);
         CalendarResourceTypeHelper calendarResourceTypeHelper = new CalendarResourceTypeHelper(accessControlledResourceTypeHelper);
         resourceTypeHelper = new AddressBookResourceTypeHelper(calendarResourceTypeHelper);
     }
@@ -144,6 +153,13 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
                 protocols.add(webDavProtocol);
             }
 
+            if( webDavLevel2Protocol == null && webdavLevel2Enabled ) {
+                webDavLevel2Protocol = new WebDavLevel2Protocol(handlerHelper, webdavResponseHandler, resourceHandlerHelper, userAgentHelper, valueWriters);
+            }
+            if( webDavLevel2Protocol != null ) {
+                protocols.add(webDavLevel2Protocol);
+            }
+            
             if (calDavProtocol == null && caldavEnabled) {
                 calDavProtocol = new CalDavProtocol(mainResourceFactory, webdavResponseHandler, handlerHelper, webDavProtocol);
             }
@@ -169,7 +185,7 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
         if (protocolHandlers == null) {
             protocolHandlers = new ProtocolHandlers(protocols);
         }
-    }    
+    }
 
     public List<WellKnownResourceFactory.WellKnownHandler> getWellKnownHandlers() {
         return wellKnownHandlers;
@@ -234,4 +250,22 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
     public void setCarddavEnabled(boolean carddavEnabled) {
         this.carddavEnabled = carddavEnabled;
     }
+
+    public WebDavLevel2Protocol getWebDavLevel2Protocol() {
+        return webDavLevel2Protocol;
+    }
+
+    public void setWebDavLevel2Protocol(WebDavLevel2Protocol webDavLevel2Protocol) {
+        this.webDavLevel2Protocol = webDavLevel2Protocol;
+    }
+
+    public boolean isWebdavLevel2Enabled() {
+        return webdavLevel2Enabled;
+    }
+
+    public void setWebdavLevel2Enabled(boolean webdavLevel2Enabled) {
+        this.webdavLevel2Enabled = webdavLevel2Enabled;
+    }
+    
+    
 }

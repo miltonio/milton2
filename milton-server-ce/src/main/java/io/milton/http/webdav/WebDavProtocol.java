@@ -24,13 +24,10 @@ import io.milton.resource.CollectionResource;
 import io.milton.resource.GetableResource;
 import io.milton.http.http11.CustomPostHandler;
 import io.milton.property.PropertySource;
-import io.milton.resource.LockableResource;
 import io.milton.resource.PropFindableResource;
 import io.milton.resource.PutableResource;
 import io.milton.resource.Resource;
-import io.milton.http.http11.DefaultETagGenerator;
 import io.milton.http.http11.ETagGenerator;
-import io.milton.http.quota.DefaultQuotaDataAccessor;
 import io.milton.http.quota.QuotaDataAccessor;
 import io.milton.http.values.SupportedReportSetList;
 import io.milton.http.values.ValueWriters;
@@ -106,9 +103,6 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 		propertyMap.add(new ResourceTypePropertyWriter());
 		propertyMap.add(new EtagPropertyWriter());
 
-		propertyMap.add(new SupportedLockPropertyWriter());
-		propertyMap.add(new LockDiscoveryPropertyWriter());
-
 		propertyMap.add(new MSIsCollectionPropertyWriter());
 		propertyMap.add(new MSIsReadOnlyPropertyWriter());
 		propertyMap.add(new MSNamePropertyWriter());
@@ -142,8 +136,6 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 		propPatchHandler = new PropPatchHandler(resourceHandlerHelper, new DefaultPropPatchParser(), patchSetter, responseHandler, propertyAuthoriser);
 		handlers.add(propPatchHandler);
 		handlers.add(new CopyHandler(responseHandler, handlerHelper, resourceHandlerHelper, userAgentHelper));
-		handlers.add(new LockHandler(responseHandler, handlerHelper));
-		handlers.add(new UnlockHandler(resourceHandlerHelper, responseHandler));
 		handlers.add(new MoveHandler(responseHandler, handlerHelper, resourceHandlerHelper, userAgentHelper));
 
 		// Reports are added by other protocols via addReport
@@ -256,14 +248,17 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 
 	class DisplayNamePropertyWriter implements StandardProperty<String> {
 
+		@Override
 		public String getValue(PropFindableResource res) {
 			return displayNameFormatter.formatDisplayName(res);
 		}
 
+		@Override
 		public String fieldName() {
 			return "displayname";
 		}
 
+		@Override
 		public Class<String> getValueClass() {
 			return String.class;
 		}
@@ -277,15 +272,18 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 			this.fieldName = fieldName;
 		}
 
+		@Override
 		public String fieldName() {
 			return fieldName;
 		}
 
+		@Override
 		public Date getValue(PropFindableResource res) {
 			// BM: was getModifiedDate(), presume that was wrong??
 			return res.getCreateDate();
 		}
 
+		@Override
 		public Class<Date> getValueClass() {
 			return Date.class;
 		}
@@ -293,14 +291,17 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 
 	class LastModifiedDatePropertyWriter implements StandardProperty<Date> {
 
+		@Override
 		public String fieldName() {
 			return "getlastmodified";
 		}
 
+		@Override
 		public Date getValue(PropFindableResource res) {
 			return res.getModifiedDate();
 		}
 
+		@Override
 		public Class<Date> getValueClass() {
 			return Date.class;
 		}
@@ -308,15 +309,17 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 
 	class ResourceTypePropertyWriter implements StandardProperty<List<QName>> {
 
+		@Override
 		public List<QName> getValue(PropFindableResource res) {
-			log.trace("ResourceTypePropertyWriter:getValue");
 			return resourceTypeHelper.getResourceTypes(res);
 		}
 
+		@Override
 		public String fieldName() {
 			return "resourcetype";
 		}
 
+		@Override
 		public Class getValueClass() {
 			return List.class;
 		}
@@ -324,6 +327,7 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 
 	class ContentTypePropertyWriter implements StandardProperty<String> {
 
+		@Override
 		public String getValue(PropFindableResource res) {
 			if (res instanceof GetableResource) {
 				GetableResource getable = (GetableResource) res;
@@ -393,6 +397,7 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 
 	class QuotaAvailableBytesPropertyWriter implements StandardProperty<Long> {
 
+		@Override
 		public Long getValue(PropFindableResource res) {
 			if (quotaDataAccessor != null) {
 				return quotaDataAccessor.getQuotaAvailable(res);
@@ -401,10 +406,12 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 			}
 		}
 
+		@Override
 		public String fieldName() {
 			return "quota-available-bytes";
 		}
 
+		@Override
 		public Class getValueClass() {
 			return Long.class;
 		}
@@ -412,57 +419,20 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 
 	class EtagPropertyWriter implements StandardProperty<String> {
 
+		@Override
 		public String getValue(PropFindableResource res) {
 			String etag = eTagGenerator.generateEtag(res);
 			return etag;
 		}
 
+		@Override
 		public String fieldName() {
 			return "getetag";
 		}
 
+		@Override
 		public Class getValueClass() {
 			return String.class;
-		}
-	}
-
-//    <D:supportedlock/><D:lockdiscovery/>
-	class LockDiscoveryPropertyWriter implements StandardProperty<LockToken> {
-
-		public LockToken getValue(PropFindableResource res) {
-			if (!(res instanceof LockableResource)) {
-				return null;
-			}
-			LockableResource lr = (LockableResource) res;
-			LockToken token = lr.getCurrentLock();
-			return token;
-		}
-
-		public String fieldName() {
-			return "lockdiscovery";
-		}
-
-		public Class getValueClass() {
-			return LockToken.class;
-		}
-	}
-
-	class SupportedLockPropertyWriter implements StandardProperty<SupportedLocks> {
-
-		public SupportedLocks getValue(PropFindableResource res) {
-			if (res instanceof LockableResource) {
-				return new SupportedLocks(res);
-			} else {
-				return null;
-			}
-		}
-
-		public String fieldName() {
-			return "supportedlock";
-		}
-
-		public Class getValueClass() {
-			return SupportedLocks.class;
 		}
 	}
 
@@ -482,10 +452,12 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 			return "iscollection";
 		}
 
+		@Override
 		public Boolean getValue(PropFindableResource res) {
 			return (res instanceof CollectionResource);
 		}
 
+		@Override
 		public Class getValueClass() {
 			return Boolean.class;
 		}
@@ -498,10 +470,12 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 			return "isreadonly";
 		}
 
+		@Override
 		public Boolean getValue(PropFindableResource res) {
 			return !(res instanceof PutableResource);
 		}
 
+		@Override
 		public Class getValueClass() {
 			return Boolean.class;
 		}

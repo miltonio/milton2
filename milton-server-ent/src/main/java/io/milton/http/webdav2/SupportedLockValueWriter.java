@@ -17,11 +17,12 @@
  * under the License.
  */
 
-package io.milton.http.values;
+package io.milton.http.webdav2;
 
 import io.milton.resource.LockableResource;
 import io.milton.http.XmlWriter;
 import io.milton.http.XmlWriter.Element;
+import io.milton.http.values.ValueWriter;
 import io.milton.http.webdav.WebDavProtocol;
 import io.milton.http.webdav.WebDavProtocol.SupportedLocks;
 import java.util.Map;

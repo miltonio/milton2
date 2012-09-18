@@ -17,13 +17,14 @@
  * under the License.
  */
 
-package io.milton.http.webdav;
+package io.milton.http.webdav2;
 
 import io.milton.http.LockInfo;
 import io.milton.http.LockInfo.LockScope;
 import io.milton.http.LockInfo.LockType;
 import io.milton.common.Utils;
 import io.milton.http.XmlWriter;
+import io.milton.http.webdav.WebDavProtocol;
 import java.net.URI;
 import java.net.URISyntaxException;
 import org.slf4j.Logger;

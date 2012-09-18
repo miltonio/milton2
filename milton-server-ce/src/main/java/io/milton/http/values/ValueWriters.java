@@ -56,9 +56,7 @@ public class ValueWriters {
      *
      */
     public ValueWriters() {
-        writers = new ArrayList<ValueWriter>();
-        writers.add(new LockTokenValueWriter());
-        writers.add(new SupportedLockValueWriter());
+        writers = new ArrayList<ValueWriter>();                
 
         // BM: Note that windows explorer is picky about its date format. This
         // property writer supports it explicitly

@@ -62,11 +62,18 @@ import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.ConnectionKeepAliveStrategy;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.conn.routing.HttpRoutePlanner;
+import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.auth.DigestScheme;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.DefaultRedirectStrategy;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.*;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -96,8 +103,7 @@ public class Host extends Folder {
             + "<D:locktype><D:write/></D:locktype>"
             + "<D:owner>${owner}</D:owner>"
             + "</D:lockinfo>";
-    private static final Set<String> WEBDAV_REDIRECTABLE = new HashSet<String>(Arrays.asList(new String[] {"PROPFIND", "LOCK", "UNLOCK", "DELETE"}));
-
+    private static final Set<String> WEBDAV_REDIRECTABLE = new HashSet<String>(Arrays.asList(new String[]{"PROPFIND", "LOCK", "UNLOCK", "DELETE"}));
     private static final Logger log = LoggerFactory.getLogger(Host.class);
     public final String server;
     public final Integer port;
@@ -153,16 +159,32 @@ public class Host extends Folder {
         this.port = port;
         this.user = user;
         this.password = password;
-        client = new MyDefaultHttpClient();
+        HttpParams params = new BasicHttpParams();
+        HttpConnectionParams.setConnectionTimeout(params, 20 * 1000);
+        HttpConnectionParams.setSoTimeout(params, 10000);
+        HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
+
+        // Create and initialize scheme registry 
+        SchemeRegistry schemeRegistry = new SchemeRegistry();
+        schemeRegistry.register(new Scheme("http", 80, PlainSocketFactory.getSocketFactory()));
+        schemeRegistry.register(new Scheme("https", 443, SSLSocketFactory.getSocketFactory()));
+
+        // Create an HttpClient with the ThreadSafeClientConnManager.
+        // This connection manager must be used if more than one thread will
+        // be using the HttpClient.
+        ThreadSafeClientConnManager cm = new ThreadSafeClientConnManager(schemeRegistry);
+        cm.setMaxTotal(200);
+
+        client = new MyDefaultHttpClient(cm, params);
         HttpRequestRetryHandler handler = new NoRetryHttpRequestRetryHandler();
         client.setHttpRequestRetryHandler(handler);
         client.setRedirectStrategy(new DefaultRedirectStrategy() {
             @Override
             public boolean isRedirected(
-                final HttpRequest request,
-                final HttpResponse response,
-                final HttpContext context) throws ProtocolException {
-             
+                    final HttpRequest request,
+                    final HttpResponse response,
+                    final HttpContext context) throws ProtocolException {
+
                 if (super.isRedirected(request, response, context)) {
                     return true;
                 }
@@ -170,19 +192,16 @@ public class Host extends Folder {
                 String method = request.getRequestLine().getMethod();
                 Header locationHeader = response.getFirstHeader("location");
                 switch (statusCode) {
-                case HttpStatus.SC_MOVED_TEMPORARILY:
-                    return locationHeader != null && WEBDAV_REDIRECTABLE.contains(method);
-                case HttpStatus.SC_MOVED_PERMANENTLY:
-                case HttpStatus.SC_TEMPORARY_REDIRECT:
-                    return WEBDAV_REDIRECTABLE.contains(method);
-                default:
-                    return false;
+                    case HttpStatus.SC_MOVED_TEMPORARILY:
+                        return locationHeader != null && WEBDAV_REDIRECTABLE.contains(method);
+                    case HttpStatus.SC_MOVED_PERMANENTLY:
+                    case HttpStatus.SC_TEMPORARY_REDIRECT:
+                        return WEBDAV_REDIRECTABLE.contains(method);
+                    default:
+                        return false;
                 }
             }
-        });
-        HttpParams params = client.getParams();
-        HttpConnectionParams.setConnectionTimeout(params, 10000);
-        HttpConnectionParams.setSoTimeout(params, 10000);
+        });        
 
         if (user != null) {
             client.getCredentialsProvider().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(user, password));
@@ -318,7 +337,8 @@ public class Host extends Folder {
     }
 
     /**
-     * Attempts to lock a resource with infinite timeout and returns the lock token, which must be retained to unlock the resource
+     * Attempts to lock a resource with infinite timeout and returns the lock
+     * token, which must be retained to unlock the resource
      *
      * @param uri - must be encoded
      * @return
@@ -327,8 +347,9 @@ public class Host extends Folder {
         return doLock(uri, -1);
     }
 
-   /**
-     * Attempts to lock a resource with the specified timeout and returns the lock token, which must be retained to unlock the resource
+    /**
+     * Attempts to lock a resource with the specified timeout and returns the
+     * lock token, which must be retained to unlock the resource
      *
      * @param uri - must be encoded
      * @param timeout lock timeout in seconds, or -1 if infinite
@@ -575,7 +596,6 @@ public class Host extends Folder {
             final ByteArrayOutputStream bout = new ByteArrayOutputStream();
             final List<PropFindResponse> responses = new ArrayList<PropFindResponse>();
             ResponseHandler<Integer> respHandler = new ResponseHandler<Integer>() {
-
                 @Override
                 public Integer handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
                     Header serverDateHeader = response.getFirstHeader("Date");
@@ -683,7 +703,6 @@ public class Host extends Folder {
         } else {
             String url = this.buildEncodedUrl(path);
             transferService.get(url, new StreamReceiver() {
-
                 @Override
                 public void receive(InputStream in) throws IOException {
                     OutputStream out = null;
@@ -723,7 +742,6 @@ public class Host extends Folder {
             url += "?" + qs;
         }
         transferService.get(url, new StreamReceiver() {
-
             @Override
             public void receive(InputStream in) throws IOException {
                 IOUtils.copy(in, out);
@@ -792,7 +810,6 @@ public class Host extends Folder {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
             transferService.get(url, new StreamReceiver() {
-
                 @Override
                 public void receive(InputStream in) {
                     try {
@@ -821,7 +838,6 @@ public class Host extends Folder {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
             transferService.get(url, new StreamReceiver() {
-
                 @Override
                 public void receive(InputStream in) {
                     try {
@@ -1155,6 +1171,10 @@ public class Host extends Folder {
     }
 
     static class MyDefaultHttpClient extends DefaultHttpClient {
+
+        public MyDefaultHttpClient(ClientConnectionManager cm, HttpParams params) {
+            super(cm, params);
+        }
 
         @Override
         protected HttpRequestRetryHandler createHttpRequestRetryHandler() {

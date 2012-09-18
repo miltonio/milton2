@@ -18,7 +18,7 @@
  */
 
 
-package io.milton.http.webdav;
+package io.milton.http.webdav2;
 
 import io.milton.http.ExistingEntityHandler;
 import io.milton.http.HttpManager;
@@ -35,6 +35,7 @@ import io.milton.http.Request.Method;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
+import io.milton.http.webdav.WebDavResponseHandler;
 
 public class UnlockHandler implements ExistingEntityHandler {
 

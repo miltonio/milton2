@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package io.milton.http.webdav;
+package io.milton.http.webdav2;
 
 import io.milton.http.HttpManager;
 import io.milton.resource.Resource;
@@ -37,6 +37,9 @@ import io.milton.http.entity.ByteArrayEntity;
 import io.milton.common.LogUtils;
 import io.milton.http.*;
 import io.milton.http.exceptions.*;
+import io.milton.http.webdav.PropFindPropertyBuilder;
+import io.milton.http.webdav.WebDavProtocol;
+import io.milton.http.webdav.WebDavResponseHandler;
 import java.io.IOException;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.slf4j.Logger;
