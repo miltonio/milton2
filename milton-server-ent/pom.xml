@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.milton</groupId>
+        <artifactId>milton</artifactId>
+        <version>2.2.0</version>
+    </parent>
+    <groupId>io.milton</groupId>
+    <artifactId>milton-server-ent</artifactId>
+    <packaging>jar</packaging>
+    <name>milton-server-ent</name>
+    <description>Milton Enterprise: Supports DAV level 2 and above, including Caldav and Carddav. Available on AGPL or commercial licenses</description>
+    <licenses>
+        <license>
+            <name>Affero GPL3</name>
+            <url>http://www.gnu.org/licenses/agpl.html</url>
+            <distribution>repo</distribution>
+            <comments>The GNU Affero General Public License is a free, copyleft license for software and other kinds of works, specifically designed to ensure cooperation with the community in the case of network server software.</comments>
+        </license>
+    </licenses>	    
+    <dependencies>
+        <dependency>
+            <groupId>io.milton</groupId>
+            <artifactId>milton-server-ce</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymock</artifactId>
+            <version>${easy-mock.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <scope>test</scope>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymockclassextension</artifactId>
+            <version>${easy-mock.version}</version>
+        </dependency>
+        <dependency>
+            <scope>test</scope>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+            <version>2.1_3</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.4</version>
+            <scope>provided</scope>
+        </dependency>        
+    </dependencies>
+
+    <!--
+    Execute 'mvn -Pexec-restlet-fileserver test' in the root project directory.
+    DANGER! It will serve the files read/write in your $user.home directory!
+    -->
+    <profiles>
+        <profile>
+            <id>exec-restlet-fileserver</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.2.1</version>
+                        <executions>
+                            <execution>
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>java</goal>
+                                </goals>
+                                <configuration>
+                                    <mainClass>com.ettrema.restlet.test.RestletFileserver</mainClass>
+                                    <classpathScope>test</classpathScope>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>
+
