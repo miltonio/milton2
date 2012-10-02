@@ -62,6 +62,9 @@ public class TResourceFactory implements ResourceFactory {
         user.setOrganizationName(org);
         user.setTelephonenumber(phone);
 
+        TFolderResource files = new TFolderResource(user, "files");
+        
+        
         TFolderResource calendars = new TFolderResource(user, "calendars");
         TCalendarResource cal1 = new TCalendarResource(calendars, "cal1");
         TEvent e = new TEvent(cal1, "event1.ics");
