@@ -134,11 +134,12 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 		String userUrl = user.getIdenitifer().getValue();
 		setLoginCookies(userUrl, request);
 	}
+
 	public void setLoginCookies(String userUrl, Request request) {
 		if (request == null) {
 			return;
 		}
-		
+
 		Response response = HttpManager.response();
 		String salt = Math.random() + "";
 		String signing = salt + ":" + DigestUtils.md5Hex(userUrl + ":" + salt);
@@ -148,21 +149,21 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 
 	@Override
 	public String getChallenge(Resource resource, Request request) {
-		for( AuthenticationHandler h : handlers) {
-			if( h.isCompatible(resource, request)) {
-				return h.getChallenge(resource, request);				
+		for (AuthenticationHandler h : handlers) {
+			if (h.isCompatible(resource, request)) {
+				return h.getChallenge(resource, request);
 			}
-		}		
+		}
 		throw new UnsupportedOperationException("Not supported because no delegate handler accepted the request");
 	}
 
 	@Override
 	public boolean isCompatible(Resource resource, Request request) {
-		for( AuthenticationHandler h : handlers) {
-			if( h.isCompatible(resource, request)) {
+		for (AuthenticationHandler h : handlers) {
+			if (h.isCompatible(resource, request)) {
 				return true;
 			}
-		}		
+		}
 		return false;
 	}
 
@@ -204,7 +205,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 	public String getUserUrlFromRequest(Request request) {
 		return getCookieOrParam(request, cookieUserUrlValue);
 	}
-	
+
 	public String getHashFromRequest(Request request) {
 		String signing = getCookieOrParam(request, cookieUserUrlHash);
 		return signing;
@@ -212,15 +213,15 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 
 	private boolean verifyHash(String userUrl, Request request) {
 		String signing = getHashFromRequest(request);
-		if( signing == null ) {
+		if (signing == null) {
 			return false;
 		}
 		signing = signing.trim();
-		if( signing.length() == 0 ) {
+		if (signing.length() == 0) {
 			return false;
 		}
 		String[] arr = signing.split(":");
-		if( arr.length != 2) {
+		if (arr.length != 2) {
 			return false;
 		}
 		String salt = arr[0];
@@ -238,14 +239,16 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 		response.setCookie(cookieUserUrlValue, "");
 		response.setCookie(cookieUserUrlHash, "");
 	}
-	
+
 	private String getCookieOrParam(Request request, String name) {
-		String v = request.getParams().get(name);
-		if( v != null ) {
-			return v;
+		if (request.getParams() != null) {
+			String v = request.getParams().get(name);
+			if (v != null) {
+				return v;
+			}
 		}
 		Cookie c = request.getCookie(name);
-		if( c != null ) {
+		if (c != null) {
 			return c.getValue();
 		}
 		return null;
@@ -258,6 +261,4 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 	public String getCookieNameUserUrl() {
 		return cookieUserUrlValue;
 	}
-	
-	
 }
