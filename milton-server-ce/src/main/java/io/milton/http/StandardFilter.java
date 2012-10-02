@@ -43,7 +43,7 @@ public class StandardFilter implements Filter {
 
             Handler handler = manager.getMethodHandler( method );
             if( handler == null ) {
-                log.trace( "No handler for: " + method );
+                log.warn( "No method handler for: " + method + " Please check that dav level 2 protocol support is enabled" );
                 manager.getResponseHandler().respondMethodNotImplemented( null, response, request );
             } else {
                 if( log.isTraceEnabled() ) {
