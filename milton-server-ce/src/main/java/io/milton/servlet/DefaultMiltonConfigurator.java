@@ -45,12 +45,32 @@ public class DefaultMiltonConfigurator implements MiltonConfigurator {
 
 	private static final Logger log = LoggerFactory.getLogger(DefaultMiltonConfigurator.class);
 	
-    protected HttpManagerBuilder builder = new HttpManagerBuilder();
+    protected HttpManagerBuilder builder;
 
     protected List<Initable> initables;
     
     protected HttpManager httpManager;
+
+	public DefaultMiltonConfigurator() {
+		try {
+			// Attempt to use Enterprise edition build if available
+			Class builderClass = Class.forName("io.milton.ent.config.HttpManagerBuilderEnt");
+			builder = (HttpManagerBuilder) builderClass.newInstance();			
+			log.info("Using enterprise builder: " + builder.getClass());
+		} catch (InstantiationException ex) {
+			log.info("Couldnt instantiate enterprise builder, DAV level 2 and beyond features will not be available");
+			builder = new HttpManagerBuilder();
+		} catch (IllegalAccessException ex) {
+			log.info("Couldnt instantiate enterprise builder, DAV level 2 and beyond features will not be available");
+			builder = new HttpManagerBuilder();
+		} catch (ClassNotFoundException ex) {
+			log.info("Couldnt instantiate enterprise builder, DAV level 2 and beyond features will not be available");
+			builder = new HttpManagerBuilder();
+		}
+	}
     
+	
+	
     @Override
     public HttpManager configure(Config config) throws ServletException {
 
