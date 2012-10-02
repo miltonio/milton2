@@ -12,12 +12,12 @@
 	<name>milton-server-ce</name>	
 	<description>Milton Community Edition: Supports DAV level 1 and is available on Apache2 license</description>
 	<licenses>
-        <license>
-            <name>Apache2</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
-            <distribution>repo</distribution>
-            <comments>Permissive, business friendly license.</comments>
-        </license>
+		<license>
+			<name>Apache2</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
+			<distribution>repo</distribution>
+			<comments>Permissive, business friendly license.</comments>
+		</license>
 	</licenses>	
 	<dependencies>
 		<dependency>
@@ -72,17 +72,10 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
-			<artifactId>spring</artifactId>
-			<version>2.5.6</version>
-			<optional>true</optional>			
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
-			<version>2.5.6</version>
+			<version>3.1.2.RELEASE</version>
 			<optional>true</optional>			
 		</dependency>
-		
 
 		<dependency>
 			<groupId>org.easymock</groupId>
