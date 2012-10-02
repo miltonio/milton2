@@ -118,7 +118,7 @@ public class HttpManagerBuilder {
 	protected boolean enableOptionsAuth = false;
 	protected ResourceHandlerHelper resourceHandlerHelper;
 	protected boolean initDone;
-	protected boolean enableCompression = true;	
+	protected boolean enableCompression = true;
 	protected boolean enabledJson = true;
 	protected boolean enableBasicAuth = true;
 	protected boolean enableDigestAuth = true;
@@ -159,12 +159,12 @@ public class HttpManagerBuilder {
 	 *
 	 */
 	public final void init() {
-		if( listeners != null ) {
-			for( InitListener l : listeners ) {
+		if (listeners != null) {
+			for (InitListener l : listeners) {
 				l.beforeInit(this);
 			}
 		}
-		
+
 		if (mainResourceFactory == null) {
 			rootDir = new File(System.getProperty("user.home"));
 			if (!rootDir.exists() || !rootDir.isDirectory()) {
@@ -243,8 +243,6 @@ public class HttpManagerBuilder {
 		}
 
 		init(authenticationService);
-		shutdownHandlers.add(expiredNonceRemover);
-		expiredNonceRemover.start();
 	}
 
 	private void init(AuthenticationService authenticationService) {
@@ -272,7 +270,7 @@ public class HttpManagerBuilder {
 			}
 			if (enableFormAuth) {
 				log.info("form authentication is enabled, so wrap response handler with " + LoginResponseHandler.class);
-				if( loginResponseHandler == null ) {
+				if (loginResponseHandler == null) {
 					loginResponseHandler = new LoginResponseHandler(webdavResponseHandler, mainResourceFactory, loginPageTypeHandler);
 					loginResponseHandler.setExcludePaths(loginPageExcludePaths);
 					loginResponseHandler.setLoginPage(loginPage);
@@ -307,17 +305,24 @@ public class HttpManagerBuilder {
 		if (!initDone) {
 			init();
 		}
-		if( listeners != null ) {
-			for( InitListener l : listeners ) {
+		if (listeners != null) {
+			for (InitListener l : listeners) {
 				l.afterInit(this);
 			}
-		}		
+		}
 		HttpManager httpManager = new HttpManager(outerResourceFactory, webdavResponseHandler, protocolHandlers, entityTransport, filters, eventManager, shutdownHandlers);
-		if( listeners != null ) {
-			for( InitListener l : listeners ) {
+		if (listeners != null) {
+			for (InitListener l : listeners) {
 				l.afterBuild(this, httpManager);
 			}
-		}		
+		}
+
+		if (expiredNonceRemover != null) {
+			shutdownHandlers.add(expiredNonceRemover);
+			log.info("Starting " + expiredNonceRemover + " this will remove Digest nonces from memory when they expire");
+			expiredNonceRemover.start();
+		}
+
 		return httpManager;
 	}
 
@@ -334,11 +339,11 @@ public class HttpManagerBuilder {
 	protected List<PropertySource> initDefaultPropertySources(ResourceTypeHelper resourceTypeHelper) {
 		List<PropertySource> list = new ArrayList<PropertySource>();
 		if (multiNamespaceCustomPropertySource == null) {
-			if( multiNamespaceCustomPropertySourceEnabled ) {
+			if (multiNamespaceCustomPropertySourceEnabled) {
 				multiNamespaceCustomPropertySource = new MultiNamespaceCustomPropertySource();
 			}
 		}
-		if( multiNamespaceCustomPropertySource != null ) {
+		if (multiNamespaceCustomPropertySource != null) {
 			list.add(multiNamespaceCustomPropertySource);
 		}
 		if (initBeanPropertySource() != null) {
@@ -967,14 +972,14 @@ public class HttpManagerBuilder {
 	protected void buildProtocolHandlers(WebDavResponseHandler webdavResponseHandler, ResourceTypeHelper resourceTypeHelper) {
 		if (protocols == null) {
 			protocols = new ArrayList<HttpExtension>();
-			
-			if( matchHelper == null ) {
+
+			if (matchHelper == null) {
 				matchHelper = new MatchHelper(eTagGenerator);
 			}
-			if( partialGetHelper == null ) {
+			if (partialGetHelper == null) {
 				partialGetHelper = new PartialGetHelper(webdavResponseHandler);
 			}
-			
+
 			Http11Protocol http11Protocol = new Http11Protocol(webdavResponseHandler, handlerHelper, resourceHandlerHelper, enableOptionsAuth, matchHelper, partialGetHelper);
 			protocols.add(http11Protocol);
 			if (propertySources == null) {
@@ -1005,7 +1010,7 @@ public class HttpManagerBuilder {
 		if (protocolHandlers == null) {
 			protocolHandlers = new ProtocolHandlers(protocols);
 		}
-	}			
+	}
 
 	protected void buildOuterResourceFactory() {
 		// wrap the real (ie main) resource factory to provide well-known support and ajax gateway
