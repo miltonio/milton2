@@ -186,7 +186,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 		if (request == null) {
 			return null;
 		}
-		String userUrl = getUserUrlFromCookie(request);
+		String userUrl = getUserUrlFromRequest(request);
 
 		if (userUrl != null) {
 			userUrl = userUrl.trim();
@@ -201,20 +201,17 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 		return null;
 	}
 
-	private String getUserUrlFromCookie(Request request) {
-		Cookie cookie = request.getCookie(cookieUserUrlValue);
-		if (cookie == null) {
-			return null;
-		}
-		return cookie.getValue();
+	public String getUserUrlFromRequest(Request request) {
+		return getCookieOrParam(request, cookieUserUrlValue);
+	}
+	
+	public String getHashFromRequest(Request request) {
+		String signing = getCookieOrParam(request, cookieUserUrlHash);
+		return signing;
 	}
 
 	private boolean verifyHash(String userUrl, Request request) {
-		Cookie cookie = request.getCookie(cookieUserUrlHash);
-		if (cookie == null) {
-			return false;
-		}
-		String signing = cookie.getValue();
+		String signing = getHashFromRequest(request);
 		if( signing == null ) {
 			return false;
 		}
@@ -241,4 +238,26 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 		response.setCookie(cookieUserUrlValue, "");
 		response.setCookie(cookieUserUrlHash, "");
 	}
+	
+	private String getCookieOrParam(Request request, String name) {
+		String v = request.getParams().get(name);
+		if( v != null ) {
+			return v;
+		}
+		Cookie c = request.getCookie(name);
+		if( c != null ) {
+			return c.getValue();
+		}
+		return null;
+	}
+
+	public String getCookieNameUserUrlHash() {
+		return cookieUserUrlHash;
+	}
+
+	public String getCookieNameUserUrl() {
+		return cookieUserUrlValue;
+	}
+	
+	
 }
