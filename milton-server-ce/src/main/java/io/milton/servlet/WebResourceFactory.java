@@ -74,6 +74,7 @@ public class WebResourceFactory implements ResourceFactory, Initable {
 		File file;
 		String path = stripContext(url);
 		path = basePath + path;
+		path = path.trim();
 		String realPath = config.getServletContext().getRealPath(path);
 		if (realPath != null) {
 			file = new File(path);
@@ -85,7 +86,9 @@ public class WebResourceFactory implements ResourceFactory, Initable {
 			try {
 				resource = config.getServletContext().getResource(path);
 			} catch (MalformedURLException ex) {
-				throw new RuntimeException(ex);
+				//throw new RuntimeException(ex);
+				log.warn("malformed url when attempting to locate servlet resource", path);
+				return null;
 			}
 			if (resource != null) {
 				return new UrlResource(p.getName(), resource, contentType, modDate);
