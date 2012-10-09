@@ -12,7 +12,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package io.milton.sso;
 
 /**
@@ -21,8 +20,5 @@ package io.milton.sso;
  */
 public interface SsoSessionProvider {
 
-
-	public Object getUserTag(String firstComp);
-	
-		
+    public Object getUserTag(String firstComp);
 }
