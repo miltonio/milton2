@@ -113,7 +113,7 @@ public class MkColHandler implements Handler {
 			}
 
 		} else {
-			log.warn("parent does not exist: " + parenturl);
+			log.warn("parent does not exist: host=" + host + " path=" + parenturl);
 			manager.getResponseHandler().respondConflict(parentcol, response, request, name);
 		}
 	}
