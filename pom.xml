@@ -8,7 +8,7 @@
 	<name>milton</name>
 	<url>http://milton.ettrema.com</url>
 	<scm>
-		<connection>scm:svn:http://svn.ettrema.com/svn/milton/trunk/milton</connection>
+		<connection>scm:git:git@github.com:miltonio/milton2.git</connection>
 	</scm>
 	<distributionManagement>
 		<repository>
