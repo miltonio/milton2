@@ -12,34 +12,32 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package io.milton.sso;
 
 /**
- * Just for testing and debugging, this uses a constant string as the "session id"
+ * Just for testing and debugging, this uses a constant string as the "session
+ * id"
  *
  * @author brad
  */
 public class SimpleSsoSessionProvider implements SsoSessionProvider {
 
-	private String prefix;
-	
-	public Object getUserTag(String firstComp) {
-		if( firstComp != null && firstComp.equals(prefix) ) {
-			return "aUser";
-		} else {
-			return null;
-		}
-	}
+    private String prefix;
 
-	public String getPrefix() {
-		return prefix;
-	}
+    @Override
+    public Object getUserTag(String firstComp) {
+        if (firstComp != null && firstComp.equals(prefix)) {
+            return "aUser";
+        } else {
+            return null;
+        }
+    }
 
-	public void setPrefix(String prefix) {
-		this.prefix = prefix;
-	}
-	
-	
-	
+    public String getPrefix() {
+        return prefix;
+    }
+
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
+    }
 }
