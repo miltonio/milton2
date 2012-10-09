@@ -23,6 +23,7 @@ public class FormAuthenticationHandler implements AuthenticationHandler {
     private static final Logger log = LoggerFactory.getLogger( FormAuthenticationHandler.class );
     private String userNameParam = "_loginUserName";
     private String passwordParam = "_loginPassword";
+	private String loginResultAttName = "loginResult";
 
     @Override
     public boolean supports( Resource r, Request request ) {
@@ -52,7 +53,6 @@ public class FormAuthenticationHandler implements AuthenticationHandler {
     public Object authenticate( Resource resource, Request request ) {
         String userName = request.getParams().get( userNameParam );
         String pwd = request.getParams().get( passwordParam );
-        log.trace( "attempt to login with: " + userName );
         Object o = resource.authenticate( userName, pwd );
         // set a request attribute that can be used when rendering
         if( o == null ) {
@@ -94,4 +94,21 @@ public class FormAuthenticationHandler implements AuthenticationHandler {
     public void setPasswordParam( String passwordParam ) {
         this.passwordParam = passwordParam;
     }
+
+	/**
+	 * Get the attribute name used to store the login result. The login result
+	 * is a Boolean which indicates if authentication was successful or not. A
+	 * null value indicates that authentication was not attempted
+	 * 
+	 * @return 
+	 */
+	public String getLoginResultAttName() {
+		return loginResultAttName;
+	}
+
+	public void setLoginResultAttName(String loginResultAttName) {
+		this.loginResultAttName = loginResultAttName;
+	}
+	
+	
 }
