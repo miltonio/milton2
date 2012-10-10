@@ -19,6 +19,7 @@
 package io.milton.http;
 
 import io.milton.resource.AccessControlledResource;
+import io.milton.resource.AccessControlledResource.Priviledge;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -56,5 +57,29 @@ public class AclUtils {
         Set<AccessControlledResource.Priviledge> set = new HashSet<AccessControlledResource.Priviledge>(privs.length);
         set.addAll(Arrays.asList(privs));
         return set;
+    }
+    
+    /**
+     * Return a set containing all privs in the given collection, and also all priviledges 
+     * implies by those, and so on recursively
+     * 
+     * @param privs
+     * @return - a set containiing all priviledges, direct or implied, by the given collection
+     */
+    public static Set<AccessControlledResource.Priviledge> expand(Iterable<AccessControlledResource.Priviledge> privs) {
+        Set<AccessControlledResource.Priviledge> set = new HashSet<AccessControlledResource.Priviledge>();
+        _expand(privs, set);
+        return set;
+    }
+    
+    private static void _expand(Iterable<AccessControlledResource.Priviledge> privs, Set<AccessControlledResource.Priviledge> output) {
+        if( privs == null ) {
+            return ;
+        }
+        for( Priviledge p : privs ) {
+            output.add(p);
+            _expand(p.contains, output);
+        }
+        
     }
 }
