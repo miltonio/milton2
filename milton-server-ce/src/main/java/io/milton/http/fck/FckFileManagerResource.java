@@ -332,7 +332,7 @@ public class FckFileManagerResource extends FckCommon implements GetableResource
 
         private void processFileUpload( FileItem f ) throws ConflictException, NotAuthorizedException, BadRequestException {
             String sFolder = params.get( "CurrentFolder" );
-            log.debug( "sFolder: " + sFolder + " - " + sFolder.length() );
+            log.info( "processFileUpload: sFolder: " + sFolder + " - " + sFolder.length() );
             String relFolder = sFolder.substring( 1 );
             Path p = Path.path( relFolder );
             Resource r = find( wrappedResource, p );
@@ -345,7 +345,7 @@ public class FckFileManagerResource extends FckCommon implements GetableResource
             }
 
             String name = f.getName(); //utilFile().sanitiseName(f.getName());
-            log.debug( "processFileUpload: " + name );
+            log.info( "processFileUpload: " + name );
             boolean isFirst = true;
             while( target.child( name ) != null ) {
                 name = FileUtils.incrementFileName( name, isFirst );
