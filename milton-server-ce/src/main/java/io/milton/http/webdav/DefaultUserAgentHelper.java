@@ -40,7 +40,7 @@ public class DefaultUserAgentHelper implements UserAgentHelper {
 	public boolean isNautilus(Request r) {
 		if (r != null) {
 			String userAgent = r.getUserAgentHeader();
-			return userAgent.startsWith("gvfs");
+			return userAgent != null && userAgent.startsWith("gvfs");
 		} else {
 			return false;
 		}
