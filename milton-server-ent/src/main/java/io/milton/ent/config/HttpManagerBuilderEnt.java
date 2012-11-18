@@ -153,13 +153,16 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
                 protocols.add(webDavProtocol);
             }
 
-            if( webDavLevel2Protocol == null && webdavLevel2Enabled ) {
+            if (webDavLevel2Protocol == null && webdavLevel2Enabled) {
                 webDavLevel2Protocol = new WebDavLevel2Protocol(handlerHelper, webdavResponseHandler, resourceHandlerHelper, userAgentHelper, valueWriters);
             }
-            if( webDavLevel2Protocol != null ) {
+            if (webDavLevel2Protocol != null) {
                 protocols.add(webDavLevel2Protocol);
+                if (webDavProtocol != null) {
+                    webDavProtocol.getPropertySources().add(webDavLevel2Protocol);
+                }
             }
-            
+
             if (calDavProtocol == null && caldavEnabled) {
                 calDavProtocol = new CalDavProtocol(mainResourceFactory, webdavResponseHandler, handlerHelper, webDavProtocol);
             }
@@ -266,6 +269,4 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
     public void setWebdavLevel2Enabled(boolean webdavLevel2Enabled) {
         this.webdavLevel2Enabled = webdavLevel2Enabled;
     }
-    
-    
 }
