@@ -159,7 +159,7 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
             if (webDavLevel2Protocol != null) {
                 protocols.add(webDavLevel2Protocol);
                 if (webDavProtocol != null) {
-                    webDavProtocol.getPropertySources().add(webDavLevel2Protocol);
+                    webDavProtocol.addPropertySource(webDavLevel2Protocol);
                 }
             }
 
