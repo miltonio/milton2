@@ -150,12 +150,17 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 		}
 
 		Response response = HttpManager.response();
-		String salt = Math.random() + "";
-		String signing = salt + ":" + DigestUtils.md5Hex(userUrl + ":" + salt);
+		String signing = getUrlSigningHash(userUrl);
 		setCookieValues(response, userUrl, signing);
 		request.getAttributes().put(userUrlAttName, userUrl);
 	}
 
+	public String getUrlSigningHash(String userUrl) {
+		String salt = Math.random() + "";
+		String signing = salt + ":" + DigestUtils.md5Hex(userUrl + ":" + salt);
+		return signing;
+	}
+	
 	@Override
 	public String getChallenge(Resource resource, Request request) {
 		for (AuthenticationHandler h : handlers) {
