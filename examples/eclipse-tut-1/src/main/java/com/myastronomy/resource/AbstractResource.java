@@ -59,10 +59,9 @@ public abstract class AbstractResource implements DigestResource, PropFindableRe
                 log.warn("that password is incorrect. Try 'password'");
             }
         } else {
-            log.warn("user not found: " + digestRequest.getUser() + " - try 'userA'");
+            log.warn("user not found: " + digestRequest.getUser() + " - try 'user'");
         }
         return null;
-
     }
 
     @Override

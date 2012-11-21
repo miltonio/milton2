@@ -25,6 +25,8 @@ import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.resource.CollectionResource;
+import io.milton.resource.CopyableResource;
+import io.milton.resource.DeletableResource;
 import io.milton.resource.GetableResource;
 import io.milton.resource.MoveableResource;
 import io.milton.resource.ReplaceableResource;
@@ -41,7 +43,7 @@ import java.util.Properties;
  *
  * @author brad
  */
-public class PlanetResource extends AbstractResource implements GetableResource, ReplaceableResource, MoveableResource{
+public class PlanetResource extends AbstractResource implements GetableResource, ReplaceableResource, MoveableResource, CopyableResource, DeletableResource{
 
     private static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(PlanetResource.class);
     private final SolarSystemResource parent;
@@ -52,7 +54,26 @@ public class PlanetResource extends AbstractResource implements GetableResource,
         this.planet = planet;
     }
 
+    @Override
+    public void delete() throws NotAuthorizedException, ConflictException, BadRequestException {
+        parent.getSolarSystem().getPlanets().remove(planet);
+    }
 
+    
+    
+    @Override
+    public void copyTo(CollectionResource toCollection, String name) throws NotAuthorizedException, BadRequestException, ConflictException {
+        if( toCollection instanceof SolarSystemResource ) {
+            throw new BadRequestException("Can only copy planet to a SolarSystemResource folder. Current parent=" +parent.getName() + " dest parent=" + toCollection.getName());
+        }
+        SolarSystemResource newSolarSystem = (SolarSystemResource) toCollection;
+        Planet pNew = newSolarSystem.getSolarSystem().addPlanet(name);
+        pNew.setRadius(planet.getRadius());
+        pNew.setType(planet.getType());
+        pNew.setYearLength(planet.getYearLength());        
+    }
+
+    
     @Override
     public void sendContent(OutputStream out, Range range, Map<String, String> params, String contentType) throws IOException {
         Properties props = new Properties();
@@ -76,8 +97,7 @@ public class PlanetResource extends AbstractResource implements GetableResource,
             planet.setYearLength(asInt(props.getProperty("yearLength")));
         } catch (IOException ex) {
             throw new BadRequestException("Couldnt read properties", ex);
-        }
-        
+        }        
     }    
     
     @Override
@@ -118,7 +138,4 @@ public class PlanetResource extends AbstractResource implements GetableResource,
         }
         planet.setName(newName);
     }
-
-
-
 }

@@ -37,11 +37,19 @@ public class RootUniverseResource extends AbstractResource implements MakeCollec
     private final UniverseDao universeDao;
     private ArrayList<Resource> children;
     
-
     public RootUniverseResource(UniverseDao universeDao) {
         this.universeDao = universeDao;
     }
 
+    @Override
+    public CollectionResource createCollection(String newName) throws NotAuthorizedException, ConflictException, BadRequestException {
+        UniverseDao.Galaxy s = universeDao.addGalaxy(newName);        
+        GalaxyResource r = new GalaxyResource(this, s);
+        getChildren();
+        children.add(r);
+        return r;
+    }    
+    
     @Override
     public List<? extends Resource> getChildren() {
         if( children == null ) {
@@ -53,14 +61,6 @@ public class RootUniverseResource extends AbstractResource implements MakeCollec
         return children;
     }
 
-    @Override
-    public CollectionResource createCollection(String newName) throws NotAuthorizedException, ConflictException, BadRequestException {
-        UniverseDao.Galaxy s = universeDao.addGalaxy(newName);        
-        GalaxyResource r = new GalaxyResource(this, s);
-        getChildren();
-        children.add(r);
-        return r;
-    }
 
 
     @Override

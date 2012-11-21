@@ -46,6 +46,15 @@ public class GalaxyResource extends AbstractResource implements CollectionResour
     }
 
     @Override
+    public void moveTo(CollectionResource rDest, String newName) throws ConflictException, NotAuthorizedException, BadRequestException {
+        if( rDest != parent ) {
+            throw new BadRequestException("Cant move galaxy to a different folder. Current parent=" +parent.getName() + " dest parent=" + rDest.getName());
+        }
+        newName = newName.replace(".properties", ""); // need to strip suffix we add in getName method
+        galaxy.setName(newName);
+    }        
+    
+    @Override
     public List<? extends Resource> getChildren() {
         if( children == null ) {
             children = new ArrayList<Resource>();
@@ -77,13 +86,5 @@ public class GalaxyResource extends AbstractResource implements CollectionResour
     public String getName() {
         return galaxy.getName();
     }
-    
-    @Override
-    public void moveTo(CollectionResource rDest, String newName) throws ConflictException, NotAuthorizedException, BadRequestException {
-        if( rDest != parent ) {
-            throw new BadRequestException("Cant move galaxy to a different folder. Current parent=" +parent.getName() + " dest parent=" + rDest.getName());
-        }
-        newName = newName.replace(".properties", ""); // need to strip suffix we add in getName method
-        galaxy.setName(newName);
-    }    
+   
 }

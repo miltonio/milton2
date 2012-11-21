@@ -48,6 +48,14 @@ public class SolarSystemResource extends AbstractResource implements CollectionR
     }
 
     @Override
+    public Resource createNew(String newName, InputStream inputStream, Long length, String contentType) throws IOException, ConflictException, NotAuthorizedException, BadRequestException {
+        Planet p = solarSystem.addPlanet(newName);
+        PlanetResource r = new PlanetResource(this, p);
+        r.replaceContent(inputStream, length);
+        return r;
+    }    
+    
+    @Override
     public List<? extends Resource> getChildren() {
         if( children == null ) {
             children = new ArrayList<Resource>();
@@ -78,11 +86,9 @@ public class SolarSystemResource extends AbstractResource implements CollectionR
         solarSystem.setName(newName);
     }     
 
-    @Override
-    public Resource createNew(String newName, InputStream inputStream, Long length, String contentType) throws IOException, ConflictException, NotAuthorizedException, BadRequestException {
-        Planet p = solarSystem.addPlanet(newName);
-        PlanetResource r = new PlanetResource(this, p);
-        r.replaceContent(inputStream, length);
-        return r;
+    public SolarSystem getSolarSystem() {
+        return solarSystem;
     }
+
+    
 }
