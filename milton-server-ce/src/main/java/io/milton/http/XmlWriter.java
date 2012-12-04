@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.milton.common.FileUtils;
+import java.io.OutputStreamWriter;
 
 /**
  * Lightweight XML generation. Gives the programmer fine grained control
@@ -54,7 +55,11 @@ public class XmlWriter {
 	private boolean allowNewlines = false;
 
     public XmlWriter(OutputStream out) {
-        this.writer = new PrintWriter(out, true);
+		try {
+			this.writer = new PrintWriter(new OutputStreamWriter(out, "UTF-8"), true);
+		} catch (IOException ex){
+			throw new RuntimeException(ex);
+		}
     }
 
     /**
