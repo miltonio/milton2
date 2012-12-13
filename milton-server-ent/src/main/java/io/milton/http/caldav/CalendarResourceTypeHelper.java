@@ -12,7 +12,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package io.milton.http.caldav;
 
 import io.milton.http.webdav.ResourceTypeHelper;
@@ -42,7 +41,7 @@ public class CalendarResourceTypeHelper implements ResourceTypeHelper {
         this.wrapped = wrapped;
     }
 
-	@Override
+    @Override
     public List<QName> getResourceTypes(Resource r) {
         if (log.isTraceEnabled()) {
             log.trace("getResourceTypes:" + r.getClass().getCanonicalName());
@@ -55,9 +54,9 @@ public class CalendarResourceTypeHelper implements ResourceTypeHelper {
             log.error("EEK!! Resource is both an ical resource (eg an event) and a calendar. Don't implement CalendarResource on events!");
         }
 
-		QName qn;
+        QName qn;
         List<QName> list = wrapped.getResourceTypes(r);
-        if (r instanceof CalendarResource) { 
+        if (r instanceof CalendarResource) {
             // http://greenbytes.de/tech/webdav/draft-dusseault-caldav-04.html#new-resources
             log.trace("getResourceTypes: is a calendar");
             qn = new QName(CalDavProtocol.CALDAV_NS, "calendar");
@@ -65,7 +64,7 @@ public class CalendarResourceTypeHelper implements ResourceTypeHelper {
                 list = new ArrayList<QName>();
             }
             list.add(qn);
-        } 
+        }
         if (r instanceof SchedulingInboxResource) {
             log.trace("getResourceTypes: is a schedule-inbox");
             qn = new QName(CalDavProtocol.CALDAV_NS, "schedule-inbox");
@@ -86,21 +85,23 @@ public class CalendarResourceTypeHelper implements ResourceTypeHelper {
     }
 
     /**
-     * 
+     *
      *
      * @param r
      * @return
      */
-	@Override
+    @Override
     public List<String> getSupportedLevels(Resource r) {
         log.debug("getSupportedLevels");
         List<String> list = wrapped.getSupportedLevels(r);
 //        if (r instanceof CalendarResource) {
-			addIfNotPresent(list,"3");			
-            list.add("calendar-access");
-			list.add("calendar-schedule");
-			addIfNotPresent(list,"extended-mkcol");			
-			list.add("calendar-proxy");
+        addIfNotPresent(list, "3");
+        list.add("calendar-access");
+        
+        // if present (but not actually implemented) causes problems with thunderbird
+        //list.add("calendar-schedule");
+        addIfNotPresent(list, "extended-mkcol");
+        list.add("calendar-proxy");
 //        }
         if (r instanceof SchedulingInboxResource) {
             list.add("schedule-inbox");
@@ -110,10 +111,10 @@ public class CalendarResourceTypeHelper implements ResourceTypeHelper {
         }
         return list;
     }
-	
-	private void addIfNotPresent(List<String> list, String s) {
-		if( !list.contains(s)) {
-			list.add(s);
-		}
-	}
+
+    private void addIfNotPresent(List<String> list, String s) {
+        if (!list.contains(s)) {
+            list.add(s);
+        }
+    }
 }
