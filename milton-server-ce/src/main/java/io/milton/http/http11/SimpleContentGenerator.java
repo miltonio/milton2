@@ -75,9 +75,8 @@ public class SimpleContentGenerator implements ContentGenerator {
         response.setEntity(new Response.Entity() {
             @Override
             public void write(Response response, OutputStream outputStream) throws Exception {
-                PrintWriter pw = new PrintWriter(outputStream, true);
-                pw.print(finalTemplate);
-                pw.flush();
+				outputStream.write(finalTemplate.getBytes("UTF-8"));
+                outputStream.flush();
             }
         });
 	}

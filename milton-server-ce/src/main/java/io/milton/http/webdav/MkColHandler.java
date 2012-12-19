@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.milton.http.webdav;
 
 import io.milton.http.Handler;
@@ -97,15 +96,20 @@ public class MkColHandler implements Handler {
 			Resource dest = manager.getResourceFactory().getResource(host, finalpath.toString());
 
 			if (dest != null && handlerHelper.isLockedOut(request, dest)) {
+				log.info("destination exists and is locked");
 				responseHandler.respondLocked(request, response, dest);
 				return;
 			} else if (handlerHelper.missingLock(request, parentcol)) {
+				log.info("precondition failed");
 				response.setStatus(Status.SC_PRECONDITION_FAILED); //notowner_modify wants this code here
 				return;
 			}
 
 			if (parentcol instanceof CollectionResource) {
 				CollectionResource col = (CollectionResource) parentcol;
+				if (log.isTraceEnabled()) {
+					log.trace("process mkcol on parent: " + parentcol.getClass() + " with creator: " + creator.getClass());
+				}
 				processMakeCol(manager, request, response, col, name, creator);
 			} else {
 				log.warn("parent collection is no a CollectionResource: " + parentcol.getName());
@@ -120,6 +124,7 @@ public class MkColHandler implements Handler {
 
 	private void processMakeCol(HttpManager manager, Request request, Response response, CollectionResource resource, String newName, CollectionResourceCreator creator) throws ConflictException, NotAuthorizedException, BadRequestException, IOException {
 		if (!handlerHelper.checkAuthorisation(manager, resource, request)) {
+			log.info("not authorised");
 			responseHandler.respondUnauthorised(resource, response, request);
 			return;
 		}
@@ -127,26 +132,29 @@ public class MkColHandler implements Handler {
 		handlerHelper.checkExpects(responseHandler, request, response);
 
 		MakeCollectionableResource existingCol = (MakeCollectionableResource) resource;
-		try {
-			//For litmus test and RFC support
-			if (request.getInputStream().read() > -1) //This should be empty
-			{
-				response.setStatus(Response.Status.SC_UNSUPPORTED_MEDIA_TYPE);
-				return;
-			}
-		} catch (Exception ex) {
-			//Per RFC2518 MKCOL request-content is undefined and it is therefore MANDATORY to return 415 if it exists.
-			if (request.getContentLengthHeader() > 0) {
-				response.setStatus(Response.Status.SC_UNSUPPORTED_MEDIA_TYPE);
-				return;
-			}
-		}
-		
-		if( !isCompatible(existingCol)) {
+//		try {
+//			//For litmus test and RFC support
+//			if (request.getInputStream().read() > -1) //This should be empty
+//			{
+//				log.info("unsupported media type1");
+//				response.setStatus(Response.Status.SC_UNSUPPORTED_MEDIA_TYPE);
+//				return;
+//			}
+//		} catch (Exception ex) {
+//			//Per RFC2518 MKCOL request-content is undefined and it is therefore MANDATORY to return 415 if it exists.
+//			if (request.getContentLengthHeader() > 0) {
+//				log.info("unsupported media type2");
+//				response.setStatus(Response.Status.SC_UNSUPPORTED_MEDIA_TYPE);
+//				return;
+//			}
+//		}
+
+		if (!isCompatible(existingCol)) {
+			log.info("not compatible");
 			responseHandler.respondMethodNotImplemented(existingCol, response, request);
-			return ;
+			return;
 		}
-		
+
 		Resource existingChild = existingCol.child(newName);
 		if (existingChild != null) {
 			log.warn("item already exists: " + existingChild.getName());
@@ -161,6 +169,7 @@ public class MkColHandler implements Handler {
 			log.warn("createCollection returned null. In resource class: " + existingCol.getClass());
 			response.setStatus(Response.Status.SC_METHOD_NOT_ALLOWED);
 		} else {
+			log.info("created item ok: " + made.getClass());
 			manager.getEventManager().fireEvent(new NewFolderEvent(resource));
 			response.setStatus(Response.Status.SC_CREATED);
 		}

@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.milton.http.webdav;
 
 import java.util.LinkedHashMap;
@@ -46,15 +45,15 @@ public class PropPatchSaxHandler extends DefaultHandler {
 			sb.append("<" + localName + ">");
 		}
 		if (elementPath.size() > 0) {
+			String elName = elementPath.peek();
 			if (attributesCurrent != null) {
-				if (elementPath.peek().endsWith("prop")) {
+				if (elName.endsWith("prop")) {
 					inProp = true;
 				}
 			} else {
-				if (elementPath.peek().endsWith("set")) {
+				if (elName.endsWith("set")) {
 					attributesCurrent = attributesSet;
-				}
-				if (elementPath.peek().endsWith("remove")) {
+				} else if (elName.endsWith("remove")) {
 					attributesCurrent = attributesRemove;
 				}
 			}
@@ -79,7 +78,13 @@ public class PropPatchSaxHandler extends DefaultHandler {
 				if (sb != null) {
 					String s = sb.toString().trim();
 					QName qname = new QName(uri, localName);
-					attributesCurrent.put(qname, s);
+					if (attributesCurrent != null) {
+						// will usually have this because of the set or remove element
+						attributesCurrent.put(qname, s);
+					} else {
+						// but for mkcalendar there's no set or remove element so default to set attributes
+						attributesSet.put(qname, s);
+					}
 				}
 				sb = new StringBuilder();
 			} else {

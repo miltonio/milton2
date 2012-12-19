@@ -22,8 +22,10 @@ import io.milton.common.StreamUtils;
 import io.milton.http.Range;
 import io.milton.http.Request;
 import io.milton.http.exceptions.BadRequestException;
+import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.resource.CollectionResource;
+import io.milton.resource.MakeCalendarResource;
 import io.milton.resource.MakeCollectionableResource;
 import io.milton.resource.PutableResource;
 import io.milton.resource.Resource;
@@ -37,7 +39,7 @@ import java.util.Map;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 
-public class TFolderResource extends TResource implements PutableResource, MakeCollectionableResource {
+public class TFolderResource extends TResource implements PutableResource, MakeCollectionableResource, MakeCalendarResource {
 
     private static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(TResource.class);
     ArrayList<Resource> children = new ArrayList<Resource>();
@@ -120,6 +122,7 @@ public class TFolderResource extends TResource implements PutableResource, MakeC
     }
 
     protected void doBody(PrintWriter pw) {
+        System.out.println("dobody - " + children.size());
         pw.print("<ul>");
         for (Resource r : this.children) {
             String href = r.getName();
@@ -149,5 +152,11 @@ public class TFolderResource extends TResource implements PutableResource, MakeC
         String ctag = "c" + x;
         log.trace("ctag is: " + ctag + " for: " + this.getHref());
         return ctag;
+    }
+
+    @Override
+    public CollectionResource createCalendar(String newName) throws NotAuthorizedException, ConflictException, BadRequestException {
+        TCalendarResource cal = new TCalendarResource(this, newName);
+        return cal;
     }
 }

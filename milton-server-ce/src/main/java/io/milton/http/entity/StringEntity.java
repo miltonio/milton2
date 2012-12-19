@@ -22,7 +22,6 @@ package io.milton.http.entity;
 import io.milton.http.Response;
 
 import java.io.OutputStream;
-import java.io.PrintWriter;
 
 public class StringEntity implements Response.Entity{
 
@@ -38,8 +37,6 @@ public class StringEntity implements Response.Entity{
 
     @Override
     public void write(Response response, OutputStream outputStream) throws Exception {
-        PrintWriter pw = new PrintWriter(outputStream, true);
-        pw.print(string);
-        pw.flush();
+		outputStream.write(string.getBytes("UTF-8"));
     }
 }

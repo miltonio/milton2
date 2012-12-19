@@ -46,9 +46,12 @@ import io.milton.property.PropertyAuthoriser;
 import io.milton.event.PropPatchEvent;
 import io.milton.http.Request;
 import io.milton.http.Response;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.HashSet;
 import java.util.Set;
 import javax.xml.namespace.QName;
+import org.apache.commons.io.IOUtils;
 
 /**
  * Example request (from ms office)

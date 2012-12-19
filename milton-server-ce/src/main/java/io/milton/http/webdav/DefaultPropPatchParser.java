@@ -44,6 +44,7 @@ public class DefaultPropPatchParser implements PropPatchRequestParser {
 
     private final static Logger log = LoggerFactory.getLogger( DefaultPropPatchParser.class );
 
+	@Override
     public ParseResult getRequestedFields( InputStream in ) {
         log.debug( "getRequestedFields" );
         try {

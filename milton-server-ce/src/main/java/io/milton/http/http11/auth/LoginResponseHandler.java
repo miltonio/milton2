@@ -10,7 +10,8 @@ import io.milton.resource.GetableResource;
 import io.milton.resource.Resource;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.List;
 import net.sf.json.JSONObject;
 import org.apache.commons.collections.CollectionUtils;
@@ -40,7 +41,6 @@ public class LoginResponseHandler extends AbstractWrappingResponseHandler {
 	private final LoginPageTypeHandler loginPageTypeHandler;
 	private List<String> excludePaths;
 	private boolean enabled = true;
-	
 
 	public LoginResponseHandler(WebDavResponseHandler wrapped, ResourceFactory resourceFactory, LoginPageTypeHandler loginPageTypeHandler) {
 		super(wrapped);
@@ -174,12 +174,13 @@ public class LoginResponseHandler extends AbstractWrappingResponseHandler {
 		response.setStatus(Response.Status.SC_BAD_REQUEST);
 		response.setCacheControlNoCacheHeader();
 		ByteArrayOutputStream bout = new ByteArrayOutputStream();
-		PrintWriter pw = new PrintWriter(bout);
-		json.write(pw);
-		pw.flush();
-		byte[] arr = bout.toByteArray();
-		response.setContentLengthHeader((long) arr.length);
 		try {
+			Writer pw = new OutputStreamWriter(bout, "UTF-8");
+			json.write(pw);
+			pw.flush();
+			byte[] arr = bout.toByteArray();
+			response.setContentLengthHeader((long) arr.length);
+
 			response.getOutputStream().write(arr);
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
@@ -189,28 +190,28 @@ public class LoginResponseHandler extends AbstractWrappingResponseHandler {
 	public interface LoginPageTypeHandler {
 
 		/**
-		 * Return true if the given resource and request is suitable for presenting
-		 * a web browser login page
-		 * 
+		 * Return true if the given resource and request is suitable for
+		 * presenting a web browser login page
+		 *
 		 * @param r
 		 * @param request
-		 * @return 
+		 * @return
 		 */
 		boolean canLogin(Resource r, Request request);
-		
+
 		/**
 		 * Return true if the request indicates that the login response should
 		 * be given as json data (ie response to an ajax login)
-		 * 
+		 *
 		 * @param acceptHeader
-		 * @return 
+		 * @return
 		 */
 		boolean isAjax(Resource r, Request request);
 	}
 
-	
 	/**
-	 * Default implementation which uses some sensible rules about content types etc
+	 * Default implementation which uses some sensible rules about content types
+	 * etc
 	 */
 	public static class ContentTypeLoginPageTypeHandler implements LoginPageTypeHandler {
 

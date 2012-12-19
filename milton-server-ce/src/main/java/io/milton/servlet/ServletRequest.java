@@ -196,8 +196,19 @@ public class ServletRequest extends AbstractRequest {
             } else {
                 for (Enumeration en = request.getParameterNames(); en.hasMoreElements();) {
                     String nm = (String) en.nextElement();
-                    String val = request.getParameter(nm);
-                    params.put(nm, val);
+					String[] vals = request.getParameterValues(nm);
+					if( vals.length == 1) {
+						params.put(nm, vals[0]);
+					} else {
+						StringBuilder sb = new StringBuilder();
+						for( String s : vals) {
+							sb.append(s).append(",");
+						}
+						if( sb.length() > 0 ) {
+							sb.deleteCharAt(sb.length()-1); // remove last comma
+						}
+						params.put(nm, sb.toString());
+					}					
                 }
             }
         } catch (FileUploadException ex) {

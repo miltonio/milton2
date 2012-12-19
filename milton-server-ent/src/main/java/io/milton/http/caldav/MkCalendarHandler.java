@@ -57,6 +57,7 @@ public class MkCalendarHandler implements Handler, MkColHandler.CollectionResour
 
     @Override
     public void process(HttpManager manager, Request request, Response response) throws ConflictException, NotAuthorizedException, BadRequestException {
+        log.info("process");
         try {
             mkColHandler.process(manager, request, response, this);
         } catch (IOException ex) {
@@ -66,8 +67,10 @@ public class MkCalendarHandler implements Handler, MkColHandler.CollectionResour
 
     @Override
     public CollectionResource createResource(MakeCollectionableResource existingCol, String newName, Request request) throws ConflictException, NotAuthorizedException, BadRequestException, IOException {
+        log.info("createResource");
         MakeCalendarResource mkcal = (MakeCalendarResource) existingCol;
         CollectionResource newCal = mkcal.createCalendar(newName);
+        log.info("do proppatch on new calendar collection resource");
         propPatchHandler.doPropPatch(request, newCal);
         return newCal;
 
