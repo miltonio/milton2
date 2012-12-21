@@ -19,13 +19,15 @@
 
 package io.milton.http;
 
-import io.milton.http.Response;
+import java.io.Serializable;
 
 /**
  *
  */
-public class LockResult {
+public class LockResult implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+    
     public static LockResult failed( FailureReason failureReason) {
         return new LockResult(failureReason, null);
     }
