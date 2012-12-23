@@ -24,6 +24,8 @@ import io.milton.http.caldav.ICalFormatter;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.values.HrefList;
+import io.milton.http.values.SupportedCalendarComponentList;
+import io.milton.http.values.SupportedCalendarComponentListsSet;
 import io.milton.ldap.Condition;
 import io.milton.ldap.LdapPrincipal;
 import io.milton.mail.Mailbox;
@@ -353,4 +355,18 @@ public class TCalDavPrincipal extends TFolderResource implements CalDavPrincipal
     public String getCommonName() {
         return givenName + " " + surName;
     }
+
+    @Override
+    public SupportedCalendarComponentListsSet getSupportedComponentSets() {
+        return null;
+    }
+
+    @Override
+    public SupportedCalendarComponentList getSupportedComponentSet() {
+        return null; // probably should not implement CalendarResource ... ?
+    }
+
+    
+
+    
 }

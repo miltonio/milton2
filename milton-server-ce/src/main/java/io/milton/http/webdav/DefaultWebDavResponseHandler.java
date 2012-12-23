@@ -69,11 +69,11 @@ public class DefaultWebDavResponseHandler implements WebDavResponseHandler, Buff
 
 	@Override
     public void respondWithOptions( Resource resource, Response response, Request request, List<String> methodsAllowed ) {
-        wrapped.respondWithOptions( resource, response, request, methodsAllowed );
         List<String> supportedLevels = resourceTypeHelper.getSupportedLevels( resource );
         String s = Utils.toCsv( supportedLevels );
         response.setDavHeader( s );
         response.setNonStandardHeader( "MS-Author-Via", "DAV" );
+        wrapped.respondWithOptions( resource, response, request, methodsAllowed ); // Note that setting content length must be done last for tomcat5		
     }
 
 	@Override

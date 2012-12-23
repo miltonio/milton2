@@ -20,7 +20,7 @@
 package io.milton.principal;
 
 import io.milton.http.values.HrefList;
-import io.milton.principal.DiscretePrincipal;
+import io.milton.http.values.SupportedCalendarComponentListsSet;
 
 /**
  *
@@ -107,4 +107,11 @@ public interface CalDavPrincipal extends DiscretePrincipal {
      * @return
      */
     String getDropBoxUrl();
+    
+    /**
+     * Get the list of supported combinations of component types, or just return null
+     * 
+     * @return 
+     */
+    SupportedCalendarComponentListsSet getSupportedComponentSets();
 }

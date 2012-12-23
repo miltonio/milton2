@@ -16,38 +16,27 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package io.milton.http.values;
 
-package io.milton.resource;
-
-import io.milton.http.values.SupportedCalendarComponentList;
-import java.util.List;
+import io.milton.resource.CalendarResource;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
+ * Holds a list of href values which will be written as a list of <href>
+ * elements
  *
- * @author alex
+ * See HrefListValueWriter
+ *
+ * @author brad
  */
-public interface CalendarResource extends CalendarCollection, PropFindableResource {
+public class SupportedCalendarComponentList extends ArrayList<CalendarResource.ComponentType> {
 
-    public enum ComponentType {
-        VEVENT,
-        VTODO,
-        VTIMEZONE,
-        VFREEBUSY
+    private static final long serialVersionUID = 1L;
+
+    public static SupportedCalendarComponentList asList(CalendarResource.ComponentType... items) {
+        SupportedCalendarComponentList l = new SupportedCalendarComponentList();
+        l.addAll(Arrays.asList(items));
+        return l;
     }
-    
-    String getCalendarDescription();
-
-    String getColor();
-    
-    void setColor(String s);	
-
-    /**
-     * If there is a restriction as to what types of components may be created within
-     * this calendar collection, then return the allowed components. If there are
-     * no restrictions return null.
-     * 
-     * @return 
-     */
-    SupportedCalendarComponentList getSupportedComponentSet();
-    
 }

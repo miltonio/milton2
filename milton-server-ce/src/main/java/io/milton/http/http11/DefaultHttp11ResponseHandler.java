@@ -96,7 +96,7 @@ public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Buff
 	public void respondWithOptions(Resource resource, Response response, Request request, List<String> methodsAllowed) {
 		setRespondCommonHeaders(response, resource, Status.SC_OK, request.getAuthorization());
 		response.setAllowHeader(methodsAllowed);
-		response.setContentLengthHeader((long) 0);
+		response.setContentLengthHeader((long) 0); // Note that setting content length must be done last for tomcat5	
 	}
 
 	@Override
@@ -201,7 +201,6 @@ public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Buff
 		}
 		response.setContentRangeHeader(st, fn, cl);
 		long contentLength = fn - st + 1;
-		response.setContentLengthHeader(contentLength);
 		response.setDateHeader(new Date());
 		String etag = eTagGenerator.generateEtag(resource);
 		if (etag != null) {
@@ -212,6 +211,7 @@ public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Buff
 		if (ct != null) {
 			response.setContentTypeHeader(ct);
 		}
+		response.setContentLengthHeader(contentLength);		
 		response.setEntity(new GetableResourceEntity(resource, range, params, ct));
 	}
 
@@ -223,12 +223,6 @@ public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Buff
 			return;
 		}
 		GetableResource gr = (GetableResource) resource;
-		Long contentLength = gr.getContentLength();
-		if (contentLength != null) {
-			response.setContentLengthHeader(contentLength);
-		} else {
-			log.trace("No content length is available for HEAD request");
-		}
 		String acc = request.getAcceptHeader();
 		String ct = gr.getContentType(acc);
 		if (ct != null) {
@@ -237,6 +231,12 @@ public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Buff
 				response.setContentTypeHeader(ct);
 			}
 		}
+		Long contentLength = gr.getContentLength();
+		if (contentLength != null) {
+			response.setContentLengthHeader(contentLength);
+		} else {
+			log.trace("No content length is available for HEAD request");
+		}		
 	}
 
 	@Override
