@@ -33,9 +33,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import junit.framework.TestCase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TestUtils extends TestCase {
 
+	private static final Logger log = LoggerFactory.getLogger(TestUtils.class);
+		
     public void test() throws NotAuthorizedException, BadRequestException {
         ColRes col1 = new ColRes("col1");
         ColRes col2 = new ColRes("col2");
