@@ -23,8 +23,6 @@ import io.milton.http.XmlWriter.Element;
 import io.milton.http.values.SupportedCalendarComponentList;
 import io.milton.http.values.SupportedCalendarComponentListsSet;
 import io.milton.http.values.ValueWriter;
-import io.milton.http.webdav.WebDavProtocol;
-import io.milton.resource.CalendarResource.ComponentType;
 import java.util.Map;
 
 /**
