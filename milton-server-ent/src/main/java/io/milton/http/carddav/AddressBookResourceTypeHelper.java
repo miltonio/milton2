@@ -47,7 +47,7 @@ public class AddressBookResourceTypeHelper implements ResourceTypeHelper {
         List<QName> list = wrapped.getResourceTypes(r);
 		
         if (r instanceof AddressBookResource) {
-            log.trace("getResourceTypes: is a calendar");
+            log.trace("getResourceTypes: is a AddressBookResource");
             qn = new QName(CardDavProtocol.CARDDAV_NS, "addressbook");
             if (list == null) {
                 list = new ArrayList<QName>();

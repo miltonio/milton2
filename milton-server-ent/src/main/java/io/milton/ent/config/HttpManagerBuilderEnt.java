@@ -187,7 +187,7 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
             if (cardDavProtocol == null && carddavEnabled) {
                 cardDavProtocol = new CardDavProtocol(mainResourceFactory, webdavResponseHandler, handlerHelper, webDavProtocol, propFindXmlGenerator);
             }
-            if (calDavProtocol != null) {
+            if (cardDavProtocol != null) {
                 valueWriters.getValueWriters().add(0, new SupportedCalendarComponentListValueWriter());
                 valueWriters.getValueWriters().add(0, new SupportedCalendarComponentListsSetValueWriter());
                 protocols.add(cardDavProtocol);
