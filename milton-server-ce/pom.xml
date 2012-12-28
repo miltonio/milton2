@@ -155,6 +155,12 @@
 			<scope>compile</scope>
 			<type>jar</type>
 		</dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.5.8</version>
+			<scope>test</scope>
+        </dependency>
 	</dependencies>
 	<repositories>
 		<repository>  
