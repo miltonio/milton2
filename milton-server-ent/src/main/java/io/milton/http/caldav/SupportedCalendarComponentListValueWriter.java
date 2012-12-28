@@ -28,10 +28,7 @@ import io.milton.resource.CalendarResource.ComponentType;
 import java.util.Map;
 
 /**
- * Supports HrefList objects, and writes them out as a list of <href>...</href>
- * elements
- *
- * Currently readonly, but should support writing
+ * 
  *
  * @author brad
  */
@@ -50,7 +47,7 @@ public class SupportedCalendarComponentListValueWriter implements ValueWriter {
             SupportedCalendarComponentList list = (SupportedCalendarComponentList) val;
             if (list != null) {
                 for (ComponentType comp : list) {
-                    Element hrefEl = writer.begin(WebDavProtocol.DAV_PREFIX + ":comp");
+                    Element hrefEl = writer.begin(prefix + ":comp");
                     hrefEl.writeAtt("name", comp.name());
                     hrefEl.close();
                 }

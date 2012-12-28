@@ -562,7 +562,7 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
     }    
     
     /**
-     * Implemented on DalDavPrincpials
+     * Implemented on CalDavPrincpials
      * 
      * See http://tools.ietf.org/html/draft-daboo-caldav-extensions-01#page-7
      * 

@@ -26,10 +26,7 @@ import io.milton.http.values.ValueWriter;
 import java.util.Map;
 
 /**
- * Supports HrefList objects, and writes them out as a list of <href>...</href>
- * elements
- *
- * Currently readonly, but should support writing
+ * 
  *
  * @author brad
  */

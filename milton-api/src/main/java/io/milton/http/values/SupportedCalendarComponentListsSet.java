@@ -23,9 +23,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
- * Holds a list of href values which will be written as a list of <href> elements
- *
- * See HrefListValueWriter
+ * 
+ * 
  *
  * @author brad
  */
