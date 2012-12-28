@@ -56,7 +56,7 @@ public class WebDavLevel2Protocol implements HttpExtension, PropertySource {
     private final UserAgentHelper userAgentHelper;
     private List<CustomPostHandler> customPostHandlers;
 
-    public WebDavLevel2Protocol(HandlerHelper handlerHelper, WebDavResponseHandler responseHandler, ResourceHandlerHelper resourceHandlerHelper, UserAgentHelper userAgentHelper, ValueWriters valueWriters) {
+    public WebDavLevel2Protocol(HandlerHelper handlerHelper, WebDavResponseHandler responseHandler, ResourceHandlerHelper resourceHandlerHelper, UserAgentHelper userAgentHelper) {
         this.userAgentHelper = userAgentHelper;
         this.propertyMap = new PropertyMap(WebDavProtocol.NS_DAV.getName());
         propertyMap.add(new SupportedLockPropertyWriter());
@@ -64,10 +64,7 @@ public class WebDavLevel2Protocol implements HttpExtension, PropertySource {
 
         handlers = new HashSet<Handler>();
         handlers.add(new LockHandler(responseHandler, handlerHelper));
-        handlers.add(new UnlockHandler(resourceHandlerHelper, responseHandler));
-        
-        valueWriters.getValueWriters().add(0, new SupportedLockValueWriter());
-        valueWriters.getValueWriters().add(0, new LockTokenValueWriter());
+        handlers.add(new UnlockHandler(resourceHandlerHelper, responseHandler));        
     }
 
     @Override

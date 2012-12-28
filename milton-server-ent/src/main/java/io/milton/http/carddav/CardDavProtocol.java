@@ -74,7 +74,7 @@ public class CardDavProtocol implements HttpExtension, PropertySource, WellKnown
     private final Set<Handler> handlers;
     private final PropertyMap propertyMapCardDav;
 
-    public CardDavProtocol(ResourceFactory resourceFactory, WebDavResponseHandler responseHandler, HandlerHelper handlerHelper, WebDavProtocol webDavProtocol) {
+    public CardDavProtocol(ResourceFactory resourceFactory, WebDavResponseHandler responseHandler, HandlerHelper handlerHelper, WebDavProtocol webDavProtocol, PropFindXmlGenerator gen) {
         propertyMapCardDav = new PropertyMap(CARDDAV_NS);
         propertyMapCardDav.add(new AddressBookHomeSetProperty());
         propertyMapCardDav.add(new AddressBookDescriptionProperty());
@@ -84,8 +84,6 @@ public class CardDavProtocol implements HttpExtension, PropertySource, WellKnown
 
         handlers = new HashSet<Handler>();
 
-        ValueWriters valueWriters = new ValueWriters();
-        PropFindXmlGenerator gen = new PropFindXmlGenerator(valueWriters);
         webDavProtocol.addPropertySource(this);
         PropFindPropertyBuilder propertyBuilder = new PropFindPropertyBuilder(webDavProtocol.getPropertySources());
         

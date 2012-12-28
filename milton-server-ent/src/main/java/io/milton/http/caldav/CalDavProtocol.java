@@ -84,7 +84,10 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
     private final SchedulingCustomPostHandler schedulingCustomPostHandler;
     private final List<CustomPostHandler> customPostHandlers;
 
-    public CalDavProtocol(ResourceFactory resourceFactory, WebDavResponseHandler responseHandler, HandlerHelper handlerHelper, WebDavProtocol webDavProtocol) {
+    public CalDavProtocol(ResourceFactory resourceFactory, WebDavResponseHandler responseHandler, HandlerHelper handlerHelper, WebDavProtocol webDavProtocol, PropFindXmlGenerator gen) {
+        if( gen == null ) {
+            throw new NullPointerException("PropFindXmlGenerator is null");
+        }
         propertyMapCalDav = new PropertyMap(CALDAV_NS);
         propertyMapCalDav.add(new CalenderDescriptionProperty());
         propertyMapCalDav.add(new CalendarDataProperty());
@@ -110,8 +113,6 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
 
         handlers.add(new MkCalendarHandler(webDavProtocol.getMkColHandler(), webDavProtocol.getPropPatchHandler()));
 
-        ValueWriters valueWriters = new ValueWriters();
-        PropFindXmlGenerator gen = new PropFindXmlGenerator(valueWriters);
         webDavProtocol.addPropertySource(this);
         PropFindPropertyBuilder propertyBuilder = new PropFindPropertyBuilder(webDavProtocol.getPropertySources());
 

@@ -21,6 +21,8 @@ import io.milton.http.acl.ACLProtocol;
 import io.milton.http.acl.AccessControlledResourceTypeHelper;
 import io.milton.http.caldav.CalDavProtocol;
 import io.milton.http.caldav.CalendarResourceTypeHelper;
+import io.milton.http.caldav.SupportedCalendarComponentListValueWriter;
+import io.milton.http.caldav.SupportedCalendarComponentListsSetValueWriter;
 import io.milton.http.carddav.AddressBookResourceTypeHelper;
 import io.milton.http.carddav.CardDavProtocol;
 import io.milton.http.fck.FckResourceFactory;
@@ -32,6 +34,8 @@ import io.milton.http.webdav.ResourceTypeHelper;
 import io.milton.http.webdav.WebDavProtocol;
 import io.milton.http.webdav.WebDavResourceTypeHelper;
 import io.milton.http.webdav.WebDavResponseHandler;
+import io.milton.http.webdav2.LockTokenValueWriter;
+import io.milton.http.webdav2.SupportedLockValueWriter;
 import io.milton.http.webdav2.WebDavLevel2Protocol;
 import io.milton.http.webdav2.WebDavLevel2ResourceTypeHelper;
 import java.util.ArrayList;
@@ -154,9 +158,12 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
             }
 
             if (webDavLevel2Protocol == null && webdavLevel2Enabled) {
-                webDavLevel2Protocol = new WebDavLevel2Protocol(handlerHelper, webdavResponseHandler, resourceHandlerHelper, userAgentHelper, valueWriters);
+                webDavLevel2Protocol = new WebDavLevel2Protocol(handlerHelper, webdavResponseHandler, resourceHandlerHelper, userAgentHelper);
             }
             if (webDavLevel2Protocol != null) {
+                valueWriters.getValueWriters().add(0, new SupportedLockValueWriter());
+                valueWriters.getValueWriters().add(0, new LockTokenValueWriter());
+                
                 protocols.add(webDavLevel2Protocol);
                 if (webDavProtocol != null) {
                     webDavProtocol.addPropertySource(webDavLevel2Protocol);
@@ -164,7 +171,7 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
             }
 
             if (calDavProtocol == null && caldavEnabled) {
-                calDavProtocol = new CalDavProtocol(mainResourceFactory, webdavResponseHandler, handlerHelper, webDavProtocol);
+                calDavProtocol = new CalDavProtocol(mainResourceFactory, webdavResponseHandler, handlerHelper, webDavProtocol, propFindXmlGenerator);
             }
             if (calDavProtocol != null) {
                 protocols.add(calDavProtocol);
@@ -178,9 +185,11 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
             }
 
             if (cardDavProtocol == null && carddavEnabled) {
-                cardDavProtocol = new CardDavProtocol(mainResourceFactory, webdavResponseHandler, handlerHelper, webDavProtocol);
+                cardDavProtocol = new CardDavProtocol(mainResourceFactory, webdavResponseHandler, handlerHelper, webDavProtocol, propFindXmlGenerator);
             }
             if (calDavProtocol != null) {
+                valueWriters.getValueWriters().add(0, new SupportedCalendarComponentListValueWriter());
+                valueWriters.getValueWriters().add(0, new SupportedCalendarComponentListsSetValueWriter());
                 protocols.add(cardDavProtocol);
             }
         }
