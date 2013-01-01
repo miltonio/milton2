@@ -24,7 +24,7 @@ public class Range {
     private final Long finish;
 
     public static Range parse(String s) {
-        String[] arr = s.split("-");
+        String[] arr = s.trim().split("-");
         if (arr.length == 0 || arr.length > 2) {
             throw new RuntimeException("Invalid range. Use format start-finish, eg 1000-1500. Range:" + s + " parts=" + arr.length);
         }
