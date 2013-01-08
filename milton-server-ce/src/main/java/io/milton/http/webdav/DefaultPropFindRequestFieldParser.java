@@ -52,8 +52,8 @@ public class DefaultPropFindRequestFieldParser implements PropFindRequestFieldPa
 
 	@Override
     public PropertiesRequest getRequestedFields( InputStream in ) {
-        try {
-            final Set<QName> set = new LinkedHashSet<QName>();
+		final Set<QName> set = new LinkedHashSet<QName>();
+        try {            
             ByteArrayOutputStream bout = new ByteArrayOutputStream();
             StreamUtils.readTo( in, bout, false, true );
             byte[] arr = bout.toByteArray();
@@ -76,10 +76,15 @@ public class DefaultPropFindRequestFieldParser implements PropFindRequestFieldPa
                     log.warn( "exception parsing request body", e );
                     // ignore
                 }
-            }
-            return PropertiesRequest.toProperties(set);
+            }            
         } catch( Exception ex ) {
-            throw new RuntimeException( ex );
+			// There's a report of an exception being thrown here by IT Hit Webdav client
+			// Perhaps we can just log the error and return an empty set. Usually this
+			// class is wrapped by the MsPropFindRequestFieldParser which will use a default
+			// set of properties if this returns an empty set
+			log.warn("Exception parsing PROPFIND request fields. Returning empty property set", ex);
+            //throw new RuntimeException( ex );
         }
+		return PropertiesRequest.toProperties(set);
     }
 }
