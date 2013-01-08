@@ -144,6 +144,7 @@ public class HttpManagerBuilder {
 	protected PartialGetHelper partialGetHelper;
 	protected LoginResponseHandler loginResponseHandler;
 	protected LoginResponseHandler.LoginPageTypeHandler loginPageTypeHandler = new LoginResponseHandler.ContentTypeLoginPageTypeHandler();
+	protected boolean enableExpectContinue = true;
 
 	/**
 	 * This method creates instances of required objects which have not been set
@@ -287,6 +288,7 @@ public class HttpManagerBuilder {
 			handlerHelper = new HandlerHelper(authenticationService);
 			showLog("handlerHelper", handlerHelper);
 		}
+		handlerHelper.setEnableExpectContinue(enableExpectContinue);
 		if (resourceHandlerHelper == null) {
 			resourceHandlerHelper = new ResourceHandlerHelper(handlerHelper, urlAdapter, webdavResponseHandler);
 			showLog("resourceHandlerHelper", resourceHandlerHelper);
