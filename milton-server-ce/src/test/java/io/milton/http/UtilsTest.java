@@ -137,4 +137,13 @@ public class UtilsTest extends TestCase {
 		assertEquals("/folder1/folder2", dest.url);
 		assertEquals("na me", dest.name);
 	}		
+	
+	public void testGetDecodedDestination_Https() {
+		String testDest = "https://xyz.com/folder1/folder2/name";
+		Dest dest = Utils.getDecodedDestination(testDest);
+		System.out.println("testGetDecodedDestination_Https --> " + dest);
+		assertEquals("xyz.com", dest.host);
+		assertEquals("/folder1/folder2", dest.url);
+		assertEquals("name", dest.name);
+	}	
 }

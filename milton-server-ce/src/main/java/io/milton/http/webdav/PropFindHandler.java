@@ -71,9 +71,7 @@ public class PropFindHandler implements ExistingEntityHandler, PropertyHandler {
         this.requestFieldParser = new MsPropFindRequestFieldParser( defaultFieldParse ); // use MS decorator for windows support
         this.responseHandler = responseHandler;
 
-        this.propertyBuilder = new PropFindPropertyBuilder( propertySources );
-		
-		displayCopyrightNotice();
+        this.propertyBuilder = new PropFindPropertyBuilder( propertySources );				
     }
 
     /**
@@ -163,15 +161,4 @@ public class PropFindHandler implements ExistingEntityHandler, PropertyHandler {
     public PropertyAuthoriser getPermissionService() {
         return permissionService;
     }
-
-	/**
-	 * Display information about licensing. Implemented here because this is one
-	 * of the few classes in milton which is generally not replaceable.
-	 */
-	private void displayCopyrightNotice() {		
-		System.out.println("Initializing Milton2 ...");
-		System.out.println("This software has been released under the Affero GPL license which requires derivative works (the application using milton) to be published on the same license");
-		System.out.println("For non-FOSS/commercial usage you should obtain a commercial license. Please see http://milton.io/license for details");
-		System.out.println("Copyright McEvoy Software Limited");
-	}
 }
