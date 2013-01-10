@@ -1028,4 +1028,13 @@ public class HttpManagerBuilder {
 			}
 		}
 	}
+
+	public void setEnableExpectContinue(boolean enableExpectContinue) {
+		this.enableExpectContinue = enableExpectContinue;
+	}
+
+	public boolean isEnableExpectContinue() {
+		return enableExpectContinue;
+	}
+		
 }
