@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.milton.http.values;
 
 import io.milton.common.Utils;
@@ -27,29 +26,57 @@ import java.util.Map;
  *
  * @author brad
  */
-public class CDataValueWriter  implements ValueWriter {
+public class CDataValueWriter implements ValueWriter {
 
-    public boolean supports( String nsUri, String localName, Class c ) {
-        return CData.class.equals( c );
-    }
+	public static void appendCDataString(final StringBuilder sb, final String data) {
+		final String cdStart = "<![CDATA[";
+		final String cdEnd = "]]>";
+
+		sb.append(cdStart);
+		int offset = 0;
+		int idx = -1;
+		while ((idx = data.indexOf(cdEnd, offset)) >= 0) {
+			if (offset < idx) {
+				sb.append(data.substring(offset, idx));
+			}
+			sb.append("]]").append(cdEnd).append(cdStart).append(">");
+			offset = idx + cdEnd.length();
+		}
+		if (offset < data.length()) {
+			sb.append(data.substring(offset));
+		}
+		sb.append(cdEnd);
+	}	
+	
+	@Override
+	public boolean supports(String nsUri, String localName, Class c) {
+		return CData.class.equals(c);
+	}
+
+
+	@Override
+	public void writeValue(XmlWriter writer, String nsUri, String prefix, String localName, Object val, String href, Map<String, String> nsPrefixes) {
+		if (val == null) {
+			writer.writeProperty(prefix, localName);
+		} else {
+			CData cd = (CData) val;
+			StringBuilder sb = new StringBuilder();
+			CDataValueWriter.appendCDataString(sb, cd.getData());
+			String s = sb.toString();
+			//String s = nameEncode(cd.getData());
+			//s = "<![CDATA[" + s + "]]>";
+			writer.writeProperty(prefix, localName, s);
+		}
+	}
 
     private String nameEncode( String s ) {
         //return Utils.encode(href, false); // see MIL-31
         return Utils.escapeXml( s );
-    }
+    }	
+	
+	@Override
+	public Object parse(String namespaceURI, String localPart, String value) {
+		return value;
+	}
 
-    public void writeValue( XmlWriter writer, String nsUri, String prefix, String localName, Object val, String href, Map<String, String> nsPrefixes ) {
-        if( val == null ) {
-            writer.writeProperty( prefix, localName );
-        } else {
-            CData cd = (CData) val;
-            String s = nameEncode( cd.getData() );
-            s = "<![CDATA[" + s + "]]>";
-            writer.writeProperty( prefix, localName, s );
-        }
-    }
-
-    public Object parse( String namespaceURI, String localPart, String value ) {
-        return value;
-    }
 }
