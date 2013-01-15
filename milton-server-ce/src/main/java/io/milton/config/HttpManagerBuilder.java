@@ -261,12 +261,15 @@ public class HttpManagerBuilder {
 				DefaultHttp11ResponseHandler rh = new DefaultHttp11ResponseHandler(authenticationService, eTagGenerator);
 				rh.setContentGenerator(contentGenerator);
 				rh.setCacheControlHelper(cacheControlHelper);
+				rh.setBuffering(buffering);
 				http11ResponseHandler = rh;
 				showLog("http11ResponseHandler", http11ResponseHandler);
 			}
 			webdavResponseHandler = new DefaultWebDavResponseHandler(http11ResponseHandler, resourceTypeHelper, propFindXmlGenerator);
 			if (enableCompression) {
-				webdavResponseHandler = new CompressingResponseHandler(webdavResponseHandler);
+				final CompressingResponseHandler compressingResponseHandler = new CompressingResponseHandler(webdavResponseHandler);
+				compressingResponseHandler.setBuffering(buffering);
+				webdavResponseHandler = compressingResponseHandler;
 				showLog("webdavResponseHandler", webdavResponseHandler);
 			}
 			if (enableFormAuth) {
