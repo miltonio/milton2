@@ -96,6 +96,8 @@ public class HttpManagerBuilder {
 	protected List<Stoppable> shutdownHandlers = new CopyOnWriteArrayList<Stoppable>();
 	protected ResourceTypeHelper resourceTypeHelper;
 	protected WebDavResponseHandler webdavResponseHandler;
+	// when wrapping a given response handler, this will be a reference to the outer most instance. or same as main response handler when not wrapping
+	protected WebDavResponseHandler outerWebdavResponseHandler; 
 	protected ContentGenerator contentGenerator = new SimpleContentGenerator();
 	protected CacheControlHelper cacheControlHelper = new DefaultCacheControlHelper();
 	protected HandlerHelper handlerHelper;
@@ -251,38 +253,40 @@ public class HttpManagerBuilder {
 		if (resourceTypeHelper == null) {
 			buildResourceTypeHelper();
 		}
+		if (propFindXmlGenerator == null) {
+			propFindXmlGenerator = new PropFindXmlGenerator(valueWriters);
+			showLog("propFindXmlGenerator", propFindXmlGenerator);
+		}
+		if (http11ResponseHandler == null) {
+			DefaultHttp11ResponseHandler rh = createDefaultHttp11ResponseHandler(authenticationService);
+			rh.setContentGenerator(contentGenerator);
+			rh.setCacheControlHelper(cacheControlHelper);
+			rh.setBuffering(buffering);
+			http11ResponseHandler = rh;
+			showLog("http11ResponseHandler", http11ResponseHandler);
+		}
 
 		if (webdavResponseHandler == null) {
-			if (propFindXmlGenerator == null) {
-				propFindXmlGenerator = new PropFindXmlGenerator(valueWriters);
-				showLog("propFindXmlGenerator", propFindXmlGenerator);
-			}
-			if (http11ResponseHandler == null) {
-				DefaultHttp11ResponseHandler rh = new DefaultHttp11ResponseHandler(authenticationService, eTagGenerator);
-				rh.setContentGenerator(contentGenerator);
-				rh.setCacheControlHelper(cacheControlHelper);
-				rh.setBuffering(buffering);
-				http11ResponseHandler = rh;
-				showLog("http11ResponseHandler", http11ResponseHandler);
-			}
 			webdavResponseHandler = new DefaultWebDavResponseHandler(http11ResponseHandler, resourceTypeHelper, propFindXmlGenerator);
-			if (enableCompression) {
-				final CompressingResponseHandler compressingResponseHandler = new CompressingResponseHandler(webdavResponseHandler);
-				compressingResponseHandler.setBuffering(buffering);
-				webdavResponseHandler = compressingResponseHandler;
-				showLog("webdavResponseHandler", webdavResponseHandler);
-			}
-			if (enableFormAuth) {
-				log.info("form authentication is enabled, so wrap response handler with " + LoginResponseHandler.class);
-				if (loginResponseHandler == null) {
-					loginResponseHandler = new LoginResponseHandler(webdavResponseHandler, mainResourceFactory, loginPageTypeHandler);
-					loginResponseHandler.setExcludePaths(loginPageExcludePaths);
-					loginResponseHandler.setLoginPage(loginPage);
-					webdavResponseHandler = loginResponseHandler;
-				}
+		}		
+		outerWebdavResponseHandler = webdavResponseHandler;
+		if (enableCompression) {
+			final CompressingResponseHandler compressingResponseHandler = new CompressingResponseHandler(webdavResponseHandler);
+			compressingResponseHandler.setBuffering(buffering);
+			outerWebdavResponseHandler = compressingResponseHandler;
+			showLog("webdavResponseHandler", webdavResponseHandler);
+		}
+		if (enableFormAuth) {
+			log.info("form authentication is enabled, so wrap response handler with " + LoginResponseHandler.class);
+			if (loginResponseHandler == null) {
+				loginResponseHandler = new LoginResponseHandler(outerWebdavResponseHandler, mainResourceFactory, loginPageTypeHandler);
+				loginResponseHandler.setExcludePaths(loginPageExcludePaths);
+				loginResponseHandler.setLoginPage(loginPage);
+				outerWebdavResponseHandler = loginResponseHandler;
 			}
 		}
-		init(authenticationService, webdavResponseHandler, resourceTypeHelper);
+
+		init(authenticationService, outerWebdavResponseHandler, resourceTypeHelper);
 	}
 
 	private void init(AuthenticationService authenticationService, WebDavResponseHandler webdavResponseHandler, ResourceTypeHelper resourceTypeHelper) {
@@ -363,6 +367,77 @@ public class HttpManagerBuilder {
 		}
 		return beanPropertySource;
 	}
+	
+
+	protected DefaultHttp11ResponseHandler createDefaultHttp11ResponseHandler(AuthenticationService authenticationService) {
+		DefaultHttp11ResponseHandler rh = new DefaultHttp11ResponseHandler(authenticationService, eTagGenerator);
+		return rh;
+	}	
+	
+	protected void buildResourceTypeHelper() {
+		WebDavResourceTypeHelper webDavResourceTypeHelper = new WebDavResourceTypeHelper();
+		resourceTypeHelper = webDavResourceTypeHelper;
+		showLog("resourceTypeHelper", resourceTypeHelper);
+	}
+
+	protected void buildProtocolHandlers(WebDavResponseHandler webdavResponseHandler, ResourceTypeHelper resourceTypeHelper) {
+		if (protocols == null) {
+			protocols = new ArrayList<HttpExtension>();
+
+			if (matchHelper == null) {
+				matchHelper = new MatchHelper(eTagGenerator);
+			}
+			if (partialGetHelper == null) {
+				partialGetHelper = new PartialGetHelper(webdavResponseHandler);
+			}
+
+			Http11Protocol http11Protocol = new Http11Protocol(webdavResponseHandler, handlerHelper, resourceHandlerHelper, enableOptionsAuth, matchHelper, partialGetHelper);
+			protocols.add(http11Protocol);
+			if (propertySources == null) {
+				propertySources = initDefaultPropertySources(resourceTypeHelper);
+				showLog("propertySources", propertySources);
+			}
+			if (extraPropertySources != null) {
+				for (PropertySource ps : extraPropertySources) {
+					log.info("Add extra property source: " + ps.getClass());
+					propertySources.add(ps);
+				}
+			}
+			if (propPatchSetter == null) {
+				propPatchSetter = new PropertySourcePatchSetter(propertySources);
+			}
+			if (userAgentHelper == null) {
+				userAgentHelper = new DefaultUserAgentHelper();
+			}
+
+			if (webDavProtocol == null && webdavEnabled) {
+				webDavProtocol = new WebDavProtocol(handlerHelper, resourceTypeHelper, webdavResponseHandler, propertySources, quotaDataAccessor, propPatchSetter, initPropertyAuthoriser(), eTagGenerator, urlAdapter, resourceHandlerHelper, userAgentHelper);
+			}
+			if (webDavProtocol != null) {
+				protocols.add(webDavProtocol);
+			}
+		}
+
+		if (protocolHandlers == null) {
+			protocolHandlers = new ProtocolHandlers(protocols);
+		}
+	}
+
+	protected void buildOuterResourceFactory() {
+		// wrap the real (ie main) resource factory to provide well-known support and ajax gateway
+		if (outerResourceFactory == null) {
+			outerResourceFactory = mainResourceFactory; // in case nothing else enabled
+			if (enabledJson) {
+				outerResourceFactory = new JsonResourceFactory(outerResourceFactory, eventManager, propertySources, propPatchSetter, initPropertyAuthoriser());
+				log.info("Enabled json/ajax gatewayw with: " + outerResourceFactory.getClass());
+			}
+			if (enabledCkBrowser) {
+				outerResourceFactory = new FckResourceFactory(outerResourceFactory);
+				log.info("Enabled CK Editor support with: " + outerResourceFactory.getClass());
+			}
+		}
+	}
+	
 
 	public BUFFERING getBuffering() {
 		return buffering;
@@ -968,70 +1043,6 @@ public class HttpManagerBuilder {
 		this.contentGenerator = contentGenerator;
 	}
 
-	protected void buildResourceTypeHelper() {
-		WebDavResourceTypeHelper webDavResourceTypeHelper = new WebDavResourceTypeHelper();
-		resourceTypeHelper = webDavResourceTypeHelper;
-		showLog("resourceTypeHelper", resourceTypeHelper);
-	}
-
-	protected void buildProtocolHandlers(WebDavResponseHandler webdavResponseHandler, ResourceTypeHelper resourceTypeHelper) {
-		if (protocols == null) {
-			protocols = new ArrayList<HttpExtension>();
-
-			if (matchHelper == null) {
-				matchHelper = new MatchHelper(eTagGenerator);
-			}
-			if (partialGetHelper == null) {
-				partialGetHelper = new PartialGetHelper(webdavResponseHandler);
-			}
-
-			Http11Protocol http11Protocol = new Http11Protocol(webdavResponseHandler, handlerHelper, resourceHandlerHelper, enableOptionsAuth, matchHelper, partialGetHelper);
-			protocols.add(http11Protocol);
-			if (propertySources == null) {
-				propertySources = initDefaultPropertySources(resourceTypeHelper);
-				showLog("propertySources", propertySources);
-			}
-			if (extraPropertySources != null) {
-				for (PropertySource ps : extraPropertySources) {
-					log.info("Add extra property source: " + ps.getClass());
-					propertySources.add(ps);
-				}
-			}
-			if (propPatchSetter == null) {
-				propPatchSetter = new PropertySourcePatchSetter(propertySources);
-			}
-			if (userAgentHelper == null) {
-				userAgentHelper = new DefaultUserAgentHelper();
-			}
-
-			if (webDavProtocol == null && webdavEnabled) {
-				webDavProtocol = new WebDavProtocol(handlerHelper, resourceTypeHelper, webdavResponseHandler, propertySources, quotaDataAccessor, propPatchSetter, initPropertyAuthoriser(), eTagGenerator, urlAdapter, resourceHandlerHelper, userAgentHelper);
-			}
-			if (webDavProtocol != null) {
-				protocols.add(webDavProtocol);
-			}
-		}
-
-		if (protocolHandlers == null) {
-			protocolHandlers = new ProtocolHandlers(protocols);
-		}
-	}
-
-	protected void buildOuterResourceFactory() {
-		// wrap the real (ie main) resource factory to provide well-known support and ajax gateway
-		if (outerResourceFactory == null) {
-			outerResourceFactory = mainResourceFactory; // in case nothing else enabled
-			if (enabledJson) {
-				outerResourceFactory = new JsonResourceFactory(outerResourceFactory, eventManager, propertySources, propPatchSetter, initPropertyAuthoriser());
-				log.info("Enabled json/ajax gatewayw with: " + outerResourceFactory.getClass());
-			}
-			if (enabledCkBrowser) {
-				outerResourceFactory = new FckResourceFactory(outerResourceFactory);
-				log.info("Enabled CK Editor support with: " + outerResourceFactory.getClass());
-			}
-		}
-	}
-
 	public void setEnableExpectContinue(boolean enableExpectContinue) {
 		this.enableExpectContinue = enableExpectContinue;
 	}
@@ -1039,5 +1050,6 @@ public class HttpManagerBuilder {
 	public boolean isEnableExpectContinue() {
 		return enableExpectContinue;
 	}
-		
+
+
 }
