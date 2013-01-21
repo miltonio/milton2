@@ -29,6 +29,7 @@ import io.milton.http.exceptions.NotAuthorizedException;
  *
  * Milton will ensure there are no locks which prevent the delete, however the
  * current user might have the resource locked in which case your implementation
+ * should permit the operation and remove the lock.
  *
  * Usually milton will recursively call delete on all children within a collection
  * being deleted. However you can prevent this my implementing DeletableCollectionResource

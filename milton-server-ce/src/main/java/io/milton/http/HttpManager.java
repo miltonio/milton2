@@ -122,6 +122,9 @@ public class HttpManager {
 	}
 
 	public void process(Request request, Response response) {
+		if( request == null ) {
+			throw new RuntimeException("request is null");					
+		}
 		if (log.isInfoEnabled()) {
 			log.info(request.getMethod() + " :: " + request.getAbsoluteUrl() + " - " + request.getAbsoluteUrl());
 		}

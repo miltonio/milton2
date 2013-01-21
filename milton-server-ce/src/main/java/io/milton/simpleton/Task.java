@@ -53,7 +53,10 @@ public class Task implements Runnable {
 		thisThread = Thread.currentThread();
 		startTime = System.currentTimeMillis();
 		try {
-			httpManager.process(miltonRequest, miltonResponse);
+			httpManager.process(getMiltonRequest(), getMiltonResponse());
+			//response.commit();
+			//response.getOutputStream().flush();
+			miltonResponse.close();
 		} catch (Exception e) {
 			log.error("exception processing request: " + request.getTarget(), e);
 			try {

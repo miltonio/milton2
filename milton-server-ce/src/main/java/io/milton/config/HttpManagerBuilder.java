@@ -177,6 +177,7 @@ public class HttpManagerBuilder {
 				if (mapOfNameAndPasswords == null) {
 					mapOfNameAndPasswords = new HashMap<String, String>();
 					mapOfNameAndPasswords.put(defaultUser, defaultPassword);
+					log.info("Configuring default user and password: " + defaultUser + "/" + defaultPassword);
 				}
 				securityManager = new SimpleSecurityManager(fsRealm, mapOfNameAndPasswords);
 			}
@@ -1051,5 +1052,10 @@ public class HttpManagerBuilder {
 		return enableExpectContinue;
 	}
 
+	public WebDavResponseHandler getOuterWebdavResponseHandler() {
+		return outerWebdavResponseHandler;
+	}
+
+	
 
 }
