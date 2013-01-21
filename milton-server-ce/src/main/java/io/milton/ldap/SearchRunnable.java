@@ -128,7 +128,7 @@ public class SearchRunnable implements Runnable {
 								persons.add(person);
 							}
 						}
-						size = persons.size();
+						size = persons == null ? 0 : persons.size();
 						try {
 							sendPersons(currentMessageId, dn.substring(dn.indexOf(',')), persons, returningAttributes);
 						} catch (NotAuthorizedException ex) {

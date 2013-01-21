@@ -312,7 +312,7 @@ public class CalDavBeanPropertyMapper {
         @Override
         void mapToCard(net.fortuna.ical4j.model.Calendar cal, Object bean, PropertyDescriptor pd) {
             String s = propertyAccessor.get(bean, pd.getReadMethod(), String.class);
-            if (s == null && s.trim().length() == 0) {
+            if (s == null || s.trim().length() == 0) {
                 return;
             }
 
@@ -341,7 +341,7 @@ public class CalDavBeanPropertyMapper {
         void mapToCard(net.fortuna.ical4j.model.Calendar cal, Object bean, PropertyDescriptor pd) {
             VEvent vevent = event(cal);
             String s = propertyAccessor.get(bean, pd.getReadMethod(), String.class);
-            if (s == null && s.trim().length() == 0) {
+            if (s == null || s.trim().length() == 0) {
                 return;
             }
 

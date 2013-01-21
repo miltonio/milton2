@@ -70,7 +70,7 @@ public abstract class AbstractResponse implements Response {
         if (finish > -1) {
             s = "bytes " + start + "-" + finish + "/" + l;
         } else {
-            long wrotetill = totalLength.longValue() - 1;
+            long wrotetill = totalLength == null ? 0 : totalLength.longValue() - 1;
             //The end position starts counting at zero. So subtract 1
             s = "bytes " + start + "-" + wrotetill + "/" + l;
         }
@@ -158,7 +158,7 @@ public abstract class AbstractResponse implements Response {
             }
             sb.append(m);
         }
-        setResponseHeader(Header.ALLOW, sb.toString());
+        setResponseHeader(Header.ALLOW, sb == null ? "" : sb.toString());
     }
 
 	@Override

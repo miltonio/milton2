@@ -37,9 +37,12 @@ public class HostBuilder {
     private Cache<Folder, List<Resource>> cache;
     private int timeoutMillis;
     private FileSyncer fileSyncer;
+    private boolean secure = false;
     
     public Host buildHost() {
-        return new Host(server, rootPath, port, user, password, proxy, timeoutMillis, cache, fileSyncer);
+        Host h = new Host(server, rootPath, port, user, password, proxy, timeoutMillis, cache, fileSyncer);
+        h.setSecure(secure);
+        return h;
     }
 
     /**
@@ -56,6 +59,16 @@ public class HostBuilder {
         this.server = server;
     }
 
+    public void setSecure(boolean secure) {
+        this.secure = secure;
+    }
+
+    public boolean isSecure() {
+        return secure;
+    }
+
+    
+    
     /**
      * @return the port
      */

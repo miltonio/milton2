@@ -180,7 +180,7 @@ update(InputStream in) throws IOException {
 			}
 
 			else if (operation.equals("echo"))
-				print(line.substring(4).trim());
+				print(line == null ? "" : line.substring(4).trim());
 
 			else if (operation.equals("send")) {
 				sendUpdate();

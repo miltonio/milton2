@@ -78,7 +78,7 @@ public class FileUpdater {
             double a = 10;
             int range = 0;
             int blockLength = 0;
-            List<Range> rangeList = null;
+            List<Range> rangeList = new ArrayList<Range>();
             byte[] data = null;
             FileChannel wChannel = null;
 

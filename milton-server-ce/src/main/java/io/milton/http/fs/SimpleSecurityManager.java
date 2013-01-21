@@ -59,12 +59,15 @@ public class SimpleSecurityManager implements io.milton.http.SecurityManager{
 
     public Object getUserByName( String name ) {
         String actualPassword = nameAndPasswords.get( name );
-        if( actualPassword != null ) return name;
+        if( actualPassword != null ) {
+			return name;
+		}
         return null;
     }
 
 
 
+	@Override
     public Object authenticate( String user, String password ) {
         log.debug( "authenticate: " + user + " - " + password);
         // user name will include domain when coming form ftp. we just strip it off
@@ -86,6 +89,7 @@ public class SimpleSecurityManager implements io.milton.http.SecurityManager{
         }
     }
 
+	@Override
     public Object authenticate( DigestResponse digestRequest ) {
 		if( digestGenerator == null ) {
 			throw new RuntimeException("No digest generator is configured");
@@ -103,6 +107,7 @@ public class SimpleSecurityManager implements io.milton.http.SecurityManager{
 
 
 
+	@Override
     public boolean authorise( Request request, Method method, Auth auth, Resource resource ) {
 		if( auth == null ) {
 			log.trace("authorise: declining because there is no auth object");
@@ -118,6 +123,7 @@ public class SimpleSecurityManager implements io.milton.http.SecurityManager{
 		}
     }
 
+	@Override
     public String getRealm(String host) {
         return realm;
     }
@@ -137,6 +143,7 @@ public class SimpleSecurityManager implements io.milton.http.SecurityManager{
 		this.digestGenerator = digestGenerator;
 	}
 	
+	@Override
 	public boolean isDigestAllowed() {
 		return digestGenerator != null;
 	}

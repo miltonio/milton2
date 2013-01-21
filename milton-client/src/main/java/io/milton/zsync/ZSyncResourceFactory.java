@@ -211,7 +211,7 @@ public class ZSyncResourceFactory implements ResourceFactory {
                 }
                 InputStream in = bufOut.getInputStream();
                 try {
-                    metaData = metaFileMaker.make(realPath, blocksize, fileLength, r.getModifiedDate(), in);
+                    metaData = metaFileMaker.make(realPath, blocksize, fileLength == null ? 0 : fileLength.longValue(), r.getModifiedDate(), in);
                 } finally {
                     StreamUtils.close(in);
                 }

@@ -46,12 +46,10 @@ public class StreamUtils {
 	}
 
 	public static long readTo(File inFile, OutputStream out, boolean closeOut) throws ReadingException, WritingException {
-		FileInputStream in = null;
 		try {
-			in = new FileInputStream(inFile);
+		final FileInputStream in = new FileInputStream(inFile);
+		try {
 			return readTo(in, out);
-		} catch (FileNotFoundException ex) {
-			throw new RuntimeException(ex);
 		} finally {
 			try {
 				in.close();
@@ -66,15 +64,16 @@ public class StreamUtils {
 				}
 			}
 		}
+		} catch (FileNotFoundException ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 	public static long readTo(InputStream in, File outFile, boolean closeIn) throws ReadingException, WritingException {
-		FileOutputStream out = null;
 		try {
-			out = new FileOutputStream(outFile);
+		final FileOutputStream out = new FileOutputStream(outFile);
+		try {
 			return readTo(in, out);
-		} catch (FileNotFoundException ex) {
-			throw new RuntimeException(ex);
 		} finally {
 			try {
 				out.close();
@@ -88,6 +87,9 @@ public class StreamUtils {
 					log.error("exception closing inputstream", ex);
 				}
 			}
+		}
+		} catch (FileNotFoundException ex) {
+			throw new RuntimeException(ex);
 		}
 	}
 
