@@ -48,6 +48,7 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
 
     private final static Logger log = LoggerFactory.getLogger(StandardMessageFactoryImpl.class);
 
+    @Override
     public void toStandardMessage(MimeMessage mm, StandardMessage sm) {
         try {
             sm.setFrom(findFromAddress(mm));
@@ -193,6 +194,7 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
     }
 
     protected void fillContent(StandardMessage sm, Part message) throws MessagingException {
+        System.out.println("StandardMessageFactoryImpl - fillContent");
         if (isText(sm)) {
             if (isHtml(sm)) {
                 if (hasAttachments(sm)) {
@@ -270,12 +272,14 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
     }
 
     private void addAttachmentToMime(MimeMultipart multipart, Attachment att) throws MessagingException {
+        System.out.println("StandardMessageFactoryImpl - addAttachmentToMime2 - " + att.getContentId());
         MimeBodyPart bp = new MimeBodyPart();
 
         DataSource fds = new AttachmentReadingDataSource(att);
         bp.setDataHandler(new DataHandler(fds));
         bp.setHeader("Content-ID", att.getContentId());
         bp.setDisposition(att.getDisposition());
+        bp.setFileName(att.getName());
 
         multipart.addBodyPart(bp);
     }
@@ -287,10 +291,14 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
      * @param sm
      */
     private void addAttachmentsToMime(MimeMultipart multipart, StandardMessage sm) throws MessagingException {
+        System.out.println("StandardMessageFactoryImpl - addAttachmentsToMime1");
         if (sm.getAttachments() != null && sm.getAttachments().size() > 0) {
             for (Attachment att : sm.getAttachments()) {
                 if( !isInline(att) ) {
+                    System.out.println("StandardMessageFactoryImpl - addAttachmentToMime1");
                     addAttachmentToMime(multipart, att);
+                } else {
+                    System.out.println("StandardMessageFactoryImpl - is inline so ignore");
                 }
             }
         }
@@ -496,6 +504,7 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
 
     @Override
     public void toMimeMessage(StandardMessage sm, MimeMessage mm) {
+        System.out.println("StandardMessageFactoryImpl - toMimeMessage");
         try {
             //mm.setS
             mm.setFrom(sm.getFrom().toInternetAddress());
@@ -529,6 +538,7 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
 
         @Override
         public InputStream getInputStream() throws IOException {
+            System.out.println("AttachmentReadingDataSource - getInputStream - " + att.getName());
             return att.getInputStream();
         }
 

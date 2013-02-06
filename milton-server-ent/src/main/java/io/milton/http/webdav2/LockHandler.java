@@ -39,26 +39,12 @@ import io.milton.http.exceptions.*;
 import io.milton.http.webdav.PropFindPropertyBuilder;
 import io.milton.http.webdav.WebDavProtocol;
 import io.milton.http.webdav.WebDavResponseHandler;
-import java.io.ByteArrayInputStream;
+import io.milton.webdav.utils.LockUtils;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.security.KeyFactory;
-import java.security.PublicKey;
-import java.security.Signature;
-import java.security.spec.X509EncodedKeySpec;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Properties;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
-import sun.security.provider.MD5;
 
 /**
  * Note that this is both a new entity handler and an existing entity handler
@@ -68,23 +54,14 @@ import sun.security.provider.MD5;
 public class LockHandler implements ResourceHandler {
 
     private static final Logger log = LoggerFactory.getLogger(LockHandler.class);
+            
     private final WebDavResponseHandler responseHandler;
     private final HandlerHelper handlerHelper;
-    private LockWriterHelper lockWriterHelper;
 
     public LockHandler(WebDavResponseHandler responseHandler, HandlerHelper handlerHelper) {
         this.responseHandler = responseHandler;
         this.handlerHelper = handlerHelper;
-        lockWriterHelper = new LockWriterHelper();
-        displayCopyrightNotice();
-    }
-
-    public LockWriterHelper getLockWriterHelper() {
-        return lockWriterHelper;
-    }
-
-    public void setLockWriterHelper(LockWriterHelper lockWriterHelper) {
-        this.lockWriterHelper = lockWriterHelper;
+        LockUtils.init(); 
     }
 
     @Override
@@ -301,14 +278,14 @@ public class LockHandler implements ResourceHandler {
         writer.newLine();
         writer.open(d + ":activelock");
         writer.newLine();
-        lockWriterHelper.appendType(writer, tok.info.type);
-        lockWriterHelper.appendScope(writer, tok.info.scope);
-        lockWriterHelper.appendDepth(writer, tok.info.depth);
-        lockWriterHelper.appendOwner(writer, tok.info.lockedByUser);
-        lockWriterHelper.appendTimeout(writer, tok.timeout.getSeconds());
-        lockWriterHelper.appendTokenId(writer, tok.tokenId);
+        LockUtils.appendType(writer, tok.info.type);
+        LockUtils.appendScope(writer, tok.info.scope);
+        LockUtils.appendDepth(writer, tok.info.depth);
+        LockUtils.appendOwner(writer, tok.info.lockedByUser);
+        LockUtils.appendTimeout(writer, tok.timeout.getSeconds());
+        LockUtils.appendTokenId(writer, tok.tokenId);
         String url = PropFindPropertyBuilder.fixUrlForWindows(request.getAbsoluteUrl());
-        lockWriterHelper.appendRoot(writer, url);
+        LockUtils.appendRoot(writer, url);
         writer.close(d + ":activelock");
         writer.close(d + ":lockdiscovery");
         writer.close(d + ":prop");
@@ -339,139 +316,4 @@ public class LockHandler implements ResourceHandler {
 
     }
 
-    /**
-     * Display information about licensing. Implemented here because this is one
-     * of the few classes in milton which is generally not replaceable.
-     */
-    private void displayCopyrightNotice() {
-        Properties validatedLicenseProps = getValidatedLicenseProperties();
-        System.out.println("Initializing Milton2 Webdav library. Checking for license file...");
-        if (validatedLicenseProps == null) {
-            System.out.println("No license file found. By using this software you are agreeing to the terms of the Affero GPL - http://www.gnu.org/licenses/agpl-3.0.html");
-            System.out.println("For non-FOSS/commercial usage you should obtain a commercial license. Please see http://milton.io/license for details");
-            System.out.println("Copyright McEvoy Software Limited");
-            try {
-                URL url = new URL("http://milton.io/downloads/version.txt");
-                InputStream in = url.openStream();
-                if( in != null ) {
-                    ByteArrayOutputStream bout = new ByteArrayOutputStream();
-                    IOUtils.copy(in, bout);
-                    String latestVersion = bout.toString("UTF-8").trim();
-                    in = LockHandler.class.getResourceAsStream("/META-INF/maven/io.milton/milton-server-ent/pom.properties");
-                    //in = LockHandler.class.getResourceAsStream("/test/pom.properties");
-                    if( in != null ) {
-                        Properties props = new Properties();
-                        props.load(in);
-                        in.close();
-                        String localVersion = props.getProperty("version");
-                        if( localVersion != null ) {
-                            localVersion = localVersion.trim();
-                            if( !localVersion.equals(latestVersion)) {
-                                System.out.println("A new version of Milton2 Webdav has been released: " + latestVersion + " - see http://milton.io/downloads");
-                            } else {
-                                System.out.println("using latest");
-                            }
-                        } else {
-                            System.out.println("no version prop");
-                        }
-                    } else {
-                        System.out.println("no meta information, can't check latest version");
-                    }
-                }
-            } catch (Throwable e) {
-                
-            }
-
-        } else {
-            System.out.println("Milton2 license found:");
-            for (String key : validatedLicenseProps.stringPropertyNames()) {
-                System.out.println(key + ": " + validatedLicenseProps.getProperty(key));
-            }
-        }
-    }
-
-    public static Properties getValidatedLicenseProperties() {
-        try {
-            byte[] licenseBytes;
-            {
-                InputStream in = LockHandler.class.getResourceAsStream("/milton.license.properties");
-                if (in == null) {
-                    return null;
-                }
-                ByteArrayOutputStream bout = new ByteArrayOutputStream();
-                IOUtils.copy(in, bout);
-                licenseBytes = bout.toByteArray();
-            }
-            KeyFactory keyFactory = KeyFactory.getInstance("DSA", "SUN");
-
-            Signature sig;
-            {
-                InputStream in = LockHandler.class.getResourceAsStream("/miltonPublicKey");
-                if (in == null) {
-                    System.out.println("No Milton2 public key file found on the classpath. Expected to find /miltonPublicKey - please contact the licensor at http://milton.io");
-                    return null;
-                }
-                byte[] publicKey = new byte[in.available()];
-                in.read(publicKey);
-                in.close();
-                publicKey = Base64.decodeBase64(publicKey);
-                X509EncodedKeySpec pubKeySpec = new X509EncodedKeySpec(publicKey);
-                PublicKey pub = keyFactory.generatePublic(pubKeySpec);
-
-                sig = Signature.getInstance("SHA1withDSA", "SUN");
-                sig.initVerify(pub);
-            }
-
-            {
-                ByteArrayInputStream bin = new ByteArrayInputStream(licenseBytes);
-                byte[] buffer = new byte[1024];
-                int len;
-                while (bin.available() != 0) {
-                    len = bin.read(buffer);
-                    sig.update(buffer, 0, len);
-                }
-                bin.close();
-            }
-
-            InputStream in = LockHandler.class.getResourceAsStream("/milton.license.sig");
-            if (in == null) {
-                System.out.println("No Milton2 license signature found. Please create a classpath resource /milton.license.sig containg the signature provided, or contact the licensor at http://milton.io");
-                return null;
-            }
-            byte[] sigToVerify = new byte[in.available()];
-            in.read(sigToVerify);
-            in.close();
-            sigToVerify = Base64.decodeBase64(sigToVerify);
-
-            boolean verifies = sig.verify(sigToVerify);
-
-            if (verifies) {
-                Properties props = new Properties();
-                ByteArrayInputStream bin = new ByteArrayInputStream(licenseBytes);
-                props.load(bin);
-
-                if (props.containsKey("Expires")) {
-                    String sExpires = props.getProperty("Expires");
-                    if (sExpires != null && sExpires.trim().length() > 0) {
-                        DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                        Date expiryDate = sdf.parse(sExpires);
-                        Date now = new Date();
-                        if (now.after(expiryDate)) {
-                            System.out.println("WARNING: Your Milton2 license has expired. Please contact the licensor at http://milton.io");
-                            return null;
-                        }
-                    }
-                }
-                return props;
-            } else {
-                System.out.println("Milton2 license signature is not valid for license file. Please check with the licensor at http://milton.io");
-                return null;
-            }
-
-        } catch (Exception e) {
-            System.err.println("Exception checking for milton commercial license: " + e.toString() + " If you have a commercial license please check with the licensor at http://milton.io");
-            e.printStackTrace();
-            return null;
-        }
-    }
 }
