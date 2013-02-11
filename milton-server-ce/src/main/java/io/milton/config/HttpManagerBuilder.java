@@ -296,6 +296,11 @@ public class HttpManagerBuilder {
 			handlerHelper = new HandlerHelper(authenticationService);
 			showLog("handlerHelper", handlerHelper);
 		}
+		if( !enableExpectContinue ) {
+			log.info("ExpectContinue support has been disabled");
+		} else {
+			log.info("ExpectContinue is enabled. This can cause problems on most servlet containers with clients such as CyberDuck");
+		}
 		handlerHelper.setEnableExpectContinue(enableExpectContinue);
 		if (resourceHandlerHelper == null) {
 			resourceHandlerHelper = new ResourceHandlerHelper(handlerHelper, urlAdapter, webdavResponseHandler);
