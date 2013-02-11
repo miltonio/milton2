@@ -30,6 +30,12 @@
             <param-name>milton.configurator</param-name>
             <param-value>com.mycompany.MyMiltonConfigurator</param-value>
         </init-param>
+        
+        <!-- If using DefaultMiltonConfigurator, or a subclass, you can set any bean property of the HttpManagerBuilder here -->
+        <init-param>
+            <param-name>enableExpectContinue</param-name>
+            <param-value>false</param-value>
+        </init-param>        
     </filter>
 
     <filter-mapping>
