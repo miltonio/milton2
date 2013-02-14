@@ -18,11 +18,13 @@
  */
 package io.milton.config;
 
+import io.milton.annotations.ResourceController;
 import io.milton.property.PropertySource;
 import io.milton.common.Stoppable;
 import io.milton.event.EventManager;
 import io.milton.event.EventManagerImpl;
 import io.milton.http.*;
+import io.milton.http.annotated.AnnotationResourceFactory;
 import io.milton.http.entity.DefaultEntityTransport;
 import io.milton.http.entity.EntityTransport;
 import io.milton.http.fck.FckResourceFactory;
@@ -40,6 +42,8 @@ import io.milton.http.values.ValueWriters;
 import io.milton.http.webdav.*;
 import io.milton.property.*;
 import java.io.File;
+import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -97,7 +101,7 @@ public class HttpManagerBuilder {
 	protected ResourceTypeHelper resourceTypeHelper;
 	protected WebDavResponseHandler webdavResponseHandler;
 	// when wrapping a given response handler, this will be a reference to the outer most instance. or same as main response handler when not wrapping
-	protected WebDavResponseHandler outerWebdavResponseHandler; 
+	protected WebDavResponseHandler outerWebdavResponseHandler;
 	protected ContentGenerator contentGenerator = new SimpleContentGenerator();
 	protected CacheControlHelper cacheControlHelper = new DefaultCacheControlHelper();
 	protected HandlerHelper handlerHelper;
@@ -146,7 +150,21 @@ public class HttpManagerBuilder {
 	protected PartialGetHelper partialGetHelper;
 	protected LoginResponseHandler loginResponseHandler;
 	protected LoginResponseHandler.LoginPageTypeHandler loginPageTypeHandler = new LoginResponseHandler.ContentTypeLoginPageTypeHandler();
-	protected boolean enableExpectContinue = true;
+	protected boolean enableExpectContinue = false;
+	protected String controllerPackagesToScan;
+	private Long maxAgeSeconds = 10l;
+
+	protected io.milton.http.SecurityManager securityManager() {
+		if (securityManager == null) {
+			if (mapOfNameAndPasswords == null) {
+				mapOfNameAndPasswords = new HashMap<String, String>();
+				mapOfNameAndPasswords.put(defaultUser, defaultPassword);
+				log.info("Configuring default user and password: " + defaultUser + "/" + defaultPassword + " for SimpleSecurityManager");
+			}
+			securityManager = new SimpleSecurityManager(fsRealm, mapOfNameAndPasswords);
+		}
+		return securityManager;
+	}
 
 	/**
 	 * This method creates instances of required objects which have not been set
@@ -168,21 +186,14 @@ public class HttpManagerBuilder {
 			}
 		}
 
+
 		if (mainResourceFactory == null) {
 			rootDir = new File(System.getProperty("user.home"));
 			if (!rootDir.exists() || !rootDir.isDirectory()) {
 				throw new RuntimeException("Root directory is not valie: " + rootDir.getAbsolutePath());
 			}
-			if (securityManager == null) {
-				if (mapOfNameAndPasswords == null) {
-					mapOfNameAndPasswords = new HashMap<String, String>();
-					mapOfNameAndPasswords.put(defaultUser, defaultPassword);
-					log.info("Configuring default user and password: " + defaultUser + "/" + defaultPassword);
-				}
-				securityManager = new SimpleSecurityManager(fsRealm, mapOfNameAndPasswords);
-			}
 			log.info("Using securityManager: " + securityManager.getClass());
-			FileSystemResourceFactory fsResourceFactory = new FileSystemResourceFactory(rootDir, securityManager, fsContextPath);
+			FileSystemResourceFactory fsResourceFactory = new FileSystemResourceFactory(rootDir, securityManager(), fsContextPath);
 			fsResourceFactory.setContentService(fileContentService);
 			mainResourceFactory = fsResourceFactory;
 			log.info("Using file system with root directory: " + rootDir.getAbsolutePath());
@@ -269,7 +280,7 @@ public class HttpManagerBuilder {
 
 		if (webdavResponseHandler == null) {
 			webdavResponseHandler = new DefaultWebDavResponseHandler(http11ResponseHandler, resourceTypeHelper, propFindXmlGenerator);
-		}		
+		}
 		outerWebdavResponseHandler = webdavResponseHandler;
 		if (enableCompression) {
 			final CompressingResponseHandler compressingResponseHandler = new CompressingResponseHandler(webdavResponseHandler);
@@ -288,6 +299,9 @@ public class HttpManagerBuilder {
 		}
 
 		init(authenticationService, outerWebdavResponseHandler, resourceTypeHelper);
+		initAnnotatedResourceFactory();
+
+		afterInit();
 	}
 
 	private void init(AuthenticationService authenticationService, WebDavResponseHandler webdavResponseHandler, ResourceTypeHelper resourceTypeHelper) {
@@ -296,7 +310,7 @@ public class HttpManagerBuilder {
 			handlerHelper = new HandlerHelper(authenticationService);
 			showLog("handlerHelper", handlerHelper);
 		}
-		if( !enableExpectContinue ) {
+		if (!enableExpectContinue) {
 			log.info("ExpectContinue support has been disabled");
 		} else {
 			log.info("ExpectContinue is enabled. This can cause problems on most servlet containers with clients such as CyberDuck");
@@ -341,6 +355,13 @@ public class HttpManagerBuilder {
 		return httpManager;
 	}
 
+	/**
+	 * Overridable method called after init but before build
+	 *
+	 */
+	protected void afterInit() {
+	}
+
 	protected PropertyAuthoriser initPropertyAuthoriser() {
 		if (propertyAuthoriser == null) {
 			propertyAuthoriser = new DefaultPropertyAuthoriser();
@@ -373,13 +394,12 @@ public class HttpManagerBuilder {
 		}
 		return beanPropertySource;
 	}
-	
 
 	protected DefaultHttp11ResponseHandler createDefaultHttp11ResponseHandler(AuthenticationService authenticationService) {
 		DefaultHttp11ResponseHandler rh = new DefaultHttp11ResponseHandler(authenticationService, eTagGenerator);
 		return rh;
-	}	
-	
+	}
+
 	protected void buildResourceTypeHelper() {
 		WebDavResourceTypeHelper webDavResourceTypeHelper = new WebDavResourceTypeHelper();
 		resourceTypeHelper = webDavResourceTypeHelper;
@@ -443,7 +463,6 @@ public class HttpManagerBuilder {
 			}
 		}
 	}
-	
 
 	public BUFFERING getBuffering() {
 		return buffering;
@@ -1061,6 +1080,59 @@ public class HttpManagerBuilder {
 		return outerWebdavResponseHandler;
 	}
 
-	
+	public String getControllerPackagesToScan() {
+		return controllerPackagesToScan;
+	}
 
+	public void setControllerPackagesToScan(String controllerPackagesToScan) {
+		this.controllerPackagesToScan = controllerPackagesToScan;
+	}
+
+	public Long getMaxAgeSeconds() {
+		return maxAgeSeconds;
+	}
+
+	public void setMaxAgeSeconds(Long maxAgeSeconds) {
+		this.maxAgeSeconds = maxAgeSeconds;
+	}
+
+	private void initAnnotatedResourceFactory() {
+		try {
+			if (getMainResourceFactory() instanceof AnnotationResourceFactory) {
+				AnnotationResourceFactory arf = (AnnotationResourceFactory) getMainResourceFactory();
+				if (arf.getControllers() == null) {
+					List controllers = new ArrayList();
+					if (controllerPackagesToScan != null) {
+						for (String packageName : controllerPackagesToScan.split(",")) {
+							packageName = packageName.trim();
+							List<Class> classes = ReflectionUtils.getClassNamesFromPackage(packageName);
+							for (Class c : classes) {
+								Annotation a = c.getAnnotation(ResourceController.class);
+								if (a != null) {
+									Object controller = c.newInstance();
+									controllers.add(controller);
+								}
+							}
+						}
+					}
+					arf.setControllers(controllers);
+				}
+				if (arf.getMaxAgeSeconds() == null) {
+					arf.setMaxAgeSeconds(maxAgeSeconds);
+				}
+				if (arf.getSecurityManager() == null) {
+					arf.setSecurityManager(securityManager());
+				}
+
+			}
+		} catch (InstantiationException e) {
+			throw new RuntimeException("Exception initialising AnnotationResourceFactory", e);
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException("Exception initialising AnnotationResourceFactory", e);
+		} catch (IOException e) {
+			throw new RuntimeException("Exception initialising AnnotationResourceFactory", e);
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException("Exception initialising AnnotationResourceFactory", e);
+		}
+	}
 }

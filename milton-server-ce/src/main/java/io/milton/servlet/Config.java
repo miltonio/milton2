@@ -25,7 +25,7 @@ import java.util.List;
 import javax.servlet.ServletContext;
 
 /**
- * Provides a common interface for servetl and filter configuration
+ * Provides a common interface for servlet and filter configuration
  *
  * @author brad
  */
@@ -37,6 +37,14 @@ public abstract class Config {
 	
 	protected abstract Enumeration initParamNames();
 
+	public String getContextPath() {
+		ServletContext c = getServletContext().getContext("/");
+		if( c == null || c.getServletContextName() == null || c.getServletContextName().equals("")  || c.getServletContextName().equals("/")) {
+			return "/";
+		}
+		return "/" + c.getServletContextName() + "/";
+	}
+	
     public File getConfigFile(String path) {
         File f = new File( getWebInfDir(), path);
         return f;

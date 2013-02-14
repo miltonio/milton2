@@ -31,3 +31,8 @@
 /examples/eclipse-tut-carddav/target/
 /apps/milton-davproxy-app/target/
 /examples/tutorial-eclipse-1/
+/examples/milton-anno-ref/target/
+/examples/milton-anno-ref/src/main/resources/milton.license.sig
+/examples/milton-anno-ref/src/main/resources/milton.license.properties
+/external/bootstrap/target/
+/examples/milton-anno-bandstand/target/

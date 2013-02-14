@@ -19,6 +19,7 @@ import io.milton.config.HttpManagerBuilder;
 import io.milton.http.*;
 import io.milton.http.acl.ACLProtocol;
 import io.milton.http.acl.AccessControlledResourceTypeHelper;
+import io.milton.http.annotated.AnnotationResourceFactory;
 import io.milton.http.caldav.CalDavProtocol;
 import io.milton.http.caldav.CalendarResourceTypeHelper;
 import io.milton.http.caldav.SupportedCalendarComponentListValueWriter;
@@ -26,6 +27,8 @@ import io.milton.http.caldav.SupportedCalendarComponentListsSetValueWriter;
 import io.milton.http.carddav.AddressBookResourceTypeHelper;
 import io.milton.http.carddav.CardDavProtocol;
 import io.milton.http.fck.FckResourceFactory;
+import io.milton.http.fs.SimpleLockManager;
+import io.milton.http.fs.SimpleSecurityManager;
 import io.milton.http.http11.*;
 import io.milton.http.json.JsonResourceFactory;
 import io.milton.http.webdav.DefaultUserAgentHelper;
@@ -80,7 +83,21 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
     private boolean enableWellKnown = true;
     private WebDavLevel2Protocol webDavLevel2Protocol;
     private boolean webdavLevel2Enabled = true;
+    private LockManager lockManager = new SimpleLockManager();
 
+    @Override
+    protected void afterInit() {
+        super.afterInit();
+        if( getMainResourceFactory() instanceof AnnotationResourceFactory) {
+            AnnotationResourceFactory arf = (AnnotationResourceFactory) getMainResourceFactory();
+            if( arf.getLockManager() == null ) {
+                arf.setLockManager(lockManager);
+            }
+        }
+    }
+
+    
+    
     @Override
     protected void buildOuterResourceFactory() {
         // wrap the real (ie main) resource factory to provide well-known support and ajax gateway
@@ -278,4 +295,20 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
     public void setWebdavLevel2Enabled(boolean webdavLevel2Enabled) {
         this.webdavLevel2Enabled = webdavLevel2Enabled;
     }
+
+    /**
+     * Only required for AnnotationResourceFactory
+     * 
+     * @return 
+     */
+    public LockManager getLockManager() {
+        return lockManager;
+    }
+
+    public void setLockManager(LockManager lockManager) {
+        this.lockManager = lockManager;
+    }
+
+    
+    
 }

@@ -67,7 +67,7 @@ public class MiltonFilter implements javax.servlet.Filter {
 			}
 
 			httpManager = configurator.configure(this.config);
-
+						
 		} catch (ServletException ex) {
 			log.error("Exception starting milton servlet", ex);
 			throw ex;

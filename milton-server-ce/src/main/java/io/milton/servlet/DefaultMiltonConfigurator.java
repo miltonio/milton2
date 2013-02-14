@@ -23,6 +23,7 @@ import io.milton.http.AuthenticationHandler;
 import io.milton.http.Filter;
 import io.milton.http.HttpManager;
 import io.milton.http.ResourceFactory;
+import io.milton.http.annotated.AnnotationResourceFactory;
 import io.milton.http.webdav.WebDavResponseHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -74,16 +75,16 @@ public class DefaultMiltonConfigurator implements MiltonConfigurator {
 	public HttpManager configure(Config config) throws ServletException {
 
 		log.info("Listing all config parameters:");
-		Map<String,String> props = new HashMap<String, String>();
+		Map<String, String> props = new HashMap<String, String>();
 		for (String s : config.getInitParameterNames()) {
 			String val = config.getInitParameter(s);
 			log.info(" " + s + " = " + val);
-			if( !s.contains(".") && !s.contains("_")) {
+			if (!s.contains(".") && !s.contains("_")) {
 				props.put(s, val);
 			}
 		}
 
-		
+
 		String authHandlers = config.getInitParameter("authenticationHandlers");
 		if (authHandlers != null) {
 			props.remove("authenticationHandlers"); // so the bub doesnt try to set it
@@ -96,7 +97,7 @@ public class DefaultMiltonConfigurator implements MiltonConfigurator {
 		} else {
 			log.warn("No custom ResourceFactory class name provided in resource.factory.class");
 		}
-				
+
 		String responseHandlerClassName = config.getInitParameter("response.handler.class");
 		if (responseHandlerClassName != null) {
 			WebDavResponseHandler davResponseHandler = instantiate(responseHandlerClassName);
@@ -117,7 +118,7 @@ public class DefaultMiltonConfigurator implements MiltonConfigurator {
 		if (filters != null) {
 			builder.setFilters(filters);
 		}
-		
+
 		try {
 			ConvertUtilsBean2 convertUtilsBean = new ConvertUtilsBean2();
 			BeanUtilsBean bub = new BeanUtilsBean(convertUtilsBean);
@@ -126,8 +127,15 @@ public class DefaultMiltonConfigurator implements MiltonConfigurator {
 			throw new ServletException(e);
 		} catch (InvocationTargetException e) {
 			throw new ServletException(e);
-		}		
-		
+		}
+
+		ResourceFactory rf = builder.getMainResourceFactory();
+		if (rf instanceof AnnotationResourceFactory) {
+			AnnotationResourceFactory arf = (AnnotationResourceFactory) rf;
+			arf.setContextPath(config.getContextPath());
+		}
+
+
 		build();
 		initables = new ArrayList<Initable>();
 
