@@ -15,12 +15,14 @@
 package io.milton.http.annotated;
 
 import io.milton.annotations.Name;
+import org.apache.commons.beanutils.PropertyUtils;
 
 /**
  *
  * @author brad
  */
 public class NameAnnotationHandler extends AbstractAnnotationHandler {
+
 	private final AnnotationResourceFactory outer;
 
 	public NameAnnotationHandler(final AnnotationResourceFactory outer) {
@@ -29,15 +31,24 @@ public class NameAnnotationHandler extends AbstractAnnotationHandler {
 	}
 
 	public String execute(Object source) {
-		ControllerMethod cm = getMethod(source.getClass());
-		if (cm == null) {
-			throw new RuntimeException("Method not found: " + getClass() + " - " + source.getClass());
-		}
 		try {
+			ControllerMethod cm = getBestMethod(source.getClass());
+			if (cm == null) {
+				if (PropertyUtils.isReadable(source, "name")) {
+					Object oName = PropertyUtils.getProperty(source, "name");
+					if( oName !=null ) {
+						if( oName instanceof String) {
+							String s = (String) oName;
+							return s;
+						}
+					}
+				}
+				throw new RuntimeException("Method not found: " + getClass() + " - " + source.getClass());
+			}
+
 			return (String) cm.method.invoke(cm.controller, source);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
-    
 }

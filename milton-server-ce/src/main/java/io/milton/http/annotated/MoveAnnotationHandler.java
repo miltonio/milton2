@@ -36,8 +36,8 @@ public class MoveAnnotationHandler extends AbstractAnnotationHandler {
 	}
 
 	void execute(Object source, CollectionResource rDest, String newName) {
-		log.trace("execute MKCOL method");
-		ControllerMethod cm = getMethod(source.getClass());
+		log.trace("execute MOVE method");
+		ControllerMethod cm = getBestMethod(source.getClass());
 		if (cm == null) {
 			throw new RuntimeException("Method not found: " + getClass() + " - " + source.getClass());
 		}

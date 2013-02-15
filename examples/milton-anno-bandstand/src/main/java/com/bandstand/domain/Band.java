@@ -14,8 +14,12 @@
  */
 package com.bandstand.domain;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import javax.persistence.*;
+import org.hibernate.Criteria;
+import org.hibernate.Session;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -24,54 +28,47 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
  * @author brad
  */
 @javax.persistence.Entity
-@Table(name = "GROUP_ENTITY")
+@DiscriminatorValue("B")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class Band {
+public class Band extends BaseEntity {
     
-    private long id;
-    private String name;
-    private Date createdDate;
-    private Date modifiedDate;
+    public static List<Band> findAll(Session session) {
+        Criteria crit = session.createCriteria(Band.class);
+        return DbUtils.toList(crit, Band.class);
+    }       
+        
+    private List<Song> songs;
+    private List<BandMember> bandMembers;
     
     
-    @Id
-    @GeneratedValue
-    public long getId() {
-        return id;
+    @OneToMany(mappedBy = "band")
+    public List<BandMember> getBandMembers() {
+        return bandMembers;
     }
 
-    public void setId(long id) {
-        this.id = id;
-    }    
-    
-
-    @Column(nullable = false)
-    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
-    public Date getCreatedDate() {
-        return createdDate;
+    public void setBandMembers(List<BandMember> bandMembers) {
+        this.bandMembers = bandMembers;
     }
 
-    public void setCreatedDate(Date createdDate) {
-        this.createdDate = createdDate;
+    @OneToMany(mappedBy = "band")
+    public List<Song> getSongs() {
+        return songs;
     }
 
-    @Column(nullable = false)
-    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
-    public Date getModifiedDate() {
-        return modifiedDate;
+    public void setSongs(List<Song> songs) {
+        this.songs = songs;
     }
 
-    public void setModifiedDate(Date modifiedDate) {
-        this.modifiedDate = modifiedDate;
-    }
-    
-    @Column(nullable = false)
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public BandMember addMember(Musician m, Session session) {
+        if( getBandMembers() == null ) {
+            setBandMembers(new ArrayList<BandMember>());
+        }
+        BandMember bm = new BandMember();
+        bm.setBand(this);
+        bm.setMusician(m);
+        getBandMembers().add(bm);
+        session.save(bm);
+        return bm;
     }
     
 }

@@ -36,13 +36,17 @@ public class MakeCollectionAnnotationHandler extends AbstractAnnotationHandler {
 
 	public Object execute(Object source, String newName) {
 		log.trace("execute MKCOL method");
-		ControllerMethod cm = getMethod(source.getClass());
+		ControllerMethod cm = getBestMethod(source.getClass());
 		if (cm == null) {
 			throw new RuntimeException("Method not found: " + getClass() + " - " + source.getClass());
 		}
 		try {
 			Object[] args = outer.buildInvokeArgs(source, cm.method, newName);
-			return cm.method.invoke(cm.controller, args);
+			Object o = cm.method.invoke(cm.controller, args);
+			if( o == null ) {
+				throw new RuntimeException("Method returned null object or void: " + cm.controller.getClass() + "::" + cm.method.getName() + " - should return newly created object");
+			}
+			return o;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

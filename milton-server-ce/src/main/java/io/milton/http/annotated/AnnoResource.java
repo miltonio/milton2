@@ -42,11 +42,15 @@ import java.util.Map;
  * @author brad
  */
 public abstract class AnnoResource implements GetableResource, PropFindableResource, DeletableResource, CopyableResource, MoveableResource, ConditionalCompatibleResource, CommonResource, DigestResource {
+
 	protected Object source;
 	protected final AnnotationResourceFactory annoFactory;
 	protected AnnoCollectionResource parent;
 
 	public AnnoResource(final AnnotationResourceFactory outer, Object source, AnnoCollectionResource parent) {
+		if (source == null) {
+			throw new RuntimeException("Source object is required");
+		}
 		this.annoFactory = outer;
 		this.source = source;
 		this.parent = parent;
@@ -71,7 +75,7 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 	public Object authenticate(DigestResponse digestRequest) {
 		return annoFactory.getSecurityManager().authenticate(digestRequest);
 	}
-		
+
 	@Override
 	public boolean authorise(Request request, Method method, Auth auth) {
 		return annoFactory.getSecurityManager().authorise(request, method, auth, this);
@@ -99,15 +103,25 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 
 	@Override
 	public boolean isCompatible(Method m) {
-		if( Method.PROPFIND.equals(m)) {
+		if (Method.PROPFIND.equals(m)) {
 			return true;
 		}
 		return annoFactory.isCompatible(source, m);
 	}
-    
+
 	@Override
 	public boolean is(String type) {
-		return false; // TODO
+
+		if (matchesType(source.getClass(), type)) {
+			return true;
+		}
+		for (Class c : source.getClass().getClasses()) {
+			if (matchesType(c, type)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	@Override
@@ -134,12 +148,12 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 
 	@Override
 	public void copyTo(CollectionResource toCollection, String name) throws NotAuthorizedException, BadRequestException, ConflictException {
-		annoFactory.copyAnnotationHandler.execute(source, toCollection, name); 
-	}	
-	
+		annoFactory.copyAnnotationHandler.execute(source, toCollection, name);
+	}
+
 	@Override
 	public void sendContent(OutputStream out, Range range, Map<String, String> params, String contentType) throws IOException, NotAuthorizedException, BadRequestException, NotFoundException {
-		annoFactory.getAnnotationHandler.execute(source, out, range, params, contentType);
+		annoFactory.getAnnotationHandler.execute(this, source, out, range, params, contentType);
 	}
 
 	@Override
@@ -155,13 +169,42 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 	@Override
 	public Long getContentLength() {
 		return annoFactory.contentLengthAnnotationHandler.execute(source);
-	}	
+	}
 
 	@Override
 	public boolean isDigestAllowed() {
 		return annoFactory.getSecurityManager().isDigestAllowed();
 	}
+
+	public ResourceList getAsList() {
+		ResourceList l = new ResourceList();
+		l.add(this);
+		return l;
+	}
+
+	private boolean matchesType(Class c, String type) {
+		String name = c.getCanonicalName();
+		int pos = name.lastIndexOf(".");
+		name = name.substring(pos);
+		if (name.equalsIgnoreCase(type)) {
+			return true;
+		}
+		return false;
+	}
 	
+	public String getHref() {
+		if( parent == null ) {
+			return "/";
+		} else {
+			String s = parent.getHref() + getName();
+			if( this instanceof CollectionResource ) {
+				s += "/";
+			}
+			return s;
+		}
+	}
 	
-	
+	public String getLink() {
+		return "<a href=\"" + getHref() + "\">" + getName() + "</a>";
+	}
 }

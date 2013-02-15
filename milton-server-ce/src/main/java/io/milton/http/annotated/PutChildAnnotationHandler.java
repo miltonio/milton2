@@ -25,9 +25,8 @@ import org.slf4j.LoggerFactory;
  * @author brad
  */
 public class PutChildAnnotationHandler extends AbstractAnnotationHandler {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(PutChildAnnotationHandler.class);
-	
 	private final AnnotationResourceFactory outer;
 
 	public PutChildAnnotationHandler(final AnnotationResourceFactory outer) {
@@ -37,8 +36,16 @@ public class PutChildAnnotationHandler extends AbstractAnnotationHandler {
 
 	public Object execute(Object source, String newName, InputStream inputStream, Long length, String contentType) {
 		log.trace("execute PUT method");
-		ControllerMethod cm = getMethod(source.getClass());
-		if (cm == null) {
+		ControllerMethod cm = getBestMethod(source.getClass());
+		if (cm == null) {			
+			if (controllerMethods.isEmpty()) {
+				log.info("Method not found for source: " + source.getClass() + " No methods registered for " + PutChild.class);
+			} else {
+				log.info("Method not found for source " + source.getClass() + " Listing methods registered for " + PutChild.class + " :");
+				for (ControllerMethod cmm : controllerMethods) {
+					System.out.println("	- " + cmm);
+				}
+			}
 			throw new RuntimeException("Method not found: " + getClass() + " - " + source.getClass());
 		}
 		try {
@@ -50,5 +57,4 @@ public class PutChildAnnotationHandler extends AbstractAnnotationHandler {
 			throw new RuntimeException(e);
 		}
 	}
-    
 }

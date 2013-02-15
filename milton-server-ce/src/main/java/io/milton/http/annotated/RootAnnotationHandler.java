@@ -57,7 +57,7 @@ public class RootAnnotationHandler implements AnnotationHandler {
 		for (java.lang.reflect.Method m : controller.getClass().getMethods()) {
 			Root a = m.getAnnotation(Root.class);
 			if (a != null) {
-				ControllerMethod cm = new ControllerMethod(controller, m);
+				ControllerMethod cm = new ControllerMethod(controller, m, null);
 				controllerMethods.add(cm);
 			}
 		}

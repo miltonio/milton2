@@ -16,13 +16,17 @@ package io.milton.http.annotated;
 
 import io.milton.annotations.ChildrenOf;
 import io.milton.http.Request.Method;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  *
  * @author brad
  */
 public class ChildrenOfAnnotationHandler extends AbstractAnnotationHandler {
+
 	private final AnnotationResourceFactory outer;
 
 	public ChildrenOfAnnotationHandler(final AnnotationResourceFactory outer) {
@@ -30,18 +34,29 @@ public class ChildrenOfAnnotationHandler extends AbstractAnnotationHandler {
 		this.outer = outer;
 	}
 
-	public List execute(Object source) {
-		ControllerMethod cm = getMethod(source.getClass());
-		if (cm == null) {
-			throw new RuntimeException("Method not found: " + getClass() + " - " + source.getClass());
+	public Set execute(Object source) {
+		Set result = new HashSet();
+		for (ControllerMethod cm : getMethods(source.getClass())) {
+			try {
+				Object o = cm.method.invoke(cm.controller, source);
+				if( o == null ) {
+					// ignore
+				} else if( o instanceof Collection ) {
+					Collection l = (Collection)o;
+					result.addAll(l);
+				} else if( o.getClass().isArray()) {
+					Object[] arr = (Object[]) o;
+					for( Object item : arr) {
+						result.add(item);
+					}
+				} else {
+					result.add(o);
+				}
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+
 		}
-		try {
-			return (List) cm.method.invoke(cm.controller, source); // TODO: other args like request, response, etc
-			// TODO: other args like request, response, etc
-			// TODO: other args like request, response, etc
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+		return result;
 	}
-    
 }

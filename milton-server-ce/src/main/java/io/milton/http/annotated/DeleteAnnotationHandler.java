@@ -36,7 +36,7 @@ public class DeleteAnnotationHandler extends AbstractAnnotationHandler {
 
 	void execute(Object source) {
 		log.trace("execute DELETE method");
-		ControllerMethod cm = getMethod(source.getClass());
+		ControllerMethod cm = getBestMethod(source.getClass());
 		if (cm == null) {
 			throw new RuntimeException("Method not found: " + getClass() + " - " + source.getClass());
 		}

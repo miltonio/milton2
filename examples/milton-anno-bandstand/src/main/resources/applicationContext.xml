@@ -28,10 +28,29 @@
     <bean id="open.session.in.view.filter" class="com.bandstand.web.MiltonOpenSessionInViewFilter">
         <constructor-arg ref="session.manager"/>
     </bean>
-    
+
+
+    <bean id="resource.factory" class="io.milton.http.annotated.AnnotationResourceFactory">
+        <property name="controllers">
+            <list>
+                <bean class="com.bandstand.web.BandsController" /> 
+                <bean class="com.bandstand.web.RootController" /> 
+                <bean class="com.bandstand.web.MusiciansController" /> 
+                <bean class="com.bandstand.web.ImagesController" /> 
+            </list>
+        </property>
+        <property name="viewResolver">
+            <bean class="io.milton.http.template.JspViewResolver">
+                <constructor-arg ref="servletContext"/>
+                <property name="basePath" value="/templates/themes/bootstrap/" />
+            </bean> 
+        </property>
+    </bean>
 
     <bean id="milton.http.manager" class="io.milton.ent.config.HttpManagerBuilderEnt"> <!-- Note enterprise version. Only available for AGPL + Commercial users of milton -->
         <property name="mainResourceFactory" ref="resource.factory" /> 
+        <property name="enableCompression" value="false"/>
+        <property name="buffering" value="never"/>
         <property name="filters">
             <list>
                 <ref local="open.session.in.view.filter" />

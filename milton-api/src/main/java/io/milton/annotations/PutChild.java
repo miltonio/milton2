@@ -21,6 +21,25 @@ import java.lang.annotation.Target;
 
 /**
  * Marks a method as one which creates a child resource containing the given content
+ * 
+ * Return type - Must return the created pojo object
+ * 
+ * Parameters:
+ *  - first arg must be the parent of the item to create
+ *  - items following that may include (in preferential order)
+ *      - newName
+ *      - inputStream or byte[]
+ *      - contentType
+ *      - content length as Long
+ * 
+ * Example:
+ *     @PutChild
+    public MyDatabase.FileContentItem createFile(MyDatabase.FolderContentItem parent, String name, byte[] bytes) {
+        FileContentItem file = parent.addFile(name);
+        file.setBytes(bytes);
+        return file;
+    }
+    
  *
  * @author brad
  */

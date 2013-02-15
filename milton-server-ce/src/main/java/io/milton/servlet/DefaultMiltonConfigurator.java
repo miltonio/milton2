@@ -24,6 +24,8 @@ import io.milton.http.Filter;
 import io.milton.http.HttpManager;
 import io.milton.http.ResourceFactory;
 import io.milton.http.annotated.AnnotationResourceFactory;
+import io.milton.http.template.JspViewResolver;
+import io.milton.http.template.ViewResolver;
 import io.milton.http.webdav.WebDavResponseHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -133,6 +135,11 @@ public class DefaultMiltonConfigurator implements MiltonConfigurator {
 		if (rf instanceof AnnotationResourceFactory) {
 			AnnotationResourceFactory arf = (AnnotationResourceFactory) rf;
 			arf.setContextPath(config.getContextPath());
+			if (arf.getViewResolver() == null) {
+				ViewResolver viewResolver = new JspViewResolver(config.getServletContext());
+				arf.setViewResolver(viewResolver);
+			}
+
 		}
 
 

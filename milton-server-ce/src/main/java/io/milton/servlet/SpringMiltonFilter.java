@@ -21,7 +21,11 @@ package io.milton.servlet;
 import io.milton.config.HttpManagerBuilder;
 import io.milton.http.HttpManager;
 import io.milton.http.Request;
+import io.milton.http.ResourceFactory;
 import io.milton.http.Response;
+import io.milton.http.annotated.AnnotationResourceFactory;
+import io.milton.http.template.JspViewResolver;
+import io.milton.http.template.ViewResolver;
 import io.milton.mail.MailServer;
 import io.milton.mail.MailServerBuilder;
 import java.io.File;
@@ -86,20 +90,31 @@ public class SpringMiltonFilter implements javax.servlet.Filter {
 		parent.getBeanFactory().registerSingleton("webRoot", webRoot);
 		log.info("Registered root webapp path in: webroot=" + webRoot.getAbsolutePath());
 		parent.refresh();
-		context = new ClassPathXmlApplicationContext(new String[]{"applicationContext.xml"}, parent);
-		Object milton = context.getBean("milton.http.manager");
-		if (milton instanceof HttpManager) {
-			this.httpManager = (HttpManager) milton;
-		} else if (milton instanceof HttpManagerBuilder) {
-			HttpManagerBuilder builder = (HttpManagerBuilder) milton;
-			this.httpManager = builder.buildHttpManager();
-		}
+		
 		this.filterConfig = fc;
 		servletContext = fc.getServletContext();
 		System.out.println("servletContext: " + servletContext.getClass());
 		String sExcludePaths = fc.getInitParameter("milton.exclude.paths");
 		log.info("init: exclude paths: " + sExcludePaths);
 		excludeMiltonPaths = sExcludePaths.split(",");
+		
+		
+		context = new ClassPathXmlApplicationContext(new String[]{"applicationContext.xml"}, parent);
+		Object milton = context.getBean("milton.http.manager");
+		if (milton instanceof HttpManager) {
+			this.httpManager = (HttpManager) milton;
+		} else if (milton instanceof HttpManagerBuilder) {
+			HttpManagerBuilder builder = (HttpManagerBuilder) milton;
+			ResourceFactory rf = builder.getMainResourceFactory();
+			if (rf instanceof AnnotationResourceFactory) {
+				AnnotationResourceFactory arf = (AnnotationResourceFactory) rf;
+				if (arf.getViewResolver() == null) {
+					ViewResolver viewResolver = new JspViewResolver(servletContext);
+					arf.setViewResolver(viewResolver);
+				}
+			}
+			this.httpManager = builder.buildHttpManager();
+		}
 
 		// init mail server
 

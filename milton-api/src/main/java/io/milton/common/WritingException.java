@@ -28,4 +28,9 @@ public class WritingException extends IOException{
     public WritingException(IOException cause) {
         super(cause.getMessage());
     }
+
+    public WritingException(String message, Throwable cause) {
+        super(message, cause);
+    }
+           
 }

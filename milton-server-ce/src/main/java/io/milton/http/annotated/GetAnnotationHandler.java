@@ -15,10 +15,15 @@
 package io.milton.http.annotated;
 
 import io.milton.annotations.Get;
+import io.milton.common.ModelAndView;
+import io.milton.common.StreamUtils;
 import io.milton.http.Range;
 import io.milton.http.Request.Method;
+import io.milton.http.template.TemplateProcessor;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,17 +34,16 @@ import org.slf4j.LoggerFactory;
 public class GetAnnotationHandler extends AbstractAnnotationHandler {
 	
 	private static final Logger log = LoggerFactory.getLogger(GetAnnotationHandler.class);
-	
 	private final AnnotationResourceFactory outer;
-
+	
 	public GetAnnotationHandler(final AnnotationResourceFactory outer) {
 		super(Get.class, Method.GET);
 		this.outer = outer;
 	}
-
-	public void execute(Object source, OutputStream out, Range range, Map<String, String> params, String contentType) {
+	
+	public void execute(AnnoResource resource, Object source, OutputStream out, Range range, Map<String, String> params, String contentType) {
 		log.trace("execute GET method");
-		ControllerMethod cm = getMethod(source.getClass());
+		ControllerMethod cm = getBestMethod(source.getClass());
 		if (cm == null) {
 			throw new RuntimeException("Method not found: " + getClass() + " - " + source.getClass());
 		}
@@ -50,21 +54,38 @@ public class GetAnnotationHandler extends AbstractAnnotationHandler {
 			// TODO: other args like request, response, etc
 			if (result != null) {
 				log.trace("method returned a value, so write it to output");
-				byte[] bytes;
 				if (result instanceof String) {
-					// todo: templating
-					throw new RuntimeException("String return type not yet supported. Use byte[] instead");
+					ModelAndView modelAndView = new ModelAndView("resource", source, result.toString());
+					processTemplate(modelAndView, resource, out);
+				} else if (result instanceof InputStream) {
+					InputStream contentIn = (InputStream) result;
+					if (range != null) {
+						StreamUtils.readTo(contentIn, out, true, false, range.getStart(), range.getFinish());
+					} else {
+						try {
+							IOUtils.copy(contentIn, out);
+						} finally {
+							IOUtils.closeQuietly(contentIn);
+						}
+					}
 				} else if (result instanceof byte[]) {
-					bytes = (byte[]) result;
+					byte[] bytes = (byte[]) result;
+					out.write(bytes);
+				} else if (result instanceof ModelAndView) {
+					processTemplate((ModelAndView) result, resource, out);
 				} else {
 					throw new RuntimeException("Unsupported return type from method: " + cm.method.getName() + " in " + cm.controller.getClass() + " should return String or byte[]");
 				}
-				out.write(bytes);
 			}
 			out.flush();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
-    
+	
+	private void processTemplate(ModelAndView modelAndView,AnnoResource resource, OutputStream out) {
+		TemplateProcessor templateProc = outer.getViewResolver().resolveView(modelAndView.getView());
+		modelAndView.getModel().put("page", resource);
+		templateProc.execute(modelAndView.getModel(), out);
+	}
 }

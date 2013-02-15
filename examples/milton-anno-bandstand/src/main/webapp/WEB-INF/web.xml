@@ -10,7 +10,7 @@
         <filter-class>io.milton.servlet.SpringMiltonFilter</filter-class>
         <init-param>
             <param-name>milton.exclude.paths</param-name>	
-            <param-value>/static</param-value>
+            <param-value>/static,/templates</param-value>
         </init-param>
     </filter>
     

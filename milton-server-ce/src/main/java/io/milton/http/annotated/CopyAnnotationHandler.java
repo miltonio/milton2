@@ -37,7 +37,7 @@ public class CopyAnnotationHandler extends AbstractAnnotationHandler {
 
 	void execute(Object source, CollectionResource rDest, String newName) {
 		log.trace("execute COPY method");
-		ControllerMethod cm = getMethod(source.getClass());
+		ControllerMethod cm = getBestMethod(source.getClass());
 		if (cm == null) {
 			throw new RuntimeException("Method not found: " + getClass() + " - " + source.getClass());
 		}

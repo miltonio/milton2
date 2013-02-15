@@ -42,7 +42,7 @@
 
     <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
         <property name="dataSource" ref="dataSource" />
-        <property name="packagesToScan" value="io.milton.vfs.db,io.milton.cloud.server.db,com.fuselms.db" />
+        <property name="packagesToScan" value="io.milton.vfs.db,com.bandstand.domain" />
         <property name="hibernateProperties">
             <props>
                 <prop key="hibernate.dialect">${hibernate.dialect}</prop>

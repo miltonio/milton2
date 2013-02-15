@@ -18,10 +18,24 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.List;
 
 /**
  * Marks a method as one which locates children for the given parent. The parent
  * will always be the first method argument
+ * 
+ * There may be multiple matching childrenOf methods for a given parent object,
+ * in which case all of the results are merged into a single set
+ * 
+ * The method must
+ *  - return a collection, or array, or a single pojo object which has appropriate controllers
+ *  - the first argument must be the hierachial parent of these objects
+ * 
+ * Example:
+ *  @ChildrenOf
+    public List<Band> getBands(BandsController root) {
+        return Band.findAll(SessionManager.session());
+    }
  *
  * @author brad
  */

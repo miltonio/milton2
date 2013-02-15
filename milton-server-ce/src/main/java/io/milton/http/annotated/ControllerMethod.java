@@ -19,12 +19,23 @@ package io.milton.http.annotated;
  * @author brad
  */
 class ControllerMethod {
+
 	final Object controller;
 	final java.lang.reflect.Method method;
+	final Class sourceType;
 
-	public ControllerMethod(Object controller, java.lang.reflect.Method method) {
+	public ControllerMethod(Object controller, java.lang.reflect.Method method, Class sourceType) {
 		this.controller = controller;
 		this.method = method;
+		this.sourceType = sourceType;
 	}
-    
+
+	@Override
+	public String toString() {
+		if (sourceType != null) {
+			return controller.getClass() + "::" + method.getName() + " ( " + sourceType.getCanonicalName() + " )";
+		} else {
+			return controller.getClass() + "::" + method.getName();
+		}
+	}
 }

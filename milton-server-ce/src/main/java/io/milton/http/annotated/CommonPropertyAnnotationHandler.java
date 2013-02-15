@@ -32,7 +32,7 @@ public class CommonPropertyAnnotationHandler<T> extends AbstractAnnotationHandle
 
 	public T execute(Object source) {
 		try {
-			ControllerMethod cm = getMethod(source.getClass());
+			ControllerMethod cm = getBestMethod(source.getClass());
 			if (cm == null) {
 				// look for an annotation on the source itself
 				java.lang.reflect.Method m = outer.findMethodForAnno(source.getClass(), annoClass);

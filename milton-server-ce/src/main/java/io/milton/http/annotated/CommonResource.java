@@ -21,5 +21,6 @@ import io.milton.resource.Resource;
  * @author brad
  */
 public interface CommonResource extends Resource{
-	public boolean is(String type);
+	boolean is(String type);
+	CommonResource getParent();
 }

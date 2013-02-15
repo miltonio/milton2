@@ -21,6 +21,18 @@ import java.lang.annotation.Target;
 
 /**
  * Marks a method as one which creates a collection within the resource given
+ * 
+ * The method must 
+ *  - return the created object.
+ *  - first param is the hierarchy parent objet (ie object which represents the parent folder)
+ *  - the second param must be the name for the new object
+ *  - other params are standard options such as request and response
+ * 
+ * Eg
+ * 
+ *     @MakeCollection
+    public Band createBand(BandsController root, String newName) {
+
  *
  * @author brad
  */

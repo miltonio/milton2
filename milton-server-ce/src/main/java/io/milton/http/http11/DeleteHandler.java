@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.milton.http.http11;
 
 import io.milton.http.ExistingEntityHandler;
@@ -41,66 +40,72 @@ import io.milton.http.exceptions.NotAuthorizedException;
 
 public class DeleteHandler implements ExistingEntityHandler {
 
-    private Logger log = LoggerFactory.getLogger(DeleteHandler.class);
-    private final Http11ResponseHandler responseHandler;
-    private final ResourceHandlerHelper resourceHandlerHelper;
-    private DeleteHelper deleteHelper;
+	private Logger log = LoggerFactory.getLogger(DeleteHandler.class);
+	private final Http11ResponseHandler responseHandler;
+	private final ResourceHandlerHelper resourceHandlerHelper;
+	private DeleteHelper deleteHelper;
 
-    public DeleteHandler(Http11ResponseHandler responseHandler,  ResourceHandlerHelper resourceHandlerHelper, HandlerHelper handlerHelper) {
-        this.responseHandler = responseHandler;
-        this.resourceHandlerHelper = resourceHandlerHelper;
-        deleteHelper = new DeleteHelperImpl(handlerHelper);
-    }
-
-	@Override
-    public String[] getMethods() {
-        return new String[]{Method.DELETE.code};
-    }
-
-    @Override
-    public boolean isCompatible(Resource handler) {
-        return (handler instanceof DeletableResource);
-    }
-
-    @Override
-    public void process(HttpManager manager, Request request, Response response) throws NotAuthorizedException, ConflictException, BadRequestException {
-        String url = request.getAbsoluteUrl();
-        if( url.contains("#")) {
-            // See http://www.ettrema.com:8080/browse/MIL-88
-            // Litmus test thinks this is unsafe
-            throw new BadRequestException(null, "Can't delete a resource with a # in the url");
-        }
-        resourceHandlerHelper.process(manager, request, response, this);
-    }
+	public DeleteHandler(Http11ResponseHandler responseHandler, ResourceHandlerHelper resourceHandlerHelper, HandlerHelper handlerHelper) {
+		this.responseHandler = responseHandler;
+		this.resourceHandlerHelper = resourceHandlerHelper;
+		deleteHelper = new DeleteHelperImpl(handlerHelper);
+	}
 
 	@Override
-    public void processResource(HttpManager manager, Request request, Response response, Resource r) throws NotAuthorizedException, ConflictException, BadRequestException {
-        resourceHandlerHelper.processResource(manager, request, response, r, this);
-    }
+	public String[] getMethods() {
+		return new String[]{Method.DELETE.code};
+	}
 
 	@Override
-    public void processExistingResource(HttpManager manager, Request request, Response response, Resource resource) throws NotAuthorizedException, BadRequestException, ConflictException {
-        log.debug("DELETE: " + request.getAbsoluteUrl());
+	public boolean isCompatible(Resource handler) {
+		return (handler instanceof DeletableResource);
+	}
 
-        DeletableResource r = (DeletableResource) resource;
+	@Override
+	public void process(HttpManager manager, Request request, Response response) throws NotAuthorizedException, ConflictException, BadRequestException {
+		String url = request.getAbsoluteUrl();
+		if (url.contains("#")) {
+			// See http://www.ettrema.com:8080/browse/MIL-88
+			// Litmus test thinks this is unsafe
+			throw new BadRequestException(null, "Can't delete a resource with a # in the url");
+		}
+		resourceHandlerHelper.process(manager, request, response, this);
+	}
 
-        if (deleteHelper.isLockedOut(request, r)) {
-            log.info("Could not delete. Is locked");
-            responseHandler.respondDeleteFailed(request, response, r, Status.SC_LOCKED);
-            return;
-        }
+	@Override
+	public void processResource(HttpManager manager, Request request, Response response, Resource r) throws NotAuthorizedException, ConflictException, BadRequestException {
+		if (resourceHandlerHelper.isNotCompatible(r, request.getMethod()) ) {
+			log.debug("resource not compatible. Resource class: " + r.getClass() + " handler: " + getClass());
+			responseHandler.respondMethodNotImplemented(r, response, request);
+			return;
+		}
 
-        deleteHelper.delete(r, manager.getEventManager());
-        log.debug("deleted ok");
-        responseHandler.respondNoContent(resource, response, request);
+		resourceHandlerHelper.processResource(manager, request, response, r, this);
+	}
 
-    }
+	@Override
+	public void processExistingResource(HttpManager manager, Request request, Response response, Resource resource) throws NotAuthorizedException, BadRequestException, ConflictException {
+		log.debug("DELETE: " + request.getAbsoluteUrl());
 
-    public DeleteHelper getDeleteHelper() {
-        return deleteHelper;
-    }
+		DeletableResource r = (DeletableResource) resource;
 
-    public void setDeleteHelper(DeleteHelper deleteHelper) {
-        this.deleteHelper = deleteHelper;
-    }   
+		if (deleteHelper.isLockedOut(request, r)) {
+			log.info("Could not delete. Is locked");
+			responseHandler.respondDeleteFailed(request, response, r, Status.SC_LOCKED);
+			return;
+		}
+
+		deleteHelper.delete(r, manager.getEventManager());
+		log.debug("deleted ok");
+		responseHandler.respondNoContent(resource, response, request);
+
+	}
+
+	public DeleteHelper getDeleteHelper() {
+		return deleteHelper;
+	}
+
+	public void setDeleteHelper(DeleteHelper deleteHelper) {
+		this.deleteHelper = deleteHelper;
+	}
 }

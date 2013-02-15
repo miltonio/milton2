@@ -135,6 +135,7 @@ public class PropFindHandler implements ExistingEntityHandler, PropertyHandler {
         } else {
             List<PropFindResponse> propFindResponses;
 			try {
+				System.out.println("build props");
 				propFindResponses = propertyBuilder.buildProperties( pfr, depth, parseResult, url );
 			} catch (URISyntaxException ex) {
 				log.error("Exception parsing url. request class: " + request.getClass() + ". Please check the client application is usign percentage encoding (see http://en.wikipedia.org/wiki/Percent-encoding)");

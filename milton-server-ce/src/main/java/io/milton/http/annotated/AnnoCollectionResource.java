@@ -24,6 +24,7 @@ import io.milton.resource.Resource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -52,8 +53,8 @@ public class AnnoCollectionResource extends AnnoResource implements CollectionRe
 	public List<? extends Resource> getChildren() throws NotAuthorizedException, BadRequestException {
 		if( children == null ) {
 			children = new ResourceList();
-			List list = annoFactory.childrenOfAnnotationHandler.execute(source);
-			for( Object childSource : list ) {
+			Set set = annoFactory.childrenOfAnnotationHandler.execute(source);
+			for( Object childSource : set ) {
 				AnnoResource r;
 				if( annoFactory.childrenOfAnnotationHandler.isCompatible(childSource)) {
 					r = new AnnoCollectionResource(annoFactory, childSource, this);
@@ -68,7 +69,7 @@ public class AnnoCollectionResource extends AnnoResource implements CollectionRe
 
 	@Override
 	public CollectionResource createCollection(String newName) throws NotAuthorizedException, ConflictException, BadRequestException {
-		Object newlyCreatedSource = annoFactory.makCollectionAnnotationHandler.execute(source, newName);
+		Object newlyCreatedSource = annoFactory.makCollectionAnnotationHandler.execute(source, newName);		
 		AnnoCollectionResource r = new AnnoCollectionResource(annoFactory, newlyCreatedSource, this);
 		if( children != null ) {
 			children.add(r);

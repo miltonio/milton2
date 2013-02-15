@@ -88,6 +88,12 @@ public class MkColHandler implements Handler {
 		if (parentcol != null) {
 			log.debug("process: resource: " + parentcol.getClass().getName());
 
+            if( handlerHelper.isNotCompatible( parentcol, request.getMethod() ) ) {
+                log.debug( "resource not compatible. Resource class: " + parentcol.getClass() + " handler: " + getClass() );
+                responseHandler.respondMethodNotImplemented( parentcol, response, request );
+                return;
+            }			
+			
 			if (handlerHelper.isLockedOut(request, parentcol)) {
 				log.warn("isLockedOut");
 				response.setStatus(Status.SC_LOCKED);

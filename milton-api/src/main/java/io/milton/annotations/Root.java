@@ -21,6 +21,15 @@ import java.lang.annotation.Target;
 
 /**
  * Marks a method as one which locates the root resource for a given host
+ * 
+ * There must be exactly ONE of these methods configured. If more then one is provided
+ * only the first will be used.
+ * 
+ * The only purpose of the root object is to locate methods for acting on child
+ * resources directly under the root, as such methods are generally keyed on the
+ * parent object. So you can return anything, such as the controller itself
+ * 
+ * 
  *
  * @author brad
  */

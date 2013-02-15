@@ -22,6 +22,7 @@ package io.milton.http.webdav;
 import io.milton.http.HttpManager;
 import io.milton.http.XmlWriter;
 import io.milton.http.values.ValueWriters;
+import java.io.OutputStream;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
@@ -46,8 +47,23 @@ public class PropFindXmlGenerator {
         this.helper = helper;
     }
 
+	
+	public void generate( List<PropFindResponse> propFindResponses, OutputStream responseOutput ) {
+        Map<String, String> mapOfNamespaces = helper.findNameSpaces( propFindResponses );
+        XmlWriter writer = new XmlWriter( responseOutput );
+        writer.writeXMLHeader();
+        writer.open(WebDavProtocol.NS_DAV.getPrefix() ,"multistatus" + helper.generateNamespaceDeclarations( mapOfNamespaces ) );
+        writer.newLine();
+        helper.appendResponses( writer, propFindResponses, mapOfNamespaces );
+        writer.close(WebDavProtocol.NS_DAV.getPrefix(),"multistatus" );
+        writer.flush();
+	}
+	
     public String generate( List<PropFindResponse> propFindResponses ) {
         ByteArrayOutputStream responseOutput = new ByteArrayOutputStream();
+		
+		generate(propFindResponses, responseOutput);
+		
         Map<String, String> mapOfNamespaces = helper.findNameSpaces( propFindResponses );
         ByteArrayOutputStream generatedXml = new ByteArrayOutputStream();
         XmlWriter writer = new XmlWriter( generatedXml );
@@ -62,9 +78,9 @@ public class PropFindXmlGenerator {
 			log.trace( generatedXml.toString() );
 			log.trace("---- PROPFIND response END -----");
 		}
-        helper.write( generatedXml, responseOutput );
+		
         try {
-            return responseOutput.toString( "UTF-8" );
+            return responseOutput.toString("UTF-8");
         } catch( UnsupportedEncodingException ex ) {
             throw new RuntimeException( ex );
         }

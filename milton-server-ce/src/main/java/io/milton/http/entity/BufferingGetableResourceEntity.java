@@ -25,6 +25,7 @@ import io.milton.common.BufferingOutputStream;
 import io.milton.common.ReadingException;
 import io.milton.common.StreamUtils;
 import io.milton.common.WritingException;
+import java.io.ByteArrayOutputStream;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,10 +79,13 @@ public class BufferingGetableResourceEntity extends GetableResourceEntity {
         }
         response.setContentLengthHeader(bufContentLength);
 
-        log.trace("sending buffered content...");
+		if( log.isTraceEnabled()) {
+			log.trace("sending buffered content... " + tempOut.getSize() + " bytes contentLength=" + contentLength);
+		}
         InputStream in = tempOut.getInputStream();
         try {
-            StreamUtils.readTo(in, outputStream);
+			//StreamUtils.readTo(in, outputStream);
+			IOUtils.copy(in, outputStream);
         } catch (ReadingException ex) {
             throw new RuntimeException(ex);
         } catch (WritingException ex) {

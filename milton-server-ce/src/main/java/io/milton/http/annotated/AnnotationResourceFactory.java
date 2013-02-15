@@ -41,6 +41,7 @@ import io.milton.http.ResourceFactory;
 import io.milton.http.Response;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
+import io.milton.http.template.ViewResolver;
 import io.milton.resource.CollectionResource;
 import io.milton.resource.Resource;
 import java.io.ByteArrayOutputStream;
@@ -71,6 +72,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	private LockManager lockManager;
 	private String contextPath;
 	private Collection<Object> controllers;
+	private ViewResolver viewResolver;
 	private Map<Class, AnnotationHandler> mapOfAnnotationHandlers = new HashMap<Class, AnnotationHandler>(); // keyed on annotation class
 	private Map<Method, AnnotationHandler> mapOfAnnotationHandlersByMethod = new HashMap<Method, AnnotationHandler>(); // keyed on http method
 	RootAnnotationHandler rootAnnotationHandler = new RootAnnotationHandler(this);
@@ -81,31 +83,30 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	MoveAnnotationHandler moveAnnotationHandler = new MoveAnnotationHandler(this);
 	DeleteAnnotationHandler deleteAnnotationHandler = new DeleteAnnotationHandler(this);
 	CopyAnnotationHandler copyAnnotationHandler = new CopyAnnotationHandler(this);
-	PutChildAnnotationHandler putChildAnnotationHandler = new PutChildAnnotationHandler(this);	
+	PutChildAnnotationHandler putChildAnnotationHandler = new PutChildAnnotationHandler(this);
 	CommonPropertyAnnotationHandler<Date> modifiedDateAnnotationHandler = new CommonPropertyAnnotationHandler<Date>(ModifiedDate.class, this);
 	CommonPropertyAnnotationHandler<Date> createdDateAnnotationHandler = new CommonPropertyAnnotationHandler<Date>(CreatedDate.class, this);
 	CommonPropertyAnnotationHandler<String> contentTypeAnnotationHandler = new CommonPropertyAnnotationHandler<String>(ContentType.class, this);
 	CommonPropertyAnnotationHandler<Long> contentLengthAnnotationHandler = new CommonPropertyAnnotationHandler<Long>(ContentType.class, this);
 	CommonPropertyAnnotationHandler<Long> maxAgeAnnotationHandler = new CommonPropertyAnnotationHandler<Long>(MaxAge.class, this);
 	CommonPropertyAnnotationHandler<String> uniqueIdAnnotationHandler = new CommonPropertyAnnotationHandler<String>(UniqueId.class, this);
-	
 
 	public AnnotationResourceFactory() {
 		mapOfAnnotationHandlers.put(Root.class, rootAnnotationHandler);
 		mapOfAnnotationHandlers.put(Get.class, getAnnotationHandler);
 		mapOfAnnotationHandlers.put(ChildrenOf.class, childrenOfAnnotationHandler);
 		mapOfAnnotationHandlers.put(Name.class, nameAnnotationHandler);
-		mapOfAnnotationHandlers.put(MakeCollection.class, makCollectionAnnotationHandler);		
-		mapOfAnnotationHandlers.put(Move.class, moveAnnotationHandler);		
-		mapOfAnnotationHandlers.put(Delete.class, deleteAnnotationHandler);		
-		mapOfAnnotationHandlers.put(Copy.class, copyAnnotationHandler);		
-		mapOfAnnotationHandlers.put(PutChild.class, putChildAnnotationHandler);	
-		
-		mapOfAnnotationHandlers.put(PutChild.class, modifiedDateAnnotationHandler);	
-		mapOfAnnotationHandlers.put(PutChild.class, createdDateAnnotationHandler);	
-		mapOfAnnotationHandlers.put(PutChild.class, contentTypeAnnotationHandler);	
-		mapOfAnnotationHandlers.put(PutChild.class, maxAgeAnnotationHandler);	
-		mapOfAnnotationHandlers.put(PutChild.class, uniqueIdAnnotationHandler);	
+		mapOfAnnotationHandlers.put(MakeCollection.class, makCollectionAnnotationHandler);
+		mapOfAnnotationHandlers.put(Move.class, moveAnnotationHandler);
+		mapOfAnnotationHandlers.put(Delete.class, deleteAnnotationHandler);
+		mapOfAnnotationHandlers.put(Copy.class, copyAnnotationHandler);
+		mapOfAnnotationHandlers.put(PutChild.class, putChildAnnotationHandler);
+
+		mapOfAnnotationHandlers.put(ModifiedDate.class, modifiedDateAnnotationHandler);
+		mapOfAnnotationHandlers.put(CreatedDate.class, createdDateAnnotationHandler);
+		mapOfAnnotationHandlers.put(ContentType.class, contentTypeAnnotationHandler);
+		mapOfAnnotationHandlers.put(MaxAge.class, maxAgeAnnotationHandler);
+		mapOfAnnotationHandlers.put(UniqueId.class, uniqueIdAnnotationHandler);
 
 		for (AnnotationHandler ah : mapOfAnnotationHandlers.values()) {
 			Method[] methods = ah.getSupportedMethods();
@@ -119,7 +120,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 
 	@Override
 	public Resource getResource(String host, String url) throws NotAuthorizedException, BadRequestException {
-		log.debug("getResource: host: " + host + " - url:" + url);
+		log.info("getResource: host: " + host + " - url:" + url);
 
 		AnnoCollectionResource hostRoot = locateHostRoot(host, HttpManager.request());
 		if (hostRoot == null) {
@@ -127,16 +128,18 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 			return null;
 		}
 
+		Resource r;
 		url = stripContext(url);
-		if (url.equals("/")) {
-			return hostRoot;
-		}
-		Path path = Path.path(url);
-		Resource r = findFromRoot(hostRoot, path);
-		if (r == null) {
-			log.info("Resource not found: host=" + host + " path=" + path);
+		if (url.equals("/") || url.equals("") ) {
+			r = hostRoot;
 		} else {
-			log.info("Found resource: " + r.getClass() + "  for path=" + path);
+			Path path = Path.path(url);
+			r = findFromRoot(hostRoot, path);
+			if (r == null) {
+				log.info("Resource not found: host=" + host + " path=" + path);
+			} else {
+				log.info("Found resource: " + r.getClass() + "  for path=" + path);
+			}
 		}
 		return r;
 	}
@@ -225,6 +228,14 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		}
 	}
 
+	public ViewResolver getViewResolver() {
+		return viewResolver;
+	}
+
+	public void setViewResolver(ViewResolver viewResolver) {
+		this.viewResolver = viewResolver;
+	}
+
 	private AnnoCollectionResource locateHostRoot(String host, Request request) {
 		AnnoCollectionResource rootRes;
 		if (request != null) {
@@ -257,23 +268,24 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param source
 	 * @param m
-	 * @param otherValues - any other values to be provided which can be mapped onto method arguments
+	 * @param otherValues - any other values to be provided which can be mapped
+	 * onto method arguments
 	 * @return
-	 * @throws Exception 
+	 * @throws Exception
 	 */
-	public Object[] buildInvokeArgs(Object source, java.lang.reflect.Method m, Object ... otherValues) throws Exception {
+	public Object[] buildInvokeArgs(Object source, java.lang.reflect.Method m, Object... otherValues) throws Exception {
 		Request request = HttpManager.request();
 		Response response = HttpManager.response();
 		Object[] args = new Object[m.getParameterTypes().length];
 		args[0] = source; // first arg is required to be source
 		List list = new ArrayList();
-		for( Object s : otherValues) {
+		for (Object s : otherValues) {
 			list.add(s);
 		}
-		for( int i=1; i<m.getParameterTypes().length; i++) {
+		for (int i = 1; i < m.getParameterTypes().length; i++) {
 			Class type = m.getParameterTypes()[i];
 			args[i] = findArgValue(type, request, response, list);
 		}
@@ -281,27 +293,27 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	}
 
 	public java.lang.reflect.Method findMethodForAnno(Class sourceClass, Class annoClass) {
-		for( java.lang.reflect.Method m : sourceClass.getMethods()) {
+		for (java.lang.reflect.Method m : sourceClass.getMethods()) {
 			Annotation a = m.getAnnotation(annoClass);
-			if(a != null ) {
+			if (a != null) {
 				return m;
 			}
 		}
 		return null;
 	}
-	
-	private Object findArgValue(Class type, Request request, Response response, List otherAvailValues) throws Exception {		
-		if( type == Request.class) {
+
+	private Object findArgValue(Class type, Request request, Response response, List otherAvailValues) throws Exception {
+		if (type == Request.class) {
 			return request;
-		} else if( type == Response.class) {
+		} else if (type == Response.class) {
 			return response;
-		} else if( type == byte[].class) {
+		} else if (type == byte[].class) {
 			InputStream in = (InputStream) findArgValue(InputStream.class, request, response, otherAvailValues);
 			return toBytes(in);
 		} else {
-			for( Object o : otherAvailValues) {				
+			for (Object o : otherAvailValues) {
 				//System.out.println("is assignable: " + o + " == " + type + " = " + o.getClass().isAssignableFrom(type) );				 
-				if( o != null && type.isAssignableFrom(o.getClass())) {		
+				if (o != null && type.isAssignableFrom(o.getClass())) {
 					otherAvailValues.remove(o); // remove it so that we dont use same value for next param of same type
 					return o;
 				}
@@ -311,10 +323,10 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		log.error("Available types are:");
 		log.error(" - " + Request.class);
 		log.error(" - " + Response.class);
-		for( Object o : otherAvailValues) {
+		for (Object o : otherAvailValues) {
 			log.error(" - " + o.getClass());
 		}
-		
+
 		throw new RuntimeException("Unknown parameter type: " + type);
 	}
 
