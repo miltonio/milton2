@@ -18,6 +18,8 @@
  */
 package io.milton.http.annotated;
 
+import io.milton.annotations.Authenticate;
+import io.milton.annotations.ChildOf;
 import io.milton.annotations.ChildrenOf;
 import io.milton.annotations.ContentType;
 import io.milton.annotations.Copy;
@@ -32,6 +34,7 @@ import io.milton.annotations.Name;
 import io.milton.annotations.PutChild;
 import io.milton.annotations.Root;
 import io.milton.annotations.UniqueId;
+import io.milton.annotations.Users;
 import io.milton.common.Path;
 import io.milton.http.HttpManager;
 import io.milton.http.LockManager;
@@ -42,7 +45,9 @@ import io.milton.http.Response;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.template.ViewResolver;
+import io.milton.http.webdav.DisplayNameFormatter;
 import io.milton.resource.CollectionResource;
+import io.milton.resource.PropFindableResource;
 import io.milton.resource.Resource;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -78,12 +83,17 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	RootAnnotationHandler rootAnnotationHandler = new RootAnnotationHandler(this);
 	GetAnnotationHandler getAnnotationHandler = new GetAnnotationHandler(this);
 	ChildrenOfAnnotationHandler childrenOfAnnotationHandler = new ChildrenOfAnnotationHandler(this);
+	ChildOfAnnotationHandler childOfAnnotationHandler = new ChildOfAnnotationHandler(this);
 	NameAnnotationHandler nameAnnotationHandler = new NameAnnotationHandler(this);
+	DisplayNameAnnotationHandler displayNameAnnotationHandler = new DisplayNameAnnotationHandler(this);
 	MakeCollectionAnnotationHandler makCollectionAnnotationHandler = new MakeCollectionAnnotationHandler(this);
 	MoveAnnotationHandler moveAnnotationHandler = new MoveAnnotationHandler(this);
 	DeleteAnnotationHandler deleteAnnotationHandler = new DeleteAnnotationHandler(this);
 	CopyAnnotationHandler copyAnnotationHandler = new CopyAnnotationHandler(this);
 	PutChildAnnotationHandler putChildAnnotationHandler = new PutChildAnnotationHandler(this);
+	UsersAnnotationHandler usersAnnotationHandler = new UsersAnnotationHandler(this);
+	AuthenticateAnnotationHandler authenticateAnnotationHandler = new AuthenticateAnnotationHandler(this);
+	
 	CommonPropertyAnnotationHandler<Date> modifiedDateAnnotationHandler = new CommonPropertyAnnotationHandler<Date>(ModifiedDate.class, this);
 	CommonPropertyAnnotationHandler<Date> createdDateAnnotationHandler = new CommonPropertyAnnotationHandler<Date>(CreatedDate.class, this);
 	CommonPropertyAnnotationHandler<String> contentTypeAnnotationHandler = new CommonPropertyAnnotationHandler<String>(ContentType.class, this);
@@ -95,12 +105,17 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		mapOfAnnotationHandlers.put(Root.class, rootAnnotationHandler);
 		mapOfAnnotationHandlers.put(Get.class, getAnnotationHandler);
 		mapOfAnnotationHandlers.put(ChildrenOf.class, childrenOfAnnotationHandler);
+		mapOfAnnotationHandlers.put(ChildOf.class, childOfAnnotationHandler);
 		mapOfAnnotationHandlers.put(Name.class, nameAnnotationHandler);
+		mapOfAnnotationHandlers.put(DisplayNameAnnotationHandler.class, displayNameAnnotationHandler);
 		mapOfAnnotationHandlers.put(MakeCollection.class, makCollectionAnnotationHandler);
 		mapOfAnnotationHandlers.put(Move.class, moveAnnotationHandler);
 		mapOfAnnotationHandlers.put(Delete.class, deleteAnnotationHandler);
 		mapOfAnnotationHandlers.put(Copy.class, copyAnnotationHandler);
 		mapOfAnnotationHandlers.put(PutChild.class, putChildAnnotationHandler);
+		
+		mapOfAnnotationHandlers.put(Users.class, usersAnnotationHandler);		
+		mapOfAnnotationHandlers.put(Authenticate.class, authenticateAnnotationHandler);				
 
 		mapOfAnnotationHandlers.put(ModifiedDate.class, modifiedDateAnnotationHandler);
 		mapOfAnnotationHandlers.put(CreatedDate.class, createdDateAnnotationHandler);
@@ -130,7 +145,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 
 		Resource r;
 		url = stripContext(url);
-		if (url.equals("/") || url.equals("") ) {
+		if (url.equals("/") || url.equals("")) {
 			r = hostRoot;
 		} else {
 			Path path = Path.path(url);
@@ -334,5 +349,42 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		ByteArrayOutputStream bout = new ByteArrayOutputStream();
 		IOUtils.copy(inputStream, bout);
 		return bout.toByteArray();
+	}
+
+	/**
+	 * Create a Resource to wrap a source pojo object.
+	 * 
+	 * @param childSource
+	 * @param parent
+	 * @param method - the method which located the source object. Will be inspected for annotations
+	 * @return 
+	 */
+	public AnnoResource instantiate(Object childSource, AnnoCollectionResource parent, java.lang.reflect.Method m) {
+		if( m.getAnnotation(Users.class) != null ) { // TODO: instead of Users annotation, just look for @Authenticate anno for source class
+			return new AnnoPrincipalResource(this, childSource, parent);
+		}
+		if (childrenOfAnnotationHandler.isCompatible(childSource)) {
+			return new AnnoCollectionResource(this, childSource, parent);
+		} else {
+			return new AnnoFileResource(this, childSource, parent);
+		}
+	}
+
+	public class AnnotationsDisplayNameFormatter implements DisplayNameFormatter {
+
+		private final DisplayNameFormatter wrapped;
+
+		public AnnotationsDisplayNameFormatter(DisplayNameFormatter wrapper) {
+			this.wrapped = wrapper;
+		}
+
+		@Override
+		public String formatDisplayName(PropFindableResource res) {
+			if (res instanceof AnnoResource) {
+				AnnoResource r = (AnnoResource) res;
+				return r.getDisplayName();
+			}
+			return wrapped.formatDisplayName(res);
+		}
 	}
 }

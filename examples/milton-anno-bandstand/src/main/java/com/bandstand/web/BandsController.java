@@ -20,10 +20,16 @@ import com.bandstand.domain.Musician;
 import com.bandstand.domain.SessionManager;
 import io.milton.annotations.ChildrenOf;
 import io.milton.annotations.Delete;
+import io.milton.annotations.DisplayName;
+import io.milton.annotations.Get;
 import io.milton.annotations.MakeCollection;
 import io.milton.annotations.Move;
 import io.milton.annotations.Name;
 import io.milton.annotations.ResourceController;
+import io.milton.common.JsonResult;
+import io.milton.common.ModelAndView;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import org.hibernate.Transaction;
@@ -34,70 +40,103 @@ import org.hibernate.Transaction;
  */
 @ResourceController
 public class BandsController {
+
+    @Get
+    public ModelAndView renderBandPage(Band band) throws UnsupportedEncodingException {
+        return new ModelAndView("controller", this, "bandPage"); 
+    }    
+
+    @Get(params={"editMode"})
+    public ModelAndView renderBandEditPage(Band band) throws UnsupportedEncodingException {
+        return new ModelAndView("controller", this, "bandEditPage"); 
+    }    
+    
+    
+    @Get(contentType="application/json")
+    public JsonResult renderBandJson(Band band) throws UnsupportedEncodingException {
+        return JsonResult.returnData(band);
+    }      
     
     @ChildrenOf
     public BandsController getBandsRoot(RootController root) {
         return this;
-    }    
-        
+    }
+
     @ChildrenOf
     public List<Band> getBands(BandsController root) {
         return Band.findAll(SessionManager.session());
     }
-    
+
     @Name
     public String getBandsRootName(BandsController bandsRoot) {
         return "bands";
     }
-    
-    
+
     @MakeCollection
     public Band createBand(BandsController root, String newName) {
-        Band b = new  Band();
+        Band b = new Band();
         b.setCreatedDate(new Date());
         b.setModifiedDate(new Date());
         b.setName(newName);
         SessionManager.session().save(b);
         return b;
     }
-    
+
     @Move
     public void move(Band band, BandsController newParent, String newName) {
         Transaction tx = SessionManager.session().beginTransaction();
         band.setName(newName);
         SessionManager.session().save(band);
         tx.commit();
-    }    
+    }
     
+    @Move
+    public void move(BandMember bandMember, Band newParent, String newName) {
+        Transaction tx = SessionManager.session().beginTransaction();
+        bandMember.getMusician().setName(newName);
+        bandMember.getBand().getBandMembers().remove(bandMember);
+        bandMember.setBand(newParent);
+        if( newParent.getBandMembers() == null ) {
+            newParent.setBandMembers(new ArrayList<BandMember>());
+        }
+        newParent.getBandMembers().add(bandMember);
+        SessionManager.session().save(bandMember);
+        tx.commit();
+    }    
+
     @ChildrenOf
     public List<BandMember> getBandMembers(Band band) {
         return band.getBandMembers();
-    }       
+    }
 
     @MakeCollection
     public BandMember createBandMember(Band band, String newName) {
         Transaction tx = SessionManager.session().beginTransaction();
         // Check for an existing musician with the given name, and create one if it doesnt exist
         Musician m = Musician.find(newName, SessionManager.session());
-        if( m == null ) {
+        if (m == null) {
             m = Musician.create(newName, SessionManager.session());
         }
         BandMember bm = band.addMember(m, SessionManager.session()); // then add the musician to the band
         SessionManager.session().save(band);
         tx.commit();
         return bm;
-    }    
-    
-    
+    }
+
     @Delete
     public void deleteBandMember(BandMember bm) {
         Transaction tx = SessionManager.session().beginTransaction();
         SessionManager.session().delete(bm);
-        tx.commit();        
+        tx.commit();
     }
-    
+
     @Name
     public String getBandMemberName(BandMember bm) {
         return bm.getMusician().getName();
+    }
+    
+    @DisplayName
+    public String getBandDisplayName(Band band) {
+        return band.getName();
     }
 }

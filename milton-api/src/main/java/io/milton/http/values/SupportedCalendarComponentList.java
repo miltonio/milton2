@@ -34,6 +34,8 @@ public class SupportedCalendarComponentList extends ArrayList<CalendarResource.C
 
     private static final long serialVersionUID = 1L;
 
+    public static final SupportedCalendarComponentList VEVENT_ONLY = asList(CalendarResource.ComponentType.VEVENT);
+    
     public static SupportedCalendarComponentList asList(CalendarResource.ComponentType... items) {
         SupportedCalendarComponentList l = new SupportedCalendarComponentList();
         l.addAll(Arrays.asList(items));

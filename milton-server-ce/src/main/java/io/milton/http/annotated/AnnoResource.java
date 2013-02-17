@@ -17,19 +17,27 @@ package io.milton.http.annotated;
 import io.milton.http.Auth;
 import io.milton.http.ConditionalCompatibleResource;
 import io.milton.http.HttpManager;
+import io.milton.http.LockInfo;
+import io.milton.http.LockResult;
+import io.milton.http.LockTimeout;
+import io.milton.http.LockToken;
 import io.milton.http.Range;
 import io.milton.http.Request;
 import io.milton.http.Request.Method;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.ConflictException;
+import io.milton.http.exceptions.LockedException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.exceptions.NotFoundException;
+import io.milton.http.exceptions.PreConditionFailedException;
 import io.milton.http.http11.auth.DigestResponse;
+import io.milton.principal.DiscretePrincipal;
 import io.milton.resource.CollectionResource;
 import io.milton.resource.CopyableResource;
 import io.milton.resource.DeletableResource;
 import io.milton.resource.DigestResource;
 import io.milton.resource.GetableResource;
+import io.milton.resource.LockableResource;
 import io.milton.resource.MoveableResource;
 import io.milton.resource.PropFindableResource;
 import java.io.IOException;
@@ -41,7 +49,7 @@ import java.util.Map;
  *
  * @author brad
  */
-public abstract class AnnoResource implements GetableResource, PropFindableResource, DeletableResource, CopyableResource, MoveableResource, ConditionalCompatibleResource, CommonResource, DigestResource {
+public abstract class AnnoResource implements GetableResource, PropFindableResource, DeletableResource, CopyableResource, MoveableResource, LockableResource, ConditionalCompatibleResource, CommonResource, DigestResource {
 
 	protected Object source;
 	protected final AnnotationResourceFactory annoFactory;
@@ -68,11 +76,25 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 
 	@Override
 	public Object authenticate(String user, String password) {
+		AnnoPrincipalResource userRes = annoFactory.usersAnnotationHandler.findUser(getRoot(), user);
+		if( userRes != null ) {
+			Boolean b = annoFactory.authenticateAnnotationHandler.authenticate(userRes, password);
+			if( b != null ) {
+				return userRes;
+			}
+		}
 		return annoFactory.getSecurityManager().authenticate(user, password);
 	}
 
 	@Override
 	public Object authenticate(DigestResponse digestRequest) {
+		AnnoPrincipalResource userRes = annoFactory.usersAnnotationHandler.findUser(getRoot(), digestRequest.getUser());
+		if( userRes != null ) {
+			Boolean b = annoFactory.authenticateAnnotationHandler.authenticate(userRes, digestRequest);
+			if( b != null ) {
+				return userRes;
+			}
+		}		
 		return annoFactory.getSecurityManager().authenticate(digestRequest);
 	}
 
@@ -142,6 +164,7 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 		return annoFactory;
 	}
 
+	@Override
 	public AnnoCollectionResource getParent() {
 		return parent;
 	}
@@ -204,7 +227,36 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 		}
 	}
 	
+	public AnnoCollectionResource getRoot() {
+		return parent.getRoot();
+	}
+	
 	public String getLink() {
 		return "<a href=\"" + getHref() + "\">" + getName() + "</a>";
 	}
+
+	public String getDisplayName() {
+		return annoFactory.displayNameAnnotationHandler.execute(source);
+	}
+	
+
+	@Override
+	public LockResult lock(LockTimeout timeout, LockInfo lockInfo) throws NotAuthorizedException, PreConditionFailedException, LockedException {
+		return annoFactory.getLockManager().lock(timeout, lockInfo, this);
+	}
+
+	@Override
+	public LockResult refreshLock(String token) throws NotAuthorizedException, PreConditionFailedException {
+		return annoFactory.getLockManager().refresh(token, this);
+	}
+
+	@Override
+	public void unlock(String tokenId) throws NotAuthorizedException, PreConditionFailedException {
+		annoFactory.getLockManager().unlock(tokenId, this);
+	}
+
+	@Override
+	public LockToken getCurrentLock() {
+		return annoFactory.getLockManager().getCurrentToken(this);
+	}	
 }

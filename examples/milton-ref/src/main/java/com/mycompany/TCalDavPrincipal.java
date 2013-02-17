@@ -204,7 +204,6 @@ public class TCalDavPrincipal extends TFolderResource implements CalDavPrincipal
 
     @Override
     public HrefList getCalendarUserAddressSet() {
-
         return HrefList.asList("mailto:" + name + "@localhost", getHref());
     }
 

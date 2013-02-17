@@ -67,6 +67,10 @@ public class ResourceList extends ArrayList<CommonResource> {
 	public CommonResource get(String name) {
 		return map.get(name);
 	}
+	
+	public Resource remove(String name ) {
+		return map.remove(name);
+	}
 
 	public boolean hasChild(String name) {
 		return get(name) != null;

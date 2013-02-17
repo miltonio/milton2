@@ -26,11 +26,12 @@ import java.io.UnsupportedEncodingException;
  */
 @ResourceController
 public class RootController {
+    
     @Root
     public RootController getRoot() {
         return this;
     }
-        
+         
     @Get
     public ModelAndView renderHomePage(RootController root) throws UnsupportedEncodingException {
         //return "<html>\n<body><h1>hello world</h1></body></html>".getBytes("UTF-8");        

@@ -32,6 +32,7 @@ import io.milton.resource.PropFindableResource;
  */
 public class DefaultDisplayNameFormatter implements DisplayNameFormatter {
 
+	@Override
     public String formatDisplayName( PropFindableResource res ) {
         return res.getName();
     }

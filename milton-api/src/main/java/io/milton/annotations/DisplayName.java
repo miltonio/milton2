@@ -12,34 +12,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package io.milton.http.annotated;
+package io.milton.annotations;
 
-import java.lang.annotation.Annotation;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
+ * Marks the method which returns the display name for a resource
+ * 
+ * The display name is intended for user friendly understanding of the content. It
+ * is not required to be unique in a collection and may contain special characters
+ * It is not used in URL's
  *
  * @author brad
  */
-class ControllerMethod {
-
-	final Object controller;
-	final java.lang.reflect.Method method;
-	final Class sourceType;
-	final Annotation anno;
-
-	public ControllerMethod(Object controller, java.lang.reflect.Method method, Class sourceType, final Annotation anno) {
-		this.controller = controller;
-		this.method = method;
-		this.sourceType = sourceType;
-		this.anno = anno;
-	}
-
-	@Override
-	public String toString() {
-		if (sourceType != null) {
-			return controller.getClass() + "::" + method.getName() + " ( " + sourceType.getCanonicalName() + " )";
-		} else {
-			return controller.getClass() + "::" + method.getName();
-		}
-	}
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface DisplayName {
+    
 }

@@ -14,18 +14,18 @@
  */
 package io.milton.http.annotated;
 
-import io.milton.annotations.Name;
+import io.milton.annotations.DisplayName;
 
 /**
  *
  * @author brad
  */
-public class NameAnnotationHandler extends AbstractAnnotationHandler {
+public class DisplayNameAnnotationHandler extends AbstractAnnotationHandler {
 
 	private final AnnotationResourceFactory outer;
 
-	public NameAnnotationHandler(final AnnotationResourceFactory outer) {
-		super(Name.class);
+	public DisplayNameAnnotationHandler(final AnnotationResourceFactory outer) {
+		super(DisplayName.class);
 		this.outer = outer;
 	}
 
@@ -33,7 +33,7 @@ public class NameAnnotationHandler extends AbstractAnnotationHandler {
 		try {
 			ControllerMethod cm = getBestMethod(source.getClass());
 			if (cm == null) {
-				String s = attemptToReadProperty(source, "name");
+				String s = attemptToReadProperty(source, "displayName", "title");
 				if( s != null ) {
 					return s;
 				}

@@ -42,7 +42,7 @@
         <property name="viewResolver">
             <bean class="io.milton.http.template.JspViewResolver">
                 <constructor-arg ref="servletContext"/>
-                <property name="basePath" value="/templates/themes/bootstrap/" />
+                <property name="theme" value="united" />
             </bean> 
         </property>
     </bean>

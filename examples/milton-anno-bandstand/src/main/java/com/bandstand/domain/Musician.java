@@ -17,6 +17,7 @@ package com.bandstand.domain;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.DiscriminatorValue;
+import javax.persistence.OneToMany;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.annotations.Cache;
@@ -51,8 +52,12 @@ public class Musician extends BaseEntity {
         SessionManager.session().save(m);
         return m;
     }
+
+    
+    private List<BandMember> bandMembers;
     private String avatarImageName; // image of the musician
     private String musicType; // eg singer, drummer, etc
+    private String password; // to allow the user to login
 
     public String getAvatarImageName() {
         return avatarImageName;
@@ -69,4 +74,24 @@ public class Musician extends BaseEntity {
     public void setMusicType(String musicType) {
         this.musicType = musicType;
     }
+    
+    @OneToMany(mappedBy = "musician")
+    public List<BandMember> getBandMembers() {
+        return bandMembers;
+    }
+
+    public void setBandMembers(List<BandMember> bandMembers) {
+        this.bandMembers = bandMembers;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+    
+    
+    
 }

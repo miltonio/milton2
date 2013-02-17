@@ -42,4 +42,19 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Get {
     
+    
+    /**
+     * If specified, will only match on requests with the given content type
+     * 
+     * @return 
+     */
+    String contentType() default "";
+    
+    /**
+     * If present, only requests which contain all of the given parameters will
+     * be matched
+     * 
+     * @return 
+     */
+    String[] params() default {};
 }

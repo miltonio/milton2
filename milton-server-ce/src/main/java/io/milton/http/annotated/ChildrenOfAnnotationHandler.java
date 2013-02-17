@@ -18,7 +18,6 @@ import io.milton.annotations.ChildrenOf;
 import io.milton.http.Request.Method;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -34,8 +33,9 @@ public class ChildrenOfAnnotationHandler extends AbstractAnnotationHandler {
 		this.outer = outer;
 	}
 
-	public Set execute(Object source) {
-		Set result = new HashSet();
+	public Set<AnnoResource> execute(AnnoCollectionResource parent) {
+		Object source = parent.getSource();
+		Set<AnnoResource> result = new HashSet<AnnoResource>();
 		for (ControllerMethod cm : getMethods(source.getClass())) {
 			try {
 				Object o = cm.method.invoke(cm.controller, source);
@@ -47,10 +47,10 @@ public class ChildrenOfAnnotationHandler extends AbstractAnnotationHandler {
 				} else if( o.getClass().isArray()) {
 					Object[] arr = (Object[]) o;
 					for( Object item : arr) {
-						result.add(item);
+						result.add(outer.instantiate(item, parent, cm.method));
 					}
 				} else {
-					result.add(o);
+					result.add(outer.instantiate(o, parent, cm.method));
 				}
 			} catch (Exception e) {
 				throw new RuntimeException(e);

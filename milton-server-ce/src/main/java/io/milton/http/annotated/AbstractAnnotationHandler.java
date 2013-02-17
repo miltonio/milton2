@@ -14,10 +14,16 @@
  */
 package io.milton.http.annotated;
 
+import io.milton.annotations.Get;
+import io.milton.http.HttpManager;
+import io.milton.http.Request;
 import io.milton.http.Request.Method;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,9 +32,8 @@ import org.slf4j.LoggerFactory;
  * @author brad
  */
 public abstract class AbstractAnnotationHandler implements AnnotationHandler {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(AbstractAnnotationHandler.class);
-	
 	protected final Class annoClass;
 	protected final Method[] methods;
 	/**
@@ -53,21 +58,37 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 					throw new RuntimeException("Invalid controller method: " + m.getName() + " does not have a source argument");
 				}
 				Class sourceType = params[0];
-				ControllerMethod cm = new ControllerMethod(controller, m, sourceType);
-				controllerMethods.add( cm);
+				ControllerMethod cm = new ControllerMethod(controller, m, sourceType, a);
+				controllerMethods.add(cm);
 			}
 		}
 	}
 
 	ControllerMethod getBestMethod(Class sourceClass) {
+		return getBestMethod(sourceClass, null);
+	}
+
+	ControllerMethod getBestMethod(Class sourceClass, String contentType) {
+		return getBestMethod(sourceClass, contentType, null);
+	}
+
+	ControllerMethod getBestMethod(Class sourceClass, String contentType, Map<String, String> params) {
 		ControllerMethod foundMethod = null;
-		for (ControllerMethod cm : controllerMethods ) {
+		int foundMethodScore = -1;
+		for (ControllerMethod cm : controllerMethods) {
 			if (cm.sourceType.isAssignableFrom(sourceClass)) {
-				if (foundMethod == null) {
-					foundMethod = cm;
-				} else if (foundMethod.sourceType.isAssignableFrom(cm.sourceType)) {
-					foundMethod = cm; // this key is more specific then the last one found
-					// this key is more specific then the last one found
+				int score = 0;
+				int i = contentTypeMatch(contentType, cm.anno);
+				if( i >= 0 ) {
+					score += i;
+					i = isParamMatch(params, cm.anno);
+					if( i >= 0 ) {
+						score +=i;
+						if( score > foundMethodScore) {
+							foundMethod = cm;
+							foundMethodScore = score;
+						}
+					}
 				}
 			}
 		}
@@ -76,7 +97,7 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 
 	List<ControllerMethod> getMethods(Class sourceClass) {
 		List<ControllerMethod> foundMethods = new ArrayList<ControllerMethod>();
-		for (ControllerMethod cm : controllerMethods ) {
+		for (ControllerMethod cm : controllerMethods) {
 			Class key = cm.sourceType;
 			if (key.isAssignableFrom(sourceClass)) {
 				foundMethods.add(cm);
@@ -84,7 +105,7 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 		}
 		return foundMethods;
 	}
-	
+
 	@Override
 	public Method[] getSupportedMethods() {
 		return methods;
@@ -92,8 +113,71 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 
 	@Override
 	public boolean isCompatible(Object source) {
-		ControllerMethod m = getBestMethod(source.getClass());
+		String contentType = null;
+		Map<String,String> params = null;
+		Request req = HttpManager.request();
+		if (req != null) {
+			contentType = req.getContentTypeHeader();
+			params = req.getParams();
+		}
+		ControllerMethod m = getBestMethod(source.getClass(), contentType, params);
 		return m != null;
 	}
-    
+
+	protected String attemptToReadProperty(Object source, String... propNames) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+		for (String propName : propNames) {
+			if (PropertyUtils.isReadable(source, propName)) {
+				Object oName = PropertyUtils.getProperty(source, propName);
+				if (oName != null) {
+					if (oName instanceof String) {
+						String s = (String) oName;
+						return s;
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Check if the annotation has a contentType specified. If so it must match
+	 * that given
+	 *
+	 * @param reqContentType
+	 * @param anno
+	 * @return - negative means does not match. Otherwise is the score of the match, where more is better
+	 */
+	private int contentTypeMatch(String reqContentType, Annotation anno) {
+		if (anno instanceof Get) {
+			Get g = (Get) anno;
+			if (g.contentType() != null && g.contentType().length() > 0) {
+				if( g.contentType().equals(reqContentType) ) {
+					return 1;
+				} else {
+					return -1;
+				}
+			}
+		}
+		return 0;
+	}
+
+	private int isParamMatch(Map<String, String> params, Annotation anno) {
+		if (anno instanceof Get) {
+			Get g = (Get) anno;
+			if (g.params().length > 0) {
+				for (String paramName : g.params()) {
+					if (params == null || !params.containsKey(paramName)) {
+						System.out.println("params: " + params);
+						//System.out.println("param not tound: " + paramName + " in map: " + params.size());
+						return -1; // does not match
+					}
+				}
+				return g.params().length;
+			} else {
+				return 0;
+			}
+		}
+		return 0;
+
+	}
 }

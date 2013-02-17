@@ -14,17 +14,18 @@
  */
 package com.bandstand.web;
 
-import com.bandstand.domain.Band;
-import com.bandstand.domain.BaseEntity;
-import com.bandstand.domain.Image;
+import com.bandstand.domain.BandMember;
 import com.bandstand.domain.Musician;
 import com.bandstand.domain.SessionManager;
+import io.milton.annotations.Authenticate;
+import io.milton.annotations.ChildOf;
 import io.milton.annotations.ChildrenOf;
+import io.milton.annotations.Delete;
 import io.milton.annotations.MakeCollection;
 import io.milton.annotations.Move;
 import io.milton.annotations.Name;
 import io.milton.annotations.ResourceController;
-import java.util.ArrayList;
+import io.milton.annotations.Users;
 import java.util.Date;
 import java.util.List;
 import org.hibernate.Transaction;
@@ -42,10 +43,21 @@ public class MusiciansController {
     }
 
     @ChildrenOf
+    @Users // ties in with the @Authenticate method below
     public List<Musician> getMusicians(MusiciansController root) {
         return Musician.findAll(SessionManager.session());
     }
 
+    @Authenticate
+    public String getMusicianPassword(Musician m) {
+        return m.getPassword(); // The @Authenticate also allows methods which verify a password and return Boolean
+    }
+    
+    @ChildOf
+    public Musician findMusicianByName(MusiciansController root, String name) {
+        return Musician.find(name, SessionManager.session());
+    }
+        
     @Name
     public String getMusiciansRootName(MusiciansController musiciansRoot) {
         return "musicians";
@@ -69,5 +81,17 @@ public class MusiciansController {
         SessionManager.session().save(m);
         tx.commit();
         return m;
+    }
+    
+    @Delete
+    public void deleteMusician(Musician musician) {
+        Transaction tx = SessionManager.session().beginTransaction();
+        if( musician.getBandMembers() != null ) {
+            for( BandMember bm : musician.getBandMembers()) {
+                SessionManager.session().delete(bm);
+            }
+        }
+        SessionManager.session().delete(musician);
+        tx.commit();        
     }
 }

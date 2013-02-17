@@ -20,7 +20,7 @@
 package io.milton.http.values;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * 
@@ -30,7 +30,22 @@ import java.util.Arrays;
  */
 public class SupportedCalendarComponentListsSet extends ArrayList<SupportedCalendarComponentList> {
 
+    public static final SupportedCalendarComponentListsSet EVENTS_ONLY = new SupportedCalendarComponentListsSet(SupportedCalendarComponentList.VEVENT_ONLY);
+    
     private static final long serialVersionUID = 1L;
 
+    public SupportedCalendarComponentListsSet() {
+    }
+
+    public SupportedCalendarComponentListsSet(Collection<? extends SupportedCalendarComponentList> c) {
+        super(c);
+    }
+
+    public SupportedCalendarComponentListsSet(SupportedCalendarComponentList ... lists) {
+        for( SupportedCalendarComponentList l : lists ) {
+            add(l);
+        }
+    }
+    
 
 }

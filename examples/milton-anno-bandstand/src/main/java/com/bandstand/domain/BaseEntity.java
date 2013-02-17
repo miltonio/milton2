@@ -34,6 +34,7 @@ public class BaseEntity {
     
     private long id;
     private String name;
+    private String description;
     private Date createdDate;
     private Date modifiedDate;
     
@@ -79,6 +80,14 @@ public class BaseEntity {
         this.name = name;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }    
+    
     @OneToMany(mappedBy = "baseEntity")
     public List<Image> getImages() {
         return images;

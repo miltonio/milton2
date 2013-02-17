@@ -31,8 +31,16 @@ import java.util.Set;
  * @author brad
  */
 public class AnnoCollectionResource extends AnnoResource implements CollectionResource, PutableResource, MakeCollectionableResource {
-	
+
+	/**
+	 * lazy loaded list of all children of this collection
+	 */
 	private ResourceList children;
+	/**
+	 * this holds child items located single prior to the children list being
+	 * populated
+	 */
+	private ResourceList singlyLoadedChildItems;
 
 	public AnnoCollectionResource(final AnnotationResourceFactory outer, Object source, AnnoCollectionResource parent) {
 		super(outer, source, parent);
@@ -40,7 +48,30 @@ public class AnnoCollectionResource extends AnnoResource implements CollectionRe
 
 	@Override
 	public Resource child(String childName) throws NotAuthorizedException, BadRequestException {
-		// TODO: have specialised annotation for locating single children
+		if (children == null) {
+			// attempt to locate singly, ie without loading entire list of children
+			// first check if it has already been loaded singly
+			if (singlyLoadedChildItems != null && singlyLoadedChildItems.hasChild(childName)) {
+				return singlyLoadedChildItems.get(childName);
+			}
+			// try to load singly using ChildOf annotation, if present
+			// childTriValue can be null, the child source object, or a special value indicating no search
+			Object childTriValue = annoFactory.childOfAnnotationHandler.execute(this);
+			if (childTriValue == null) {
+				return null; // definitely not found
+			} else if (childTriValue.equals(ChildOfAnnotationHandler.NOT_ATTEMPTED)) {
+				// there is no ChildOf method, so fall through to iterating over all children
+			} else {
+				// got one!
+				AnnoResource r = (AnnoResource) childTriValue;
+				if( singlyLoadedChildItems == null ) {
+					singlyLoadedChildItems = new ResourceList();
+				}
+				singlyLoadedChildItems.add(r);				
+				return r;
+			}
+		}
+
 		for (Resource r : getChildren()) {
 			if (r.getName().equals(childName)) {
 				return r;
@@ -50,28 +81,32 @@ public class AnnoCollectionResource extends AnnoResource implements CollectionRe
 	}
 
 	@Override
-	public List<? extends Resource> getChildren() throws NotAuthorizedException, BadRequestException {
-		if( children == null ) {
+	public ResourceList getChildren() throws NotAuthorizedException, BadRequestException {
+		if (children == null) {
 			children = new ResourceList();
-			Set set = annoFactory.childrenOfAnnotationHandler.execute(source);
-			for( Object childSource : set ) {
-				AnnoResource r;
-				if( annoFactory.childrenOfAnnotationHandler.isCompatible(childSource)) {
-					r = new AnnoCollectionResource(annoFactory, childSource, this);
-				} else {
-					r = new AnnoFileResource(annoFactory, childSource, this);
-				}
+			Set<AnnoResource> set = annoFactory.childrenOfAnnotationHandler.execute(this);
+			for (AnnoResource r : set) {
 				children.add(r);
 			}
+			// if there are singly loaded items we must replace their dopple-ganger in children
+			// because there might already be references to those resource objects elsewhere in code
+			// and having two objects representing the same resource causes unpredictable chaos!!!
+			if( singlyLoadedChildItems != null ) {
+				for( CommonResource r : singlyLoadedChildItems ) {
+					children.remove(r.getName());
+					children.add(r);
+				}
+			}
 		}
-		return children;		
+		return children;
 	}
+
 
 	@Override
 	public CollectionResource createCollection(String newName) throws NotAuthorizedException, ConflictException, BadRequestException {
-		Object newlyCreatedSource = annoFactory.makCollectionAnnotationHandler.execute(source, newName);		
+		Object newlyCreatedSource = annoFactory.makCollectionAnnotationHandler.execute(source, newName);
 		AnnoCollectionResource r = new AnnoCollectionResource(annoFactory, newlyCreatedSource, this);
-		if( children != null ) {
+		if (children != null) {
 			children.add(r);
 		}
 		return r;
@@ -81,14 +116,22 @@ public class AnnoCollectionResource extends AnnoResource implements CollectionRe
 	public Resource createNew(String newName, InputStream inputStream, Long length, String contentType) throws IOException, ConflictException, NotAuthorizedException, BadRequestException {
 		Object newChildSource = annoFactory.putChildAnnotationHandler.execute(source, newName, inputStream, length, contentType);
 		AnnoCollectionResource newRes = new AnnoCollectionResource(annoFactory, newChildSource, this);
-		if( children != null ) {
-			CommonResource oldRes = children.get(newName); 
-			if( oldRes != null ) {
+		if (children != null) {
+			CommonResource oldRes = children.get(newName);
+			if (oldRes != null) {
 				children.remove(oldRes);
 			}
 			children.add(newRes);
 		}
 		return newRes;
+	}
+	
+	public AnnoCollectionResource getRoot() {
+		if( parent == null ) {
+			return this;
+		} else {
+			return parent.getRoot();
+		}
 	}
 	
 }

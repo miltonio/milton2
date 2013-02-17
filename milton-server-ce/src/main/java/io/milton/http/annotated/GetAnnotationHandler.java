@@ -41,17 +41,15 @@ public class GetAnnotationHandler extends AbstractAnnotationHandler {
 		this.outer = outer;
 	}
 	
-	public void execute(AnnoResource resource, Object source, OutputStream out, Range range, Map<String, String> params, String contentType) {
-		log.trace("execute GET method");
-		ControllerMethod cm = getBestMethod(source.getClass());
+	public void execute(AnnoResource resource, Object source, OutputStream out, Range range, Map<String, String> params, String contentType) {		
+		ControllerMethod cm = getBestMethod(source.getClass(), contentType, params);
 		if (cm == null) {
 			throw new RuntimeException("Method not found: " + getClass() + " - " + source.getClass());
 		}
+		log.trace("execute GET method: " + cm.method.getName());
 		try {
 			Object[] args = outer.buildInvokeArgs(source, cm.method, range, params, contentType, out);
-			Object result = cm.method.invoke(cm.controller, args); // TODO: other args like request, response, etc
-			// TODO: other args like request, response, etc
-			// TODO: other args like request, response, etc
+			Object result = cm.method.invoke(cm.controller, args);
 			if (result != null) {
 				log.trace("method returned a value, so write it to output");
 				if (result instanceof String) {

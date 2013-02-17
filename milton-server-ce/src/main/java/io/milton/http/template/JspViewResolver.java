@@ -32,7 +32,8 @@ import javax.servlet.http.HttpServletResponse;
  * @author brad
  */
 public class JspViewResolver implements ViewResolver {
-	private String basePath = "/theme/";
+	private String basePath = "/templates/";
+	private String theme = "bootstrap";
 	private final ServletContext servletContext;
 
 	public JspViewResolver(ServletContext servletContext) {
@@ -60,6 +61,14 @@ public class JspViewResolver implements ViewResolver {
 	public void setBasePath(String basePath) {
 		this.basePath = basePath;
 	}
+
+	public String getTheme() {
+		return theme;
+	}
+
+	public void setTheme(String theme) {
+		this.theme = theme;
+	}
 	
 	
 	
@@ -79,10 +88,11 @@ public class JspViewResolver implements ViewResolver {
 			try {
 				HttpServletRequest req = ServletRequest.getRequest();
 				HttpServletResponse resp = new OutputStreamWrappingHttpServletResponse(ServletResponse.getResponse(), out);
-				System.out.println("stat temmplate - " + out.getClass());
+				if( !model.containsKey("theme")) {
+					model.put("theme", theme);
+				}
 				req.setAttribute("model", model);
 				rd.include(req, resp);
-				System.out.println("finished template");
 				resp.flushBuffer();
 			} catch (ServletException e) {
 				throw new RuntimeException(jspPath, e);

@@ -23,11 +23,14 @@ import io.milton.http.HttpManager;
 import io.milton.http.Request;
 import io.milton.http.ResourceFactory;
 import io.milton.http.Response;
+import io.milton.http.annotated.AnnoResource;
 import io.milton.http.annotated.AnnotationResourceFactory;
 import io.milton.http.template.JspViewResolver;
 import io.milton.http.template.ViewResolver;
+import io.milton.http.webdav.DisplayNameFormatter;
 import io.milton.mail.MailServer;
 import io.milton.mail.MailServerBuilder;
+import io.milton.resource.PropFindableResource;
 import java.io.File;
 import java.io.IOException;
 import javax.servlet.FilterChain;
@@ -111,7 +114,7 @@ public class SpringMiltonFilter implements javax.servlet.Filter {
 				if (arf.getViewResolver() == null) {
 					ViewResolver viewResolver = new JspViewResolver(servletContext);
 					arf.setViewResolver(viewResolver);
-				}
+				}				
 			}
 			this.httpManager = builder.buildHttpManager();
 		}
@@ -176,5 +179,5 @@ public class SpringMiltonFilter implements javax.servlet.Filter {
 			resp.getOutputStream().flush();
 			resp.flushBuffer();
 		}
-	}
+	}	
 }

@@ -25,6 +25,7 @@ import io.milton.event.EventManager;
 import io.milton.event.EventManagerImpl;
 import io.milton.http.*;
 import io.milton.http.annotated.AnnotationResourceFactory;
+import io.milton.http.annotated.AnnotationResourceFactory.AnnotationsDisplayNameFormatter;
 import io.milton.http.entity.DefaultEntityTransport;
 import io.milton.http.entity.EntityTransport;
 import io.milton.http.fck.FckResourceFactory;
@@ -145,6 +146,7 @@ public class HttpManagerBuilder {
 	protected boolean multiNamespaceCustomPropertySourceEnabled = true;
 	protected BeanPropertySource beanPropertySource;
 	protected WebDavProtocol webDavProtocol;
+	protected DisplayNameFormatter displayNameFormatter = new DefaultDisplayNameFormatter();
 	protected boolean webdavEnabled = true;
 	protected MatchHelper matchHelper;
 	protected PartialGetHelper partialGetHelper;
@@ -1096,6 +1098,16 @@ public class HttpManagerBuilder {
 		this.maxAgeSeconds = maxAgeSeconds;
 	}
 
+	public DisplayNameFormatter getDisplayNameFormatter() {
+		return displayNameFormatter;
+	}
+
+	public void setDisplayNameFormatter(DisplayNameFormatter displayNameFormatter) {
+		this.displayNameFormatter = displayNameFormatter;
+	}
+	
+	
+
 	private void initAnnotatedResourceFactory() {
 		try {
 			if (getMainResourceFactory() instanceof AnnotationResourceFactory) {
@@ -1121,9 +1133,10 @@ public class HttpManagerBuilder {
 					arf.setMaxAgeSeconds(maxAgeSeconds);
 				}
 				if (arf.getSecurityManager() == null) {
+					// init the default, statically configured sm
 					arf.setSecurityManager(securityManager());
 				}
-
+				setDisplayNameFormatter(arf.new AnnotationsDisplayNameFormatter(getDisplayNameFormatter()));
 			}
 		} catch (InstantiationException e) {
 			throw new RuntimeException("Exception initialising AnnotationResourceFactory", e);
