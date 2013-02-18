@@ -46,6 +46,7 @@ import io.milton.servlet.upload.MonitoredDiskFileItemFactory;
 import io.milton.servlet.upload.UploadListener;
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.Locale;
 import javax.servlet.ServletContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -308,4 +309,11 @@ public class ServletRequest extends AbstractRequest {
     public ServletContext getServletContext() {
         return servletContext;
     }
+
+	@Override
+	public Locale getLocale() {
+		return request.getLocale();
+	}
+	
+	
 }

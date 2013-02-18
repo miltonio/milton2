@@ -14,9 +14,11 @@
  */
 package io.milton.http.annotated;
 
+import io.milton.common.JsonResult;
 import io.milton.http.AclUtils;
 import io.milton.http.Auth;
 import io.milton.http.ConditionalCompatibleResource;
+import io.milton.http.FileItem;
 import io.milton.http.HttpManager;
 import io.milton.http.LockInfo;
 import io.milton.http.LockResult;
@@ -40,6 +42,7 @@ import io.milton.resource.DigestResource;
 import io.milton.resource.GetableResource;
 import io.milton.resource.LockableResource;
 import io.milton.resource.MoveableResource;
+import io.milton.resource.PostableResource;
 import io.milton.resource.PropFindableResource;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -53,12 +56,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author brad
  */
-public abstract class AnnoResource implements GetableResource, PropFindableResource, DeletableResource, CopyableResource, MoveableResource, LockableResource, ConditionalCompatibleResource, CommonResource, DigestResource {
+public abstract class AnnoResource implements GetableResource, PropFindableResource, DeletableResource, CopyableResource, MoveableResource, LockableResource, ConditionalCompatibleResource, CommonResource, DigestResource, PostableResource {
 
 	private static final Logger log = LoggerFactory.getLogger(AnnoResource.class);
 	protected Object source;
 	protected final AnnotationResourceFactory annoFactory;
 	protected AnnoCollectionResource parent;
+	protected JsonResult jsonResult;
+	protected String nameOverride;
 
 	public AnnoResource(final AnnotationResourceFactory outer, Object source, AnnoCollectionResource parent) {
 		if (source == null) {
@@ -70,12 +75,38 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 	}
 
 	@Override
+	public String processForm(Map<String, String> parameters, Map<String, FileItem> files) throws BadRequestException, NotAuthorizedException, ConflictException {
+		Request request = HttpManager.request();
+		Object result = annoFactory.postAnnotationHandler.execute(this, request, parameters);
+		if (result instanceof String) {
+			String redirect = (String) result;
+			return redirect;
+		} else if (result instanceof JsonResult) {
+			jsonResult = (JsonResult) result;
+		}
+		return null;
+	}
+
+	@Override
+	public void sendContent(OutputStream out, Range range, Map<String, String> params, String contentType) throws IOException, NotAuthorizedException, BadRequestException, NotFoundException {
+		if (jsonResult == null) {
+			annoFactory.getAnnotationHandler.execute(this, out, range, params, contentType);
+		} else {
+			JsonWriter jsonWriter = new JsonWriter();
+			jsonWriter.write(this, out);
+		}
+	}
+
+	@Override
 	public String getUniqueId() {
 		return annoFactory.uniqueIdAnnotationHandler.execute(source);
 	}
 
 	@Override
 	public String getName() {
+		if (nameOverride != null) {
+			return nameOverride;
+		}
 		return annoFactory.nameAnnotationHandler.execute(source);
 	}
 
@@ -188,6 +219,7 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 
 	@Override
 	public void moveTo(CollectionResource rDest, String name) throws ConflictException, NotAuthorizedException, BadRequestException {
+		nameOverride = null; // reset any explicitly set name (eg for creating new resources)
 		annoFactory.moveAnnotationHandler.execute(source, rDest, name);
 	}
 
@@ -210,17 +242,15 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 	}
 
 	@Override
-	public void sendContent(OutputStream out, Range range, Map<String, String> params, String contentType) throws IOException, NotAuthorizedException, BadRequestException, NotFoundException {
-		annoFactory.getAnnotationHandler.execute(this, source, out, range, params, contentType);
-	}
-
-	@Override
 	public Long getMaxAgeSeconds(Auth auth) {
 		return annoFactory.maxAgeAnnotationHandler.execute(source);
 	}
 
 	@Override
 	public String getContentType(String accepts) {
+		if (accepts != null && accepts.contains("application/json")) {
+			return "application/json";
+		}
 		return annoFactory.contentTypeAnnotationHandler.execute(source);
 	}
 
@@ -292,5 +322,13 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 	@Override
 	public LockToken getCurrentLock() {
 		return annoFactory.getLockManager().getCurrentToken(this);
+	}
+
+	public String getNameOverride() {
+		return nameOverride;
+	}
+
+	public void setNameOverride(String nameOverride) {
+		this.nameOverride = nameOverride;
 	}
 }

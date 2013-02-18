@@ -15,6 +15,11 @@ public class JsonResult {
     
     //public static String CONTENT_TYPE = "application/x-javascript; charset=utf-8";
     public static String CONTENT_TYPE = "application/json; charset=utf-8";
+
+    public static JsonResult error(String description) {
+        JsonResult r = new JsonResult(false, description);
+        return r;        
+    }
     
     public static JsonResult fieldError(String field, String fieldMessage) {
         JsonResult r = new JsonResult(false, "Validation error");

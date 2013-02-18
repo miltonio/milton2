@@ -35,7 +35,7 @@
                     <div class="control-group">
                         <label class="control-label" >Band name</label>
                         <div class="controls">
-                            <input id="name" type="text" name="name" value="${model.page.name}"/>
+                            <input id="name" type="text" name="name" value="${model.page.source.name}"/>
                         </div>
                     </div>
                     <div class="control-group">

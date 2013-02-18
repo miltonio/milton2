@@ -40,7 +40,9 @@ public class ChildrenOfAnnotationHandler extends AbstractAnnotationHandler {
 					// ignore
 				} else if( o instanceof Collection ) {
 					Collection l = (Collection)o;
-					result.addAll(l);
+					for( Object item : l) {
+						result.add(outer.instantiate(item, parent, cm.method));
+					}
 				} else if( o.getClass().isArray()) {
 					Object[] arr = (Object[]) o;
 					for( Object item : arr) {

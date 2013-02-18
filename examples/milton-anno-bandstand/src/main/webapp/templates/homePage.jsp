@@ -72,6 +72,15 @@
         </div>        
 
         <%@include file="includes/theme-bottom.jsp" %>
+
+        <script type="text/javascript">
+            $(function() {
+                $("body").on("show","#newBandModal", function() {
+                    $("#newBandModal .modal-body").html("Loading...");
+                    $("#newBandModal .modal-body").load("/bands/.new?editMode .container form");
+                });
+            });
+        </script>
     </body>
 </html>
 

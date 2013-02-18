@@ -15,11 +15,14 @@
 package io.milton.http.annotated;
 
 import io.milton.annotations.Get;
+import io.milton.common.JsonResult;
 import io.milton.common.ModelAndView;
 import io.milton.common.StreamUtils;
+import io.milton.http.HttpManager;
 import io.milton.http.Range;
 import io.milton.http.Request.Method;
 import io.milton.http.template.TemplateProcessor;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
@@ -32,14 +35,15 @@ import org.slf4j.LoggerFactory;
  * @author brad
  */
 public class GetAnnotationHandler extends AbstractAnnotationHandler {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(GetAnnotationHandler.class);
-	
+
 	public GetAnnotationHandler(final AnnotationResourceFactory outer) {
 		super(outer, Get.class, Method.GET);
 	}
-	
-	public void execute(AnnoResource resource, Object source, OutputStream out, Range range, Map<String, String> params, String contentType) {		
+
+	public void execute(AnnoResource resource, OutputStream out, Range range, Map<String, String> params, String contentType) {
+		Object source = resource.getSource();
 		ControllerMethod cm = getBestMethod(source.getClass(), contentType, params);
 		if (cm == null) {
 			throw new RuntimeException("Method not found: " + getClass() + " - " + source.getClass());
@@ -53,6 +57,11 @@ public class GetAnnotationHandler extends AbstractAnnotationHandler {
 				if (result instanceof String) {
 					ModelAndView modelAndView = new ModelAndView("resource", source, result.toString());
 					processTemplate(modelAndView, resource, out);
+				} else if (result instanceof JsonResult) {
+					JsonResult jsonr = (JsonResult) result;
+					JsonWriter jsonWriter = new JsonWriter();
+					jsonWriter.write(jsonr, out);
+
 				} else if (result instanceof InputStream) {
 					InputStream contentIn = (InputStream) result;
 					if (range != null) {
@@ -78,8 +87,8 @@ public class GetAnnotationHandler extends AbstractAnnotationHandler {
 			throw new RuntimeException(e);
 		}
 	}
-	
-	private void processTemplate(ModelAndView modelAndView,AnnoResource resource, OutputStream out) {
+
+	private void processTemplate(ModelAndView modelAndView, AnnoResource resource, OutputStream out) {
 		TemplateProcessor templateProc = outer.getViewResolver().resolveView(modelAndView.getView());
 		modelAndView.getModel().put("page", resource);
 		templateProc.execute(modelAndView.getModel(), out);

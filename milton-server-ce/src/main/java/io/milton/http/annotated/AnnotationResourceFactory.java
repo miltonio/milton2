@@ -32,6 +32,7 @@ import io.milton.annotations.MaxAge;
 import io.milton.annotations.ModifiedDate;
 import io.milton.annotations.Move;
 import io.milton.annotations.Name;
+import io.milton.annotations.Post;
 import io.milton.annotations.PutChild;
 import io.milton.annotations.Root;
 import io.milton.annotations.UniqueId;
@@ -93,6 +94,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	private Map<Method, AnnotationHandler> mapOfAnnotationHandlersByMethod = new HashMap<Method, AnnotationHandler>(); // keyed on http method
 	RootAnnotationHandler rootAnnotationHandler = new RootAnnotationHandler(this);
 	GetAnnotationHandler getAnnotationHandler = new GetAnnotationHandler(this);
+	PostAnnotationHandler postAnnotationHandler = new PostAnnotationHandler(this);
 	ChildrenOfAnnotationHandler childrenOfAnnotationHandler = new ChildrenOfAnnotationHandler(this);
 	ChildOfAnnotationHandler childOfAnnotationHandler = new ChildOfAnnotationHandler(this);
 	NameAnnotationHandler nameAnnotationHandler = new NameAnnotationHandler(this);
@@ -115,6 +117,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	public AnnotationResourceFactory() {
 		mapOfAnnotationHandlers.put(Root.class, rootAnnotationHandler);
 		mapOfAnnotationHandlers.put(Get.class, getAnnotationHandler);
+		mapOfAnnotationHandlers.put(Post.class, postAnnotationHandler);		
 		mapOfAnnotationHandlers.put(ChildrenOf.class, childrenOfAnnotationHandler);
 		mapOfAnnotationHandlers.put(ChildOf.class, childOfAnnotationHandler);
 		mapOfAnnotationHandlers.put(Name.class, nameAnnotationHandler);
@@ -290,7 +293,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 			log.info("isCompatible: " + source + " - " + m + " = " + b);
 			return b;
 		}
-		System.out.println("NO HANDLER for: " + m);
+		log.warn("No annotation handler is configured for http method: " + m);
 		return false;
 	}
 

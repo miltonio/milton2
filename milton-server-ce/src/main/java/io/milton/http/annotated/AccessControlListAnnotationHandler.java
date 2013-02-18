@@ -15,7 +15,9 @@
 package io.milton.http.annotated;
 
 import io.milton.annotations.AccessControlList;
+import io.milton.annotations.Post;
 import io.milton.http.Auth;
+import io.milton.http.HttpManager;
 import io.milton.http.Request;
 import io.milton.http.Request.Method;
 import io.milton.resource.AccessControlledResource;
@@ -75,21 +77,32 @@ public class AccessControlListAnnotationHandler extends AbstractAnnotationHandle
 		return acl;
 	}
 
-	public Priviledge requiredPriv(AnnoResource res, Method method, Request request) {
-		if (method.equals(Method.POST)) {
-			Priviledge p = getRequiredPostPriviledge(request);
+	public Priviledge requiredPriv(AnnoResource res, Method httpMethod, Request request) {
+		if (httpMethod.equals(Method.POST)) {
+			Priviledge p = getRequiredPostPriviledge(request, res);
 			if (p == null) {
 				p = Priviledge.READ_CONTENT;
 			}
 			return p;
-		} else if (method.isWrite) {
+		} else if (httpMethod.isWrite) {
 			return Priviledge.WRITE;
 		} else {
 			return Priviledge.READ;
 		}
 	}
 
-	private Priviledge getRequiredPostPriviledge(Request request) {
-		throw new UnsupportedOperationException("Not yet implemented");
+	private Priviledge getRequiredPostPriviledge(Request request, AnnoResource res) {
+		ControllerMethod cm = outer.postAnnotationHandler.getPostMethod(res, request, HttpManager.request().getParams());
+		if (cm == null) {
+			return null;
+		} else {
+			Post p = cm.method.getAnnotation(Post.class);
+			if( p != null ) {
+				return p.requiredPriviledge();
+			} else {
+				return null;
+			}
+		}
+
 	}
 }

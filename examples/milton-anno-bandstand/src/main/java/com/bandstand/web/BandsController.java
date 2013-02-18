@@ -18,6 +18,7 @@ import com.bandstand.domain.Band;
 import com.bandstand.domain.BandMember;
 import com.bandstand.domain.Musician;
 import com.bandstand.domain.SessionManager;
+import io.milton.annotations.ChildOf;
 import io.milton.annotations.ChildrenOf;
 import io.milton.annotations.Delete;
 import io.milton.annotations.DisplayName;
@@ -81,7 +82,15 @@ public class BandsController {
         SessionManager.session().save(b);
         return b;
     }
-
+    
+    @ChildOf(pathSuffix="new")
+    public Band createNewBand(BandsController root) {
+        Band b = new Band();
+        b.setCreatedDate(new Date());
+        b.setModifiedDate(new Date());
+        return b;
+    }
+    
     @Move
     public void move(Band band, BandsController newParent, String newName) {
         Transaction tx = SessionManager.session().beginTransaction();

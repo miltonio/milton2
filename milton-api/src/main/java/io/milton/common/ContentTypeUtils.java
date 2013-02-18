@@ -18,10 +18,11 @@
  */
 package io.milton.common;
 
+import io.milton.http.Request;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +34,6 @@ public class ContentTypeUtils {
 
     private static Logger log = LoggerFactory.getLogger(ContentTypeUtils.class);
     private static final ContentTypeService contentTypeService = new DefaultContentTypeService(); // will load props file ;
-
 
     public static String findContentTypes(String name) {
         List<String> list = contentTypeService.findContentTypes(name);
@@ -54,16 +54,15 @@ public class ContentTypeUtils {
         String s = contentTypeService.getPreferedMimeType(accepts, canProvideList);
         return s;
     }
-    
-    
+
     private static String buildContentTypeText(List<String> mimeTypes) {
         return Utils.toCsv(mimeTypes);
     }
 
     public static List<String> toList(String s) {
         List<String> list = new ArrayList<String>();
-        if( s != null ) {
-            for( String x : s.split(",")) {
+        if (s != null) {
+            for (String x : s.split(",")) {
                 x = x.trim();
                 list.add(x);
             }

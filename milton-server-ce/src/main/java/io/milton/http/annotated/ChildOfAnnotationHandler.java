@@ -45,34 +45,23 @@ public class ChildOfAnnotationHandler extends AbstractAnnotationHandler {
 	public Object execute(AnnoCollectionResource parent, String childName) {
 		Object source = parent.getSource();
 		try {
-			if (childName.endsWith(".new")) {
-				String type = getType(childName);
-				ControllerMethod cm = outer.putChildAnnotationHandler.getMethodForType(parent, type);
-				if (cm == null) {
-					cm = outer.makCollectionAnnotationHandler.getMethodForType(parent, type);
-				}
-				if (cm == null) {
-					log.warn("Couldnt locate a @PutChild or @MakeCollection method for source class: " + source.getClass() + " which can return a type: " + type);
-					return null;
-				}
-				Object o = invoke(cm, source, parent, "");
-				return outer.instantiate(o, parent, cm.method);
-			} else {
-				List<ControllerMethod> availMethods = getMethods(source.getClass());
-				if (availMethods.isEmpty()) {
-					return NOT_ATTEMPTED;
-				}
-				for (ControllerMethod cm : availMethods) {
-
+			List<ControllerMethod> availMethods = getMethods(source.getClass());
+			if (availMethods.isEmpty()) {
+				return NOT_ATTEMPTED;
+			}
+			for (ControllerMethod cm : availMethods) {
+				if (matchesSuffix(cm, childName)) {
 					Object o = invoke(cm, source, parent, childName);
 					if (o == null) {
 						// ignore
 					} else {
-						return outer.instantiate(o, parent, cm.method);
+						AnnoResource r = outer.instantiate(o, parent, cm.method);
+						r.setNameOverride(childName);
+						return r;
 					}
-
 				}
 			}
+
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -89,5 +78,14 @@ public class ChildOfAnnotationHandler extends AbstractAnnotationHandler {
 			return s;
 		}
 		return null;
+	}
+
+	private boolean matchesSuffix(ControllerMethod cm, String childName) {
+		ChildOf a = (ChildOf) cm.anno;
+		if( !a.pathSuffix().equals("") ) {
+			return childName.endsWith(a.pathSuffix());
+		} else {
+			return true;
+		}
 	}
 }

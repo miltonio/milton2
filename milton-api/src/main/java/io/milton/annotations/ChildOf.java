@@ -14,6 +14,7 @@
  */
 package io.milton.annotations;
 
+import io.milton.common.Utils;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -44,5 +45,12 @@ import java.util.List;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ChildOf {
-
+    
+    /**
+     * Will only match on paths which end with the given suffic. Default is empty
+     * string so will always match
+     * 
+     * @return 
+     */
+    String pathSuffix() default ""; 
 }

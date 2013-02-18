@@ -27,14 +27,18 @@ import io.milton.annotations.Get;
 import io.milton.annotations.MakeCollection;
 import io.milton.annotations.Move;
 import io.milton.annotations.Name;
+import io.milton.annotations.Post;
 import io.milton.annotations.ResourceController;
 import io.milton.annotations.Users;
+import io.milton.common.JsonResult;
 import io.milton.common.ModelAndView;
 import io.milton.resource.AccessControlledResource;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.List;
 import org.hibernate.Transaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -43,6 +47,8 @@ import org.hibernate.Transaction;
 @ResourceController
 public class MusiciansController {
 
+    private static final Logger log = LoggerFactory.getLogger(MusiciansController.class);
+    
     @ChildrenOf
     public MusiciansController getMusiciansRoot(RootController root) {
         return this;
@@ -53,12 +59,25 @@ public class MusiciansController {
     public List<Musician> getMusicians(MusiciansController root) {
         return Musician.findAll(SessionManager.session());
     }
-
+    
+    @Get(contentType="application/json")
+    public JsonResult renderMusicianJson(Musician musician) throws UnsupportedEncodingException {
+        return JsonResult.returnData(musician);
+    }  
+    
     @Get
     public ModelAndView renderMusicianPage(Musician musician) throws UnsupportedEncodingException {
         return new ModelAndView("musician", musician, "musicianPage"); 
     }    
 
+    @Post(bindData=true)
+    public void saveMusician(Musician musician) {
+        Transaction tx = SessionManager.session().beginTransaction();
+        SessionManager.session().save(musician);
+        tx.commit();
+        log.info("saved musician");
+    }
+    
     @Get(params={"editMode"})
     public ModelAndView renderMusicianEditPage(Musician musician) throws UnsupportedEncodingException {
         return new ModelAndView("musician", musician, "musicianEditPage"); 
@@ -97,7 +116,7 @@ public class MusiciansController {
     }
 
     @MakeCollection
-    public Musician createMusician(MusiciansController root, String newName) {
+    public Musician createAndSaveMusician(MusiciansController root, String newName) {
         Transaction tx = SessionManager.session().beginTransaction();
         Musician m = new Musician();
         m.setCreatedDate(new Date());
@@ -107,6 +126,14 @@ public class MusiciansController {
         tx.commit();
         return m;
     }
+    
+    @ChildOf(pathSuffix="new")
+    public Musician createNewMusician(MusiciansController root) {
+        Musician m = new Musician();
+        m.setCreatedDate(new Date());
+        m.setModifiedDate(new Date());
+        return m;
+    }    
     
     @Delete
     public void deleteMusician(Musician musician) {

@@ -164,12 +164,12 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 	protected String attemptToReadProperty(Object source, String... propNames) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		for (String propName : propNames) {
 			if (PropertyUtils.isReadable(source, propName)) {
-				Object oName = PropertyUtils.getProperty(source, propName);
+				// found a readable property, so return it				
+				Object oName = PropertyUtils.getProperty(source, propName);				
 				if (oName != null) {
-					if (oName instanceof String) {
-						String s = (String) oName;
-						return s;
-					}
+					return oName.toString();
+				} else {
+					return null;
 				}
 			}
 		}
@@ -189,6 +189,7 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 		if (anno instanceof Get) {
 			Get g = (Get) anno;
 			if (g.contentType() != null && g.contentType().length() > 0) {
+				System.out.println(g.contentType() + " == " + reqContentType);
 				if (g.contentType().equals(reqContentType)) {
 					return 1;
 				} else {
