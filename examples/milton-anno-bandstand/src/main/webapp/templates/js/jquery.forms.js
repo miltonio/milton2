@@ -7,15 +7,20 @@
         init : function( options ) { 
             var container = this;
             
-            var config = $.extend( {}, options);
+            var config = $.extend( {
+                callback: function(resp, form) {
+                    log("Completed POST", resp, form);
+                }
+            }, options);
             var inputs = container.find("input,select,textarea").not("[type=submit]");
-            log("val", inputs, container);
+            log("jqBootstrapValidation", inputs, container);
             inputs.jqBootstrapValidation({
                 submitSuccess: function(form, e) {
+                    log("submit syuccess");
                     e.stopPropagation();
                     e.cancel=true;
                     e.preventDefault();                        
-                    postForm(form);                        
+                    postForm(form, config.callback);                        
                     return false;
                 }
             });                

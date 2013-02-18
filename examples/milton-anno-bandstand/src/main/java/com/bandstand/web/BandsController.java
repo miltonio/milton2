@@ -26,6 +26,7 @@ import io.milton.annotations.Get;
 import io.milton.annotations.MakeCollection;
 import io.milton.annotations.Move;
 import io.milton.annotations.Name;
+import io.milton.annotations.Post;
 import io.milton.annotations.ResourceController;
 import io.milton.common.JsonResult;
 import io.milton.common.ModelAndView;
@@ -51,12 +52,19 @@ public class BandsController {
     public ModelAndView renderBandEditPage(Band band) throws UnsupportedEncodingException {
         return new ModelAndView("band", band, "bandEditPage"); 
     }    
-    
-    
+        
     @Get(contentType="application/json")
     public JsonResult renderBandJson(Band band) throws UnsupportedEncodingException {
         return JsonResult.returnData(band);
     }      
+    
+    @Post(bindData=true)
+    public Band saveBand(Band band) {
+        Transaction tx = SessionManager.session().beginTransaction();
+        SessionManager.session().save(band);
+        tx.commit();
+        return band;
+    }    
     
     @ChildrenOf
     public BandsController getBandsRoot(RootController root) {

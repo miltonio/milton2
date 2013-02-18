@@ -15,6 +15,7 @@
 package io.milton.http.template;
 
 import io.milton.common.View;
+import io.milton.http.HttpManager;
 import io.milton.servlet.OutputStreamWrappingHttpServletResponse;
 import io.milton.servlet.ServletRequest;
 import io.milton.servlet.ServletResponse;
@@ -69,11 +70,8 @@ public class JspViewResolver implements ViewResolver {
 	public void setTheme(String theme) {
 		this.theme = theme;
 	}
-	
-	
-	
+		
 	public class JspTemplateProcessor implements TemplateProcessor {
-
 		private final String jspPath;
 		private final RequestDispatcher rd;
 
@@ -81,8 +79,7 @@ public class JspViewResolver implements ViewResolver {
 			this.jspPath = jspPath;
 			this.rd = rd;
 		}
-				
-		
+						
 		@Override
 		public void execute(Map<String, Object> model, OutputStream out) {
 			try {
@@ -91,6 +88,8 @@ public class JspViewResolver implements ViewResolver {
 				if( !model.containsKey("theme")) {
 					model.put("theme", theme);
 				}
+				String path = HttpManager.request().getAbsolutePath();
+				req.setAttribute("pagePath", path);
 				req.setAttribute("model", model);
 				rd.include(req, resp);
 				resp.flushBuffer();
@@ -99,7 +98,6 @@ public class JspViewResolver implements ViewResolver {
 			} catch (IOException e) {
 				throw new RuntimeException(jspPath, e);
 			}
-		}
-		
+		}		
 	}
 }

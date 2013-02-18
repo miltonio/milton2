@@ -83,6 +83,8 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 			return redirect;
 		} else if (result instanceof JsonResult) {
 			jsonResult = (JsonResult) result;
+		} else {
+			jsonResult = JsonResult.returnData(getHref(), result);
 		}
 		return null;
 	}
@@ -93,7 +95,7 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 			annoFactory.getAnnotationHandler.execute(this, out, range, params, contentType);
 		} else {
 			JsonWriter jsonWriter = new JsonWriter();
-			jsonWriter.write(this, out);
+			jsonWriter.write(jsonResult, out);
 		}
 	}
 

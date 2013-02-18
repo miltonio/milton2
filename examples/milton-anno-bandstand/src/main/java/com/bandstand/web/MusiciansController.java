@@ -55,7 +55,7 @@ public class MusiciansController {
     }
 
     @ChildrenOf
-    @Users // ties in with the @Authenticate method below
+    @Users // ties in with the @AccessControlList and @Authenticate methods below
     public List<Musician> getMusicians(MusiciansController root) {
         return Musician.findAll(SessionManager.session());
     }
@@ -71,11 +71,12 @@ public class MusiciansController {
     }    
 
     @Post(bindData=true)
-    public void saveMusician(Musician musician) {
+    public Musician saveMusician(Musician musician) {
         Transaction tx = SessionManager.session().beginTransaction();
         SessionManager.session().save(musician);
         tx.commit();
         log.info("saved musician");
+        return musician;
     }
     
     @Get(params={"editMode"})

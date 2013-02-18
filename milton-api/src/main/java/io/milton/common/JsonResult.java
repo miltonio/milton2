@@ -27,6 +27,13 @@ public class JsonResult {
         return r;
     }
     
+    public static JsonResult returnData(String href, Object data) {
+        JsonResult r = new JsonResult(true);
+        r.setData(data);
+        r.setNextHref(href);
+        return r;        
+    }
+    
     public static JsonResult returnData(Object data) {
         JsonResult r = new JsonResult(true);
         r.setData(data);

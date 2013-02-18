@@ -26,7 +26,7 @@ function log() {
     }
 }
 
-function postForm(form) {
+function postForm(form, callback) {
     var serialised = form.serialize();
     form.trigger("preSubmitForm", serialised);
     try {                    

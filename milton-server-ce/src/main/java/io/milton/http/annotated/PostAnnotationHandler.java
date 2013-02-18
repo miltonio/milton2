@@ -18,7 +18,6 @@ import io.milton.annotations.Post;
 import io.milton.common.JsonResult;
 import io.milton.http.Request;
 import io.milton.http.Request.Method;
-import io.milton.http.annotated.DataBinder;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Locale;
 import java.util.Map;
@@ -65,6 +64,7 @@ public class PostAnnotationHandler extends AbstractAnnotationHandler {
 				}
 				DataBinder dataBinder = new DataBinder(locale);
 				dataBinder.populate(source, params);
+				resource.setNameOverride(null); // clear the name set by new object handling so created name will be returned
 			}
 		} catch (IllegalAccessException e) {
 			log.warn("Exception running DataBinder:", e);

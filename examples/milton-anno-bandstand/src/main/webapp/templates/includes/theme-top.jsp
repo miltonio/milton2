@@ -6,6 +6,7 @@
 
         <!-- Le styles -->
         <link href="/templates/themes/${model.theme}/css/bootstrap.css" rel="stylesheet">
+        <link href="/templates/css/common.css" rel="stylesheet">
         <style>
             body {
                 padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */

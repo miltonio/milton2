@@ -22,6 +22,7 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
 /**
@@ -35,6 +36,7 @@ public class Musician extends BaseEntity {
 
     public static List<Musician> findAll(Session session) {
         Criteria crit = session.createCriteria(Musician.class);
+        crit.addOrder(Order.asc("name"));
         return DbUtils.toList(crit, Musician.class);
     }
 

@@ -155,6 +155,7 @@ public class HttpManagerBuilder {
 	protected boolean enableExpectContinue = false;
 	protected String controllerPackagesToScan;
 	private Long maxAgeSeconds = 10l;
+	private String fsHomeDir = null; 
 
 	protected io.milton.http.SecurityManager securityManager() {
 		if (securityManager == null) {
@@ -190,9 +191,12 @@ public class HttpManagerBuilder {
 
 
 		if (mainResourceFactory == null) {
-			rootDir = new File(System.getProperty("user.home"));
+			if( fsHomeDir == null ) {
+				fsHomeDir = System.getProperty("user.home");
+			}
+			rootDir = new File(fsHomeDir);
 			if (!rootDir.exists() || !rootDir.isDirectory()) {
-				throw new RuntimeException("Root directory is not valie: " + rootDir.getAbsolutePath());
+				throw new RuntimeException("Root directory is not valid: " + rootDir.getAbsolutePath());
 			}
 			log.info("Using securityManager: " + securityManager.getClass());
 			FileSystemResourceFactory fsResourceFactory = new FileSystemResourceFactory(rootDir, securityManager(), fsContextPath);
@@ -1105,6 +1109,21 @@ public class HttpManagerBuilder {
 	public void setDisplayNameFormatter(DisplayNameFormatter displayNameFormatter) {
 		this.displayNameFormatter = displayNameFormatter;
 	}
+
+	/**
+	 * Set this if you're using the FileSystemResourceFactory and you want to explicitly
+	 * set a home directory. If left null milton will use the user.home System property
+	 * 
+	 * @return 
+	 */
+	public String getFsHomeDir() {
+		return fsHomeDir;
+	}
+
+	public void setFsHomeDir(String fsHomeDir) {
+		this.fsHomeDir = fsHomeDir;
+	}
+	
 	
 	
 
