@@ -625,7 +625,7 @@ public class Host extends Folder {
                     return response.getStatusLine().getStatusCode();
                 }
             };
-            Integer res = client.execute(m, respHandler);
+            Integer res = client.execute(m, respHandler, newContext());
 
             Utils.processResultCode(res, url);
             return responses;
