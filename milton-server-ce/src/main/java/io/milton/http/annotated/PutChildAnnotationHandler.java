@@ -17,6 +17,7 @@ package io.milton.http.annotated;
 import io.milton.annotations.PutChild;
 import io.milton.http.Request.Method;
 import java.io.InputStream;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,11 +28,9 @@ import org.slf4j.LoggerFactory;
 public class PutChildAnnotationHandler extends AbstractAnnotationHandler {
 
 	private static final Logger log = LoggerFactory.getLogger(PutChildAnnotationHandler.class);
-	private final AnnotationResourceFactory outer;
 
 	public PutChildAnnotationHandler(final AnnotationResourceFactory outer) {
-		super(PutChild.class, Method.PUT);
-		this.outer = outer;
+		super(outer, PutChild.class, Method.PUT);
 	}
 
 	public Object execute(Object source, String newName, InputStream inputStream, Long length, String contentType) {

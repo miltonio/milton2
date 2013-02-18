@@ -14,15 +14,20 @@
  */
 package io.milton.http.annotated;
 
+import io.milton.http.LockInfo;
+import io.milton.http.LockTimeout;
+import io.milton.http.LockToken;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.resource.CollectionResource;
+import io.milton.resource.LockingCollectionResource;
 import io.milton.resource.MakeCollectionableResource;
 import io.milton.resource.PutableResource;
 import io.milton.resource.Resource;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -30,7 +35,7 @@ import java.util.Set;
  *
  * @author brad
  */
-public class AnnoCollectionResource extends AnnoResource implements CollectionResource, PutableResource, MakeCollectionableResource {
+public class AnnoCollectionResource extends AnnoResource implements CollectionResource, PutableResource, MakeCollectionableResource, LockingCollectionResource {
 
 	/**
 	 * lazy loaded list of all children of this collection
@@ -56,7 +61,7 @@ public class AnnoCollectionResource extends AnnoResource implements CollectionRe
 			}
 			// try to load singly using ChildOf annotation, if present
 			// childTriValue can be null, the child source object, or a special value indicating no search
-			Object childTriValue = annoFactory.childOfAnnotationHandler.execute(this);
+			Object childTriValue = annoFactory.childOfAnnotationHandler.execute(this, childName);
 			if (childTriValue == null) {
 				return null; // definitely not found
 			} else if (childTriValue.equals(ChildOfAnnotationHandler.NOT_ATTEMPTED)) {
@@ -88,6 +93,13 @@ public class AnnoCollectionResource extends AnnoResource implements CollectionRe
 			for (AnnoResource r : set) {
 				children.add(r);
 			}
+			
+			// Now add any temp lock resources
+			for( LockHolder holder : annoFactory.getTempResourcesForParent(this)) {
+				CommonResource cr = annoFactory.instantiate(holder, this);
+				children.add(cr);
+			}
+			
 			// if there are singly loaded items we must replace their dopple-ganger in children
 			// because there might already be references to those resource objects elsewhere in code
 			// and having two objects representing the same resource causes unpredictable chaos!!!
@@ -126,11 +138,34 @@ public class AnnoCollectionResource extends AnnoResource implements CollectionRe
 		return newRes;
 	}
 	
+	@Override
 	public AnnoCollectionResource getRoot() {
 		if( parent == null ) {
 			return this;
 		} else {
 			return parent.getRoot();
+		}
+	}
+
+	@Override
+	public LockToken createAndLock(String name, LockTimeout timeout, LockInfo lockInfo) throws NotAuthorizedException {
+		LockHolder r = annoFactory.createLockHolder(this, name, timeout, lockInfo);
+		if( children != null ) {
+			CommonResource cr = annoFactory.instantiate(r, parent);
+			children.add(cr);
+		}
+		return new LockToken(r.getId().toString(), lockInfo, timeout);
+	}
+
+	void removeLockHolder(String name) {
+		if( children != null ) {
+			Iterator<CommonResource> it = children.iterator();
+			while( it.hasNext()) {
+				Resource r = it.next();
+				if( r instanceof LockNullResource && r.getName().equals(name)) {
+					it.remove();					
+				}
+			}
 		}
 	}
 	

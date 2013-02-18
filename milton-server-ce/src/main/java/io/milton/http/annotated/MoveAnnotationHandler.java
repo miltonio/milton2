@@ -28,11 +28,8 @@ public class MoveAnnotationHandler extends AbstractAnnotationHandler {
 	
 	private static final Logger log = LoggerFactory.getLogger(MoveAnnotationHandler.class);
 	
-	private final AnnotationResourceFactory outer;
-
 	public MoveAnnotationHandler(final AnnotationResourceFactory outer) {
-		super(Move.class, Method.MOVE);
-		this.outer = outer;
+		super(outer, Move.class, Method.MOVE);
 	}
 
 	void execute(Object source, CollectionResource rDest, String newName) {

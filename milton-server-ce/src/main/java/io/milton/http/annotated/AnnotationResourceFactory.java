@@ -18,6 +18,7 @@
  */
 package io.milton.http.annotated;
 
+import io.milton.annotations.AccessControlList;
 import io.milton.annotations.Authenticate;
 import io.milton.annotations.ChildOf;
 import io.milton.annotations.ChildrenOf;
@@ -37,7 +38,9 @@ import io.milton.annotations.UniqueId;
 import io.milton.annotations.Users;
 import io.milton.common.Path;
 import io.milton.http.HttpManager;
+import io.milton.http.LockInfo;
 import io.milton.http.LockManager;
+import io.milton.http.LockTimeout;
 import io.milton.http.Request;
 import io.milton.http.Request.Method;
 import io.milton.http.ResourceFactory;
@@ -58,8 +61,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,6 +85,10 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	private String contextPath;
 	private Collection<Object> controllers;
 	private ViewResolver viewResolver;
+	/**
+	 * Replace with a suitable cluster enabled Map for cluster support
+	 */
+	private Map<String, List<LockHolder>> mapOfTempResources = new ConcurrentHashMap<String, List<LockHolder>>();
 	private Map<Class, AnnotationHandler> mapOfAnnotationHandlers = new HashMap<Class, AnnotationHandler>(); // keyed on annotation class
 	private Map<Method, AnnotationHandler> mapOfAnnotationHandlersByMethod = new HashMap<Method, AnnotationHandler>(); // keyed on http method
 	RootAnnotationHandler rootAnnotationHandler = new RootAnnotationHandler(this);
@@ -93,7 +104,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	PutChildAnnotationHandler putChildAnnotationHandler = new PutChildAnnotationHandler(this);
 	UsersAnnotationHandler usersAnnotationHandler = new UsersAnnotationHandler(this);
 	AuthenticateAnnotationHandler authenticateAnnotationHandler = new AuthenticateAnnotationHandler(this);
-	
+	AccessControlListAnnotationHandler accessControlListAnnotationHandler = new AccessControlListAnnotationHandler(this);
 	CommonPropertyAnnotationHandler<Date> modifiedDateAnnotationHandler = new CommonPropertyAnnotationHandler<Date>(ModifiedDate.class, this);
 	CommonPropertyAnnotationHandler<Date> createdDateAnnotationHandler = new CommonPropertyAnnotationHandler<Date>(CreatedDate.class, this);
 	CommonPropertyAnnotationHandler<String> contentTypeAnnotationHandler = new CommonPropertyAnnotationHandler<String>(ContentType.class, this);
@@ -113,9 +124,10 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		mapOfAnnotationHandlers.put(Delete.class, deleteAnnotationHandler);
 		mapOfAnnotationHandlers.put(Copy.class, copyAnnotationHandler);
 		mapOfAnnotationHandlers.put(PutChild.class, putChildAnnotationHandler);
-		
-		mapOfAnnotationHandlers.put(Users.class, usersAnnotationHandler);		
-		mapOfAnnotationHandlers.put(Authenticate.class, authenticateAnnotationHandler);				
+
+		mapOfAnnotationHandlers.put(Users.class, usersAnnotationHandler);
+		mapOfAnnotationHandlers.put(Authenticate.class, authenticateAnnotationHandler);
+		mapOfAnnotationHandlers.put(AccessControlList.class, accessControlListAnnotationHandler);
 
 		mapOfAnnotationHandlers.put(ModifiedDate.class, modifiedDateAnnotationHandler);
 		mapOfAnnotationHandlers.put(CreatedDate.class, createdDateAnnotationHandler);
@@ -302,7 +314,11 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		}
 		for (int i = 1; i < m.getParameterTypes().length; i++) {
 			Class type = m.getParameterTypes()[i];
-			args[i] = findArgValue(type, request, response, list);
+			try {
+				args[i] = findArgValue(type, request, response, list);
+			} catch (UnresolvableParameterException e) {
+				throw new Exception("Couldnt find parameter " + type + " for method: " + m);
+			}
 		}
 		return args;
 	}
@@ -339,10 +355,14 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		log.error(" - " + Request.class);
 		log.error(" - " + Response.class);
 		for (Object o : otherAvailValues) {
-			log.error(" - " + o.getClass());
+			if (o != null) {
+				log.error(" - " + o.getClass());
+			} else {
+				log.error(" - null");
+			}
 		}
 
-		throw new RuntimeException("Unknown parameter type: " + type);
+		throw new UnresolvableParameterException("Couldnt find parameter of type: " + type);
 	}
 
 	private byte[] toBytes(InputStream inputStream) throws IOException {
@@ -353,14 +373,15 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 
 	/**
 	 * Create a Resource to wrap a source pojo object.
-	 * 
+	 *
 	 * @param childSource
 	 * @param parent
-	 * @param method - the method which located the source object. Will be inspected for annotations
-	 * @return 
+	 * @param method - the method which located the source object. Will be
+	 * inspected for annotations
+	 * @return
 	 */
 	public AnnoResource instantiate(Object childSource, AnnoCollectionResource parent, java.lang.reflect.Method m) {
-		if( m.getAnnotation(Users.class) != null ) { // TODO: instead of Users annotation, just look for @Authenticate anno for source class
+		if (m.getAnnotation(Users.class) != null) { // TODO: instead of Users annotation, just look for @Authenticate anno for source class
 			return new AnnoPrincipalResource(this, childSource, parent);
 		}
 		if (childrenOfAnnotationHandler.isCompatible(childSource)) {
@@ -368,6 +389,100 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		} else {
 			return new AnnoFileResource(this, childSource, parent);
 		}
+	}
+
+	public CommonResource instantiate(LockHolder r, AnnoCollectionResource parent) {
+		return new LockNullResource(this, parent, r);
+	}
+
+	/**
+	 * Create an in-memory resource with the given timeout. The resource will
+	 * not be persisted, but may be distributed among the cluster if configured
+	 * as such.
+	 *
+	 * The resource may be flushed from the in-memory list after the given
+	 * timeout if not-null
+	 *
+	 * The type of the object returned is not intended to have any significance
+	 * and does not contain any meaningful content
+	 *
+	 * @param parentCollection
+	 * @param name
+	 * @param timeout - optional. The resource will be removed after this
+	 * timeout expires
+	 * @return - a temporary (not persistent) resource of an indeterminate type
+	 */
+	public LockHolder createLockHolder(AnnoCollectionResource parentCollection, String name, LockTimeout timeout, LockInfo lockInfo) {
+		String parentKey = parentCollection.getUniqueId();
+		if (parentKey == null) {
+			throw new RuntimeException("Cant create temp resource because parent's uniqueID is null. Please add the @UniqueID for class: " + parentCollection.getSource().getClass());
+		}
+		LockHolder r = new LockHolder(UUID.randomUUID());
+		r.setParentCollectionId(parentKey);
+		r.setName(name);
+		r.setLockTimeout(timeout);
+		r.setLockInfo(lockInfo);
+		synchronized (this) {
+			List<LockHolder> list = mapOfTempResources.get(parentKey);
+			if (list == null) {
+				list = new CopyOnWriteArrayList<LockHolder>();
+				mapOfTempResources.put(parentKey, list);
+			}
+			list.add(r);
+		}
+		return r;
+	}
+
+	/**
+	 * Null-safe method to get the list of lock holders for the given parent.
+	 * These are resources created by a LOCK-null request, where resources are
+	 * locked prior to being created. The lock-null resource is replaced
+	 * following a PUT to that resource
+	 *
+	 * @param parent
+	 * @return
+	 */
+	public List<LockHolder> getTempResourcesForParent(AnnoCollectionResource parent) {
+		String parentKey = parent.getUniqueId();
+		if (parentKey == null) {
+			return Collections.EMPTY_LIST;
+		}
+		return getTempResourcesForParent(parentKey);
+	}
+
+	public List<LockHolder> getTempResourcesForParent(String parentKey) {
+		List<LockHolder> list = mapOfTempResources.get(parentKey);
+		if (list == null) {
+			return Collections.EMPTY_LIST;
+		} else {
+			return list;
+		}
+	}
+
+	/**
+	 * Removes the LockHolder from memory and also from the parent which
+	 * contains it (if loaded)
+	 *
+	 * @param parent
+	 * @param name
+	 */
+	public void removeLockHolder(AnnoCollectionResource parent, String name) {
+		List<LockHolder> list = getTempResourcesForParent(parent);
+		Iterator<LockHolder> it = list.iterator();
+		while (it.hasNext()) {
+			if (it.next().getName().equals(name)) {
+				it.remove();
+			}
+		}
+		parent.removeLockHolder(name);
+	}
+
+	public Map<String, List<LockHolder>> getMapOfTempResources() {
+		return mapOfTempResources;
+	}
+
+	public void setMapOfTempResources(Map<String, List<LockHolder>> mapOfTempResources) {
+		this.mapOfTempResources = mapOfTempResources;
 	}
 
 	public class AnnotationsDisplayNameFormatter implements DisplayNameFormatter {

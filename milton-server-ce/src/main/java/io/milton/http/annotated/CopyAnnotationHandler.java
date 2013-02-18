@@ -28,11 +28,8 @@ public class CopyAnnotationHandler extends AbstractAnnotationHandler {
 	
 	private static final Logger log = LoggerFactory.getLogger(CopyAnnotationHandler.class);
 	
-	private final AnnotationResourceFactory outer;
-
 	public CopyAnnotationHandler(final AnnotationResourceFactory outer) {
-		super(Copy.class, Method.COPY);
-		this.outer = outer;
+		super(outer, Copy.class, Method.COPY);
 	}
 
 	void execute(Object source, CollectionResource rDest, String newName) {
@@ -47,8 +44,7 @@ public class CopyAnnotationHandler extends AbstractAnnotationHandler {
 				AnnoResource arDest = (AnnoResource) rDest;
 				destObject = arDest.getSource();
 			}
-			Object[] args = outer.buildInvokeArgs(source, cm.method, newName, rDest, destObject);
-			cm.method.invoke(cm.controller, args);
+			invoke(cm, source, newName, rDest, destObject);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

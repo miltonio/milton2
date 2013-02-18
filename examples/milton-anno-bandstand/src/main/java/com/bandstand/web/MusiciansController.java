@@ -14,18 +14,24 @@
  */
 package com.bandstand.web;
 
+import com.bandstand.domain.Band;
 import com.bandstand.domain.BandMember;
 import com.bandstand.domain.Musician;
 import com.bandstand.domain.SessionManager;
+import io.milton.annotations.AccessControlList;
 import io.milton.annotations.Authenticate;
 import io.milton.annotations.ChildOf;
 import io.milton.annotations.ChildrenOf;
 import io.milton.annotations.Delete;
+import io.milton.annotations.Get;
 import io.milton.annotations.MakeCollection;
 import io.milton.annotations.Move;
 import io.milton.annotations.Name;
 import io.milton.annotations.ResourceController;
 import io.milton.annotations.Users;
+import io.milton.common.ModelAndView;
+import io.milton.resource.AccessControlledResource;
+import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.List;
 import org.hibernate.Transaction;
@@ -48,9 +54,28 @@ public class MusiciansController {
         return Musician.findAll(SessionManager.session());
     }
 
+    @Get
+    public ModelAndView renderMusicianPage(Musician musician) throws UnsupportedEncodingException {
+        return new ModelAndView("musician", musician, "musicianPage"); 
+    }    
+
+    @Get(params={"editMode"})
+    public ModelAndView renderMusicianEditPage(Musician musician) throws UnsupportedEncodingException {
+        return new ModelAndView("musician", musician, "musicianEditPage"); 
+    }        
+    
     @Authenticate
     public String getMusicianPassword(Musician m) {
         return m.getPassword(); // The @Authenticate also allows methods which verify a password and return Boolean
+    }
+    
+    @AccessControlList
+    public List<AccessControlledResource.Priviledge> getMusicianPrivs(Musician target, Musician currentUser) {
+        if( target == currentUser ) {
+            return AccessControlledResource.READ_WRITE;
+        } else {
+            return AccessControlledResource.READ_CONTENT;
+        }
     }
     
     @ChildOf

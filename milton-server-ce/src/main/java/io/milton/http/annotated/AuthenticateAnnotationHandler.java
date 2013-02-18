@@ -27,13 +27,11 @@ import org.slf4j.LoggerFactory;
  */
 public class AuthenticateAnnotationHandler extends AbstractAnnotationHandler {
 
-	private static final Logger log = LoggerFactory.getLogger(GetAnnotationHandler.class);
+	private static final Logger log = LoggerFactory.getLogger(AuthenticateAnnotationHandler.class);
 	public static final String NOT_ATTEMPTED = "NotAttempted";
-	private final AnnotationResourceFactory outer;
 
 	public AuthenticateAnnotationHandler(final AnnotationResourceFactory outer) {
-		super(Authenticate.class);
-		this.outer = outer;
+		super(outer, Authenticate.class);
 	}
 
 	public Boolean authenticate(AnnoPrincipalResource userRes, String requestedPassword) {

@@ -43,12 +43,12 @@ public class BandsController {
 
     @Get
     public ModelAndView renderBandPage(Band band) throws UnsupportedEncodingException {
-        return new ModelAndView("controller", this, "bandPage"); 
+        return new ModelAndView("band", band, "bandPage"); 
     }    
 
     @Get(params={"editMode"})
     public ModelAndView renderBandEditPage(Band band) throws UnsupportedEncodingException {
-        return new ModelAndView("controller", this, "bandEditPage"); 
+        return new ModelAndView("band", band, "bandEditPage"); 
     }    
     
     

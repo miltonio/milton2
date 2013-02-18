@@ -27,11 +27,8 @@ public class DeleteAnnotationHandler extends AbstractAnnotationHandler {
 	
 	private static final Logger log = LoggerFactory.getLogger(DeleteAnnotationHandler.class);
 	
-	private final AnnotationResourceFactory outer;
-
 	public DeleteAnnotationHandler(final AnnotationResourceFactory outer) {
-		super(Delete.class, Method.DELETE);
-		this.outer = outer;
+		super(outer, Delete.class, Method.DELETE);
 	}
 
 	void execute(Object source) {

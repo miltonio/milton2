@@ -17,8 +17,6 @@ package io.milton.http.annotated;
 import io.milton.annotations.Users;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
-import io.milton.http.http11.auth.DigestResponse;
-import io.milton.principal.DiscretePrincipal;
 import io.milton.resource.Resource;
 import java.util.List;
 
@@ -30,11 +28,8 @@ public class UsersAnnotationHandler extends AbstractAnnotationHandler {
 
 	public static final String NOT_ATTEMPTED = "NotAttempted";
 	
-	private final AnnotationResourceFactory outer;
-
 	public UsersAnnotationHandler(final AnnotationResourceFactory outer) {
-		super(Users.class);
-		this.outer = outer;
+		super(outer, Users.class);
 	}
 
 	public AnnoPrincipalResource findUser(AnnoCollectionResource root, String name)  {

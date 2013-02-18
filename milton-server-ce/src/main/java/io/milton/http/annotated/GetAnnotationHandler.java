@@ -34,11 +34,9 @@ import org.slf4j.LoggerFactory;
 public class GetAnnotationHandler extends AbstractAnnotationHandler {
 	
 	private static final Logger log = LoggerFactory.getLogger(GetAnnotationHandler.class);
-	private final AnnotationResourceFactory outer;
 	
 	public GetAnnotationHandler(final AnnotationResourceFactory outer) {
-		super(Get.class, Method.GET);
-		this.outer = outer;
+		super(outer, Get.class, Method.GET);
 	}
 	
 	public void execute(AnnoResource resource, Object source, OutputStream out, Range range, Map<String, String> params, String contentType) {		

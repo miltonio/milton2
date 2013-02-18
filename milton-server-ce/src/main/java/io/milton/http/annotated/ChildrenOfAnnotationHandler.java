@@ -26,11 +26,8 @@ import java.util.Set;
  */
 public class ChildrenOfAnnotationHandler extends AbstractAnnotationHandler {
 
-	private final AnnotationResourceFactory outer;
-
 	public ChildrenOfAnnotationHandler(final AnnotationResourceFactory outer) {
-		super(ChildrenOf.class, Method.PROPFIND);
-		this.outer = outer;
+		super(outer, ChildrenOf.class, Method.PROPFIND);
 	}
 
 	public Set<AnnoResource> execute(AnnoCollectionResource parent) {
@@ -38,7 +35,7 @@ public class ChildrenOfAnnotationHandler extends AbstractAnnotationHandler {
 		Set<AnnoResource> result = new HashSet<AnnoResource>();
 		for (ControllerMethod cm : getMethods(source.getClass())) {
 			try {
-				Object o = cm.method.invoke(cm.controller, source);
+				Object o = invoke(cm, source, parent);
 				if( o == null ) {
 					// ignore
 				} else if( o instanceof Collection ) {

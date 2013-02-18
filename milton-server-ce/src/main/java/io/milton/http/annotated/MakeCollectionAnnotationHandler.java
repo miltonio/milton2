@@ -26,12 +26,9 @@ import org.slf4j.LoggerFactory;
 public class MakeCollectionAnnotationHandler extends AbstractAnnotationHandler {
 	
 	private static final Logger log = LoggerFactory.getLogger(MakeCollectionAnnotationHandler.class);
-	
-	private final AnnotationResourceFactory outer;
 
 	public MakeCollectionAnnotationHandler(final AnnotationResourceFactory outer) {
-		super(MakeCollection.class, Method.MKCOL);
-		this.outer = outer;
+		super(outer, MakeCollection.class, Method.MKCOL);
 	}
 
 	public Object execute(Object source, String newName) {

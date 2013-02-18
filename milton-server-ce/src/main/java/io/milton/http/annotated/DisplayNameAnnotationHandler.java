@@ -22,14 +22,12 @@ import io.milton.annotations.DisplayName;
  */
 public class DisplayNameAnnotationHandler extends AbstractAnnotationHandler {
 
-	private final AnnotationResourceFactory outer;
-
 	public DisplayNameAnnotationHandler(final AnnotationResourceFactory outer) {
-		super(DisplayName.class);
-		this.outer = outer;
+		super(outer, DisplayName.class);
 	}
 
-	public String execute(Object source) {
+	public String execute(AnnoResource res) {
+		Object source = res.getSource();
 		try {
 			ControllerMethod cm = getBestMethod(source.getClass());
 			if (cm == null) {
@@ -37,7 +35,7 @@ public class DisplayNameAnnotationHandler extends AbstractAnnotationHandler {
 				if( s != null ) {
 					return s;
 				}
-				throw new RuntimeException("Method not found: " + getClass() + " - " + source.getClass());
+				return res.getName();
 			}
 
 			return (String) cm.method.invoke(cm.controller, source);

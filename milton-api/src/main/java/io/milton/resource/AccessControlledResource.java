@@ -106,10 +106,13 @@ public interface AccessControlledResource extends Resource {
 
         private Priviledge(List<Priviledge>contains) {
             this.contains = contains;
-        }
-        
-        
+        }               
     }
+    
+    public final static List<AccessControlledResource.Priviledge> READ_WRITE = Arrays.asList(Priviledge.READ, Priviledge.WRITE);
+    
+    public final static List<AccessControlledResource.Priviledge> READ_CONTENT = Arrays.asList(Priviledge.READ_CONTENT);
+    
 
     /**
      * A URL which identifies the principal owner of this resource

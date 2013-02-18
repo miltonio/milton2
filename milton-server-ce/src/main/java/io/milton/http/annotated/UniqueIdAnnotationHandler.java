@@ -25,11 +25,9 @@ import org.apache.commons.beanutils.PropertyUtils;
 public class UniqueIdAnnotationHandler extends AbstractAnnotationHandler {
 
 	private final String[] ID_PROP_NAMES = {"id", "uniqueId", "code"};
-	private final AnnotationResourceFactory outer;
 
 	public UniqueIdAnnotationHandler(Class annoClass, final AnnotationResourceFactory outer) {
-		super(annoClass);
-		this.outer = outer;
+		super(outer, annoClass);
 	}
 
 	public String execute(Object source) {

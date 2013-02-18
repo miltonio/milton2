@@ -15,8 +15,9 @@
 package io.milton.http.annotated;
 
 import io.milton.annotations.ChildOf;
-import io.milton.http.Request.Method;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -24,42 +25,68 @@ import java.util.List;
  */
 public class ChildOfAnnotationHandler extends AbstractAnnotationHandler {
 
+	private static final Logger log = LoggerFactory.getLogger(ChildOfAnnotationHandler.class);
 	public static final String NOT_ATTEMPTED = "NotAttempted";
-		
-	private final AnnotationResourceFactory annoFactory;
 
 	public ChildOfAnnotationHandler(final AnnotationResourceFactory outer) {
-		super(ChildOf.class, Method.PROPFIND);
-		this.annoFactory = outer;
+		super(outer, ChildOf.class);
 	}
 
 	/**
-	 * Will return one of:
-	 *	- ChildOfAnnotationHandler.NOT_ATTEMPTED if no appropriate method was found
-	 *	- null, if a method was available but no resource was found
-	 *	- or, the child object with the given name wrapped in an AnnoResource
-	 * 
+	 * Will return one of: - ChildOfAnnotationHandler.NOT_ATTEMPTED if no
+	 * appropriate method was found - null, if a method was available but no
+	 * resource was found - or, the child object with the given name wrapped in
+	 * an AnnoResource
+	 *
 	 * @param source
-	 * @return - a tri-value indicating the object which was found, no object was found, or search was not attempted
+	 * @return - a tri-value indicating the object which was found, no object
+	 * was found, or search was not attempted
 	 */
-	public Object execute(AnnoCollectionResource parent) {
+	public Object execute(AnnoCollectionResource parent, String childName) {
 		Object source = parent.getSource();
-		List<ControllerMethod> availMethods = getMethods(source.getClass());
-		if( availMethods.isEmpty()) {
-			return NOT_ATTEMPTED;
-		}
-		for (ControllerMethod cm : availMethods) {
-			try {
-				Object o = cm.method.invoke(cm.controller, source);
-				if( o == null ) {
-					// ignore
-				} else {
-					return annoFactory.instantiate(o, parent, cm.method);
+		try {
+			if (childName.endsWith(".new")) {
+				String type = getType(childName);
+				ControllerMethod cm = outer.putChildAnnotationHandler.getMethodForType(parent, type);
+				if (cm == null) {
+					cm = outer.makCollectionAnnotationHandler.getMethodForType(parent, type);
 				}
-			} catch (Exception e) {
-				throw new RuntimeException(e);
-			}
+				if (cm == null) {
+					log.warn("Couldnt locate a @PutChild or @MakeCollection method for source class: " + source.getClass() + " which can return a type: " + type);
+					return null;
+				}
+				Object o = invoke(cm, source, parent, "");
+				return outer.instantiate(o, parent, cm.method);
+			} else {
+				List<ControllerMethod> availMethods = getMethods(source.getClass());
+				if (availMethods.isEmpty()) {
+					return NOT_ATTEMPTED;
+				}
+				for (ControllerMethod cm : availMethods) {
 
+					Object o = invoke(cm, source, parent, childName);
+					if (o == null) {
+						// ignore
+					} else {
+						return outer.instantiate(o, parent, cm.method);
+					}
+
+				}
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		return null;
+	}
+
+	private String getType(String childName) {
+		int pos = childName.indexOf(".");
+		if (pos > 0) {
+			String s = childName.substring(0, pos);
+			if (s.length() == 0) {
+				s = null;
+			}
+			return s;
 		}
 		return null;
 	}

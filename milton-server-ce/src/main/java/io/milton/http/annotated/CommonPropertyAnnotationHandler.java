@@ -21,13 +21,11 @@ import java.lang.reflect.InvocationTargetException;
  * @author brad
  */
 public class CommonPropertyAnnotationHandler<T> extends AbstractAnnotationHandler {
-	private final AnnotationResourceFactory outer;
 	
 	private T defaultValue;
 
 	public CommonPropertyAnnotationHandler(Class annoClass, final AnnotationResourceFactory outer) {
-		super(annoClass);
-		this.outer = outer;
+		super(outer, annoClass);
 	}
 
 	public T execute(Object source) {

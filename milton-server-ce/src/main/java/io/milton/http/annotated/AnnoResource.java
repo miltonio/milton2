@@ -14,6 +14,7 @@
  */
 package io.milton.http.annotated;
 
+import io.milton.http.AclUtils;
 import io.milton.http.Auth;
 import io.milton.http.ConditionalCompatibleResource;
 import io.milton.http.HttpManager;
@@ -31,7 +32,7 @@ import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.exceptions.NotFoundException;
 import io.milton.http.exceptions.PreConditionFailedException;
 import io.milton.http.http11.auth.DigestResponse;
-import io.milton.principal.DiscretePrincipal;
+import io.milton.resource.AccessControlledResource;
 import io.milton.resource.CollectionResource;
 import io.milton.resource.CopyableResource;
 import io.milton.resource.DeletableResource;
@@ -44,6 +45,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Date;
 import java.util.Map;
+import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -51,6 +55,7 @@ import java.util.Map;
  */
 public abstract class AnnoResource implements GetableResource, PropFindableResource, DeletableResource, CopyableResource, MoveableResource, LockableResource, ConditionalCompatibleResource, CommonResource, DigestResource {
 
+	private static final Logger log = LoggerFactory.getLogger(AnnoResource.class);
 	protected Object source;
 	protected final AnnotationResourceFactory annoFactory;
 	protected AnnoCollectionResource parent;
@@ -77,9 +82,9 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 	@Override
 	public Object authenticate(String user, String password) {
 		AnnoPrincipalResource userRes = annoFactory.usersAnnotationHandler.findUser(getRoot(), user);
-		if( userRes != null ) {
+		if (userRes != null) {
 			Boolean b = annoFactory.authenticateAnnotationHandler.authenticate(userRes, password);
-			if( b != null ) {
+			if (b != null) {
 				return userRes;
 			}
 		}
@@ -89,17 +94,47 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 	@Override
 	public Object authenticate(DigestResponse digestRequest) {
 		AnnoPrincipalResource userRes = annoFactory.usersAnnotationHandler.findUser(getRoot(), digestRequest.getUser());
-		if( userRes != null ) {
+		if (userRes != null) {
 			Boolean b = annoFactory.authenticateAnnotationHandler.authenticate(userRes, digestRequest);
-			if( b != null ) {
+			if (b != null) {
 				return userRes;
 			}
-		}		
+		}
 		return annoFactory.getSecurityManager().authenticate(digestRequest);
 	}
 
 	@Override
 	public boolean authorise(Request request, Method method, Auth auth) {
+		Object oUser = auth.getTag();
+		AnnoPrincipalResource p = null;
+		if (oUser instanceof AnnoPrincipalResource) {
+			p = (AnnoPrincipalResource) oUser;
+		}
+		// only check ACL if current user is null (ie guest) or the current user is an AnnoPrincipal
+		if (oUser == null || p != null) {
+			Set<AccessControlledResource.Priviledge> acl = annoFactory.accessControlListAnnotationHandler.availablePrivs(p, this, method, auth);
+			if (acl != null) {
+				AccessControlledResource.Priviledge requiredPriv = annoFactory.accessControlListAnnotationHandler.requiredPriv(this, method, request);
+				boolean allows;
+				if (requiredPriv == null) {
+					allows = true;
+				} else {
+					allows = AclUtils.containsPriviledge(requiredPriv, acl);
+					if (!allows) {
+						if (p != null) {
+							log.info("Authorisation declined for user: " + p.getName());
+						} else {
+							log.info("Authorisation declined for anonymous access");
+						}
+						log.info("Required priviledge: " + requiredPriv + " was not found in assigned priviledge list of size: " + acl.size());
+					}
+				}
+				return allows;
+			} else {
+				// null ACL means do not apply ACL
+			}
+		}
+		// if we get here it means ACL was not applied, so we check default SM
 		return annoFactory.getSecurityManager().authorise(request, method, auth, this);
 	}
 
@@ -214,31 +249,30 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 		}
 		return false;
 	}
-	
+
 	public String getHref() {
-		if( parent == null ) {
+		if (parent == null) {
 			return "/";
 		} else {
 			String s = parent.getHref() + getName();
-			if( this instanceof CollectionResource ) {
+			if (this instanceof CollectionResource) {
 				s += "/";
 			}
 			return s;
 		}
 	}
-	
+
 	public AnnoCollectionResource getRoot() {
 		return parent.getRoot();
 	}
-	
+
 	public String getLink() {
 		return "<a href=\"" + getHref() + "\">" + getName() + "</a>";
 	}
 
 	public String getDisplayName() {
-		return annoFactory.displayNameAnnotationHandler.execute(source);
+		return annoFactory.displayNameAnnotationHandler.execute(this);
 	}
-	
 
 	@Override
 	public LockResult lock(LockTimeout timeout, LockInfo lockInfo) throws NotAuthorizedException, PreConditionFailedException, LockedException {
@@ -258,5 +292,5 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 	@Override
 	public LockToken getCurrentLock() {
 		return annoFactory.getLockManager().getCurrentToken(this);
-	}	
+	}
 }

@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 
 	private static final Logger log = LoggerFactory.getLogger(AbstractAnnotationHandler.class);
+	protected final AnnotationResourceFactory outer;
 	protected final Class annoClass;
 	protected final Method[] methods;
 	/**
@@ -41,7 +42,8 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 	 */
 	List<ControllerMethod> controllerMethods = new ArrayList<ControllerMethod>();
 
-	public AbstractAnnotationHandler(Class annoClass, Method... methods) {
+	public AbstractAnnotationHandler(AnnotationResourceFactory outer, Class annoClass, Method... methods) {
+		this.outer = outer;
 		this.annoClass = annoClass;
 		this.methods = methods;
 	}
@@ -79,12 +81,12 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 			if (cm.sourceType.isAssignableFrom(sourceClass)) {
 				int score = 0;
 				int i = contentTypeMatch(contentType, cm.anno);
-				if( i >= 0 ) {
+				if (i >= 0) {
 					score += i;
 					i = isParamMatch(params, cm.anno);
-					if( i >= 0 ) {
-						score +=i;
-						if( score > foundMethodScore) {
+					if (i >= 0) {
+						score += i;
+						if (score > foundMethodScore) {
 							foundMethod = cm;
 							foundMethodScore = score;
 						}
@@ -95,12 +97,47 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 		return foundMethod;
 	}
 
+	/**
+	 * Locate a ControllerMethod which can create an object of the given type (may
+	 * be null) in the given parent
+	 * 
+	 * @param type - final segment of the class name to be created, or null. Eg to create com.mycompany.Customer use "Customer"
+	 * @return null, if none found, otherwise a method which can create the given resource
+	 */
+	public ControllerMethod getMethodForType(AnnoCollectionResource parent, String type) {
+		List<ControllerMethod> foundMethods = getMethods(parent.getSource().getClass(), type);
+		if( foundMethods.isEmpty()) {
+			return null;
+		} else {
+			return foundMethods.get(0);
+		}
+	}	
+	
 	List<ControllerMethod> getMethods(Class sourceClass) {
 		List<ControllerMethod> foundMethods = new ArrayList<ControllerMethod>();
 		for (ControllerMethod cm : controllerMethods) {
 			Class key = cm.sourceType;
 			if (key.isAssignableFrom(sourceClass)) {
 				foundMethods.add(cm);
+			}
+		}
+		return foundMethods;
+	}
+
+	/**
+	 *
+	 * @param sourceClassName - may be null, otherwise final segment of class
+	 * name
+	 * @return
+	 */
+	List<ControllerMethod> getMethods(Class sourceClass, String sourceClassName) {
+		List<ControllerMethod> foundMethods = new ArrayList<ControllerMethod>();
+		for (ControllerMethod cm : controllerMethods) {
+			Class key = cm.sourceType;
+			if (key.isAssignableFrom(sourceClass)) {
+				if (sourceClassName == null || cm.method.getReturnType().getCanonicalName().endsWith(sourceClassName)) {
+					foundMethods.add(cm);
+				}
 			}
 		}
 		return foundMethods;
@@ -114,7 +151,7 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 	@Override
 	public boolean isCompatible(Object source) {
 		String contentType = null;
-		Map<String,String> params = null;
+		Map<String, String> params = null;
 		Request req = HttpManager.request();
 		if (req != null) {
 			contentType = req.getContentTypeHeader();
@@ -145,13 +182,14 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 	 *
 	 * @param reqContentType
 	 * @param anno
-	 * @return - negative means does not match. Otherwise is the score of the match, where more is better
+	 * @return - negative means does not match. Otherwise is the score of the
+	 * match, where more is better
 	 */
 	private int contentTypeMatch(String reqContentType, Annotation anno) {
 		if (anno instanceof Get) {
 			Get g = (Get) anno;
 			if (g.contentType() != null && g.contentType().length() > 0) {
-				if( g.contentType().equals(reqContentType) ) {
+				if (g.contentType().equals(reqContentType)) {
 					return 1;
 				} else {
 					return -1;
@@ -178,6 +216,15 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 			}
 		}
 		return 0;
+	}
+
+	protected Object invoke(ControllerMethod cm, Object source, Object... values) throws Exception {
+		try {
+			Object[] args = outer.buildInvokeArgs(source, cm.method, values);
+			return cm.method.invoke(cm.controller, args);
+		} catch (Exception e) {
+			throw new Exception("Method: " + cm, e);
+		}
 
 	}
 }

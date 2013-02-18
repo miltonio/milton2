@@ -14,32 +14,14 @@
  */
 package io.milton.http.annotated;
 
-import io.milton.annotations.Name;
-
 /**
  *
  * @author brad
  */
-public class NameAnnotationHandler extends AbstractAnnotationHandler {
+public class UnresolvableParameterException extends Exception{
 
-	public NameAnnotationHandler(final AnnotationResourceFactory outer) {
-		super(outer, Name.class);
+	public UnresolvableParameterException(String message) {
+		super(message);
 	}
-
-	public String execute(Object source) {
-		try {
-			ControllerMethod cm = getBestMethod(source.getClass());
-			if (cm == null) {
-				String s = attemptToReadProperty(source, "name");
-				if( s != null ) {
-					return s;
-				}
-				throw new RuntimeException("Method not found: " + getClass() + " - " + source.getClass());
-			}
-
-			return (String) cm.method.invoke(cm.controller, source);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
+	
 }
