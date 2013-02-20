@@ -73,7 +73,7 @@ public class ICalDataAnnotationHandler extends AbstractAnnotationHandler {
 				return null;
 			}
 		} catch (Exception e) {
-			throw new RuntimeException("Exception executing " + getClass() + " - " + source.getClass());
+			throw new RuntimeException("Exception executing " + getClass() + " - " + source.getClass(), e);
 		}
 	}
 }

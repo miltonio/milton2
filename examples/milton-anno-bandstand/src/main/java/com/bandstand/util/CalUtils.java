@@ -39,6 +39,9 @@ public class CalUtils {
     }
 
     public static  net.fortuna.ical4j.model.DateTime toCalDateTime(Date dt, TimeZone timezone) {
+        if( dt == null ) {
+            return null;
+        }
         try {
             java.util.Calendar cal = java.util.Calendar.getInstance();
             cal.setTimeZone(timezone);

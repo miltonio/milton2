@@ -31,6 +31,7 @@ public class Gig implements Serializable{
     private String fileName;
     private Band band;
     private Date startDate;
+    private Date endDate;
     
     private Date createdDate;
     private Date modifiedDate;
@@ -84,6 +85,18 @@ public class Gig implements Serializable{
         this.startDate = startDate;
     }
 
+    @Column
+    @Temporal(javax.persistence.TemporalType.TIMESTAMP)        
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
+    
+    
 
     @Column(nullable = false)
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)

@@ -154,7 +154,7 @@ public abstract class AbstractResponse implements Response {
             if (sb == null) {
                 sb = new StringBuilder();
             } else {
-                sb.append(",");
+                sb.append(", ");
             }
             sb.append(m);
         }

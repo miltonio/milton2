@@ -20,6 +20,7 @@ import com.bandstand.domain.Gig;
 import com.bandstand.domain.Musician;
 import com.bandstand.domain.SessionManager;
 import com.bandstand.util.CalUtils;
+import io.milton.annotations.CTag;
 import io.milton.annotations.Calendars;
 import io.milton.annotations.ChildrenOf;
 import io.milton.annotations.CreatedDate;
@@ -90,6 +91,18 @@ public class GigController {
         }
     }
     
+    @Delete
+    public void delete(MusicianCalendar cal) {
+        Transaction tx = SessionManager.session().beginTransaction();
+        try {
+            cal.musician.removeFromBand(cal.band, SessionManager.session());
+            
+            tx.commit();
+        } catch (Exception e) {
+            tx.rollback();
+        }
+    }    
+
     @ChildrenOf
     public List<Gig> getGigs(MusicianCalendar cal) {
         return cal.getBand().getGigs();
@@ -102,7 +115,7 @@ public class GigController {
         updateGig(gig, arr);
         return gig;
     }
-    
+
     @PutChild
     public Gig updateGig(Gig gig, byte[] ical) throws IOException, ParserException {
         Transaction tx = SessionManager.session().beginTransaction();
@@ -111,22 +124,23 @@ public class GigController {
             ByteArrayInputStream bin = new ByteArrayInputStream(ical);
             Calendar calendar = builder.build(bin);
             VEvent ev = (VEvent) calendar.getComponent("VEVENT");
-            gig.setStartDate(ev.getStartDate().getDate());
+            gig.setStartDate(ev.getStartDate().getDate());            
             Date endDate = null;
-//        if (ev.getEndDate() != null) {
-//            endDate = ev.getEndDate().getDate();
-//        }
-//        calEvent.setEndDate(endDate);
+            if (ev.getEndDate() != null) {
+                endDate = ev.getEndDate().getDate();
+            }
+            gig.setEndDate(endDate);
             String summary = null;
             if (ev.getSummary() != null) {
                 summary = ev.getSummary().getValue();
             }
             gig.setDisplayName(summary);
-            
+
             gig.setModifiedDate(new Date());
-            
+
             SessionManager.session().save(gig);
             tx.commit();
+            System.out.println("Updated gig: " + gig.getStartDate() + " - " + gig.getEndDate());
         } catch (Exception e) {
             tx.rollback();
         }
@@ -145,7 +159,7 @@ public class GigController {
         VTimeZone tz = timezone.getVTimeZone();
         calendar.getComponents().add(tz);
         net.fortuna.ical4j.model.DateTime start = CalUtils.toCalDateTime(gig.getStartDate(), timezone);
-        net.fortuna.ical4j.model.DateTime finish = CalUtils.toCalDateTime(gig.getStartDate(), timezone); // todo end date
+        net.fortuna.ical4j.model.DateTime finish = CalUtils.toCalDateTime(gig.getEndDate(), timezone);
         String summary = gig.getDisplayName();
         VEvent vevent = new VEvent(start, finish, summary);
         //vevent.getProperties().add(new Uid(UUID.randomUUID().toString()));
@@ -156,7 +170,6 @@ public class GigController {
 
         calendar.getComponents().add(vevent);
 
-
         CalendarOutputter outputter = new CalendarOutputter();
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         try {
@@ -166,12 +179,12 @@ public class GigController {
         }
         return bout.toByteArray();
     }
-    
+
     @ModifiedDate
     public Date getModifiedDate(Gig gig) {
         return gig.getModifiedDate();
     }
-    
+
     @CreatedDate
     public Date getCreatedDate(Gig gig) {
         return gig.getCreatedDate();

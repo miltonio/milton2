@@ -16,6 +16,7 @@ package com.bandstand.web;
 
 import com.bandstand.domain.Band;
 import com.bandstand.domain.BandMember;
+import com.bandstand.domain.Gig;
 import com.bandstand.domain.Musician;
 import com.bandstand.domain.SessionManager;
 import io.milton.annotations.AccessControlList;
@@ -28,14 +29,17 @@ import io.milton.annotations.MakeCollection;
 import io.milton.annotations.Move;
 import io.milton.annotations.Name;
 import io.milton.annotations.Post;
+import io.milton.annotations.PutChild;
 import io.milton.annotations.ResourceController;
 import io.milton.annotations.Users;
 import io.milton.common.JsonResult;
 import io.milton.common.ModelAndView;
 import io.milton.resource.AccessControlledResource;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.List;
+import net.fortuna.ical4j.data.ParserException;
 import org.hibernate.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -149,4 +153,9 @@ public class MusiciansController {
         SessionManager.session().delete(musician);
         tx.commit();        
     }
+    
+    @PutChild
+    public Gig uploadSomething(Musician m, String name, byte[] arr) throws IOException, ParserException {
+        throw new RuntimeException("Not really supported");
+    }    
 }

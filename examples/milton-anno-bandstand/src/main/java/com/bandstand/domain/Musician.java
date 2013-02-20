@@ -15,6 +15,7 @@
 package com.bandstand.domain;
 
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.OneToMany;
@@ -92,6 +93,19 @@ public class Musician extends BaseEntity {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public void removeFromBand(Band band, Session session) {
+        if( getBandMembers() != null ) {
+            Iterator<BandMember> it = getBandMembers().iterator();
+            while(it.hasNext()) {
+                BandMember bm = it.next();
+                if( bm.getBand() == band ) {
+                    session.delete(bm);
+                    it.remove();
+                }
+            }
+        }
     }
     
     

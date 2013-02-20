@@ -62,6 +62,11 @@ public class AnnoEventResource extends AnnoFileResource implements ICalResource{
 		return dt;
 	}
 
+	@Override
+	public String getContentType(String accepts) {
+		return "text/calendar";
+	}
+
 	
 
 	
