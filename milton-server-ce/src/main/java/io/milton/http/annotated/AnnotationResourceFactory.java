@@ -21,6 +21,7 @@ package io.milton.http.annotated;
 import io.milton.annotations.AccessControlList;
 import io.milton.annotations.Authenticate;
 import io.milton.annotations.CTag;
+import io.milton.annotations.CalendarColor;
 import io.milton.annotations.Calendars;
 import io.milton.annotations.ChildOf;
 import io.milton.annotations.ChildrenOf;
@@ -121,6 +122,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	CommonPropertyAnnotationHandler<Long> contentLengthAnnotationHandler = new CommonPropertyAnnotationHandler<Long>(ContentType.class, this);
 	CommonPropertyAnnotationHandler<Long> maxAgeAnnotationHandler = new CommonPropertyAnnotationHandler<Long>(MaxAge.class, this);
 	CommonPropertyAnnotationHandler<String> uniqueIdAnnotationHandler = new CommonPropertyAnnotationHandler<String>(UniqueId.class, this, "id");
+	CommonPropertyAnnotationHandler<String> calendarColorAnnotationHandler = new CommonPropertyAnnotationHandler<String>(CalendarColor.class, this, "color");
 
 	public AnnotationResourceFactory() {
 		mapOfAnnotationHandlers.put(Root.class, rootAnnotationHandler);
@@ -147,6 +149,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		mapOfAnnotationHandlers.put(UniqueId.class, uniqueIdAnnotationHandler);
 		mapOfAnnotationHandlers.put(CTag.class, cTagAnnotationHandler);		
 		mapOfAnnotationHandlers.put(ICalData.class, iCalDataAnnotationHandler);				
+		mapOfAnnotationHandlers.put(CalendarColor.class, calendarColorAnnotationHandler);
 
 		for (AnnotationHandler ah : mapOfAnnotationHandlers.values()) {
 			Method[] methods = ah.getSupportedMethods();

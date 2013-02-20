@@ -14,8 +14,6 @@
  */
 package io.milton.http.annotated;
 
-import java.lang.reflect.InvocationTargetException;
-
 /**
  *
  * @author brad
@@ -35,14 +33,15 @@ public class CommonPropertyAnnotationHandler<T> extends AbstractAnnotationHandle
 		propertyNames = propNames;
 	}
 
-	public T execute(Object source) {
+	public T get(Object source) {
 		try {
-			ControllerMethod cm = getBestMethod(source.getClass());
+			ControllerMethod cm = getBestMethod(source.getClass(), null, null, Object.class);
 			if (cm == null) {
 				// look for an annotation on the source itself
 				java.lang.reflect.Method m = outer.findMethodForAnno(source.getClass(), annoClass);
 				if (m != null) {
-					return (T) m.invoke(source, (Object) null);
+					T val = (T) m.invoke(source, (Object) null);
+					return val;
 				}
 				for( String propName : propertyNames) {
 					Object s = attemptToReadProperty(source, propName);
@@ -52,12 +51,38 @@ public class CommonPropertyAnnotationHandler<T> extends AbstractAnnotationHandle
 				}
 				return defaultValue;
 			}
-			return (T) invoke(cm, source);
+			T val = (T) invoke(cm, source);
+			return val;
 		} catch (Exception e) {
 			throw new RuntimeException("Exception executing " + annoClass + " - " + source.getClass(), e);
 		}
 	}
 
+	public void set(Object source, T newValue) {
+		try {
+			ControllerMethod cm = getBestMethod(source.getClass(), null, null, Void.TYPE);
+			if (cm == null) {
+				// look for an annotation on the source itself
+				java.lang.reflect.Method m = outer.findMethodForAnno(source.getClass(), annoClass);
+				if (m != null) {
+					m.invoke(source, (Object) null);
+					return ;
+				}
+				// look for a bean property
+				for( String propName : propertyNames) {
+					if( attemptToSetProperty(source, propName) ) {
+						return ;
+					}
+				}
+			} else {
+				invoke(cm, source, newValue);
+			}
+		} catch (Exception e) {
+			throw new RuntimeException("Exception executing " + annoClass + " - " + source.getClass(), e);
+		}
+		
+	}
+	
 	public T getDefaultValue() {
 		return defaultValue;
 	}

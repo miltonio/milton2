@@ -14,19 +14,17 @@
             <form class="form-horizontal editForm" method="POST" action="${pagePath}">
                 <fieldset>
                     <legend>
-                        Edit the band details
+                        Edit the band member
                         <a class="btn pull-right" href="."><i class="icon-edit"></i> Cancel</a>
                     </legend>
                     <div class="control-group">
-                        <label class="control-label" >Band name</label>
+                        <label class="control-label" >Select Musician</label>
                         <div class="controls">
-                            <input id="name" type="text" name="name" value="${model.page.source.name}"/>
-                        </div>
-                    </div>
-                    <div class="control-group">
-                        <label class="control-label" >Description</label>
-                        <div class="controls">
-                            <textarea id="description" name="description">${model.page.source.description}</textarea>
+                            <select name="musician" required="true">
+                                <c:forEach items="${model.page.root.child('musicians').children.getSortByName()}" var="muso">
+                                    <option value="${muso.name}" >${muso.displayName}</option>
+                                </c:forEach>
+                            </select>
                         </div>
                     </div>
                     <div class="control-group">
@@ -40,14 +38,5 @@
 
         <%@include file="includes/theme-bottom.jsp" %>
         
-        <script type="text/javascript" language="javascript">
-            $(function() {
-                $("form.editForm").forms({
-                    callback: function() {
-                        $("form.editForm legend").after("<div class='alert'><button type='button' class='close' data-dismiss='alert'>&times;</button>Saved ok. <a href='.'>Return to the view page</a></div>")
-                    }
-                });
-            });
-        </script>
     </body>
 </html>

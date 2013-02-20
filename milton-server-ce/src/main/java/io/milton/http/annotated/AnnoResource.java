@@ -14,7 +14,9 @@
  */
 package io.milton.http.annotated;
 
+import io.milton.annotations.Get;
 import io.milton.common.JsonResult;
+import io.milton.common.ModelAndView;
 import io.milton.http.AclUtils;
 import io.milton.http.Auth;
 import io.milton.http.ConditionalCompatibleResource;
@@ -102,7 +104,7 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 
 	@Override
 	public String getUniqueId() {
-		return annoFactory.uniqueIdAnnotationHandler.execute(source);
+		return annoFactory.uniqueIdAnnotationHandler.get(source);
 	}
 
 	@Override
@@ -110,7 +112,7 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 		if (nameOverride != null) {
 			return nameOverride;
 		}
-		return annoFactory.nameAnnotationHandler.execute(source);
+		return annoFactory.nameAnnotationHandler.get(source);
 	}
 
 	@Override
@@ -182,7 +184,7 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 
 	@Override
 	public Date getModifiedDate() {
-		return annoFactory.modifiedDateAnnotationHandler.execute(source);
+		return annoFactory.modifiedDateAnnotationHandler.get(source);
 	}
 
 	@Override
@@ -220,7 +222,7 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 
 	@Override
 	public Date getCreateDate() {
-		return annoFactory.createdDateAnnotationHandler.execute(source);
+		return annoFactory.createdDateAnnotationHandler.get(source);
 	}
 
 	@Override
@@ -249,7 +251,23 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 
 	@Override
 	public Long getMaxAgeSeconds(Auth auth) {
-		return annoFactory.maxAgeAnnotationHandler.execute(source);
+		ControllerMethod cm = annoFactory.getAnnotationHandler.getBestMethod(source.getClass());
+		if( cm != null ) {
+			Get g = (Get) cm.anno;
+			long l = g.maxAgeSecs();
+			if( l == 0 ) {
+				return null;
+			} else if( l > 0 ) {
+				return l;
+			} // otherwise fall through to system default
+			
+			// if return type is a ModelAndView then we know its templated, so should have null max ag
+			if( ModelAndView.class.isAssignableFrom(cm.method.getReturnType()) ) {
+				return null;
+			}
+		}
+		Long l = annoFactory.maxAgeAnnotationHandler.get(source);
+		return l;
 	}
 
 	@Override
@@ -257,12 +275,12 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 		if (accepts != null && accepts.contains("application/json")) {
 			return "application/json";
 		}
-		return annoFactory.contentTypeAnnotationHandler.execute(source);
+		return annoFactory.contentTypeAnnotationHandler.get(source);
 	}
 
 	@Override
 	public Long getContentLength() {
-		return annoFactory.contentLengthAnnotationHandler.execute(source);
+		return annoFactory.contentLengthAnnotationHandler.get(source);
 	}
 
 	@Override

@@ -71,24 +71,26 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 	}
 
 	ControllerMethod getBestMethod(Class sourceClass, String contentType) {
-		return getBestMethod(sourceClass, contentType, null);
+		return getBestMethod(sourceClass, contentType, null, null);
 	}
 
-	ControllerMethod getBestMethod(Class sourceClass, String contentType, Map<String, String> params) {
+	ControllerMethod getBestMethod(Class sourceClass, String contentType, Map<String, String> params, Class returnType) {
 		ControllerMethod foundMethod = null;
 		int foundMethodScore = -1;
 		for (ControllerMethod cm : controllerMethods) {
 			if (cm.sourceType.isAssignableFrom(sourceClass)) {
-				int score = 0;
-				int i = contentTypeMatch(contentType, cm.anno);
-				if (i >= 0) {
-					score += i;
-					i = isParamMatch(params, cm.anno);
+				if (isReturnTypeMatch(cm.method, returnType)) {
+					int score = 0;
+					int i = contentTypeMatch(contentType, cm.anno);
 					if (i >= 0) {
 						score += i;
-						if (score > foundMethodScore) {
-							foundMethod = cm;
-							foundMethodScore = score;
+						i = isParamMatch(params, cm.anno);
+						if (i >= 0) {
+							score += i;
+							if (score > foundMethodScore) {
+								foundMethod = cm;
+								foundMethodScore = score;
+							}
 						}
 					}
 				}
@@ -98,21 +100,23 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 	}
 
 	/**
-	 * Locate a ControllerMethod which can create an object of the given type (may
-	 * be null) in the given parent
-	 * 
-	 * @param type - final segment of the class name to be created, or null. Eg to create com.mycompany.Customer use "Customer"
-	 * @return null, if none found, otherwise a method which can create the given resource
+	 * Locate a ControllerMethod which can create an object of the given type
+	 * (may be null) in the given parent
+	 *
+	 * @param type - final segment of the class name to be created, or null. Eg
+	 * to create com.mycompany.Customer use "Customer"
+	 * @return null, if none found, otherwise a method which can create the
+	 * given resource
 	 */
 	public ControllerMethod getMethodForType(AnnoCollectionResource parent, String type) {
 		List<ControllerMethod> foundMethods = getMethods(parent.getSource().getClass(), type);
-		if( foundMethods.isEmpty()) {
+		if (foundMethods.isEmpty()) {
 			return null;
 		} else {
 			return foundMethods.get(0);
 		}
-	}	
-	
+	}
+
 	List<ControllerMethod> getMethods(Class sourceClass) {
 		List<ControllerMethod> foundMethods = new ArrayList<ControllerMethod>();
 		for (ControllerMethod cm : controllerMethods) {
@@ -157,7 +161,7 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 			contentType = req.getContentTypeHeader();
 			params = req.getParams();
 		}
-		ControllerMethod m = getBestMethod(source.getClass(), contentType, params);
+		ControllerMethod m = getBestMethod(source.getClass(), contentType, params, null);
 		return m != null;
 	}
 
@@ -165,7 +169,7 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 		for (String propName : propNames) {
 			if (PropertyUtils.isReadable(source, propName)) {
 				// found a readable property, so return it				
-				Object oName = PropertyUtils.getProperty(source, propName);				
+				Object oName = PropertyUtils.getProperty(source, propName);
 				if (oName != null) {
 					return oName.toString();
 				} else {
@@ -176,6 +180,26 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 		return null;
 	}
 
+	/**
+	 * Returns true if it was able to set the property
+	 * 
+	 * @param source
+	 * @param propNames
+	 * @return
+	 * @throws IllegalAccessException
+	 * @throws InvocationTargetException
+	 * @throws NoSuchMethodException 
+	 */
+	protected boolean attemptToSetProperty(Object source, Object value, String... propNames) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+		for (String propName : propNames) {
+			if (PropertyUtils.isWriteable(source, propName)) {
+				PropertyUtils.setProperty(source, propName, value);
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	/**
 	 * Check if the annotation has a contentType specified. If so it must match
 	 * that given
@@ -227,5 +251,13 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 			throw new Exception("Method: " + cm, e);
 		}
 
+	}
+
+	private boolean isReturnTypeMatch(java.lang.reflect.Method method, Class returnType) {
+		if( returnType == null ) {
+			return true;
+		} else {
+			return returnType.isAssignableFrom(method.getReturnType());
+		}
 	}
 }

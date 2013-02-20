@@ -45,12 +45,12 @@ public class AnnoCalendarResource extends AnnoCollectionResource implements Cale
 
 	@Override
 	public String getColor() {
-		return "red";
+		return annoFactory.calendarColorAnnotationHandler.get(source); 
 	}
 
 	@Override
-	public void setColor(String s) {
-		throw new UnsupportedOperationException("Not supported yet.");
+	public void setColor(String color) {
+		annoFactory.calendarColorAnnotationHandler.set(source, color);
 	}
 
 	@Override

@@ -35,17 +35,23 @@ public class AnnoPrincipalResource extends AnnoCollectionResource implements Dis
 	}
 
 	@Override
-	public HrefList getCalendarHomeSet() throws NotAuthorizedException, BadRequestException{
-		HrefList list = new HrefList(); 
-		for( Resource r : getChildren()) {
-			if( r instanceof AnnoCollectionResource) {
-				AnnoCollectionResource col = (AnnoCollectionResource) r;
-				if( annoFactory.calendarsAnnotationHandler.hasCalendars(col.getSource()) ) {
-					list.add(col.getHref());
+	public HrefList getCalendarHomeSet() {
+		try {
+			HrefList list = new HrefList();			
+			for (Resource r : getChildren()) {
+				if (r instanceof AnnoCollectionResource) {
+					AnnoCollectionResource col = (AnnoCollectionResource) r;
+					if (annoFactory.calendarsAnnotationHandler.hasCalendars(col.getSource())) {
+						list.add(col.getHref());
+					}
 				}
 			}
+			return list;
+		} catch (NotAuthorizedException e) {
+			throw new RuntimeException(e);
+		} catch (BadRequestException e) {
+			throw new RuntimeException(e);
 		}
-		return list;
 	}
 	@Override
 	public HrefList getAddressBookHomeSet() {

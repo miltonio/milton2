@@ -50,7 +50,7 @@ public class PostAnnotationHandler extends AbstractAnnotationHandler {
 	 */
 	public Object execute(AnnoResource resource,Request request, Map<String, String> params) {
 		Object source = resource.getSource();
-		ControllerMethod cm = getBestMethod(source.getClass(), null, params);
+		ControllerMethod cm = getBestMethod(source.getClass(), null, params, null);
 		if (cm == null) {
 			throw new RuntimeException("Method not found: " + getClass() + " - " + source.getClass());
 		}
@@ -85,7 +85,7 @@ public class PostAnnotationHandler extends AbstractAnnotationHandler {
 	
 	public ControllerMethod getPostMethod(AnnoResource resource,Request request, Map<String, String> params) {
 		Object source = resource.getSource();
-		ControllerMethod cm = getBestMethod(source.getClass(), null, params);
+		ControllerMethod cm = getBestMethod(source.getClass(), null, params, null);
 		return cm;
 	}
 }

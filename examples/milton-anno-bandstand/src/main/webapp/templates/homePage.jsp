@@ -16,7 +16,7 @@
                     <div class="well" id="bandsDiv">                        
                         <h1>
                             Bands
-                            <a href="/bands/new?editMode  .container form" class="btn pull-right newItem modalLink" data-toggle="modal" data-target="#newItemModal" ><i class="icon-plus-sign"></i> Add</a>
+                            <a href="/bands/new?editMode .container form" class="btn pull-right newItem modalLink" data-toggle="modal" data-target="#newItemModal" ><i class="icon-plus-sign"></i> Add</a>
                         </h1>
                         <p>Here are all the bands in our database</p>
                         <ul>
@@ -45,18 +45,7 @@
             </div>            
 
         </div> <!-- /container -->
-
-        <div class="modal hide fade" id="newItemModal">
-            <div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h3>Modal header</h3></div>
-            <div class="modal-body">
-                
-            </div>
-            <div class="modal-footer">
-                <a href="#" class="btn" data-dismiss="modal">Close</a>
-                <a href="#" class="btn btn-primary">Save changes</a>
-            </div>            
-        </div>        
-
+    
         <%@include file="includes/theme-bottom.jsp" %>
 
     </body>

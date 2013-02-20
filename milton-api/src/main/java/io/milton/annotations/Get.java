@@ -57,4 +57,13 @@ public @interface Get {
      * @return 
      */
     String[] params() default {};
+    
+    /**
+     * Default is -1 which means use the system default. Returning 0 will 
+     * explicitly disabled caching. Any other value is the number of seconds
+     * that the content may be cached by clients
+     * 
+     * @return 
+     */
+    long maxAgeSecs() default -1;
 }

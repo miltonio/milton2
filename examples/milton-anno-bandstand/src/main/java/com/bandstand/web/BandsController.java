@@ -76,13 +76,11 @@ public class BandsController {
 
     @ChildrenOf
     public BandsController getBandsRoot(RootController root) {
-        System.out.println("getBandsRoot");
         return this;
     }
 
     @ChildrenOf
     public List<Band> getBands(BandsController root) {
-        System.out.println("getBands");
         return Band.findAll(SessionManager.session());
     }
 
@@ -111,15 +109,20 @@ public class BandsController {
         return b;
     }
 
+    /**
+     * Instantiate but do not save a new Band object. For use in .new page
+     * @param root
+     * @return 
+     */
     @ChildOf(pathSuffix = "new")
-    public Band createNewBand(BandsController root) {
+    public Band newBand(BandsController root) {
         Band b = new Band();
         b.setCreatedDate(new Date());
         b.setModifiedDate(new Date());
 
         return b;
     }
-
+    
     @Move
     public void move(Band band, BandsController newParent, String newName) {
         Transaction tx = SessionManager.session().beginTransaction();
@@ -141,38 +144,6 @@ public class BandsController {
         SessionManager.session().save(bandMember);
         tx.commit();
     }
-
-    @ChildrenOf
-    public List<BandMember> getBandMembers(Band band) {
-        return band.getBandMembers();
-    }
-
-    @MakeCollection
-    public BandMember createBandMember(Band band, String newName) {
-        Transaction tx = SessionManager.session().beginTransaction();
-        // Check for an existing musician with the given name, and create one if it doesnt exist
-        Musician m = Musician.find(newName, SessionManager.session());
-        if (m == null) {
-            m = Musician.create(newName, SessionManager.session());
-        }
-        BandMember bm = band.addMember(m, SessionManager.session()); // then add the musician to the band
-        SessionManager.session().save(band);
-        tx.commit();
-        return bm;
-    }
-
-    @Delete
-    public void deleteBandMember(BandMember bm) {
-        Transaction tx = SessionManager.session().beginTransaction();
-        SessionManager.session().delete(bm);
-        tx.commit();
-    }
-
-    @Name
-    public String getBandMemberName(BandMember bm) {
-        return bm.getMusician().getName();
-    }
-
     @DisplayName
     public String getBandDisplayName(Band band) {
         return band.getName();

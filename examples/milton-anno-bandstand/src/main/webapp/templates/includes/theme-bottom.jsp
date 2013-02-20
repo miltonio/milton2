@@ -1,5 +1,15 @@
-<!-- Le javascript
-================================================== -->
+
+<div class="modal hide fade" id="newItemModal">
+    <div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h3>Modal header</h3></div>
+    <div class="modal-body">
+
+    </div>
+    <div class="modal-footer">
+        <a href="#" class="btn" data-dismiss="modal">Close</a>
+        <a href="#" class="btn btn-primary">Save changes</a>
+    </div>            
+</div>    
+
 <!-- Placed at the end of the document so the pages load faster -->
 <script src="//code.jquery.com/jquery.js"></script>
 <script src="/templates/js/jqBootstrapValidation/jqBootstrapValidation.js"></script>
@@ -13,21 +23,14 @@
     
     $(function() {
         $("body").on("click", 'a.modalLink', function(e) {            
-            log("clicked1");
             targetModalLink = $(e.target);
-            log("clicked2");
         });
-        
-        $(document).ajaxSuccess(function(e, xml, options) {
-            log("ajax done", e, xml, options);
-        });
-        
+                
         $('body').on('hidden', '.modal', function () {
             $(this).removeData('modal');
         });   
         
         $("body").on("show", function(e) {
-            log("show");
             var modal = $(e.target);
             var forms = modal.find("form");
             forms.find(":input").not(':button, :submit, :reset, :hidden')
@@ -38,10 +41,8 @@
         });
         
         $("body").on("shown", function(e) {
-            log("shown");
             var modal = $(e.target);
             var forms = modal.find("form");
-            log("running forms init", modal, forms);
             forms.find("legend a.btn").remove();
             modal.find("h3").html(forms.find("legend").text());
                 
@@ -49,12 +50,9 @@
                 callback: function() {
                     modal.modal("hide");                    
                     var cont = targetModalLink.closest(".well, .container");
-                    log("cont", cont);
                     if( cont.attr("id")) {                        
                         var url = window.location.pathname;
-                        log("url", url);
                         url  += "?" + Math.random() + " #" + cont.attr("id") + " > *";
-                        log("reload: ", cont, url );
                         cont.load(url);
                     } else {
                         window.location.reload();

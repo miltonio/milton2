@@ -44,7 +44,7 @@ public class GetAnnotationHandler extends AbstractAnnotationHandler {
 
 	public void execute(AnnoResource resource, OutputStream out, Range range, Map<String, String> params, String contentType) {
 		Object source = resource.getSource();
-		ControllerMethod cm = getBestMethod(source.getClass(), contentType, params);
+		ControllerMethod cm = getBestMethod(source.getClass(), contentType, params, null);
 		if (cm == null) {
 			throw new RuntimeException("Method not found: " + getClass() + " - " + source.getClass());
 		}

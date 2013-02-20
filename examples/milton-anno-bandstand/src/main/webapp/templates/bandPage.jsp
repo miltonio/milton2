@@ -39,7 +39,12 @@
                 <div class="span2"></div>
                 <div class="span4">
                     <div class="well">
-                        <h2>Band Members</h2>
+                        <h2>
+                            Members 
+                            <a href="newMember .container form"  class="pull-right btn btn-success modalLink" data-toggle="modal" data-target="#newItemModal">
+                                <i class="icon-plus-sign"></i> Add
+                            </a>
+                        </h2>
                         <table>
                             <thead>
                                 <tr>
@@ -55,9 +60,7 @@
                             </c:forEach>                        
                             </tbody>
                         </table>
-
                     </div>
-
                 </div>
             </div>
         </div> <!-- /container -->
