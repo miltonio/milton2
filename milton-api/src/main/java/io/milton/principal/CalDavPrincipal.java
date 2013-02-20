@@ -19,6 +19,8 @@
 
 package io.milton.principal;
 
+import io.milton.http.exceptions.BadRequestException;
+import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.values.HrefList;
 import io.milton.http.values.SupportedCalendarComponentListsSet;
 
@@ -64,7 +66,7 @@ public interface CalDavPrincipal extends DiscretePrincipal {
      *
      * @return
      */
-    HrefList getCalendarHomeSet();
+    HrefList getCalendarHomeSet() throws NotAuthorizedException, BadRequestException;
 
 
     /**
@@ -76,7 +78,7 @@ public interface CalDavPrincipal extends DiscretePrincipal {
      *
      * @return
      */
-    HrefList getCalendarUserAddressSet();
+    HrefList getCalendarUserAddressSet() throws NotAuthorizedException, BadRequestException;
 
 
     /**
@@ -87,7 +89,7 @@ public interface CalDavPrincipal extends DiscretePrincipal {
      *
      * @return
      */
-    String getScheduleInboxUrl();
+    String getScheduleInboxUrl() throws NotAuthorizedException, BadRequestException;
 
     /**
      * Return the path to the scheduling outbox. This should refer to a collection
@@ -99,19 +101,19 @@ public interface CalDavPrincipal extends DiscretePrincipal {
      *
      * @return
      */
-    String getScheduleOutboxUrl();
+    String getScheduleOutboxUrl() throws NotAuthorizedException, BadRequestException;
 
     /**
      * Couldnt find any info about this property. Can only guess what its supposed to do.
      * 
      * @return
      */
-    String getDropBoxUrl();
+    String getDropBoxUrl() throws NotAuthorizedException, BadRequestException;
     
     /**
      * Get the list of supported combinations of component types, or just return null
      * 
      * @return 
      */
-    SupportedCalendarComponentListsSet getSupportedComponentSets();
+    SupportedCalendarComponentListsSet getSupportedComponentSets() throws NotAuthorizedException, BadRequestException;
 }

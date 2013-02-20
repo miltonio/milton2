@@ -63,7 +63,11 @@ public class AnnoCollectionResource extends AnnoResource implements CollectionRe
 			// childTriValue can be null, the child source object, or a special value indicating no search
 			Object childTriValue = annoFactory.childOfAnnotationHandler.execute(this, childName);
 			if (childTriValue == null) {
-				return null; // definitely not found
+				//return null; // definitely not found
+				
+				// well, actually. ChildOf can just apply to a certain sort of child, so if its not found
+				// that doesnt mean that there might not be some othe child
+				// so we can't assume in any circumstance that a null means not found. Must always fall through to ChildrenOf
 			} else if (childTriValue.equals(ChildOfAnnotationHandler.NOT_ATTEMPTED)) {
 				// there is no ChildOf method, so fall through to iterating over all children
 			} else {

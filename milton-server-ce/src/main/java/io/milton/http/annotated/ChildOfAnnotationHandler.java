@@ -49,6 +49,7 @@ public class ChildOfAnnotationHandler extends AbstractAnnotationHandler {
 			if (availMethods.isEmpty()) {
 				return NOT_ATTEMPTED;
 			}
+			
 			for (ControllerMethod cm : availMethods) {
 				if (matchesSuffix(cm, childName)) {
 					Object o = invoke(cm, source, parent, childName);
@@ -64,18 +65,6 @@ public class ChildOfAnnotationHandler extends AbstractAnnotationHandler {
 
 		} catch (Exception e) {
 			throw new RuntimeException(e);
-		}
-		return null;
-	}
-
-	private String getType(String childName) {
-		int pos = childName.indexOf(".");
-		if (pos > 0) {
-			String s = childName.substring(0, pos);
-			if (s.length() == 0) {
-				s = null;
-			}
-			return s;
 		}
 		return null;
 	}

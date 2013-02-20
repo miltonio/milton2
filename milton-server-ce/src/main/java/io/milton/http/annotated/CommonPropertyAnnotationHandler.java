@@ -21,11 +21,18 @@ import java.lang.reflect.InvocationTargetException;
  * @author brad
  */
 public class CommonPropertyAnnotationHandler<T> extends AbstractAnnotationHandler {
-	
+
 	private T defaultValue;
+	protected final String[] propertyNames;
 
 	public CommonPropertyAnnotationHandler(Class annoClass, final AnnotationResourceFactory outer) {
 		super(outer, annoClass);
+		propertyNames = new String[0];
+	}
+
+	public CommonPropertyAnnotationHandler(Class annoClass, final AnnotationResourceFactory outer, String ... propNames) {
+		super(outer, annoClass);
+		propertyNames = propNames;
 	}
 
 	public T execute(Object source) {
@@ -37,13 +44,17 @@ public class CommonPropertyAnnotationHandler<T> extends AbstractAnnotationHandle
 				if (m != null) {
 					return (T) m.invoke(source, (Object) null);
 				}
+				for( String propName : propertyNames) {
+					Object s = attemptToReadProperty(source, propName);
+					if (s != null) {
+						return (T)s;
+					}					
+				}
 				return defaultValue;
 			}
-			return (T) cm.method.invoke(cm.controller, source);
-		} catch (IllegalAccessException e) {
-			throw new RuntimeException("Exception executing " + getClass() + " - " + source.getClass());			
-		} catch (InvocationTargetException e) {
-			throw new RuntimeException("Exception executing " + getClass() + " - " + source.getClass());			
+			return (T) invoke(cm, source);
+		} catch (Exception e) {
+			throw new RuntimeException("Exception executing " + annoClass + " - " + source.getClass(), e);
 		}
 	}
 
@@ -54,6 +65,8 @@ public class CommonPropertyAnnotationHandler<T> extends AbstractAnnotationHandle
 	public void setDefaultValue(T defaultValue) {
 		this.defaultValue = defaultValue;
 	}
-    
 	
+	protected T deriveDefaultValue(Object source) {
+		return getDefaultValue();
+	}
 }

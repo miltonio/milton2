@@ -20,9 +20,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks a method as one which creates a child resource containing the given content
+ * Marks a method as one which creates a child resource containing the given content,
+ * or replaces an existing child's content with new data
  * 
- * Return type - Must return the created pojo object
+ * Return type - Must return the created pojo object, or the updated child
  * 
  * Parameters:
  *  - first arg must be the parent of the item to create
@@ -32,7 +33,7 @@ import java.lang.annotation.Target;
  *      - contentType
  *      - content length as Long
  * 
- * Example:
+ * Example: Creating a new child resource
  *     @PutChild
     public MyDatabase.FileContentItem createFile(MyDatabase.FolderContentItem parent, String name, byte[] bytes) {
         FileContentItem file = parent.addFile(name);
@@ -41,6 +42,16 @@ import java.lang.annotation.Target;
     }
     
  *
+ * Example: updating an existing resource
+ * 
+ *     @PutChild
+    public Image uploadImage(Image image, byte[] bytes) throws IOException {
+        File fRoot = getContentRoot();
+        File content = new File(fRoot, image.getFileName());
+        FileUtils.writeByteArrayToFile(content, bytes);
+        return image;
+    }    
+
  * @author brad
  */
 @Target(ElementType.METHOD)

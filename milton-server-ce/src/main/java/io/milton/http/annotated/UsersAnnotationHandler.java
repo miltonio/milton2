@@ -35,14 +35,16 @@ public class UsersAnnotationHandler extends AbstractAnnotationHandler {
 	public AnnoPrincipalResource findUser(AnnoCollectionResource root, String name)  {
 		try {
 			// iterate over each root collection, looking for objects which have
-			// a Users annotation on their ChildOf or ChildrenOf methods
+			// a @Authenticate annotation on their ChildOf or ChildrenOf methods
 			for (CommonResource col : root.getChildren()) {				
 				if (col instanceof AnnoCollectionResource) {
 					AnnoCollectionResource acr = (AnnoCollectionResource) col;
 					List<ControllerMethod> availMethods = getMethods(acr.getSource().getClass());
 					if (!availMethods.isEmpty()) {
 						Resource r = acr.child(name);
+						System.out.println("resource: " + r);
 						if (r instanceof AnnoPrincipalResource) {
+							System.out.println("is princip");
 							AnnoPrincipalResource apr = (AnnoPrincipalResource) r;
 							return apr;
 						}

@@ -17,6 +17,7 @@ package com.bandstand.domain;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import javax.persistence.*;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -32,6 +33,7 @@ import org.hibernate.criterion.Order;
 @DiscriminatorValue("B")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Band extends BaseEntity {
+    private List<Gig> gigs;
     
     public static List<Band> findAll(Session session) {
         Criteria crit = session.createCriteria(Band.class);
@@ -71,6 +73,30 @@ public class Band extends BaseEntity {
         getBandMembers().add(bm);
         session.save(bm);
         return bm;
+    }
+
+    @OneToMany(mappedBy = "band")
+    public List<Gig> getGigs() {
+        return gigs;
+    }
+
+    public void setGigs(List<Gig> gigs) {
+        this.gigs = gigs;
+    }
+
+    public Gig addGig(String title, Date dt) {
+        if( getGigs() == null ) {
+            setGigs(new ArrayList<Gig>());
+        }
+        Gig g = new Gig();
+        g.setStartDate(dt);
+        g.setBand(this);
+        g.setDisplayName(title);
+        g.setFileName(UUID.randomUUID().toString());
+        g.setCreatedDate(new Date());
+        g.setModifiedDate(new Date());
+        getGigs().add(g);
+        return g;
     }
     
 }

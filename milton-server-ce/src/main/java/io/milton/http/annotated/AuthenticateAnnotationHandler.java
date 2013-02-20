@@ -34,6 +34,11 @@ public class AuthenticateAnnotationHandler extends AbstractAnnotationHandler {
 		super(outer, Authenticate.class);
 	}
 
+	public boolean canAuthenticate(Object source) {
+		List<ControllerMethod> availMethods = getMethods(source.getClass());
+		return !availMethods.isEmpty();
+	}
+	
 	public Boolean authenticate(AnnoPrincipalResource userRes, String requestedPassword) {
 		Object source = userRes.getSource();
 		List<ControllerMethod> availMethods = getMethods(source.getClass());
@@ -44,8 +49,7 @@ public class AuthenticateAnnotationHandler extends AbstractAnnotationHandler {
 			for (ControllerMethod cm : availMethods) {
 				// if it returns String then it returns a password. Otherwise is authenticate method
 				if (cm.method.getReturnType().equals(String.class)) {
-					Object[] args = outer.buildInvokeArgs(source, cm.method, userRes);
-					String result = (String) cm.method.invoke(cm.controller, args);
+					String result = (String) invoke(cm, source, cm.method, userRes);
 					if (result == null) {
 						log.warn("Null password from: " + cm + " for user: " + userRes.getHref());
 						return false;

@@ -12,34 +12,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package io.milton.http.annotated;
+package io.milton.annotations;
 
-import io.milton.annotations.Name;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
+ * Marks the method which returns a CTag for the resource
+ * 
+ * A CTag "tags" a collection with some identifier representing the current state.
+ * The only requirement for this tag is that it changes whenever the state of
+ * any member changes
+ * 
+ * A simple way to achieve this is to set the ctag to the system clock whenever
+ * any member of the collection changes
  *
  * @author brad
  */
-public class NameAnnotationHandler extends AbstractAnnotationHandler {
-
-	public NameAnnotationHandler(final AnnotationResourceFactory outer) {
-		super(outer, Name.class);
-	}
-
-	public String execute(Object source) {
-		try {
-			ControllerMethod cm = getBestMethod(source.getClass());
-			if (cm == null) {
-				String s = attemptToReadProperty(source, "name");
-				if( s != null ) {
-					return s;
-				}
-				throw new RuntimeException("Method not found: " + getClass() + " - " + source.getClass());
-			}
-
-			return (String) cm.method.invoke(cm.controller, source);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface CTag {
+    
 }

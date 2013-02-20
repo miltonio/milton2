@@ -36,7 +36,7 @@ public class PutChildAnnotationHandler extends AbstractAnnotationHandler {
 	public Object execute(Object source, String newName, InputStream inputStream, Long length, String contentType) {
 		log.trace("execute PUT method");
 		ControllerMethod cm = getBestMethod(source.getClass());
-		if (cm == null) {			
+		if (cm == null) {
 			if (controllerMethods.isEmpty()) {
 				log.info("Method not found for source: " + source.getClass() + " No methods registered for " + PutChild.class);
 			} else {
@@ -49,11 +49,28 @@ public class PutChildAnnotationHandler extends AbstractAnnotationHandler {
 		}
 		try {
 			Object[] args = outer.buildInvokeArgs(source, cm.method, newName, inputStream, length, contentType);
-			return cm.method.invoke(cm.controller, args); // returns the newly created source object
-			// returns the newly created source object
-			// returns the newly created source object
+			return cm.method.invoke(cm.controller, args); 
 		} catch (Exception e) {
 			throw new RuntimeException(e);
+		}
+	}
+
+	public void replace(AnnoFileResource fileRes, InputStream inputStream, Long length) {
+		log.trace("execute PUT (replace) method");
+		Object source = fileRes.getSource();
+		ControllerMethod cm = getBestMethod(source.getClass());
+		if (cm == null) {
+			// ok, cant replace. Maybe we can delete and PUT?
+			String name = fileRes.getName();
+			outer.deleteAnnotationHandler.execute(source);
+			execute(fileRes.getParent().getSource(), name, inputStream, length, null);
+
+		} else {
+			try {
+				invoke(cm, source, inputStream, length, fileRes);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
 		}
 	}
 }

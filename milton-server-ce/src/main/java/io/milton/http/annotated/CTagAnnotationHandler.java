@@ -14,23 +14,25 @@
  */
 package io.milton.http.annotated;
 
-import io.milton.http.Request.Method;
+import io.milton.annotations.CTag;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Date;
 import org.apache.commons.beanutils.PropertyUtils;
 
 /**
  *
  * @author brad
  */
-public class UniqueIdAnnotationHandler extends AbstractAnnotationHandler {
+public class CTagAnnotationHandler extends AbstractAnnotationHandler {
 
-	private final String[] ID_PROP_NAMES = {"id", "uniqueId", "code"};
+	private final String[] CTAG_PROP_NAMES = {"ctag"};
 
-	public UniqueIdAnnotationHandler(Class annoClass, final AnnotationResourceFactory outer) {
-		super(outer, annoClass);
+	public CTagAnnotationHandler(final AnnotationResourceFactory outer) {
+		super(outer, CTag.class);
 	}
 
-	public String execute(Object source) {
+	public String execute(AnnoCollectionResource col) {
+		Object source = col.getSource();
 		try {
 			Object rawId = null;
 			ControllerMethod cm = getBestMethod(source.getClass());
@@ -40,15 +42,28 @@ public class UniqueIdAnnotationHandler extends AbstractAnnotationHandler {
 				if (m != null) {
 					rawId = m.invoke(source, (Object) null);
 				} else {
-					for (String nameProp : ID_PROP_NAMES) {
-						if (PropertyUtils.isReadable(source, "name")) {
+					for (String nameProp : CTAG_PROP_NAMES) {
+						if (PropertyUtils.isReadable(source, nameProp)) {
 							Object oPropVal = PropertyUtils.getProperty(source, nameProp);
-							if (oPropVal != null) {
-								rawId = oPropVal;
-								break;
+							rawId = oPropVal;
+							break;
+						}
+					}
+					if (rawId == null) {
+						// last ditch effort, use latest mod date on the collection or any member
+						Date latest = col.getModifiedDate();
+						if (latest != null) {
+							for (CommonResource r : col.getChildren()) {
+								Date d = r.getModifiedDate();
+								if (latest == null || d.after(latest)) {
+									latest = d;
+								}
 							}
 						}
-					}					
+						if( latest != null ) {
+							rawId = "T" + latest.getTime();
+						}
+					}
 				}
 			} else {
 				rawId = cm.method.invoke(cm.controller, source);
@@ -58,11 +73,7 @@ public class UniqueIdAnnotationHandler extends AbstractAnnotationHandler {
 			} else {
 				return null;
 			}
-		} catch (IllegalAccessException e) {
-			throw new RuntimeException("Exception executing " + getClass() + " - " + source.getClass());
-		} catch (InvocationTargetException e) {
-			throw new RuntimeException("Exception executing " + getClass() + " - " + source.getClass());
-		} catch(NoSuchMethodException e) {
+		} catch (Exception e) {
 			throw new RuntimeException("Exception executing " + getClass() + " - " + source.getClass());
 		}
 	}

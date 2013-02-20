@@ -52,7 +52,11 @@ public class AccessControlListAnnotationHandler extends AbstractAnnotationHandle
 		}
 		try {
 			for (ControllerMethod cm : availMethods) {
-				Object[] args = outer.buildInvokeArgs(source, cm.method, curUser, res, method, auth);
+				Object currentUserSource = null;
+				if( curUser != null ) {
+					currentUserSource = curUser.getSource();
+				}
+				Object[] args = outer.buildInvokeArgs(source, cm.method, curUser, res, method, auth, currentUserSource);
 				Object result = cm.method.invoke(cm.controller, args);
 				if (result == null) {
 					// ignore

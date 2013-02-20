@@ -20,6 +20,8 @@ package io.milton.http.annotated;
 
 import io.milton.annotations.AccessControlList;
 import io.milton.annotations.Authenticate;
+import io.milton.annotations.CTag;
+import io.milton.annotations.Calendars;
 import io.milton.annotations.ChildOf;
 import io.milton.annotations.ChildrenOf;
 import io.milton.annotations.ContentType;
@@ -27,6 +29,7 @@ import io.milton.annotations.Copy;
 import io.milton.annotations.CreatedDate;
 import io.milton.annotations.Delete;
 import io.milton.annotations.Get;
+import io.milton.annotations.ICalData;
 import io.milton.annotations.MakeCollection;
 import io.milton.annotations.MaxAge;
 import io.milton.annotations.ModifiedDate;
@@ -69,6 +72,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,8 +100,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	GetAnnotationHandler getAnnotationHandler = new GetAnnotationHandler(this);
 	PostAnnotationHandler postAnnotationHandler = new PostAnnotationHandler(this);
 	ChildrenOfAnnotationHandler childrenOfAnnotationHandler = new ChildrenOfAnnotationHandler(this);
-	ChildOfAnnotationHandler childOfAnnotationHandler = new ChildOfAnnotationHandler(this);
-	NameAnnotationHandler nameAnnotationHandler = new NameAnnotationHandler(this);
+	ChildOfAnnotationHandler childOfAnnotationHandler = new ChildOfAnnotationHandler(this);	
 	DisplayNameAnnotationHandler displayNameAnnotationHandler = new DisplayNameAnnotationHandler(this);
 	MakeCollectionAnnotationHandler makCollectionAnnotationHandler = new MakeCollectionAnnotationHandler(this);
 	MoveAnnotationHandler moveAnnotationHandler = new MoveAnnotationHandler(this);
@@ -107,12 +110,17 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	UsersAnnotationHandler usersAnnotationHandler = new UsersAnnotationHandler(this);
 	AuthenticateAnnotationHandler authenticateAnnotationHandler = new AuthenticateAnnotationHandler(this);
 	AccessControlListAnnotationHandler accessControlListAnnotationHandler = new AccessControlListAnnotationHandler(this);
+	CTagAnnotationHandler cTagAnnotationHandler = new CTagAnnotationHandler(this);
+	ICalDataAnnotationHandler iCalDataAnnotationHandler = new ICalDataAnnotationHandler(this);
+	CalendarsAnnotationHandler calendarsAnnotationHandler = new CalendarsAnnotationHandler(this);
+	
+	CommonPropertyAnnotationHandler<String> nameAnnotationHandler = new CommonPropertyAnnotationHandler(Name.class, this, "name", "fileName");
 	CommonPropertyAnnotationHandler<Date> modifiedDateAnnotationHandler = new CommonPropertyAnnotationHandler<Date>(ModifiedDate.class, this);
 	CommonPropertyAnnotationHandler<Date> createdDateAnnotationHandler = new CommonPropertyAnnotationHandler<Date>(CreatedDate.class, this);
 	CommonPropertyAnnotationHandler<String> contentTypeAnnotationHandler = new CommonPropertyAnnotationHandler<String>(ContentType.class, this);
 	CommonPropertyAnnotationHandler<Long> contentLengthAnnotationHandler = new CommonPropertyAnnotationHandler<Long>(ContentType.class, this);
 	CommonPropertyAnnotationHandler<Long> maxAgeAnnotationHandler = new CommonPropertyAnnotationHandler<Long>(MaxAge.class, this);
-	CommonPropertyAnnotationHandler<String> uniqueIdAnnotationHandler = new CommonPropertyAnnotationHandler<String>(UniqueId.class, this);
+	CommonPropertyAnnotationHandler<String> uniqueIdAnnotationHandler = new CommonPropertyAnnotationHandler<String>(UniqueId.class, this, "id");
 
 	public AnnotationResourceFactory() {
 		mapOfAnnotationHandlers.put(Root.class, rootAnnotationHandler);
@@ -137,6 +145,8 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		mapOfAnnotationHandlers.put(ContentType.class, contentTypeAnnotationHandler);
 		mapOfAnnotationHandlers.put(MaxAge.class, maxAgeAnnotationHandler);
 		mapOfAnnotationHandlers.put(UniqueId.class, uniqueIdAnnotationHandler);
+		mapOfAnnotationHandlers.put(CTag.class, cTagAnnotationHandler);		
+		mapOfAnnotationHandlers.put(ICalData.class, iCalDataAnnotationHandler);				
 
 		for (AnnotationHandler ah : mapOfAnnotationHandlers.values()) {
 			Method[] methods = ah.getSupportedMethods();
@@ -168,7 +178,12 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 			if (r == null) {
 				log.info("Resource not found: host=" + host + " path=" + path);
 			} else {
-				log.info("Found resource: " + r.getClass() + "  for path=" + path);
+				if( r instanceof AnnoResource) {
+					AnnoResource ar = (AnnoResource) r;					
+					log.info("Found AnnoResource: " + r.getClass() + "  for path=" + path + "  with source: " + ar.getSource());
+				} else {
+					log.info("Found resource: " + r.getClass() + "  for path=" + path);
+				}
 			}
 		}
 		return r;
@@ -287,6 +302,9 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	}
 
 	public boolean isCompatible(Object source, Method m) {
+		if( in(m, Method.REPORT, Method.LOCK, Method.UNLOCK, Method.HEAD, Method.OPTIONS)) {
+			return true;
+		}
 		AnnotationHandler ah = mapOfAnnotationHandlersByMethod.get(m);
 		if (ah != null) {
 			boolean b = ah.isCompatible(source);
@@ -317,11 +335,14 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		}
 		for (int i = 1; i < m.getParameterTypes().length; i++) {
 			Class type = m.getParameterTypes()[i];
+			Object argValue;
 			try {
-				args[i] = findArgValue(type, request, response, list);
+				argValue = findArgValue(type, request, response, list);
 			} catch (UnresolvableParameterException e) {
-				throw new Exception("Couldnt find parameter " + type + " for method: " + m);
+				//throw new Exception("Couldnt find parameter " + type + " for method: " + m);
+				argValue = null;
 			}
+			args[i] = argValue;
 		}
 		return args;
 	}
@@ -384,8 +405,15 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	 * @return
 	 */
 	public AnnoResource instantiate(Object childSource, AnnoCollectionResource parent, java.lang.reflect.Method m) {
-		if (m.getAnnotation(Users.class) != null) { // TODO: instead of Users annotation, just look for @Authenticate anno for source class
+		
+		if (authenticateAnnotationHandler.canAuthenticate(childSource)) {
 			return new AnnoPrincipalResource(this, childSource, parent);
+		}
+		if( m.getAnnotation(Calendars.class) != null ) {
+			return new AnnoCalendarResource(this, childSource, parent);
+		}
+		if( parent instanceof AnnoCalendarResource) {
+			return new AnnoEventResource(this, childSource, parent);
 		}
 		if (childrenOfAnnotationHandler.isCompatible(childSource)) {
 			return new AnnoCollectionResource(this, childSource, parent);
@@ -486,6 +514,15 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 
 	public void setMapOfTempResources(Map<String, List<LockHolder>> mapOfTempResources) {
 		this.mapOfTempResources = mapOfTempResources;
+	}
+
+	private boolean in(Method m, Method ... methods) {
+		for( Method listMethod : methods ) {
+			if( m.equals(listMethod)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public class AnnotationsDisplayNameFormatter implements DisplayNameFormatter {

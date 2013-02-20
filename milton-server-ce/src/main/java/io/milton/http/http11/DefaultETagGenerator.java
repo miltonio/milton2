@@ -46,7 +46,9 @@ public class DefaultETagGenerator implements ETagGenerator {
         log.trace( "generateEtag" );
         String s = r.getUniqueId();
         if( s == null ) {
-            log.trace("no uniqueId, so no etag");
+			if( log.isTraceEnabled()) {
+				log.trace("no uniqueId, so no etag for class: " + r.getClass());
+			}
             return null;
         } else {
             Date dt = r.getModifiedDate();

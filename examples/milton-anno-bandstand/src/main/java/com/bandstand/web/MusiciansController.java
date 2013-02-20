@@ -60,6 +60,13 @@ public class MusiciansController {
         return Musician.findAll(SessionManager.session());
     }
     
+    @ChildOf
+    @Users
+    public Musician findMusicianByName(MusiciansController root, String name) {
+        return Musician.find(name, SessionManager.session());
+    }
+            
+    
     @Get(contentType="application/json")
     public JsonResult renderMusicianJson(Musician musician) throws UnsupportedEncodingException {
         return JsonResult.returnData(musician);
@@ -98,11 +105,6 @@ public class MusiciansController {
         }
     }
     
-    @ChildOf
-    public Musician findMusicianByName(MusiciansController root, String name) {
-        return Musician.find(name, SessionManager.session());
-    }
-        
     @Name
     public String getMusiciansRootName(MusiciansController musiciansRoot) {
         return "musicians";

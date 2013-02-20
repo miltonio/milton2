@@ -14,14 +14,15 @@
  */
 package io.milton.http.annotated;
 
+import io.milton.http.exceptions.BadRequestException;
+import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.values.HrefList;
-import io.milton.http.values.SupportedCalendarComponentList;
 import io.milton.http.values.SupportedCalendarComponentListsSet;
 import io.milton.principal.CalDavPrincipal;
 import io.milton.principal.CardDavPrincipal;
 import io.milton.principal.DiscretePrincipal;
 import io.milton.principal.HrefPrincipleId;
-import io.milton.resource.CalendarResource;
+import io.milton.resource.Resource;
 
 /**
  *
@@ -34,8 +35,17 @@ public class AnnoPrincipalResource extends AnnoCollectionResource implements Dis
 	}
 
 	@Override
-	public HrefList getCalendarHomeSet() {
-		throw new UnsupportedOperationException("Not supported yet.");
+	public HrefList getCalendarHomeSet() throws NotAuthorizedException, BadRequestException{
+		HrefList list = new HrefList(); 
+		for( Resource r : getChildren()) {
+			if( r instanceof AnnoCollectionResource) {
+				AnnoCollectionResource col = (AnnoCollectionResource) r;
+				if( annoFactory.calendarsAnnotationHandler.hasCalendars(col.getSource()) ) {
+					list.add(col.getHref());
+				}
+			}
+		}
+		return list;
 	}
 	@Override
 	public HrefList getAddressBookHomeSet() {

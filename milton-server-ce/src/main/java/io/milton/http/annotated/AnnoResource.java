@@ -44,6 +44,7 @@ import io.milton.resource.LockableResource;
 import io.milton.resource.MoveableResource;
 import io.milton.resource.PostableResource;
 import io.milton.resource.PropFindableResource;
+import io.milton.resource.ReportableResource;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Date;
@@ -56,7 +57,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author brad
  */
-public abstract class AnnoResource implements GetableResource, PropFindableResource, DeletableResource, CopyableResource, MoveableResource, LockableResource, ConditionalCompatibleResource, CommonResource, DigestResource, PostableResource {
+public abstract class AnnoResource implements GetableResource, PropFindableResource, DeletableResource, CopyableResource, MoveableResource, LockableResource, ConditionalCompatibleResource, CommonResource, DigestResource, PostableResource, ReportableResource {
 
 	private static final Logger log = LoggerFactory.getLogger(AnnoResource.class);
 	protected Object source;
@@ -138,7 +139,10 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 
 	@Override
 	public boolean authorise(Request request, Method method, Auth auth) {
-		Object oUser = auth.getTag();
+		Object oUser = null;
+		if( auth != null ) {
+			oUser = auth.getTag();
+		}
 		AnnoPrincipalResource p = null;
 		if (oUser instanceof AnnoPrincipalResource) {
 			p = (AnnoPrincipalResource) oUser;

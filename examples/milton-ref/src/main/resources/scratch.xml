@@ -1,462 +1,1853 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<d:multistatus xmlns:ns1="http://apple.com/ns/ical/" xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:" xmlns:cal="urn:ietf:params:xml:ns:caldav" xmlns:card="urn:ietf:params:xml:ns:carddav">
+<d:multistatus xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:" xmlns:cal="urn:ietf:params:xml:ns:caldav" xmlns:card="urn:ietf:params:xml:ns:carddav">
     <d:response>
-        <d:href>/p/userA/calendars/</d:href>
+        <d:href>/musicians/m1/b5/f3dcb094-1d58-4e5e-b8f1-1232a7136bd9</d:href>
         <d:propstat>
             <d:prop>
-                <d:displayname>calendars</d:displayname>
-                <d:current-user-privilege-set>
-                    <d:privilege>
-                        <d:read/>
-                    </d:privilege>
-                    <d:privilege>
-                        <d:read-acl/>
-                    </d:privilege>
-                    <d:privilege>
-                        <d:read-current-user-privilege-set/>
-                    </d:privilege>
-                    <d:privilege>
-                        <d:unlock/>
-                    </d:privilege>
-                    <d:privilege>
-                        <d:write/>
-                    </d:privilege>
-                    <d:privilege>
-                        <d:write-acl/>
-                    </d:privilege>
-                </d:current-user-privilege-set>
-                <ns1:calendar-color/>
-                <cs:getctag/>
-                <d:quota-used-bytes/>
-                <d:quota-available-bytes/>
-                <cal:calendar-description/>
-                <d:supported-report-set>
-                    <d:supported-report>
-                        <d:report>
-                            <d:principal-search-property-set/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:addressbook-query/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:calendar-multiget/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:expand-property/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:calendar-query/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:principal-property-search/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:acl-principal-prop-set/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:addressbook-multiget/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:principal-match/>
-                        </d:report>
-                    </d:supported-report>
-                </d:supported-report-set>
-                <d:resourcetype>
-                    <d:collection/>
-                </d:resourcetype>
+                <cal:calendar-data><![CDATA[BEGIN:VCALENDAR
+PRODID:-//spliffy.org//iCal4j 1.0//EN
+VERSION:2.0
+BEGIN:VTIMEZONE
+TZID:Pacific/Auckland
+TZURL:http://tzurl.org/zoneinfo/Pacific/Auckland
+X-LIC-LOCATION:Pacific/Auckland
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1300
+TZNAME:NZDT
+DTSTART:20070930T020000
+RRULE:FREQ=YEARLY;BYMONTH=9;BYDAY=-1SU
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1300
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:20080406T030000
+RRULE:FREQ=YEARLY;BYMONTH=4;BYDAY=1SU
+END:STANDARD
+BEGIN:STANDARD
+TZOFFSETFROM:+113904
+TZOFFSETTO:+1130
+TZNAME:NZMT
+DTSTART:18681102T000000
+RDATE:
+END:STANDARD
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1130
+TZOFFSETTO:+1230
+TZNAME:NZST
+DTSTART:19271106T023000
+RDATE:
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1230
+TZOFFSETTO:+1130
+TZNAME:NZMT
+DTSTART:19280304T023000
+RDATE:
+END:STANDARD
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1130
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:19281014T023000
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1130
+TZNAME:NZMT
+DTSTART:19290317T023000
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+END:STANDARD
+BEGIN:STANDARD
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:19460101T000000
+RDATE:
+END:STANDARD
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1300
+TZNAME:NZDT
+DTSTART:19741103T020000
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1300
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:19750223T030000
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+DTSTAMP:20130220T002534Z
+DTSTART;TZID=Pacific/Auckland:20130307T231816
+DTEND:20130307T231816
+SUMMARY:Test 8
+UID:f3dcb094-1d58-4e5e-b8f1-1232a7136bd9
+TZID:Pacific/Auckland
+END:VEVENT
+END:VCALENDAR
+]]>
+                </cal:calendar-data>
+                <d:getetag/>
             </d:prop>
             <d:status>HTTP/1.1 200 OK</d:status>
-        </d:propstat>
-        <d:propstat>
-            <d:prop>
-                <cs:source/>
-                <d:owner/>
-                <cs:allowed-sharing-modes/>
-                <bulk-requests/>
-                <cal:default-alarm-vevent-datetime/>
-                <d:sync-token/>
-                <d:resource-id/>
-                <cal:calendar-free-busy-set/>
-                <cs:subscribed-strip-attachments/>
-                <cal:default-alarm-vevent-date/>
-                <cs:pre-publish-url/>
-                <ns1:calendar-order/>
-                <cal:calendar-timezone/>
-                <d:add-member/>
-                <cal:schedule-calendar-transp/>
-                <cs:push-transports/>
-                <cs:subscribed-strip-alarms/>
-                <cal:schedule-default-calendar-URL/>
-                <cs:pushkey/>
-                <ns1:refreshrate/>
-                <cs:subscribed-strip-todos/>
-                <cs:publish-url/>
-                <cs:xmpp-server/>
-                <cs:xmpp-uri/>
-            </d:prop>
-            <d:status>HTTP/1.1 404 Not Found</d:status>
         </d:propstat>
     </d:response>
     <d:response>
-        <d:href>/p/userA/calendars/cal1/</d:href>
+        <d:href>/musicians/m1/b5/6d019e84-8fd7-4894-a558-a9a1dbc7da76</d:href>
         <d:propstat>
             <d:prop>
-                <d:displayname>cal1</d:displayname>
-                <d:current-user-privilege-set>
-                    <d:privilege>
-                        <d:read/>
-                    </d:privilege>
-                    <d:privilege>
-                        <d:read-acl/>
-                    </d:privilege>
-                    <d:privilege>
-                        <d:read-current-user-privilege-set/>
-                    </d:privilege>
-                    <d:privilege>
-                        <d:unlock/>
-                    </d:privilege>
-                    <d:privilege>
-                        <d:write/>
-                    </d:privilege>
-                    <d:privilege>
-                        <d:write-acl/>
-                    </d:privilege>
-                </d:current-user-privilege-set>
-                <ns1:calendar-color>#2952A3</ns1:calendar-color>
-                <cal:supported-calendar-component-set>
-                    <cal:comp name="VEVENT"/>
-                    <cal:comp name="VTODO"/>
-                </cal:supported-calendar-component-set>
-                <cs:getctag>c1535530118</cs:getctag>
-                <d:quota-used-bytes/>
-                <d:quota-available-bytes/>
-                <cal:calendar-description>A test calendar</cal:calendar-description>
-                <d:supported-report-set>
-                    <d:supported-report>
-                        <d:report>
-                            <d:principal-search-property-set/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:addressbook-query/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:calendar-multiget/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:expand-property/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:calendar-query/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:principal-property-search/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:acl-principal-prop-set/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:addressbook-multiget/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:principal-match/>
-                        </d:report>
-                    </d:supported-report>
-                </d:supported-report-set>
-                <d:resourcetype>
-                    <d:collection/>
-                    <cal:calendar/>
-                </d:resourcetype>
+                <cal:calendar-data><![CDATA[BEGIN:VCALENDAR
+PRODID:-//spliffy.org//iCal4j 1.0//EN
+VERSION:2.0
+BEGIN:VTIMEZONE
+TZID:Pacific/Auckland
+TZURL:http://tzurl.org/zoneinfo/Pacific/Auckland
+X-LIC-LOCATION:Pacific/Auckland
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1300
+TZNAME:NZDT
+DTSTART:20070930T020000
+RRULE:FREQ=YEARLY;BYMONTH=9;BYDAY=-1SU
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1300
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:20080406T030000
+RRULE:FREQ=YEARLY;BYMONTH=4;BYDAY=1SU
+END:STANDARD
+BEGIN:STANDARD
+TZOFFSETFROM:+113904
+TZOFFSETTO:+1130
+TZNAME:NZMT
+DTSTART:18681102T000000
+RDATE:
+END:STANDARD
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1130
+TZOFFSETTO:+1230
+TZNAME:NZST
+DTSTART:19271106T023000
+RDATE:
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1230
+TZOFFSETTO:+1130
+TZNAME:NZMT
+DTSTART:19280304T023000
+RDATE:
+END:STANDARD
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1130
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:19281014T023000
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1130
+TZNAME:NZMT
+DTSTART:19290317T023000
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+END:STANDARD
+BEGIN:STANDARD
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:19460101T000000
+RDATE:
+END:STANDARD
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1300
+TZNAME:NZDT
+DTSTART:19741103T020000
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1300
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:19750223T030000
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+DTSTAMP:20130220T002534Z
+DTSTART;TZID=Pacific/Auckland:20130303T231816
+DTEND:20130303T231816
+SUMMARY:Test 6
+UID:6d019e84-8fd7-4894-a558-a9a1dbc7da76
+TZID:Pacific/Auckland
+END:VEVENT
+END:VCALENDAR
+]]>
+                </cal:calendar-data>
+                <d:getetag/>
             </d:prop>
             <d:status>HTTP/1.1 200 OK</d:status>
-        </d:propstat>
-        <d:propstat>
-            <d:prop>
-                <cs:source/>
-                <d:owner/>
-                <cs:allowed-sharing-modes/>
-                <bulk-requests/>
-                <cal:default-alarm-vevent-datetime/>
-                <d:sync-token/>
-                <d:resource-id/>
-                <cal:calendar-free-busy-set/>
-                <cs:subscribed-strip-attachments/>
-                <cal:default-alarm-vevent-date/>
-                <cs:pre-publish-url/>
-                <ns1:calendar-order/>
-                <cal:calendar-timezone/>
-                <d:add-member/>
-                <cal:schedule-calendar-transp/>
-                <cs:push-transports/>
-                <cs:subscribed-strip-alarms/>
-                <cal:schedule-default-calendar-URL/>
-                <cs:pushkey/>
-                <ns1:refreshrate/>
-                <cs:subscribed-strip-todos/>
-                <cs:publish-url/>
-                <cs:xmpp-server/>
-                <cs:xmpp-uri/>
-            </d:prop>
-            <d:status>HTTP/1.1 404 Not Found</d:status>
         </d:propstat>
     </d:response>
     <d:response>
-        <d:href>/p/userA/calendars/inbox/</d:href>
+        <d:href>/musicians/m1/b5/dc20b45a-30d5-476c-a6f2-343dc0840346</d:href>
         <d:propstat>
             <d:prop>
-                <d:displayname>inbox</d:displayname>
-                <d:current-user-privilege-set>
-                    <d:privilege>
-                        <d:read/>
-                    </d:privilege>
-                    <d:privilege>
-                        <d:read-acl/>
-                    </d:privilege>
-                    <d:privilege>
-                        <d:read-current-user-privilege-set/>
-                    </d:privilege>
-                    <d:privilege>
-                        <d:unlock/>
-                    </d:privilege>
-                    <d:privilege>
-                        <d:write/>
-                    </d:privilege>
-                    <d:privilege>
-                        <d:write-acl/>
-                    </d:privilege>
-                </d:current-user-privilege-set>
-                <ns1:calendar-color/>
-                <cs:getctag>c1614196</cs:getctag>
-                <d:quota-used-bytes/>
-                <d:quota-available-bytes/>
-                <cal:calendar-description/>
-                <d:supported-report-set>
-                    <d:supported-report>
-                        <d:report>
-                            <d:principal-search-property-set/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:addressbook-query/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:calendar-multiget/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:expand-property/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:calendar-query/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:principal-property-search/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:acl-principal-prop-set/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:addressbook-multiget/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:principal-match/>
-                        </d:report>
-                    </d:supported-report>
-                </d:supported-report-set>
-                <d:resourcetype>
-                    <d:collection/>
-                    <cal:schedule-inbox/>
-                </d:resourcetype>
+                <cal:calendar-data><![CDATA[BEGIN:VCALENDAR
+PRODID:-//spliffy.org//iCal4j 1.0//EN
+VERSION:2.0
+BEGIN:VTIMEZONE
+TZID:Pacific/Auckland
+TZURL:http://tzurl.org/zoneinfo/Pacific/Auckland
+X-LIC-LOCATION:Pacific/Auckland
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1300
+TZNAME:NZDT
+DTSTART:20070930T020000
+RRULE:FREQ=YEARLY;BYMONTH=9;BYDAY=-1SU
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1300
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:20080406T030000
+RRULE:FREQ=YEARLY;BYMONTH=4;BYDAY=1SU
+END:STANDARD
+BEGIN:STANDARD
+TZOFFSETFROM:+113904
+TZOFFSETTO:+1130
+TZNAME:NZMT
+DTSTART:18681102T000000
+RDATE:
+END:STANDARD
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1130
+TZOFFSETTO:+1230
+TZNAME:NZST
+DTSTART:19271106T023000
+RDATE:
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1230
+TZOFFSETTO:+1130
+TZNAME:NZMT
+DTSTART:19280304T023000
+RDATE:
+END:STANDARD
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1130
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:19281014T023000
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1130
+TZNAME:NZMT
+DTSTART:19290317T023000
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+END:STANDARD
+BEGIN:STANDARD
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:19460101T000000
+RDATE:
+END:STANDARD
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1300
+TZNAME:NZDT
+DTSTART:19741103T020000
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1300
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:19750223T030000
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+DTSTAMP:20130220T002534Z
+DTSTART;TZID=Pacific/Auckland:20130305T231816
+DTEND:20130305T231816
+SUMMARY:Test 7
+UID:dc20b45a-30d5-476c-a6f2-343dc0840346
+TZID:Pacific/Auckland
+END:VEVENT
+END:VCALENDAR
+]]>
+                </cal:calendar-data>
+                <d:getetag/>
             </d:prop>
             <d:status>HTTP/1.1 200 OK</d:status>
-        </d:propstat>
-        <d:propstat>
-            <d:prop>
-                <cs:source/>
-                <d:owner/>
-                <cs:allowed-sharing-modes/>
-                <bulk-requests/>
-                <cal:default-alarm-vevent-datetime/>
-                <d:sync-token/>
-                <d:resource-id/>
-                <cal:calendar-free-busy-set/>
-                <cs:subscribed-strip-attachments/>
-                <cal:default-alarm-vevent-date/>
-                <cs:pre-publish-url/>
-                <ns1:calendar-order/>
-                <cal:calendar-timezone/>
-                <d:add-member/>
-                <cal:schedule-calendar-transp/>
-                <cs:push-transports/>
-                <cs:subscribed-strip-alarms/>
-                <cal:schedule-default-calendar-URL/>
-                <cs:pushkey/>
-                <ns1:refreshrate/>
-                <cs:subscribed-strip-todos/>
-                <cs:publish-url/>
-                <cs:xmpp-server/>
-                <cs:xmpp-uri/>
-            </d:prop>
-            <d:status>HTTP/1.1 404 Not Found</d:status>
         </d:propstat>
     </d:response>
     <d:response>
-        <d:href>/p/userA/calendars/outbox/</d:href>
+        <d:href>/musicians/m1/b5/06fad5b6-1604-4ee6-9d47-56ad42631aa4</d:href>
         <d:propstat>
             <d:prop>
-                <d:displayname>outbox</d:displayname>
-                <d:current-user-privilege-set>
-                    <d:privilege>
-                        <d:read/>
-                    </d:privilege>
-                    <d:privilege>
-                        <d:read-acl/>
-                    </d:privilege>
-                    <d:privilege>
-                        <d:read-current-user-privilege-set/>
-                    </d:privilege>
-                    <d:privilege>
-                        <d:unlock/>
-                    </d:privilege>
-                    <d:privilege>
-                        <d:write/>
-                    </d:privilege>
-                    <d:privilege>
-                        <d:write-acl/>
-                    </d:privilege>
-                </d:current-user-privilege-set>
-                <ns1:calendar-color/>
-                <cs:getctag>c17812966</cs:getctag>
-                <d:quota-used-bytes/>
-                <d:quota-available-bytes/>
-                <cal:calendar-description/>
-                <d:supported-report-set>
-                    <d:supported-report>
-                        <d:report>
-                            <d:principal-search-property-set/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:addressbook-query/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:calendar-multiget/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:expand-property/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:calendar-query/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:principal-property-search/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:acl-principal-prop-set/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:addressbook-multiget/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:principal-match/>
-                        </d:report>
-                    </d:supported-report>
-                </d:supported-report-set>
-                <d:resourcetype>
-                    <d:collection/>
-                    <cal:schedule-outbox/>
-                </d:resourcetype>
+                <cal:calendar-data><![CDATA[BEGIN:VCALENDAR
+PRODID:-//spliffy.org//iCal4j 1.0//EN
+VERSION:2.0
+BEGIN:VTIMEZONE
+TZID:Pacific/Auckland
+TZURL:http://tzurl.org/zoneinfo/Pacific/Auckland
+X-LIC-LOCATION:Pacific/Auckland
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1300
+TZNAME:NZDT
+DTSTART:20070930T020000
+RRULE:FREQ=YEARLY;BYMONTH=9;BYDAY=-1SU
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1300
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:20080406T030000
+RRULE:FREQ=YEARLY;BYMONTH=4;BYDAY=1SU
+END:STANDARD
+BEGIN:STANDARD
+TZOFFSETFROM:+113904
+TZOFFSETTO:+1130
+TZNAME:NZMT
+DTSTART:18681102T000000
+RDATE:
+END:STANDARD
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1130
+TZOFFSETTO:+1230
+TZNAME:NZST
+DTSTART:19271106T023000
+RDATE:
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1230
+TZOFFSETTO:+1130
+TZNAME:NZMT
+DTSTART:19280304T023000
+RDATE:
+END:STANDARD
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1130
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:19281014T023000
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1130
+TZNAME:NZMT
+DTSTART:19290317T023000
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+END:STANDARD
+BEGIN:STANDARD
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:19460101T000000
+RDATE:
+END:STANDARD
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1300
+TZNAME:NZDT
+DTSTART:19741103T020000
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1300
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:19750223T030000
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+DTSTAMP:20130220T002534Z
+DTSTART;TZID=Pacific/Auckland:20130309T231816
+DTEND:20130309T231816
+SUMMARY:Test 9
+UID:06fad5b6-1604-4ee6-9d47-56ad42631aa4
+TZID:Pacific/Auckland
+END:VEVENT
+END:VCALENDAR
+]]>
+                </cal:calendar-data>
+                <d:getetag/>
             </d:prop>
             <d:status>HTTP/1.1 200 OK</d:status>
         </d:propstat>
+    </d:response>
+    <d:response>
+        <d:href>/musicians/m1/b5/d6bfb87c-4ccf-4e3b-af4a-2855788099bf</d:href>
         <d:propstat>
             <d:prop>
-                <cs:source/>
-                <d:owner/>
-                <cs:allowed-sharing-modes/>
-                <bulk-requests/>
-                <cal:default-alarm-vevent-datetime/>
-                <d:sync-token/>
-                <d:resource-id/>
-                <cal:calendar-free-busy-set/>
-                <cs:subscribed-strip-attachments/>
-                <cal:default-alarm-vevent-date/>
-                <cs:pre-publish-url/>
-                <ns1:calendar-order/>
-                <cal:calendar-timezone/>
-                <d:add-member/>
-                <cal:schedule-calendar-transp/>
-                <cs:push-transports/>
-                <cs:subscribed-strip-alarms/>
-                <cal:schedule-default-calendar-URL/>
-                <cs:pushkey/>
-                <ns1:refreshrate/>
-                <cs:subscribed-strip-todos/>
-                <cs:publish-url/>
-                <cs:xmpp-server/>
-                <cs:xmpp-uri/>
+                <cal:calendar-data><![CDATA[BEGIN:VCALENDAR
+PRODID:-//spliffy.org//iCal4j 1.0//EN
+VERSION:2.0
+BEGIN:VTIMEZONE
+TZID:Pacific/Auckland
+TZURL:http://tzurl.org/zoneinfo/Pacific/Auckland
+X-LIC-LOCATION:Pacific/Auckland
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1300
+TZNAME:NZDT
+DTSTART:20070930T020000
+RRULE:FREQ=YEARLY;BYMONTH=9;BYDAY=-1SU
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1300
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:20080406T030000
+RRULE:FREQ=YEARLY;BYMONTH=4;BYDAY=1SU
+END:STANDARD
+BEGIN:STANDARD
+TZOFFSETFROM:+113904
+TZOFFSETTO:+1130
+TZNAME:NZMT
+DTSTART:18681102T000000
+RDATE:
+END:STANDARD
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1130
+TZOFFSETTO:+1230
+TZNAME:NZST
+DTSTART:19271106T023000
+RDATE:
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1230
+TZOFFSETTO:+1130
+TZNAME:NZMT
+DTSTART:19280304T023000
+RDATE:
+END:STANDARD
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1130
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:19281014T023000
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1130
+TZNAME:NZMT
+DTSTART:19290317T023000
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+END:STANDARD
+BEGIN:STANDARD
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:19460101T000000
+RDATE:
+END:STANDARD
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1300
+TZNAME:NZDT
+DTSTART:19741103T020000
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1300
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:19750223T030000
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+DTSTAMP:20130220T002534Z
+DTSTART;TZID=Pacific/Auckland:20130219T231816
+DTEND:20130219T231816
+SUMMARY:Test 0
+UID:d6bfb87c-4ccf-4e3b-af4a-2855788099bf
+TZID:Pacific/Auckland
+END:VEVENT
+END:VCALENDAR
+]]>
+                </cal:calendar-data>
+                <d:getetag/>
             </d:prop>
-            <d:status>HTTP/1.1 404 Not Found</d:status>
+            <d:status>HTTP/1.1 200 OK</d:status>
+        </d:propstat>
+    </d:response>
+    <d:response>
+        <d:href>/musicians/m1/b5/38ff703c-e0f8-4735-a42a-1cea7eaced15</d:href>
+        <d:propstat>
+            <d:prop>
+                <cal:calendar-data><![CDATA[BEGIN:VCALENDAR
+PRODID:-//spliffy.org//iCal4j 1.0//EN
+VERSION:2.0
+BEGIN:VTIMEZONE
+TZID:Pacific/Auckland
+TZURL:http://tzurl.org/zoneinfo/Pacific/Auckland
+X-LIC-LOCATION:Pacific/Auckland
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1300
+TZNAME:NZDT
+DTSTART:20070930T020000
+RRULE:FREQ=YEARLY;BYMONTH=9;BYDAY=-1SU
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1300
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:20080406T030000
+RRULE:FREQ=YEARLY;BYMONTH=4;BYDAY=1SU
+END:STANDARD
+BEGIN:STANDARD
+TZOFFSETFROM:+113904
+TZOFFSETTO:+1130
+TZNAME:NZMT
+DTSTART:18681102T000000
+RDATE:
+END:STANDARD
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1130
+TZOFFSETTO:+1230
+TZNAME:NZST
+DTSTART:19271106T023000
+RDATE:
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1230
+TZOFFSETTO:+1130
+TZNAME:NZMT
+DTSTART:19280304T023000
+RDATE:
+END:STANDARD
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1130
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:19281014T023000
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1130
+TZNAME:NZMT
+DTSTART:19290317T023000
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+END:STANDARD
+BEGIN:STANDARD
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:19460101T000000
+RDATE:
+END:STANDARD
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1300
+TZNAME:NZDT
+DTSTART:19741103T020000
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1300
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:19750223T030000
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+DTSTAMP:20130220T002534Z
+DTSTART;TZID=Pacific/Auckland:20130301T231816
+DTEND:20130301T231816
+SUMMARY:Test 5
+UID:38ff703c-e0f8-4735-a42a-1cea7eaced15
+TZID:Pacific/Auckland
+END:VEVENT
+END:VCALENDAR
+]]>
+                </cal:calendar-data>
+                <d:getetag/>
+            </d:prop>
+            <d:status>HTTP/1.1 200 OK</d:status>
+        </d:propstat>
+    </d:response>
+    <d:response>
+        <d:href>/musicians/m1/b5/48b3610d-e34d-4c52-a292-655c0b10907b</d:href>
+        <d:propstat>
+            <d:prop>
+                <cal:calendar-data><![CDATA[BEGIN:VCALENDAR
+PRODID:-//spliffy.org//iCal4j 1.0//EN
+VERSION:2.0
+BEGIN:VTIMEZONE
+TZID:Pacific/Auckland
+TZURL:http://tzurl.org/zoneinfo/Pacific/Auckland
+X-LIC-LOCATION:Pacific/Auckland
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1300
+TZNAME:NZDT
+DTSTART:20070930T020000
+RRULE:FREQ=YEARLY;BYMONTH=9;BYDAY=-1SU
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1300
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:20080406T030000
+RRULE:FREQ=YEARLY;BYMONTH=4;BYDAY=1SU
+END:STANDARD
+BEGIN:STANDARD
+TZOFFSETFROM:+113904
+TZOFFSETTO:+1130
+TZNAME:NZMT
+DTSTART:18681102T000000
+RDATE:
+END:STANDARD
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1130
+TZOFFSETTO:+1230
+TZNAME:NZST
+DTSTART:19271106T023000
+RDATE:
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1230
+TZOFFSETTO:+1130
+TZNAME:NZMT
+DTSTART:19280304T023000
+RDATE:
+END:STANDARD
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1130
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:19281014T023000
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1130
+TZNAME:NZMT
+DTSTART:19290317T023000
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+END:STANDARD
+BEGIN:STANDARD
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:19460101T000000
+RDATE:
+END:STANDARD
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1300
+TZNAME:NZDT
+DTSTART:19741103T020000
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1300
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:19750223T030000
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+DTSTAMP:20130220T002534Z
+DTSTART;TZID=Pacific/Auckland:20130223T231816
+DTEND:20130223T231816
+SUMMARY:Test 2
+UID:48b3610d-e34d-4c52-a292-655c0b10907b
+TZID:Pacific/Auckland
+END:VEVENT
+END:VCALENDAR
+]]>
+                </cal:calendar-data>
+                <d:getetag/>
+            </d:prop>
+            <d:status>HTTP/1.1 200 OK</d:status>
+        </d:propstat>
+    </d:response>
+    <d:response>
+        <d:href>/musicians/m1/b5/884f7bae-c07b-4660-9e1a-3974ce4ee7ab</d:href>
+        <d:propstat>
+            <d:prop>
+                <cal:calendar-data><![CDATA[BEGIN:VCALENDAR
+PRODID:-//spliffy.org//iCal4j 1.0//EN
+VERSION:2.0
+BEGIN:VTIMEZONE
+TZID:Pacific/Auckland
+TZURL:http://tzurl.org/zoneinfo/Pacific/Auckland
+X-LIC-LOCATION:Pacific/Auckland
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1300
+TZNAME:NZDT
+DTSTART:20070930T020000
+RRULE:FREQ=YEARLY;BYMONTH=9;BYDAY=-1SU
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1300
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:20080406T030000
+RRULE:FREQ=YEARLY;BYMONTH=4;BYDAY=1SU
+END:STANDARD
+BEGIN:STANDARD
+TZOFFSETFROM:+113904
+TZOFFSETTO:+1130
+TZNAME:NZMT
+DTSTART:18681102T000000
+RDATE:
+END:STANDARD
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1130
+TZOFFSETTO:+1230
+TZNAME:NZST
+DTSTART:19271106T023000
+RDATE:
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1230
+TZOFFSETTO:+1130
+TZNAME:NZMT
+DTSTART:19280304T023000
+RDATE:
+END:STANDARD
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1130
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:19281014T023000
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1130
+TZNAME:NZMT
+DTSTART:19290317T023000
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+END:STANDARD
+BEGIN:STANDARD
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:19460101T000000
+RDATE:
+END:STANDARD
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1300
+TZNAME:NZDT
+DTSTART:19741103T020000
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1300
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:19750223T030000
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+DTSTAMP:20130220T002534Z
+DTSTART;TZID=Pacific/Auckland:20130225T231816
+DTEND:20130225T231816
+SUMMARY:Test 3
+UID:884f7bae-c07b-4660-9e1a-3974ce4ee7ab
+TZID:Pacific/Auckland
+END:VEVENT
+END:VCALENDAR
+]]>
+                </cal:calendar-data>
+                <d:getetag/>
+            </d:prop>
+            <d:status>HTTP/1.1 200 OK</d:status>
+        </d:propstat>
+    </d:response>
+    <d:response>
+        <d:href>/musicians/m1/b5/587431d3-6527-4809-b5ff-b11bc99e03e9</d:href>
+        <d:propstat>
+            <d:prop>
+                <cal:calendar-data><![CDATA[BEGIN:VCALENDAR
+PRODID:-//spliffy.org//iCal4j 1.0//EN
+VERSION:2.0
+BEGIN:VTIMEZONE
+TZID:Pacific/Auckland
+TZURL:http://tzurl.org/zoneinfo/Pacific/Auckland
+X-LIC-LOCATION:Pacific/Auckland
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1300
+TZNAME:NZDT
+DTSTART:20070930T020000
+RRULE:FREQ=YEARLY;BYMONTH=9;BYDAY=-1SU
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1300
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:20080406T030000
+RRULE:FREQ=YEARLY;BYMONTH=4;BYDAY=1SU
+END:STANDARD
+BEGIN:STANDARD
+TZOFFSETFROM:+113904
+TZOFFSETTO:+1130
+TZNAME:NZMT
+DTSTART:18681102T000000
+RDATE:
+END:STANDARD
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1130
+TZOFFSETTO:+1230
+TZNAME:NZST
+DTSTART:19271106T023000
+RDATE:
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1230
+TZOFFSETTO:+1130
+TZNAME:NZMT
+DTSTART:19280304T023000
+RDATE:
+END:STANDARD
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1130
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:19281014T023000
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1130
+TZNAME:NZMT
+DTSTART:19290317T023000
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+END:STANDARD
+BEGIN:STANDARD
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:19460101T000000
+RDATE:
+END:STANDARD
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1300
+TZNAME:NZDT
+DTSTART:19741103T020000
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1300
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:19750223T030000
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+DTSTAMP:20130220T002534Z
+DTSTART;TZID=Pacific/Auckland:20130227T231816
+DTEND:20130227T231816
+SUMMARY:Test 4
+UID:587431d3-6527-4809-b5ff-b11bc99e03e9
+TZID:Pacific/Auckland
+END:VEVENT
+END:VCALENDAR
+]]>
+                </cal:calendar-data>
+                <d:getetag/>
+            </d:prop>
+            <d:status>HTTP/1.1 200 OK</d:status>
+        </d:propstat>
+    </d:response>
+    <d:response>
+        <d:href>/musicians/m1/b5/05a0acbe-6bee-4eb6-b218-6815478d2e4a</d:href>
+        <d:propstat>
+            <d:prop>
+                <cal:calendar-data><![CDATA[BEGIN:VCALENDAR
+PRODID:-//spliffy.org//iCal4j 1.0//EN
+VERSION:2.0
+BEGIN:VTIMEZONE
+TZID:Pacific/Auckland
+TZURL:http://tzurl.org/zoneinfo/Pacific/Auckland
+X-LIC-LOCATION:Pacific/Auckland
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1300
+TZNAME:NZDT
+DTSTART:20070930T020000
+RRULE:FREQ=YEARLY;BYMONTH=9;BYDAY=-1SU
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1300
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:20080406T030000
+RRULE:FREQ=YEARLY;BYMONTH=4;BYDAY=1SU
+END:STANDARD
+BEGIN:STANDARD
+TZOFFSETFROM:+113904
+TZOFFSETTO:+1130
+TZNAME:NZMT
+DTSTART:18681102T000000
+RDATE:
+END:STANDARD
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1130
+TZOFFSETTO:+1230
+TZNAME:NZST
+DTSTART:19271106T023000
+RDATE:
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1230
+TZOFFSETTO:+1130
+TZNAME:NZMT
+DTSTART:19280304T023000
+RDATE:
+END:STANDARD
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1130
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:19281014T023000
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1130
+TZNAME:NZMT
+DTSTART:19290317T023000
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+END:STANDARD
+BEGIN:STANDARD
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:19460101T000000
+RDATE:
+END:STANDARD
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+1200
+TZOFFSETTO:+1300
+TZNAME:NZDT
+DTSTART:19741103T020000
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+1300
+TZOFFSETTO:+1200
+TZNAME:NZST
+DTSTART:19750223T030000
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+RDATE:
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+DTSTAMP:20130220T002534Z
+DTSTART;TZID=Pacific/Auckland:20130221T231816
+DTEND:20130221T231816
+SUMMARY:Test 1
+UID:05a0acbe-6bee-4eb6-b218-6815478d2e4a
+TZID:Pacific/Auckland
+END:VEVENT
+END:VCALENDAR
+]]>
+                </cal:calendar-data>
+                <d:getetag/>
+            </d:prop>
+            <d:status>HTTP/1.1 200 OK</d:status>
         </d:propstat>
     </d:response>
 </d:multistatus>

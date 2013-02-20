@@ -16,6 +16,7 @@ package com.bandstand.web;
 
 import com.bandstand.domain.Band;
 import com.bandstand.domain.BandMember;
+import com.bandstand.domain.Gig;
 import com.bandstand.domain.Musician;
 import com.bandstand.domain.SessionManager;
 import io.milton.annotations.ChildOf;
@@ -45,34 +46,43 @@ public class BandsController {
 
     @Get
     public ModelAndView renderBandPage(Band band) throws UnsupportedEncodingException {
-        return new ModelAndView("band", band, "bandPage"); 
-    }    
+        return new ModelAndView("band", band, "bandPage");
+    }
 
-    @Get(params={"editMode"})
+    @Get(params = {"editMode"})
     public ModelAndView renderBandEditPage(Band band) throws UnsupportedEncodingException {
-        return new ModelAndView("band", band, "bandEditPage"); 
-    }    
-        
-    @Get(contentType="application/json")
+        return new ModelAndView("band", band, "bandEditPage");
+    }
+
+    @Get(contentType = "application/json")
     public JsonResult renderBandJson(Band band) throws UnsupportedEncodingException {
         return JsonResult.returnData(band);
-    }      
-    
-    @Post(bindData=true)
+    }
+
+    @Post(bindData = true)
     public Band saveBand(Band band) {
         Transaction tx = SessionManager.session().beginTransaction();
         SessionManager.session().save(band);
+        if (band.getGigs() == null) {
+            for (int i = 0; i < 10; i++) {
+                Date dt = new Date(System.currentTimeMillis() + i * 1000 * 60 * 60 * 24 * 2);
+                Gig g = band.addGig("Test " + i, dt);
+                SessionManager.session().save(g);
+            }
+        }
         tx.commit();
         return band;
-    }    
-    
+    }
+
     @ChildrenOf
     public BandsController getBandsRoot(RootController root) {
+        System.out.println("getBandsRoot");
         return this;
     }
 
     @ChildrenOf
     public List<Band> getBands(BandsController root) {
+        System.out.println("getBands");
         return Band.findAll(SessionManager.session());
     }
 
@@ -83,22 +93,33 @@ public class BandsController {
 
     @MakeCollection
     public Band createBand(BandsController root, String newName) {
+        Transaction tx = SessionManager.session().beginTransaction();
         Band b = new Band();
         b.setCreatedDate(new Date());
         b.setModifiedDate(new Date());
         b.setName(newName);
         SessionManager.session().save(b);
+
+        for (int i = 0; i < 10; i++) {
+            Date dt = new Date(System.currentTimeMillis() + i * 1000 * 60 * 60 * 24 * 2);
+            Gig g = b.addGig("Test " + i, dt);
+        }
+        SessionManager.session().save(b);
+        System.out.println(" band gigs: " + b.getGigs().size());
+        SessionManager.session().save(b);
+        tx.commit();
         return b;
     }
-    
-    @ChildOf(pathSuffix="new")
+
+    @ChildOf(pathSuffix = "new")
     public Band createNewBand(BandsController root) {
         Band b = new Band();
         b.setCreatedDate(new Date());
         b.setModifiedDate(new Date());
+
         return b;
     }
-    
+
     @Move
     public void move(Band band, BandsController newParent, String newName) {
         Transaction tx = SessionManager.session().beginTransaction();
@@ -106,20 +127,20 @@ public class BandsController {
         SessionManager.session().save(band);
         tx.commit();
     }
-    
+
     @Move
     public void move(BandMember bandMember, Band newParent, String newName) {
         Transaction tx = SessionManager.session().beginTransaction();
         bandMember.getMusician().setName(newName);
         bandMember.getBand().getBandMembers().remove(bandMember);
         bandMember.setBand(newParent);
-        if( newParent.getBandMembers() == null ) {
+        if (newParent.getBandMembers() == null) {
             newParent.setBandMembers(new ArrayList<BandMember>());
         }
         newParent.getBandMembers().add(bandMember);
         SessionManager.session().save(bandMember);
         tx.commit();
-    }    
+    }
 
     @ChildrenOf
     public List<BandMember> getBandMembers(Band band) {
@@ -151,7 +172,7 @@ public class BandsController {
     public String getBandMemberName(BandMember bm) {
         return bm.getMusician().getName();
     }
-    
+
     @DisplayName
     public String getBandDisplayName(Band band) {
         return band.getName();

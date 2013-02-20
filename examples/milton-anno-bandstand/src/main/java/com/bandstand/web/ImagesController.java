@@ -75,6 +75,14 @@ public class ImagesController {
         System.out.println("added image: " + i.getDisplayName());
         return i;
     }
+    
+    @PutChild
+    public Image uploadImage(Image image, byte[] bytes) throws IOException {
+        File fRoot = getContentRoot();
+        File content = new File(fRoot, image.getFileName());
+        FileUtils.writeByteArrayToFile(content, bytes);
+        return image;
+    }    
         
     @Get
     public InputStream getImageFile(Image image) throws IOException {
