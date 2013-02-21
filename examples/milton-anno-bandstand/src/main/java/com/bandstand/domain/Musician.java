@@ -61,6 +61,10 @@ public class Musician extends BaseEntity {
     private String avatarImageName; // image of the musician
     private String musicType; // eg singer, drummer, etc
     private String password; // to allow the user to login
+    private String givenName;
+    private String surName;
+    private String mail;
+    private String telephonenumber;
 
     public String getAvatarImageName() {
         return avatarImageName;
@@ -95,6 +99,7 @@ public class Musician extends BaseEntity {
         this.password = password;
     }
 
+    
     public void removeFromBand(Band band, Session session) {
         if( getBandMembers() != null ) {
             Iterator<BandMember> it = getBandMembers().iterator();
@@ -106,6 +111,38 @@ public class Musician extends BaseEntity {
                 }
             }
         }
+    }
+
+    public String getGivenName() {
+        return givenName;
+    }
+
+    public void setGivenName(String givenName) {
+        this.givenName = givenName;
+    }
+
+    public String getSurName() {
+        return surName;
+    }
+
+    public void setSurName(String surName) {
+        this.surName = surName;
+    }
+
+    public String getMail() {
+        return mail;
+    }
+
+    public void setMail(String mail) {
+        this.mail = mail;
+    }
+
+    public String getTelephonenumber() {
+        return telephonenumber;
+    }
+
+    public void setTelephonenumber(String telephonenumber) {
+        this.telephonenumber = telephonenumber;
     }
     
     

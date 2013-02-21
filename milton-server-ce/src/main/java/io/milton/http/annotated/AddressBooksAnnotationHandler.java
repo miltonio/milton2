@@ -18,34 +18,32 @@
  */
 package io.milton.http.annotated;
 
-import io.milton.annotations.Calendars;
+import io.milton.annotations.AddressBooks;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Attempt to locate an Access Control List of the given resource for the
- * current user
  *
  * @author brad
  */
-public class CalendarsAnnotationHandler extends AbstractAnnotationHandler {
+public class AddressBooksAnnotationHandler extends AbstractAnnotationHandler {
 
-	private static final Logger log = LoggerFactory.getLogger(CalendarsAnnotationHandler.class);
+	private static final Logger log = LoggerFactory.getLogger(AddressBooksAnnotationHandler.class);
 
-	public CalendarsAnnotationHandler(final AnnotationResourceFactory outer) {
-		super(outer, Calendars.class);
+	public AddressBooksAnnotationHandler(final AnnotationResourceFactory outer) {
+		super(outer, AddressBooks.class);
 	}
 
 	/**
 	 * Check if the source object is a source parameter for methods with the 
-	 * @Calendars annotation
+	 * @AddressBooks annotation
 	 * 
 	 * @param source
 	 * @return 
 	 */
-	public boolean hasCalendars(Object source) {
+	public boolean hasAddressBooks(Object source) {
 		for( ControllerMethod cm : getMethods(source.getClass())) {
-			Calendars c = cm.method.getAnnotation(Calendars.class);
+			AddressBooks c = cm.method.getAnnotation(AddressBooks.class);
 			if( c != null ) {
 				return true;
 			}

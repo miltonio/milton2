@@ -39,6 +39,7 @@
                 <bean class="com.bandstand.web.ImagesController" /> 
                 <bean class="com.bandstand.web.GigController" /> 
                 <bean class="com.bandstand.web.BandMembersController" /> 
+                <bean class="com.bandstand.web.ContactsController" /> 
             </list>
         </property>
         <property name="viewResolver">

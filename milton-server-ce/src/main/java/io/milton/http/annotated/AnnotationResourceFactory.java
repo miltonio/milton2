@@ -19,12 +19,14 @@
 package io.milton.http.annotated;
 
 import io.milton.annotations.AccessControlList;
+import io.milton.annotations.AddressBooks;
 import io.milton.annotations.Authenticate;
 import io.milton.annotations.CTag;
 import io.milton.annotations.CalendarColor;
 import io.milton.annotations.Calendars;
 import io.milton.annotations.ChildOf;
 import io.milton.annotations.ChildrenOf;
+import io.milton.annotations.ContactData;
 import io.milton.annotations.ContentType;
 import io.milton.annotations.Copy;
 import io.milton.annotations.CreatedDate;
@@ -73,7 +75,6 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -114,6 +115,8 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	CTagAnnotationHandler cTagAnnotationHandler = new CTagAnnotationHandler(this);
 	ICalDataAnnotationHandler iCalDataAnnotationHandler = new ICalDataAnnotationHandler(this);
 	CalendarsAnnotationHandler calendarsAnnotationHandler = new CalendarsAnnotationHandler(this);
+	AddressBooksAnnotationHandler addressBooksAnnotationHandler = new AddressBooksAnnotationHandler(this);
+	ContactDataAnnotationHandler contactDataAnnotationHandler = new ContactDataAnnotationHandler(this);
 	
 	CommonPropertyAnnotationHandler<String> nameAnnotationHandler = new CommonPropertyAnnotationHandler(Name.class, this, "name", "fileName");
 	CommonPropertyAnnotationHandler<Date> modifiedDateAnnotationHandler = new CommonPropertyAnnotationHandler<Date>(ModifiedDate.class, this);
@@ -141,6 +144,8 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		mapOfAnnotationHandlers.put(Users.class, usersAnnotationHandler);
 		mapOfAnnotationHandlers.put(Authenticate.class, authenticateAnnotationHandler);
 		mapOfAnnotationHandlers.put(AccessControlList.class, accessControlListAnnotationHandler);
+		mapOfAnnotationHandlers.put(AddressBooks.class, addressBooksAnnotationHandler);		
+		mapOfAnnotationHandlers.put(Calendars.class, calendarsAnnotationHandler);		
 
 		mapOfAnnotationHandlers.put(ModifiedDate.class, modifiedDateAnnotationHandler);
 		mapOfAnnotationHandlers.put(CreatedDate.class, createdDateAnnotationHandler);
@@ -150,6 +155,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		mapOfAnnotationHandlers.put(CTag.class, cTagAnnotationHandler);		
 		mapOfAnnotationHandlers.put(ICalData.class, iCalDataAnnotationHandler);				
 		mapOfAnnotationHandlers.put(CalendarColor.class, calendarColorAnnotationHandler);
+		mapOfAnnotationHandlers.put(ContactData.class, contactDataAnnotationHandler);		
 
 		for (AnnotationHandler ah : mapOfAnnotationHandlers.values()) {
 			Method[] methods = ah.getSupportedMethods();
