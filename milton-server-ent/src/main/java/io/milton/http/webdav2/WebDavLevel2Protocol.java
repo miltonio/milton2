@@ -147,6 +147,7 @@ public class WebDavLevel2Protocol implements HttpExtension, PropertySource {
 //    <D:supportedlock/><D:lockdiscovery/>
     class LockDiscoveryPropertyWriter implements StandardProperty<LockToken> {
 
+        @Override
         public LockToken getValue(PropFindableResource res) {
             if (!(res instanceof LockableResource)) {
                 return null;

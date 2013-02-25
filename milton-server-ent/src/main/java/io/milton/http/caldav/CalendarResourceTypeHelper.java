@@ -21,6 +21,7 @@ import io.milton.resource.SchedulingInboxResource;
 import io.milton.resource.SchedulingOutboxResource;
 import io.milton.resource.CollectionResource;
 import io.milton.resource.Resource;
+import io.milton.webdav.utils.LockUtils;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.namespace.QName;
@@ -95,12 +96,12 @@ public class CalendarResourceTypeHelper implements ResourceTypeHelper {
         log.debug("getSupportedLevels");
         List<String> list = wrapped.getSupportedLevels(r);
 //        if (r instanceof CalendarResource) {
-        addIfNotPresent(list, "3");
+        LockUtils.add(list, "3");
         list.add("calendar-access");
         
         // if present (but not actually implemented) causes problems with thunderbird
         //list.add("calendar-schedule");
-        addIfNotPresent(list, "extended-mkcol");
+        LockUtils.add(list, "extended-mkcol");
         list.add("calendar-proxy");
 //        }
         if (r instanceof SchedulingInboxResource) {
@@ -110,11 +111,5 @@ public class CalendarResourceTypeHelper implements ResourceTypeHelper {
             list.add("schedule-outbox");
         }
         return list;
-    }
-
-    private void addIfNotPresent(List<String> list, String s) {
-        if (!list.contains(s)) {
-            list.add(s);
-        }
     }
 }

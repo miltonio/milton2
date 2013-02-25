@@ -28,20 +28,14 @@ import io.milton.http.LockToken;
 import io.milton.http.HandlerHelper;
 import io.milton.http.LockTimeout;
 import io.milton.http.LockInfo;
-import io.milton.http.XmlWriter;
 import io.milton.common.Path;
 import io.milton.http.Request.Method;
 import io.milton.http.Response.Status;
-import io.milton.http.entity.ByteArrayEntity;
-import io.milton.common.LogUtils;
 import io.milton.http.*;
 import io.milton.http.exceptions.*;
-import io.milton.http.webdav.PropFindPropertyBuilder;
-import io.milton.http.webdav.WebDavProtocol;
 import io.milton.http.webdav.WebDavResponseHandler;
 import io.milton.webdav.utils.LockUtils;
 import java.io.IOException;
-import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -198,7 +192,7 @@ public class LockHandler implements ResourceHandler {
             }
             response.setStatus(Status.SC_CREATED);
             response.setLockTokenHeader("<opaquelocktoken:" + tok.tokenId + ">");  // spec says to set response header. See 8.10.1
-            respondWithToken(tok, request, response);
+            LockUtils.respondLocked(tok, request, response);
 
         } else {
             log.debug("parent does not support lock-null, respondong method not allowed");
@@ -242,14 +236,14 @@ public class LockHandler implements ResourceHandler {
             LockToken tok = result.getLockToken();
             log.debug("..locked ok: " + tok.tokenId);
             response.setLockTokenHeader("<opaquelocktoken:" + tok.tokenId + ">");  // spec says to set response header. See 8.10.1
-            respondWithToken(tok, request, response);
+            LockUtils.respondLocked(tok, request, response);
         } else {
-            respondWithLockFailure(result, request, response);
+            LockUtils.respondLockFailure(result, request, response);
         }
     }
 
     protected void processRefresh(HttpManager milton, Request request, Response response, LockableResource r, LockTimeout timeout, String ifHeader) throws NotAuthorizedException {
-        String token = parseToken(ifHeader);
+        String token = LockUtils.parse(ifHeader);
         log.debug("refreshing lock: " + token);
         LockResult result;
         try {
@@ -260,60 +254,11 @@ public class LockHandler implements ResourceHandler {
         }
         if (result.isSuccessful()) {
             LockToken tok = result.getLockToken();
-            respondWithToken(tok, request, response);
+            LockUtils.respondLocked(tok, request, response);
         } else {
-            respondWithLockFailure(result, request, response);
+            LockUtils.respondLockFailure(result, request, response);
         }
     }
 
-    protected void respondWithToken(LockToken tok, Request request, Response response) {
-        response.setStatus(Status.SC_OK);
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        XmlWriter writer = new XmlWriter(out);
-        writer.writeXMLHeader();
-        String d = WebDavProtocol.DAV_PREFIX;
-        writer.open(d + ":prop  xmlns:" + d + "=\"DAV:\"");
-        writer.newLine();
-        writer.open(d + ":lockdiscovery");
-        writer.newLine();
-        writer.open(d + ":activelock");
-        writer.newLine();
-        LockUtils.appendType(writer, tok.info.type);
-        LockUtils.appendScope(writer, tok.info.scope);
-        LockUtils.appendDepth(writer, tok.info.depth);
-        LockUtils.appendOwner(writer, tok.info.lockedByUser);
-        LockUtils.appendTimeout(writer, tok.timeout.getSeconds());
-        LockUtils.appendTokenId(writer, tok.tokenId);
-        String url = PropFindPropertyBuilder.fixUrlForWindows(request.getAbsoluteUrl());
-        LockUtils.appendRoot(writer, url);
-        writer.close(d + ":activelock");
-        writer.close(d + ":lockdiscovery");
-        writer.close(d + ":prop");
-        writer.flush();
-
-        LogUtils.debug(log, "lock response: ", out);
-        response.setEntity(new ByteArrayEntity(out.toByteArray()));
-//        response.close();
-
-    }
-
-    static String parseToken(String ifHeader) {
-        String token = ifHeader;
-        int pos = token.indexOf(":");
-        if (pos >= 0) {
-            token = token.substring(pos + 1);
-            pos = token.indexOf(">");
-            if (pos >= 0) {
-                token = token.substring(0, pos);
-            }
-        }
-        return token;
-    }
-
-    private void respondWithLockFailure(LockResult result, Request request, Response response) {
-        log.info("respondWithLockFailure: " + result.getFailureReason().name());
-        response.setStatus(result.getFailureReason().status);
-
-    }
 
 }

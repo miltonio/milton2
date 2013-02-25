@@ -22,6 +22,7 @@ import io.milton.http.webdav.ResourceTypeHelper;
 import io.milton.http.webdav.WebDavResourceTypeHelper;
 import io.milton.resource.LockableResource;
 import io.milton.resource.Resource;
+import io.milton.webdav.utils.LockUtils;
 import java.util.List;
 import javax.xml.namespace.QName;
 import org.slf4j.Logger;
@@ -55,7 +56,7 @@ public class WebDavLevel2ResourceTypeHelper implements ResourceTypeHelper {
     public List<String> getSupportedLevels(Resource r) {
         List<String> list = wrapped.getSupportedLevels(r);
         if (r instanceof LockableResource) {
-            list.add("2");
+            LockUtils.add(list, "2");            
         }
         return list;
     }

@@ -18,6 +18,7 @@ package io.milton.http.carddav;
 import io.milton.http.webdav.ResourceTypeHelper;
 import io.milton.resource.AddressBookResource;
 import io.milton.resource.Resource;
+import io.milton.webdav.utils.LockUtils;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.namespace.QName;
@@ -68,17 +69,10 @@ public class AddressBookResourceTypeHelper implements ResourceTypeHelper {
         log.debug("getSupportedLevels");
         List<String> list = wrapped.getSupportedLevels(r);
 //        if (r instanceof AddressBookResource) {
-		addIfNotPresent(list,"3");			
-		addIfNotPresent(list,"addressbook");	
-		addIfNotPresent(list,"extended-mkcol");			
+		LockUtils.add(list,"3");			
+		LockUtils.add(list,"addressbook");	
+		LockUtils.add(list,"extended-mkcol");			
 //        }
         return list;
-    }
-	
-	
-	private void addIfNotPresent(List<String> list, String s) {
-		if( !list.contains(s)) {
-			list.add(s);
-		}
-	}	
+    }	
 }

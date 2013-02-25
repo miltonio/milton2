@@ -1,20 +1,11 @@
 /*
  * Copyright 2012 McEvoy Software Ltd.
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package io.milton.http.caldav;
 
+import io.milton.webdav.utils.CalendarDataProperty;
 import io.milton.http.values.SupportedCalendarComponentList;
 import io.milton.principal.CalDavPrincipal;
 import io.milton.common.LogUtils;
@@ -194,29 +185,6 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
     @Override
     public List<CustomPostHandler> getCustomPostHandlers() {
         return customPostHandlers;
-    }
-
-    class CalendarDataProperty implements StandardProperty<CData> {
-
-        @Override
-        public String fieldName() {
-            return "calendar-data";
-        }
-
-        @Override
-        public CData getValue(PropFindableResource res) {
-            if (res instanceof ICalResource) {
-                ICalResource ical = (ICalResource) res;
-                return new CData(ical.getICalData());
-            } else {
-                return null;
-            }
-        }
-
-        @Override
-        public Class<CData> getValueClass() {
-            return CData.class;
-        }
     }
 
     /*

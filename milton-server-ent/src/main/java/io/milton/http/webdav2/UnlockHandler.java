@@ -36,6 +36,7 @@ import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.webdav.WebDavResponseHandler;
+import io.milton.webdav.utils.LockUtils;
 
 public class UnlockHandler implements ExistingEntityHandler {
 
@@ -51,18 +52,21 @@ public class UnlockHandler implements ExistingEntityHandler {
     }
 
 
+    @Override
     public void process( HttpManager httpManager, Request request, Response response ) throws ConflictException, NotAuthorizedException, BadRequestException {
         resourceHandlerHelper.process( httpManager, request, response, this );
     }
 
+    @Override
     public void processResource( HttpManager manager, Request request, Response response, Resource r ) throws NotAuthorizedException, ConflictException, BadRequestException {
         resourceHandlerHelper.processResource( manager, request, response, r, this );
     }
 
+    @Override
     public void processExistingResource( HttpManager manager, Request request, Response response, Resource resource ) throws NotAuthorizedException, BadRequestException, ConflictException {
         LockableResource r = (LockableResource) resource;
         String sToken = request.getLockTokenHeader();        
-        sToken = LockHandler.parseToken(sToken);
+        sToken = LockUtils.parse(sToken);
         
         // this should be checked in processResource now
         
@@ -86,6 +90,7 @@ public class UnlockHandler implements ExistingEntityHandler {
         }
     }
     
+    @Override
     public String[] getMethods() {
         return new String[]{Method.UNLOCK.code};
     }
