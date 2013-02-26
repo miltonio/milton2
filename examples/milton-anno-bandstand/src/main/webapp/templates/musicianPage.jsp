@@ -15,6 +15,7 @@
             <h1>${model.page.source.givenName} ${model.page.source.surName}</h1>
             <p>Phone: ${model.page.source.telephonenumber}</p>
             <p>Email: ${model.page.source.mail}</p>
+            <p>ContactUid: ${model.page.source.contactUid}</p>
             <p>${model.page.source.description}</p>
         </div> <!-- /container -->
 

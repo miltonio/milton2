@@ -86,6 +86,7 @@ public class ContactsController {
         try {
             VCardImpl vcard = new VCardImpl();
             vcard.setBegin(new BeginType());
+            vcard.setID(m.getContactUid());
             vcard.setFormattedName(new FormattedNameType(m.getGivenName() + " " + m.getSurName()));
             vcard.setName(new NameType(m.getSurName(), m.getGivenName()));
             if (!StringUtils.isBlank(m.getTelephonenumber())) {
@@ -104,13 +105,20 @@ public class ContactsController {
     }
 
     @PutChild
-    public Musician createMusicianContact(MusicianAddressBook abook, String newName, byte[] vcardData) throws BadRequestException {
+    public MusicianContact createMusicianContact(MusicianAddressBook abook, String newName, byte[] vcardData) throws BadRequestException {
+        
         Transaction tx = SessionManager.session().beginTransaction();
         try {
             VCardEngine cardEngine = new VCardEngine();
             String vc = new String(vcardData);
+            System.out.println("---- contact ----");
+            System.out.println(vc);
+            System.out.println("-------");
             VCard vcard = cardEngine.parse(vc);
             Musician m = new Musician();
+            if( vcard.getUID() != null ) {
+                m.setContactUid(vcard.getUID().getUID());
+            }
             m.setName(newName);
             m.setCreatedDate(new Date());
             m.setGivenName(vcard.getName().getGivenName());
@@ -131,7 +139,7 @@ public class ContactsController {
 
             SessionManager.session().save(m);
             tx.commit();
-            return m;
+            return new MusicianContact(m);
         } catch (Exception e) {
             tx.rollback();
             log.error("exception uploading musician contact", e);
@@ -140,13 +148,21 @@ public class ContactsController {
     }
 
     @PutChild
-    public Musician updateMusicianContact(MusicianContact contact, byte[] vcardData) throws BadRequestException {
+    public MusicianContact updateMusicianContact(MusicianContact contact, byte[] vcardData) throws BadRequestException {
         Transaction tx = SessionManager.session().beginTransaction();
         try {
             Musician m = contact.getMusician();
             VCardEngine cardEngine = new VCardEngine();
             String vc = new String(vcardData);
+            System.out.println("---- contact ----");
+            System.out.println(vc);
+            System.out.println("-------");
+            
             VCard vcard = cardEngine.parse(vc);
+            if( vcard.getUID() != null ) {
+                m.setContactUid(vcard.getUID().getUID());
+            }
+            
             if (vcard.getName() != null) {
                 m.setGivenName(vcard.getName().getGivenName());
                 m.setSurName(vcard.getName().getFamilyName());
@@ -169,7 +185,7 @@ public class ContactsController {
 
             SessionManager.session().save(m);
             tx.commit();
-            return m;
+            return contact;
         } catch (Exception e) {
             tx.rollback();
             log.error("exception uploading musician contact", e);
@@ -200,7 +216,7 @@ public class ContactsController {
         }
 
         public String getName() {
-            return contact.getId() + "";
+            return contact.getName();
         }
 
         public Musician getMusician() {

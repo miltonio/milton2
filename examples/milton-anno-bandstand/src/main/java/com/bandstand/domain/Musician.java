@@ -65,7 +65,18 @@ public class Musician extends BaseEntity {
     private String surName;
     private String mail;
     private String telephonenumber;
+    private String contactUid;
 
+    public String getContactUid() {
+        return contactUid;
+    }
+
+    public void setContactUid(String contactUid) {
+        this.contactUid = contactUid;
+    }
+
+    
+    
     public String getAvatarImageName() {
         return avatarImageName;
     }
