@@ -18,6 +18,7 @@ import io.milton.annotations.Users;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.resource.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -42,9 +43,7 @@ public class UsersAnnotationHandler extends AbstractAnnotationHandler {
 					List<ControllerMethod> availMethods = getMethods(acr.getSource().getClass());
 					if (!availMethods.isEmpty()) {
 						Resource r = acr.child(name);
-						System.out.println("resource: " + r);
 						if (r instanceof AnnoPrincipalResource) {
-							System.out.println("is princip");
 							AnnoPrincipalResource apr = (AnnoPrincipalResource) r;
 							return apr;
 						}
@@ -59,4 +58,26 @@ public class UsersAnnotationHandler extends AbstractAnnotationHandler {
 		return null;
 	}
 
+	public List<AnnoCollectionResource> findUsersCollections(AnnoCollectionResource root)  {
+		try {
+			// iterate over each root collection, looking for objects which have
+			// a @Authenticate annotation on their ChildOf or ChildrenOf methods
+			List<AnnoCollectionResource> list = new ArrayList<AnnoCollectionResource>();
+			for (CommonResource col : root.getChildren()) {				
+				if (col instanceof AnnoCollectionResource) {
+					AnnoCollectionResource acr = (AnnoCollectionResource) col;
+					List<ControllerMethod> availMethods = getMethods(acr.getSource().getClass());
+					if (!availMethods.isEmpty()) {
+						list.add(acr);
+					}
+				}
+			}
+			return list;
+		} catch (NotAuthorizedException e) {
+			throw new RuntimeException(e);
+		} catch (BadRequestException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
 }

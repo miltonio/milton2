@@ -480,7 +480,7 @@ public class CardDavProtocol implements HttpExtension, PropertySource, WellKnown
                         return null;
                     } else {
                         first = addressBookHomes.get(0); // just use first
-                        LogUtils.trace(log, "well-known: checkRedirect. redirecting to:", first);
+                        LogUtils.debug(log, "well-known: checkRedirect. redirecting to:", first);
                         return first;
                     }
                 } else {

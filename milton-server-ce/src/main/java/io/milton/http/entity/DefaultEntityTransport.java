@@ -18,7 +18,9 @@
  */
 package io.milton.http.entity;
 
+import io.milton.http.HttpManager;
 import io.milton.http.Response;
+import io.milton.http.webdav.UserAgentHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +34,10 @@ public class DefaultEntityTransport implements EntityTransport {
 
 	private static final Logger log = LoggerFactory.getLogger(DefaultEntityTransport.class);
 	
-	public DefaultEntityTransport() {
+	private UserAgentHelper userAgentHelper;
+	
+	public DefaultEntityTransport(UserAgentHelper userAgentHelper) {
+		this.userAgentHelper = userAgentHelper;
 	}
 
 	@Override
@@ -49,4 +54,14 @@ public class DefaultEntityTransport implements EntityTransport {
 	public void closeResponse(Response response) {
 		response.close();
 	}
+
+	public UserAgentHelper getUserAgentHelper() {
+		return userAgentHelper;
+	}
+
+	public void setUserAgentHelper(UserAgentHelper userAgentHelper) {
+		this.userAgentHelper = userAgentHelper;
+	}
+	
+	
 }

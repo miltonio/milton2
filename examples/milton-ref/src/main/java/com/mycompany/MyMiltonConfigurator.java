@@ -40,6 +40,9 @@ public class MyMiltonConfigurator extends DefaultMiltonConfigurator {
 
     @Override
     protected void build() {
+        
+        builder.setEnableCompression(false);
+        
         super.build();
         
         resourceFactory = (TResourceFactory) builder.getMainResourceFactory(); // get our resource factory from the builder

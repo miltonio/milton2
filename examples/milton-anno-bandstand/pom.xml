@@ -93,9 +93,9 @@
             <version>3.2.1</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
+            <groupId>net.sourceforge.cardme</groupId>
             <artifactId>cardme</artifactId>
-            <version>1.0.0</version>
+            <version>0.3.6.03</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>

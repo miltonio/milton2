@@ -21,6 +21,30 @@
                         </div>
                     </div>
                     <div class="control-group">
+                        <label class="control-label" >First name</label>
+                        <div class="controls">
+                            <input id="givenName" required="" type="text" name="givenName" value="${model.page.source.givenName}"/>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" >Surname</label>
+                        <div class="controls">
+                            <input id="surName" required="" type="text" name="surName" value="${model.page.source.surName}"/>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" >mail</label>
+                        <div class="controls">
+                            <input id="mail" required="" type="text" name="mail" value="${model.page.source.mail}"/>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" >telephonenumber</label>
+                        <div class="controls">
+                            <input id="telephonenumber" required="" type="text" name="telephonenumber" value="${model.page.source.telephonenumber}"/>
+                        </div>
+                    </div>
+                    <div class="control-group">
                         <label class="control-label" >Password</label>
                         <div class="controls">
                             <input id="name" required="" type="password" name="password" value="${model.page.source.password}"/>
@@ -37,17 +61,21 @@
                             <button type="submit" class="btn"><i class="icon-ok-sign"></i> Save</button>
                         </div>
                     </div>                            
-                </fieldset>
-                <script type="text/javascript" language="javascript">
-                    $(function() {
-                        log("running muso forms");
-                        $("form.editMusician").forms();
-                    });            
-                </script>                        
+                </fieldset>                   
             </form>
         </div> <!-- /container -->
 
         <%@include file="includes/theme-bottom.jsp" %>
 
+        <script type="text/javascript" language="javascript">
+            $(function() {
+                log("running muso forms");
+                $("form.editMusician").forms({
+                    callback: function() {
+                        $("form.editMusician legend").after("<div class='alert'><button type='button' class='close' data-dismiss='alert'>&times;</button>Saved ok. <a href='.'>Return to the view page</a></div>")
+                    }
+                });
+            });            
+        </script>             
     </body>
 </html>

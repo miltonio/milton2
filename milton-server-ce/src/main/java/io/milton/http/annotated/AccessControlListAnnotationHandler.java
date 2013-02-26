@@ -43,7 +43,37 @@ public class AccessControlListAnnotationHandler extends AbstractAnnotationHandle
 		super(outer, AccessControlList.class);
 	}
 
+	/**
+	 * Get priviledges for the current user
+	 *
+	 * @param curUser
+	 * @param res
+	 * @param method
+	 * @param auth
+	 * @return
+	 */
 	public Set<AccessControlledResource.Priviledge> availablePrivs(AnnoPrincipalResource curUser, AnnoResource res, Request.Method method, Auth auth) {
+		Set<Priviledge> privs = directPrivs(curUser, res, method, auth);
+		if (privs != null) {
+			return privs;
+		}
+		AnnoCollectionResource p = res.getParent();
+		while (p != null) {
+			privs = directPrivs(curUser, p, method, auth);
+			if (privs != null) {
+				return privs;
+			}
+			p = p.getParent();
+		}
+		privs = new HashSet<Priviledge>();
+		if (curUser != null) {
+			log.info("No explicit AccessControl annotation found, so defaulting to full access for logged in user");
+			privs.add(Priviledge.ALL);
+		}
+		return privs;
+	}
+
+	public Set<AccessControlledResource.Priviledge> directPrivs(AnnoPrincipalResource curUser, AnnoResource res, Request.Method method, Auth auth) {
 		Set<AccessControlledResource.Priviledge> acl = new HashSet<Priviledge>();
 		Object source = res.getSource();
 		List<ControllerMethod> availMethods = getMethods(source.getClass());
@@ -53,7 +83,7 @@ public class AccessControlListAnnotationHandler extends AbstractAnnotationHandle
 		try {
 			for (ControllerMethod cm : availMethods) {
 				Object currentUserSource = null;
-				if( curUser != null ) {
+				if (curUser != null) {
 					currentUserSource = curUser.getSource();
 				}
 				Object[] args = outer.buildInvokeArgs(source, cm.method, curUser, res, method, auth, currentUserSource);
@@ -101,7 +131,7 @@ public class AccessControlListAnnotationHandler extends AbstractAnnotationHandle
 			return null;
 		} else {
 			Post p = cm.method.getAnnotation(Post.class);
-			if( p != null ) {
+			if (p != null) {
 				return p.requiredPriviledge();
 			} else {
 				return null;

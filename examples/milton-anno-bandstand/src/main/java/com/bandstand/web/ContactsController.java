@@ -17,20 +17,37 @@ package com.bandstand.web;
 
 import com.bandstand.domain.Musician;
 import com.bandstand.domain.SessionManager;
-import info.ineighborhood.cardme.io.VCardWriter;
-import info.ineighborhood.cardme.vcard.VCardImpl;
-import info.ineighborhood.cardme.vcard.types.EmailType;
-import info.ineighborhood.cardme.vcard.types.NameType;
-import info.ineighborhood.cardme.vcard.types.TelephoneType;
+
 import io.milton.annotations.AddressBooks;
 import io.milton.annotations.ChildrenOf;
 import io.milton.annotations.ContactData;
 import io.milton.annotations.Get;
+import io.milton.annotations.ModifiedDate;
+import io.milton.annotations.PutChild;
 import io.milton.annotations.ResourceController;
 import io.milton.common.ModelAndView;
+import io.milton.http.exceptions.BadRequestException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import net.sourceforge.cardme.engine.VCardEngine;
+import net.sourceforge.cardme.io.VCardWriter;
+import net.sourceforge.cardme.vcard.VCard;
+import net.sourceforge.cardme.vcard.VCardImpl;
+import net.sourceforge.cardme.vcard.features.EmailFeature;
+import net.sourceforge.cardme.vcard.features.TelephoneFeature;
+import net.sourceforge.cardme.vcard.types.BeginType;
+import net.sourceforge.cardme.vcard.types.EmailType;
+import net.sourceforge.cardme.vcard.types.EndType;
+import net.sourceforge.cardme.vcard.types.FormattedNameType;
+import net.sourceforge.cardme.vcard.types.NameType;
+import net.sourceforge.cardme.vcard.types.TelephoneType;
+import org.apache.commons.lang.StringUtils;
+import org.hibernate.Transaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * For accessing other musicians as contacts via carddav
@@ -39,6 +56,8 @@ import java.util.List;
  */
 @ResourceController
 public class ContactsController {
+
+    private static final Logger log = LoggerFactory.getLogger(ContactsController.class);
 
     @ChildrenOf
     public MusicianAddressBooksHome getAddressBookHome(Musician m) {
@@ -61,19 +80,106 @@ public class ContactsController {
     }
 
     @ContactData
+    @Get
     public byte[] getContactData(MusicianContact c) {
         Musician m = c.contact;
         try {
             VCardImpl vcard = new VCardImpl();
+            vcard.setBegin(new BeginType());
+            vcard.setFormattedName(new FormattedNameType(m.getGivenName() + " " + m.getSurName()));
             vcard.setName(new NameType(m.getSurName(), m.getGivenName()));
-            vcard.addTelephoneNumber(new TelephoneType(m.getTelephonenumber()));
-            vcard.addEmail(new EmailType(m.getMail()));
+            if (!StringUtils.isBlank(m.getTelephonenumber())) {
+                vcard.addTelephoneNumber(new TelephoneType(m.getTelephonenumber()));
+            }
+            if (!StringUtils.isBlank(m.getMail())) {
+                vcard.addEmail(new EmailType(m.getMail()));
+            }
+            vcard.setEnd(new EndType());
             VCardWriter writer = new VCardWriter();
             writer.setVCard(vcard);
             return writer.buildVCardString().getBytes("UTF-8");
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    @PutChild
+    public Musician createMusicianContact(MusicianAddressBook abook, String newName, byte[] vcardData) throws BadRequestException {
+        Transaction tx = SessionManager.session().beginTransaction();
+        try {
+            VCardEngine cardEngine = new VCardEngine();
+            String vc = new String(vcardData);
+            VCard vcard = cardEngine.parse(vc);
+            Musician m = new Musician();
+            m.setName(newName);
+            m.setCreatedDate(new Date());
+            m.setGivenName(vcard.getName().getGivenName());
+            m.setSurName(vcard.getName().getFamilyName());
+            m.setModifiedDate(new Date());
+            {
+                Iterator<TelephoneFeature> it = vcard.getTelephoneNumbers();
+                while (it.hasNext()) {
+                    m.setTelephonenumber(it.next().getTelephone());
+                }
+            }
+            {
+                Iterator<EmailFeature> itEmails = vcard.getEmails();
+                while (itEmails.hasNext()) {
+                    m.setMail(itEmails.next().getEmail());
+                }
+            }
+
+            SessionManager.session().save(m);
+            tx.commit();
+            return m;
+        } catch (Exception e) {
+            tx.rollback();
+            log.error("exception uploading musician contact", e);
+            throw new BadRequestException(e.getMessage());
+        }
+    }
+
+    @PutChild
+    public Musician updateMusicianContact(MusicianContact contact, byte[] vcardData) throws BadRequestException {
+        Transaction tx = SessionManager.session().beginTransaction();
+        try {
+            Musician m = contact.getMusician();
+            VCardEngine cardEngine = new VCardEngine();
+            String vc = new String(vcardData);
+            VCard vcard = cardEngine.parse(vc);
+            if (vcard.getName() != null) {
+                m.setGivenName(vcard.getName().getGivenName());
+                m.setSurName(vcard.getName().getFamilyName());
+            } else {
+                log.warn("No name feature in supplied vcard: " + vc);
+            }
+            m.setModifiedDate(new Date());
+            {
+                Iterator<TelephoneFeature> it = vcard.getTelephoneNumbers();
+                while (it.hasNext()) {
+                    m.setTelephonenumber(it.next().getTelephone());
+                }
+            }
+            {
+                Iterator<EmailFeature> itEmails = vcard.getEmails();
+                while (itEmails.hasNext()) {
+                    m.setMail(itEmails.next().getEmail());
+                }
+            }
+
+            SessionManager.session().save(m);
+            tx.commit();
+            return m;
+        } catch (Exception e) {
+            tx.rollback();
+            log.error("exception uploading musician contact", e);
+            throw new BadRequestException(e.getMessage());
+        }
+    }
+
+    @ModifiedDate
+    public Date getContactModDate(MusicianContact c) {
+        return c.getMusician().getModifiedDate();
     }
 
     @Get
@@ -88,11 +194,15 @@ public class ContactsController {
         public MusicianContact(Musician contact) {
             this.contact = contact;
         }
-        
+
+        public String getId() {
+            return contact.getId() + "";
+        }
+
         public String getName() {
             return contact.getId() + "";
         }
-        
+
         public Musician getMusician() {
             return contact;
         }
@@ -105,7 +215,7 @@ public class ContactsController {
         public MusicianAddressBooksHome(Musician musician) {
             this.musician = musician;
         }
-        
+
         public String getName() {
             return "abooks";
         }
@@ -118,7 +228,7 @@ public class ContactsController {
         public MusicianAddressBook(Musician musician) {
             this.musician = musician;
         }
-        
+
         public String getName() {
             return "default";
         }

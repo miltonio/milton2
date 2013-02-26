@@ -108,7 +108,7 @@ public class HttpManagerBuilder {
 	protected HandlerHelper handlerHelper;
 	protected ArrayList<HttpExtension> protocols;
 	protected ProtocolHandlers protocolHandlers;
-	protected EntityTransport entityTransport = new DefaultEntityTransport();
+	protected EntityTransport entityTransport;
 	protected EventManager eventManager = new EventManagerImpl();
 	protected PropertyAuthoriser propertyAuthoriser;
 	protected List<PropertySource> propertySources;
@@ -345,6 +345,9 @@ public class HttpManagerBuilder {
 				l.afterInit(this);
 			}
 		}
+		if( entityTransport == null ) {
+			entityTransport = new DefaultEntityTransport(userAgentHelper());
+		}
 		HttpManager httpManager = new HttpManager(outerResourceFactory, webdavResponseHandler, protocolHandlers, entityTransport, filters, eventManager, shutdownHandlers);
 		if (listeners != null) {
 			for (InitListener l : listeners) {
@@ -438,12 +441,9 @@ public class HttpManagerBuilder {
 			if (propPatchSetter == null) {
 				propPatchSetter = new PropertySourcePatchSetter(propertySources);
 			}
-			if (userAgentHelper == null) {
-				userAgentHelper = new DefaultUserAgentHelper();
-			}
 
 			if (webDavProtocol == null && webdavEnabled) {
-				webDavProtocol = new WebDavProtocol(handlerHelper, resourceTypeHelper, webdavResponseHandler, propertySources, quotaDataAccessor, propPatchSetter, initPropertyAuthoriser(), eTagGenerator, urlAdapter, resourceHandlerHelper, userAgentHelper);
+				webDavProtocol = new WebDavProtocol(handlerHelper, resourceTypeHelper, webdavResponseHandler, propertySources, quotaDataAccessor, propPatchSetter, initPropertyAuthoriser(), eTagGenerator, urlAdapter, resourceHandlerHelper, userAgentHelper());
 			}
 			if (webDavProtocol != null) {
 				protocols.add(webDavProtocol);
@@ -1166,5 +1166,12 @@ public class HttpManagerBuilder {
 		} catch (ClassNotFoundException e) {
 			throw new RuntimeException("Exception initialising AnnotationResourceFactory", e);
 		}
+	}
+
+	protected UserAgentHelper userAgentHelper() {
+		if( userAgentHelper == null ) {
+			userAgentHelper = new DefaultUserAgentHelper();
+		}
+		return userAgentHelper;
 	}
 }

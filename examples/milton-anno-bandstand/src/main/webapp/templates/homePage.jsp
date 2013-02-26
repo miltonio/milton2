@@ -37,7 +37,7 @@
                         <p>Here are all the musicians in our database</p>
                         <ul>
                             <c:forEach items="${model.page.child('musicians').children.getSortByName()}" var="muso">    
-                                <li>${muso.link}</li>
+                                <li><a href="${muso.href}">${muso.source.givenName} ${muso.source.surName}</a></li>
                             </c:forEach>
                         </ul>
                     </div>

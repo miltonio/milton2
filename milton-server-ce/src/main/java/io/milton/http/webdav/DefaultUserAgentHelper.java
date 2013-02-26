@@ -45,4 +45,17 @@ public class DefaultUserAgentHelper implements UserAgentHelper {
 			return false;
 		}
 	}
+
+	@Override
+	public boolean isEvolution(Request r) {
+		if (r != null) {
+			String userAgent = r.getUserAgentHeader();
+			return userAgent != null && userAgent.startsWith("Evolution");
+		} else {
+			return false;
+		}
+
+	}
+	
+	
 }

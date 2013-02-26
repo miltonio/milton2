@@ -31,4 +31,5 @@ import io.milton.http.Request;
 public interface UserAgentHelper {
     boolean isMacFinder(Request r);
 	boolean isNautilus(Request r);
+	boolean isEvolution(Request r);
 }

@@ -153,19 +153,17 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
             if (propPatchSetter == null) {
                 propPatchSetter = new PropertySourcePatchSetter(propertySources);
             }
-            if (userAgentHelper == null) {
-                userAgentHelper = new DefaultUserAgentHelper();
-            }
+
 
             if (webDavProtocol == null && webdavEnabled) {
-                webDavProtocol = new WebDavProtocol(handlerHelper, resourceTypeHelper, webdavResponseHandler, propertySources, quotaDataAccessor, propPatchSetter, initPropertyAuthoriser(), eTagGenerator, urlAdapter, resourceHandlerHelper, userAgentHelper);
+                webDavProtocol = new WebDavProtocol(handlerHelper, resourceTypeHelper, webdavResponseHandler, propertySources, quotaDataAccessor, propPatchSetter, initPropertyAuthoriser(), eTagGenerator, urlAdapter, resourceHandlerHelper, userAgentHelper());
             }
             if (webDavProtocol != null) {
                 protocols.add(webDavProtocol);
             }
 
             if (webDavLevel2Protocol == null && webdavLevel2Enabled) {
-                webDavLevel2Protocol = new WebDavLevel2Protocol(handlerHelper, webdavResponseHandler, resourceHandlerHelper, userAgentHelper);
+                webDavLevel2Protocol = new WebDavLevel2Protocol(handlerHelper, webdavResponseHandler, resourceHandlerHelper, userAgentHelper()); 
             }
             if (webDavLevel2Protocol != null) {
                 valueWriters.getValueWriters().add(0, new SupportedLockValueWriter());

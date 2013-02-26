@@ -413,8 +413,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	 * inspected for annotations
 	 * @return
 	 */
-	public AnnoResource instantiate(Object childSource, AnnoCollectionResource parent, java.lang.reflect.Method m) {
-		
+	public AnnoResource instantiate(Object childSource, AnnoCollectionResource parent, java.lang.reflect.Method m) {		
 		if (authenticateAnnotationHandler.canAuthenticate(childSource)) {
 			return new AnnoPrincipalResource(this, childSource, parent);
 		}
@@ -424,6 +423,13 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		if( parent instanceof AnnoCalendarResource) {
 			return new AnnoEventResource(this, childSource, parent);
 		}
+		if( m.getAnnotation(AddressBooks.class) != null ) {
+			return new AnnoAddressBookResource(this, childSource, parent);
+		}
+		if( parent instanceof AnnoAddressBookResource) {
+			return new AnnoContactResource(this, childSource, parent);
+		}
+		
 		if (childrenOfAnnotationHandler.isCompatible(childSource)) {
 			return new AnnoCollectionResource(this, childSource, parent);
 		} else {

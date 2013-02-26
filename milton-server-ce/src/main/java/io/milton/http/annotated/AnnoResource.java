@@ -40,6 +40,9 @@ import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.exceptions.NotFoundException;
 import io.milton.http.exceptions.PreConditionFailedException;
 import io.milton.http.http11.auth.DigestResponse;
+import io.milton.http.values.HrefList;
+import io.milton.principal.DiscretePrincipal;
+import io.milton.principal.Principal;
 import io.milton.resource.AccessControlledResource;
 import io.milton.resource.CollectionResource;
 import io.milton.resource.CopyableResource;
@@ -53,7 +56,10 @@ import io.milton.resource.PropFindableResource;
 import io.milton.resource.ReportableResource;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.slf4j.Logger;
@@ -63,15 +69,15 @@ import org.slf4j.LoggerFactory;
  *
  * @author brad
  */
-public abstract class AnnoResource implements GetableResource, PropFindableResource, DeletableResource, CopyableResource, MoveableResource, LockableResource, ConditionalCompatibleResource, CommonResource, DigestResource, PostableResource, ReportableResource {
-
+public abstract class AnnoResource implements GetableResource, PropFindableResource, DeletableResource, CopyableResource, MoveableResource, LockableResource, ConditionalCompatibleResource, CommonResource, DigestResource, PostableResource, ReportableResource, AccessControlledResource {
+	
 	private static final Logger log = LoggerFactory.getLogger(AnnoResource.class);
 	protected Object source;
 	protected final AnnotationResourceFactory annoFactory;
 	protected AnnoCollectionResource parent;
 	protected JsonResult jsonResult;
 	protected String nameOverride;
-
+	
 	public AnnoResource(final AnnotationResourceFactory outer, Object source, AnnoCollectionResource parent) {
 		if (source == null) {
 			throw new RuntimeException("Source object is required");
@@ -80,7 +86,7 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 		this.source = source;
 		this.parent = parent;
 	}
-
+	
 	@Override
 	public String processForm(Map<String, String> parameters, Map<String, FileItem> files) throws BadRequestException, NotAuthorizedException, ConflictException {
 		Request request = HttpManager.request();
@@ -95,7 +101,7 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 		}
 		return null;
 	}
-
+	
 	@Override
 	public void sendContent(OutputStream out, Range range, Map<String, String> params, String contentType) throws IOException, NotAuthorizedException, BadRequestException, NotFoundException {
 		if (jsonResult == null) {
@@ -105,12 +111,12 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 			jsonWriter.write(jsonResult, out);
 		}
 	}
-
+	
 	@Override
 	public String getUniqueId() {
 		return annoFactory.uniqueIdAnnotationHandler.get(source);
 	}
-
+	
 	@Override
 	public String getName() {
 		if (nameOverride != null) {
@@ -118,7 +124,7 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 		}
 		return annoFactory.nameAnnotationHandler.get(source);
 	}
-
+	
 	@Override
 	public Object authenticate(String user, String password) {
 		AnnoPrincipalResource userRes = annoFactory.usersAnnotationHandler.findUser(getRoot(), user);
@@ -130,7 +136,7 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 		}
 		return annoFactory.getSecurityManager().authenticate(user, password);
 	}
-
+	
 	@Override
 	public Object authenticate(DigestResponse digestRequest) {
 		AnnoPrincipalResource userRes = annoFactory.usersAnnotationHandler.findUser(getRoot(), digestRequest.getUser());
@@ -142,11 +148,11 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 		}
 		return annoFactory.getSecurityManager().authenticate(digestRequest);
 	}
-
+	
 	@Override
 	public boolean authorise(Request request, Method method, Auth auth) {
 		Object oUser = null;
-		if( auth != null ) {
+		if (auth != null) {
 			oUser = auth.getTag();
 		}
 		AnnoPrincipalResource p = null;
@@ -180,27 +186,27 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 		// if we get here it means ACL was not applied, so we check default SM
 		return annoFactory.getSecurityManager().authorise(request, method, auth, this);
 	}
-
+	
 	@Override
 	public String getRealm() {
 		return annoFactory.getSecurityManager().getRealm(HttpManager.request().getHostHeader());
 	}
-
+	
 	@Override
 	public Date getModifiedDate() {
 		return annoFactory.modifiedDateAnnotationHandler.get(source);
 	}
-
+	
 	@Override
 	public String checkRedirect(Request request) throws NotAuthorizedException, BadRequestException {
 		return null;
 	}
-
+	
 	@Override
 	public void delete() throws NotAuthorizedException, ConflictException, BadRequestException {
 		annoFactory.deleteAnnotationHandler.execute(source);
 	}
-
+	
 	@Override
 	public boolean isCompatible(Method m) {
 		if (Method.PROPFIND.equals(m)) {
@@ -208,10 +214,10 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 		}
 		return annoFactory.isCompatible(source, m);
 	}
-
+	
 	@Override
 	public boolean is(String type) {
-
+		
 		if (matchesType(source.getClass(), type)) {
 			return true;
 		}
@@ -220,60 +226,60 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 				return true;
 			}
 		}
-
+		
 		return false;
 	}
-
+	
 	@Override
 	public Date getCreateDate() {
 		return annoFactory.createdDateAnnotationHandler.get(source);
 	}
-
+	
 	@Override
 	public void moveTo(CollectionResource rDest, String name) throws ConflictException, NotAuthorizedException, BadRequestException {
 		nameOverride = null; // reset any explicitly set name (eg for creating new resources)
 		annoFactory.moveAnnotationHandler.execute(source, rDest, name);
 	}
-
+	
 	public Object getSource() {
 		return source;
 	}
-
+	
 	public AnnotationResourceFactory getAnnoFactory() {
 		return annoFactory;
 	}
-
+	
 	@Override
 	public AnnoCollectionResource getParent() {
 		return parent;
 	}
-
+	
 	@Override
 	public void copyTo(CollectionResource toCollection, String name) throws NotAuthorizedException, BadRequestException, ConflictException {
 		annoFactory.copyAnnotationHandler.execute(source, toCollection, name);
 	}
-
+	
 	@Override
 	public Long getMaxAgeSeconds(Auth auth) {
 		ControllerMethod cm = annoFactory.getAnnotationHandler.getBestMethod(source.getClass());
-		if( cm != null ) {
+		if (cm != null) {
 			Get g = (Get) cm.anno;
 			long l = g.maxAgeSecs();
-			if( l == 0 ) {
+			if (l == 0) {
 				return null;
-			} else if( l > 0 ) {
+			} else if (l > 0) {
 				return l;
 			} // otherwise fall through to system default
-			
+
 			// if return type is a ModelAndView then we know its templated, so should have null max ag
-			if( ModelAndView.class.isAssignableFrom(cm.method.getReturnType()) ) {
+			if (ModelAndView.class.isAssignableFrom(cm.method.getReturnType())) {
 				return null;
 			}
 		}
 		Long l = annoFactory.maxAgeAnnotationHandler.get(source);
 		return l;
 	}
-
+	
 	@Override
 	public String getContentType(String accepts) {
 		if (accepts != null && accepts.contains("application/json")) {
@@ -281,23 +287,23 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 		}
 		return annoFactory.contentTypeAnnotationHandler.get(source);
 	}
-
+	
 	@Override
 	public Long getContentLength() {
 		return annoFactory.contentLengthAnnotationHandler.get(source);
 	}
-
+	
 	@Override
 	public boolean isDigestAllowed() {
 		return annoFactory.getSecurityManager().isDigestAllowed();
 	}
-
+	
 	public ResourceList getAsList() {
 		ResourceList l = new ResourceList();
 		l.add(this);
 		return l;
 	}
-
+	
 	private boolean matchesType(Class c, String type) {
 		String name = c.getCanonicalName();
 		int pos = name.lastIndexOf(".");
@@ -307,7 +313,7 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 		}
 		return false;
 	}
-
+	
 	public String getHref() {
 		if (parent == null) {
 			return "/";
@@ -319,44 +325,92 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 			return s;
 		}
 	}
-
+	
 	public AnnoCollectionResource getRoot() {
 		return parent.getRoot();
 	}
-
+	
 	public String getLink() {
 		return "<a href=\"" + getHref() + "\">" + getName() + "</a>";
 	}
-
+	
 	public String getDisplayName() {
 		return annoFactory.displayNameAnnotationHandler.execute(this);
 	}
-
+	
 	@Override
 	public LockResult lock(LockTimeout timeout, LockInfo lockInfo) throws NotAuthorizedException, PreConditionFailedException, LockedException {
 		return annoFactory.getLockManager().lock(timeout, lockInfo, this);
 	}
-
+	
 	@Override
 	public LockResult refreshLock(String token) throws NotAuthorizedException, PreConditionFailedException {
 		return annoFactory.getLockManager().refresh(token, this);
 	}
-
+	
 	@Override
 	public void unlock(String tokenId) throws NotAuthorizedException, PreConditionFailedException {
 		annoFactory.getLockManager().unlock(tokenId, this);
 	}
-
+	
 	@Override
 	public LockToken getCurrentLock() {
 		return annoFactory.getLockManager().getCurrentToken(this);
 	}
-
+	
 	public String getNameOverride() {
 		return nameOverride;
 	}
-
+	
 	public void setNameOverride(String nameOverride) {
 		this.nameOverride = nameOverride;
+	}
+	
+	@Override
+	public HrefList getPrincipalCollectionHrefs() {
+		List<AnnoCollectionResource> list = annoFactory.usersAnnotationHandler.findUsersCollections(getRoot());
+		HrefList l = new HrefList();
+		for (AnnoCollectionResource col : list) {
+			l.add(col.getHref());
+		}
+		return l;
+	}
+	
+	@Override
+	public List<Priviledge> getPriviledges(Auth auth) {
+		AnnoPrincipalResource curUser = null;
+		if (auth != null && auth.getTag() instanceof AnnoPrincipalResource) {
+			curUser = (AnnoPrincipalResource) auth.getTag();
+		}
+		Set<Priviledge> set = annoFactory.accessControlListAnnotationHandler.availablePrivs(curUser, this, null, auth);
+		if (set != null && !set.isEmpty() ) {
+			return new ArrayList<Priviledge>(set);
+		} else {
+			log.warn("Empty privs for: " + curUser);
+			return Collections.EMPTY_LIST;
+		}
+	}
+	
+	@Override
+	public void setAccessControlList(Map<Principal, List<Priviledge>> privs) {
+	}
+	
+	@Override
+	public Map<Principal, List<Priviledge>> getAccessControlList() {
+		log.warn("getAccessControlList - not implemented");
+		return null;
+	}
+	
+	@Override
+	public String getPrincipalURL() {
+		// make the assumption that the owner is the first parent resource which implements Principal
+		AnnoCollectionResource p = getParent();
+		while (p != null) {
+			if (p instanceof DiscretePrincipal) {
+				return p.getHref();
+			}
+			p = p.getParent();
+		}
+		return null;
 	}
 }
