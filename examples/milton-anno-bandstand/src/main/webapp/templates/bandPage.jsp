@@ -54,7 +54,7 @@
                             <tbody>
                             <c:forEach items="${model.page.source.bandMembers}" var="bm">    
                                 <tr>
-                                    <td>${bm.musician.name}</td>
+                                    <td>${bm.musician.givenName} ${bm.musician.surName}</td>
                                 </tr>
                             </c:forEach>                        
                             </tbody>
