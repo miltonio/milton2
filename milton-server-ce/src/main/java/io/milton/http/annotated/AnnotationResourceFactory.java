@@ -170,7 +170,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	@Override
 	public Resource getResource(String host, String url) throws NotAuthorizedException, BadRequestException {
 		log.info("getResource: host: " + host + " - url:" + url);
-
+		
 		AnnoCollectionResource hostRoot = locateHostRoot(host, HttpManager.request());
 		if (hostRoot == null) {
 			log.warn("Could not find a root resource for host: " + host + " Using " + rootAnnotationHandler.controllerMethods.size() + " root methods");

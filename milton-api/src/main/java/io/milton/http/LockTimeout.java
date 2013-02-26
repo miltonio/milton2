@@ -95,6 +95,11 @@ public class LockTimeout implements Serializable{
     final Long seconds;
     final Long[] otherSeconds;
 
+    /**
+     * 
+     * 
+     * @param timeout - duration that the lock will live for, in seconds
+     */
     public LockTimeout(Long timeout) {
         this.seconds = timeout;
         this.otherSeconds = null;

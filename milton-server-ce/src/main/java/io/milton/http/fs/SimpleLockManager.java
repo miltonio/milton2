@@ -53,24 +53,38 @@ public class SimpleLockManager implements LockManager {
 
 	@Override
     public synchronized LockResult lock( LockTimeout timeout, LockInfo lockInfo, LockableResource r ) {
+		String token = UUID.randomUUID().toString();
+		return lock(timeout, lockInfo, r, token);
+
+    }
+
+    private  LockResult lock( LockTimeout timeout, LockInfo lockInfo, LockableResource r, String token ) {
         LockToken currentLock = currentLock( r );
         if( currentLock != null ) {
             return LockResult.failed( LockResult.FailureReason.ALREADY_LOCKED );
         }
 
-        LockToken newToken = new LockToken( UUID.randomUUID().toString(), lockInfo, timeout );
+        LockToken newToken = new LockToken( token, lockInfo, timeout );
         CurrentLock newLock = new CurrentLock( r.getUniqueId(), newToken, lockInfo.lockedByUser );
         locksByUniqueId.put( r.getUniqueId(), newLock );
         locksByToken.put( newToken.tokenId, newLock );
         return LockResult.success( newToken );
-    }
-
+    }	
+	
+	@Override
     public synchronized LockResult refresh( String tokenId, LockableResource resource ) {
         CurrentLock curLock = locksByToken.get( tokenId );
+		if( curLock == null || curLock.token == null ) {
+			log.warn("attempt to refresh missing token: " + tokenId + " on resource: " + resource.getName() + " will create a new lock");
+			LockTimeout timeout = new LockTimeout(60*60l);
+			LockInfo lockInfo = new LockInfo(LockInfo.LockScope.EXCLUSIVE, LockInfo.LockType.WRITE, tokenId, LockInfo.LockDepth.ZERO);
+			return lock(timeout, lockInfo, resource, tokenId);
+		}
         curLock.token.setFrom( new Date() );
         return LockResult.success( curLock.token );
     }
 
+	@Override
     public synchronized void unlock( String tokenId, LockableResource r ) throws NotAuthorizedException {
         LockToken lockToken = currentLock( r );
         if( lockToken == null ) {
@@ -86,7 +100,9 @@ public class SimpleLockManager implements LockManager {
 
     private LockToken currentLock( LockableResource resource ) {
         CurrentLock curLock = locksByUniqueId.get( resource.getUniqueId() );
-        if( curLock == null ) return null;
+        if( curLock == null ) {
+			return null;
+		}
         LockToken token = curLock.token;
         if( token.isExpired() ) {
             removeLock( token );
