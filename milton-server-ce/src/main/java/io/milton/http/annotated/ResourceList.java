@@ -282,6 +282,12 @@ public class ResourceList extends ArrayList<CommonResource> {
 		return l;
 	}
 	
+    
+    public Map<String,CommonResource> getMap() {
+        return map;
+    }
+    	
+	
 //	public ResourceList find(String path, String type) {
 //		ResourceList l = new ResourceList();
 //		for( CommonResource r : this) {

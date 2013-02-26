@@ -33,6 +33,7 @@ public class Song implements Serializable{
       
     private Long id;
     private Band band;
+    private String displayName;
     private String fileName;
 
     public Song() {
@@ -50,6 +51,17 @@ public class Song implements Serializable{
         this.id = id;
     }
 
+    @Column(nullable=false)
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    
+    
     @ManyToOne(optional=false)
     public Band getBand() {
         return band;

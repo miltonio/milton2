@@ -15,7 +15,7 @@
             <h1>${model.page.displayName}</h1>            
             <p>${model.page.source.description}</p>
             <div class="row">
-                <div class="span4 offset1">
+                <div class="span4 offset2">
                     <div class="well">
                         <h2>Gigs</h2>
                         <table>
@@ -36,7 +36,6 @@
                         </table>
                     </div>
                 </div>
-                <div class="span2"></div>
                 <div class="span4">
                     <div class="well">
                         <h2>
@@ -61,6 +60,30 @@
                             </tbody>
                         </table>
                     </div>
+                    <div class="well">
+                        <h2>Songs</h2>
+                        <ul>
+                            <c:forEach items="${model.page.childrenMap['songs'].children}" var="song">
+                                <li>${song.link}</li>
+                            </c:forEach>
+                        </ul>
+                    </div>                                
+                </div>
+            </div>
+            <div class="row">
+                <div class="span12">
+
+                        <h2>Images</h2>
+                        <ul class="thumbnails">
+                            <c:forEach items="${model.page.childrenMap['images'].children}" var="image">
+                                <li class="span4">
+                                    <a href="${image.href}" class="thumbnail">
+                                        <img src="${image.href}" alt="">
+                                    </a>
+                                </li>
+                            </c:forEach>
+                        </ul>
+
                 </div>
             </div>
         </div> <!-- /container -->

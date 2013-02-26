@@ -28,7 +28,7 @@ import io.milton.resource.Resource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -117,6 +117,9 @@ public class AnnoCollectionResource extends AnnoResource implements CollectionRe
 		return children;
 	}
 
+	public Map<String,CommonResource> getChildrenMap() throws NotAuthorizedException, BadRequestException{
+		return getChildren().getMap();
+	}
 
 	@Override
 	public CollectionResource createCollection(String newName) throws NotAuthorizedException, ConflictException, BadRequestException {
