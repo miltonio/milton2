@@ -311,7 +311,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	}
 
 	public boolean isCompatible(Object source, Method m) {
-		if( in(m, Method.REPORT, Method.LOCK, Method.UNLOCK, Method.HEAD, Method.OPTIONS)) {
+		if( in(m, Method.REPORT, Method.LOCK, Method.UNLOCK, Method.HEAD, Method.OPTIONS, Method.PROPPATCH)) {
 			return true;
 		}
 		AnnotationHandler ah = mapOfAnnotationHandlersByMethod.get(m);

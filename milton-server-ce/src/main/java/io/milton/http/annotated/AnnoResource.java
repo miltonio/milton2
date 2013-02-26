@@ -295,7 +295,11 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 	
 	@Override
 	public boolean isDigestAllowed() {
-		return annoFactory.getSecurityManager().isDigestAllowed();
+		boolean b = annoFactory.getSecurityManager().isDigestAllowed();
+		if(!b) {
+			log.trace("Diget auth is not supported by security manager");
+		}
+		return b;
 	}
 	
 	public ResourceList getAsList() {

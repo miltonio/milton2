@@ -55,6 +55,7 @@ public class SimpleSecurityManager implements io.milton.http.SecurityManager{
     public SimpleSecurityManager( String realm, Map<String,String> nameAndPasswords ) {
         this.realm = realm;
         this.nameAndPasswords = nameAndPasswords;
+		digestGenerator = new DigestGenerator();
     }
 
     public Object getUserByName( String name ) {

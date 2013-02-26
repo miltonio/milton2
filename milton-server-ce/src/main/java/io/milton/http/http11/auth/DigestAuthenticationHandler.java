@@ -95,6 +95,7 @@ public class DigestAuthenticationHandler implements AuthenticationHandler {
 			DigestResource dr = (DigestResource) resource;
 			return dr.isDigestAllowed();
 		} else {
+			log.trace("Digest auth not supported because class does not implement DigestResource");
 			return false;
 		}
     }

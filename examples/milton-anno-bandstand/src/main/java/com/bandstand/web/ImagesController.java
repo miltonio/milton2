@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.apache.commons.io.FileUtils;
+import org.hibernate.Transaction;
 
 /**
  *
@@ -78,12 +79,22 @@ public class ImagesController {
     
     @PutChild
     public Image uploadImage(Image image, byte[] bytes) throws IOException {
-        File fRoot = getContentRoot();
-        File content = new File(fRoot, image.getFileName());
+        File content = new File(image.getFileName());
         FileUtils.writeByteArrayToFile(content, bytes);
         return image;
     }    
         
+    @Delete
+    public void deleteImage(Image image) {
+        Transaction tx = SessionManager.session().beginTransaction();
+        try {
+            SessionManager.session().delete(image);
+            
+            tx.commit();
+        } catch (Exception e) {
+            tx.rollback();
+        }        
+    }
     @Get
     public InputStream getImageFile(Image image) throws IOException {
         File content = new File(image.getFileName());
@@ -138,7 +149,7 @@ public class ImagesController {
     
     
     private File getContentRoot() {
-        File fRoot = new File("target/files"); // folder to put these files
+        File fRoot = new File("target" + File.separator + "files"); // folder to put these files
         if( !fRoot.exists() ) {
             if( !fRoot.mkdirs() ) {
                 throw new RuntimeException("WARN: couldnt create directory to store file content - " + fRoot.getAbsolutePath());
