@@ -138,7 +138,7 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
                 partialGetHelper = new PartialGetHelper(webdavResponseHandler);
             }
 
-            Http11Protocol http11Protocol = new Http11Protocol(webdavResponseHandler, handlerHelper, resourceHandlerHelper, enableOptionsAuth, matchHelper, partialGetHelper);
+            Http11Protocol http11Protocol = new Http11Protocol(webdavResponseHandler, handlerHelper, resourceHandlerHelper, enableOptionsAuth, matchHelper, partialGetHelper); 
             protocols.add(http11Protocol);
             if (propertySources == null) {
                 propertySources = initDefaultPropertySources(resourceTypeHelper);
