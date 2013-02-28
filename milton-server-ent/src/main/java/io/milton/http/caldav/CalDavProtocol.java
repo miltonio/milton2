@@ -23,9 +23,7 @@ import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.exceptions.NotFoundException;
 import io.milton.http.http11.CustomPostHandler;
 import io.milton.http.http11.auth.DigestResponse;
-import io.milton.http.values.CData;
 import io.milton.http.values.HrefList;
-import io.milton.http.values.ValueWriters;
 import io.milton.http.values.WrappedHref;
 import io.milton.http.webdav.PropFindPropertyBuilder;
 import io.milton.http.webdav.PropFindXmlGenerator;
@@ -36,7 +34,6 @@ import io.milton.http.webdav.WebDavResponseHandler;
 import io.milton.property.PropertySource;
 import io.milton.resource.CalendarCollection;
 import io.milton.resource.CalendarResource;
-import io.milton.resource.ICalResource;
 import io.milton.http.acl.ACLHandler;
 import io.milton.http.values.SupportedCalendarComponentListsSet;
 import io.milton.resource.DigestResource;
@@ -75,7 +72,7 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
     private final SchedulingCustomPostHandler schedulingCustomPostHandler;
     private final List<CustomPostHandler> customPostHandlers;
 
-    public CalDavProtocol(ResourceFactory resourceFactory, WebDavResponseHandler responseHandler, HandlerHelper handlerHelper, WebDavProtocol webDavProtocol, PropFindXmlGenerator gen) {
+    public CalDavProtocol(ResourceFactory resourceFactory, WebDavResponseHandler responseHandler, HandlerHelper handlerHelper, WebDavProtocol webDavProtocol, PropFindXmlGenerator gen, PropFindPropertyBuilder propertyBuilder) {
         if( gen == null ) {
             throw new NullPointerException("PropFindXmlGenerator is null");
         }
@@ -105,7 +102,6 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
         handlers.add(new MkCalendarHandler(webDavProtocol.getMkColHandler(), webDavProtocol.getPropPatchHandler()));
 
         webDavProtocol.addPropertySource(this);
-        PropFindPropertyBuilder propertyBuilder = new PropFindPropertyBuilder(webDavProtocol.getPropertySources());
 
         //Adding supported reports
         webDavProtocol.addReport(new MultiGetReport(resourceFactory, propertyBuilder, gen));

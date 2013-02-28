@@ -18,13 +18,9 @@ import io.milton.http.carddav.AddressBookResourceTypeHelper;
 import io.milton.http.carddav.CardDavProtocol;
 import io.milton.http.fck.FckResourceFactory;
 import io.milton.http.fs.SimpleLockManager;
-import io.milton.http.fs.SimpleSecurityManager;
 import io.milton.http.http11.*;
-import io.milton.http.json.JsonResourceFactory;
-import io.milton.http.webdav.DefaultUserAgentHelper;
 import io.milton.http.webdav.PropertySourcePatchSetter;
 import io.milton.http.webdav.ResourceTypeHelper;
-import io.milton.http.webdav.WebDavProtocol;
 import io.milton.http.webdav.WebDavResourceTypeHelper;
 import io.milton.http.webdav.WebDavResponseHandler;
 import io.milton.http.webdav2.LockTokenValueWriter;
@@ -78,23 +74,21 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
     @Override
     protected void afterInit() {
         super.afterInit();
-        if( getMainResourceFactory() instanceof AnnotationResourceFactory) {
+        if (getMainResourceFactory() instanceof AnnotationResourceFactory) {
             AnnotationResourceFactory arf = (AnnotationResourceFactory) getMainResourceFactory();
-            if( arf.getLockManager() == null ) {
+            if (arf.getLockManager() == null) {
                 arf.setLockManager(lockManager);
             }
         }
     }
 
-    
-    
     @Override
     protected void buildOuterResourceFactory() {
         // wrap the real (ie main) resource factory to provide well-known support and ajax gateway
         if (outerResourceFactory == null) {
             outerResourceFactory = mainResourceFactory; // in case nothing else enabled
             if (enabledJson) {
-                outerResourceFactory = new JsonResourceFactory(outerResourceFactory, eventManager, propertySources, propPatchSetter, initPropertyAuthoriser());
+                outerResourceFactory = buildJsonResourceFactory();
                 log.info("Enabled json/ajax gatewayw with: " + outerResourceFactory.getClass());
             }
             if (enableWellKnown) {
@@ -138,7 +132,7 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
                 partialGetHelper = new PartialGetHelper(webdavResponseHandler);
             }
 
-            Http11Protocol http11Protocol = new Http11Protocol(webdavResponseHandler, handlerHelper, resourceHandlerHelper, enableOptionsAuth, matchHelper, partialGetHelper); 
+            Http11Protocol http11Protocol = new Http11Protocol(webdavResponseHandler, handlerHelper, resourceHandlerHelper, enableOptionsAuth, matchHelper, partialGetHelper);
             protocols.add(http11Protocol);
             if (propertySources == null) {
                 propertySources = initDefaultPropertySources(resourceTypeHelper);
@@ -155,20 +149,18 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
             }
 
 
-            if (webDavProtocol == null && webdavEnabled) {
-                webDavProtocol = new WebDavProtocol(handlerHelper, resourceTypeHelper, webdavResponseHandler, propertySources, quotaDataAccessor, propPatchSetter, initPropertyAuthoriser(), eTagGenerator, urlAdapter, resourceHandlerHelper, userAgentHelper());
-            }
+            initWebdavProtocol();
             if (webDavProtocol != null) {
                 protocols.add(webDavProtocol);
             }
 
             if (webDavLevel2Protocol == null && webdavLevel2Enabled) {
-                webDavLevel2Protocol = new WebDavLevel2Protocol(handlerHelper, webdavResponseHandler, resourceHandlerHelper, userAgentHelper()); 
+                webDavLevel2Protocol = new WebDavLevel2Protocol(handlerHelper, webdavResponseHandler, resourceHandlerHelper, userAgentHelper());
             }
             if (webDavLevel2Protocol != null) {
                 valueWriters.getValueWriters().add(0, new SupportedLockValueWriter());
                 valueWriters.getValueWriters().add(0, new LockTokenValueWriter());
-                
+
                 protocols.add(webDavLevel2Protocol);
                 if (webDavProtocol != null) {
                     webDavProtocol.addPropertySource(webDavLevel2Protocol);
@@ -176,7 +168,7 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
             }
 
             if (calDavProtocol == null && caldavEnabled) {
-                calDavProtocol = new CalDavProtocol(mainResourceFactory, webdavResponseHandler, handlerHelper, webDavProtocol, propFindXmlGenerator);
+                calDavProtocol = new CalDavProtocol(mainResourceFactory, webdavResponseHandler, handlerHelper, webDavProtocol, propFindXmlGenerator, propFindPropertyBuilder());
             }
             if (calDavProtocol != null) {
                 protocols.add(calDavProtocol);
@@ -190,7 +182,7 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
             }
 
             if (cardDavProtocol == null && carddavEnabled) {
-                cardDavProtocol = new CardDavProtocol(mainResourceFactory, webdavResponseHandler, handlerHelper, webDavProtocol, propFindXmlGenerator);
+                cardDavProtocol = new CardDavProtocol(mainResourceFactory, webdavResponseHandler, handlerHelper, webDavProtocol, propFindXmlGenerator, propFindPropertyBuilder());
             }
             if (cardDavProtocol != null) {
                 valueWriters.getValueWriters().add(0, new SupportedCalendarComponentListValueWriter());
@@ -286,8 +278,8 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
 
     /**
      * Only required for AnnotationResourceFactory
-     * 
-     * @return 
+     *
+     * @return
      */
     public LockManager getLockManager() {
         return lockManager;
@@ -296,7 +288,4 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
     public void setLockManager(LockManager lockManager) {
         this.lockManager = lockManager;
     }
-
-    
-    
 }

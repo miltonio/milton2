@@ -61,13 +61,6 @@ public class JsonResourceFactory implements ResourceFactory {
 		log.debug("created with: " + propFindHandler.getClass().getCanonicalName());
 	}
 
-	public JsonResourceFactory(ResourceFactory wrapped, EventManager eventManager, List<PropertySource> propertySources, PropPatchSetter patchSetter, PropertyAuthoriser permissionService) {
-		this.wrapped = wrapped;
-		this.eventManager = eventManager;
-		log.debug("using property sources: " + propertySources.size());
-		this.propFindHandler = new JsonPropFindHandler(new PropFindPropertyBuilder(propertySources));
-		this.propPatchHandler = new JsonPropPatchHandler(patchSetter, permissionService, eventManager);
-	}
 
 	@Override
 	public Resource getResource(String host, String sPath) throws NotAuthorizedException, BadRequestException {

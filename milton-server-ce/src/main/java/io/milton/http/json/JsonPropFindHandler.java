@@ -67,12 +67,6 @@ public class JsonPropFindHandler {
         helper = new Helper();
     }
 
-    public JsonPropFindHandler(List<PropertySource> propertySources) {
-        ResourceTypeHelper resourceTypeHelper = new WebDavResourceTypeHelper();
-        this.propertyBuilder = new PropFindPropertyBuilder(propertySources);
-        helper = new Helper();
-    }
-
     public void sendContent(PropFindableResource wrappedResource, String encodedUrl, OutputStream out, Range range, Map<String, String> params, String contentType) throws IOException, NotAuthorizedException, BadRequestException {
         log.debug("sendContent: " + encodedUrl);
         JsonConfig cfg = new JsonConfig();

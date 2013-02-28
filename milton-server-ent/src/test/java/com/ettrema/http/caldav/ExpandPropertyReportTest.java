@@ -9,6 +9,7 @@ package com.ettrema.http.caldav;
 import io.milton.http.ResourceFactory;
 import io.milton.http.caldav.ExpandPropertyReport;
 import io.milton.http.values.*;
+import io.milton.http.webdav.DefaultPropFindPropertyBuilder;
 import io.milton.http.webdav.PropFindPropertyBuilder;
 import io.milton.http.webdav.PropFindXmlGenerator;
 import io.milton.http.webdav.PropFindXmlGeneratorHelper;
@@ -60,7 +61,7 @@ public class ExpandPropertyReportTest extends TestCase {
 		propertySources = Arrays.asList(propertySource);
 		meta1 = new PropertySource.PropertyMetaData(PropertySource.PropertyAccessibility.READ_ONLY, HrefList.class);
                 meta2 = new PropertySource.PropertyMetaData(PropertySource.PropertyAccessibility.READ_ONLY, HrefList.class);
-		propertyBuilder = new PropFindPropertyBuilder(propertySources);
+		propertyBuilder = new DefaultPropFindPropertyBuilder(propertySources);
 		otherResource = createMock(PropFindableResource.class);
                 otherResource2 = createMock(PropFindableResource.class);
 		resourceFactory = createMock(ResourceFactory.class);

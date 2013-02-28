@@ -79,7 +79,7 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 	private final PropPatchHandler propPatchHandler;
 	private List<CustomPostHandler> customPostHandlers;
 
-	public WebDavProtocol(HandlerHelper handlerHelper, ResourceTypeHelper resourceTypeHelper, WebDavResponseHandler responseHandler, List<PropertySource> propertySources, QuotaDataAccessor quotaDataAccessor, PropPatchSetter patchSetter, PropertyAuthoriser propertyAuthoriser, ETagGenerator eTagGenerator, UrlAdapter urlAdapter, ResourceHandlerHelper resourceHandlerHelper, UserAgentHelper userAgentHelper) {
+	public WebDavProtocol(HandlerHelper handlerHelper, ResourceTypeHelper resourceTypeHelper, WebDavResponseHandler responseHandler, List<PropertySource> propertySources, QuotaDataAccessor quotaDataAccessor, PropPatchSetter patchSetter, PropertyAuthoriser propertyAuthoriser, ETagGenerator eTagGenerator, UrlAdapter urlAdapter, ResourceHandlerHelper resourceHandlerHelper, UserAgentHelper userAgentHelper, PropFindRequestFieldParser requestFieldParser, PropFindPropertyBuilder propertyBuilder) {
 		this.userAgentHelper = userAgentHelper;
 		this.handlerHelper = handlerHelper;
 		this.eTagGenerator = eTagGenerator;
@@ -130,7 +130,9 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 			log.info("creating default patcheSetter: " + PropertySourcePatchSetter.class);
 			patchSetter = new PropertySourcePatchSetter(propertySources, valueWriters);
 		}
-		handlers.add(new PropFindHandler(resourceHandlerHelper, resourceTypeHelper, responseHandler, propertySources));
+		//handlers.add(new PropFindHandler(resourceHandlerHelper, resourceTypeHelper, responseHandler, propertySources));
+		PropFindHandler propFindHandler = new PropFindHandler(resourceHandlerHelper, requestFieldParser, responseHandler, propertyBuilder);
+		handlers.add(propFindHandler);
 		mkColHandler = new MkColHandler(responseHandler, handlerHelper);
 		handlers.add(mkColHandler);
 		propPatchHandler = new PropPatchHandler(resourceHandlerHelper, new DefaultPropPatchParser(), patchSetter, responseHandler, propertyAuthoriser);

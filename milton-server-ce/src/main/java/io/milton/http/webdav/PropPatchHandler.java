@@ -224,7 +224,7 @@ public class PropPatchHandler implements ExistingEntityHandler, PropertyHandler 
             throw new NotAuthorizedException(resource);
         }
         String href = request.getAbsoluteUrl();
-		href = PropFindPropertyBuilder.fixUrlForWindows(href);
+		href = DefaultPropFindPropertyBuilder.fixUrlForWindows(href);
         PropFindResponse resp = patchSetter.setProperties(href, parseResult, resource);
         return resp;
     }

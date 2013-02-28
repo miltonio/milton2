@@ -58,21 +58,21 @@ public class PropFindHandler implements ExistingEntityHandler, PropertyHandler {
     private final PropFindPropertyBuilder propertyBuilder;
     private final PropertyAuthoriser permissionService = new DefaultPropertyAuthoriser();
 
-    /**
-     * 
-     * @param resourceHandlerHelper
-     * @param resourceTypeHelper
-     * @param responseHandler
-     */
-    public PropFindHandler( ResourceHandlerHelper resourceHandlerHelper, ResourceTypeHelper resourceTypeHelper, WebDavResponseHandler responseHandler, List<PropertySource> propertySources ) {
-        this.resourceHandlerHelper = resourceHandlerHelper;
-
-        DefaultPropFindRequestFieldParser defaultFieldParse = new DefaultPropFindRequestFieldParser();
-        this.requestFieldParser = new MsPropFindRequestFieldParser( defaultFieldParse ); // use MS decorator for windows support
-        this.responseHandler = responseHandler;
-
-        this.propertyBuilder = new PropFindPropertyBuilder( propertySources );				
-    }
+//    /**
+//     * 
+//     * @param resourceHandlerHelper
+//     * @param resourceTypeHelper
+//     * @param responseHandler
+//     */
+//    public PropFindHandler( ResourceHandlerHelper resourceHandlerHelper, ResourceTypeHelper resourceTypeHelper, WebDavResponseHandler responseHandler, List<PropertySource> propertySources ) {
+//        this.resourceHandlerHelper = resourceHandlerHelper;
+//
+//        DefaultPropFindRequestFieldParser defaultFieldParse = new DefaultPropFindRequestFieldParser();
+//        this.requestFieldParser = new MsPropFindRequestFieldParser( defaultFieldParse ); // use MS decorator for windows support
+//        this.responseHandler = responseHandler;
+//
+//        this.propertyBuilder = new PropFindPropertyBuilder( propertySources );				
+//    }
 
     /**
      *

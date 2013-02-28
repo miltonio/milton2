@@ -37,6 +37,8 @@ import io.milton.http.http11.*;
 import io.milton.http.http11.DefaultHttp11ResponseHandler.BUFFERING;
 import io.milton.http.http11.auth.*;
 import io.milton.http.http11.auth.LoginResponseHandler.LoginPageTypeHandler;
+import io.milton.http.json.JsonPropFindHandler;
+import io.milton.http.json.JsonPropPatchHandler;
 import io.milton.http.json.JsonResourceFactory;
 import io.milton.http.quota.QuotaDataAccessor;
 import io.milton.http.values.ValueWriters;
@@ -155,7 +157,9 @@ public class HttpManagerBuilder {
 	protected boolean enableExpectContinue = false;
 	protected String controllerPackagesToScan;
 	private Long maxAgeSeconds = 10l;
-	private String fsHomeDir = null; 
+	private String fsHomeDir = null;
+	private PropFindRequestFieldParser propFindRequestFieldParser;
+	private PropFindPropertyBuilder propFindPropertyBuilder;
 
 	protected io.milton.http.SecurityManager securityManager() {
 		if (securityManager == null) {
@@ -191,7 +195,7 @@ public class HttpManagerBuilder {
 
 
 		if (mainResourceFactory == null) {
-			if( fsHomeDir == null ) {
+			if (fsHomeDir == null) {
 				fsHomeDir = System.getProperty("user.home");
 			}
 			rootDir = new File(fsHomeDir);
@@ -345,7 +349,7 @@ public class HttpManagerBuilder {
 				l.afterInit(this);
 			}
 		}
-		if( entityTransport == null ) {
+		if (entityTransport == null) {
 			entityTransport = new DefaultEntityTransport(userAgentHelper());
 		}
 		HttpManager httpManager = new HttpManager(outerResourceFactory, webdavResponseHandler, protocolHandlers, entityTransport, filters, eventManager, shutdownHandlers);
@@ -441,10 +445,11 @@ public class HttpManagerBuilder {
 			if (propPatchSetter == null) {
 				propPatchSetter = new PropertySourcePatchSetter(propertySources);
 			}
-
-			if (webDavProtocol == null && webdavEnabled) {
-				webDavProtocol = new WebDavProtocol(handlerHelper, resourceTypeHelper, webdavResponseHandler, propertySources, quotaDataAccessor, propPatchSetter, initPropertyAuthoriser(), eTagGenerator, urlAdapter, resourceHandlerHelper, userAgentHelper());
+			if (propFindRequestFieldParser == null) {
+				DefaultPropFindRequestFieldParser defaultFieldParse = new DefaultPropFindRequestFieldParser();
+				this.propFindRequestFieldParser = new MsPropFindRequestFieldParser(defaultFieldParse); // use MS decorator for windows support				
 			}
+			initWebdavProtocol();
 			if (webDavProtocol != null) {
 				protocols.add(webDavProtocol);
 			}
@@ -455,12 +460,18 @@ public class HttpManagerBuilder {
 		}
 	}
 
+	protected void initWebdavProtocol() {
+		if (webDavProtocol == null && webdavEnabled) {
+			webDavProtocol = new WebDavProtocol(handlerHelper, resourceTypeHelper, webdavResponseHandler, propertySources, quotaDataAccessor, propPatchSetter, initPropertyAuthoriser(), eTagGenerator, urlAdapter, resourceHandlerHelper, userAgentHelper(), propFindRequestFieldParser, propFindPropertyBuilder());
+		}
+	}
+
 	protected void buildOuterResourceFactory() {
 		// wrap the real (ie main) resource factory to provide well-known support and ajax gateway
 		if (outerResourceFactory == null) {
 			outerResourceFactory = mainResourceFactory; // in case nothing else enabled
 			if (enabledJson) {
-				outerResourceFactory = new JsonResourceFactory(outerResourceFactory, eventManager, propertySources, propPatchSetter, initPropertyAuthoriser());
+				outerResourceFactory = buildJsonResourceFactory();
 				log.info("Enabled json/ajax gatewayw with: " + outerResourceFactory.getClass());
 			}
 			if (enabledCkBrowser) {
@@ -468,6 +479,13 @@ public class HttpManagerBuilder {
 				log.info("Enabled CK Editor support with: " + outerResourceFactory.getClass());
 			}
 		}
+	}
+
+	protected JsonResourceFactory buildJsonResourceFactory() {
+		JsonPropFindHandler jsonPropFindHandler = new JsonPropFindHandler(propFindPropertyBuilder());
+		JsonPropPatchHandler jsonPropPatchHandler = new JsonPropPatchHandler(propPatchSetter, initPropertyAuthoriser(), eventManager);
+		return new JsonResourceFactory(outerResourceFactory, eventManager, jsonPropFindHandler, jsonPropPatchHandler);
+
 	}
 
 	public BUFFERING getBuffering() {
@@ -1111,10 +1129,11 @@ public class HttpManagerBuilder {
 	}
 
 	/**
-	 * Set this if you're using the FileSystemResourceFactory and you want to explicitly
-	 * set a home directory. If left null milton will use the user.home System property
-	 * 
-	 * @return 
+	 * Set this if you're using the FileSystemResourceFactory and you want to
+	 * explicitly set a home directory. If left null milton will use the
+	 * user.home System property
+	 *
+	 * @return
 	 */
 	public String getFsHomeDir() {
 		return fsHomeDir;
@@ -1123,9 +1142,6 @@ public class HttpManagerBuilder {
 	public void setFsHomeDir(String fsHomeDir) {
 		this.fsHomeDir = fsHomeDir;
 	}
-	
-	
-	
 
 	private void initAnnotatedResourceFactory() {
 		try {
@@ -1169,9 +1185,19 @@ public class HttpManagerBuilder {
 	}
 
 	protected UserAgentHelper userAgentHelper() {
-		if( userAgentHelper == null ) {
+		if (userAgentHelper == null) {
 			userAgentHelper = new DefaultUserAgentHelper();
 		}
 		return userAgentHelper;
+	}
+
+	protected PropFindPropertyBuilder propFindPropertyBuilder() {
+		if (propFindPropertyBuilder == null) {
+			if (propertySources == null) {
+				throw new RuntimeException("propertySources has not been initialised yet");
+			}
+			propFindPropertyBuilder = new DefaultPropFindPropertyBuilder(propertySources);
+		}
+		return propFindPropertyBuilder;
 	}
 }

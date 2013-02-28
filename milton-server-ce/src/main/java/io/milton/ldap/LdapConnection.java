@@ -100,14 +100,14 @@ public class LdapConnection extends Thread {
      *
      * @param clientSocket LDAP client socket
      */
-    public LdapConnection(Socket clientSocket, UserFactory userSessionFactory, List<PropertySource> propertySources, SearchManager searchManager, LdapTransactionManager txManager) {
+    public LdapConnection(Socket clientSocket, UserFactory userSessionFactory, SearchManager searchManager, LdapTransactionManager txManager, PropFindPropertyBuilder propFindPropertyBuilder) {
         super(LdapConnection.class.getSimpleName() + '-' + clientSocket.getPort());
         this.searchManager = searchManager;
         this.client = clientSocket;
         this.txManager = txManager;
         setDaemon(true);
         this.userFactory = userSessionFactory;
-        this.propertyMapper = new LdapPropertyMapper(new PropFindPropertyBuilder(propertySources));
+        this.propertyMapper = new LdapPropertyMapper(propFindPropertyBuilder);
         try {
             is = new BufferedInputStream(client.getInputStream());
             os = new BufferedOutputStream(client.getOutputStream());

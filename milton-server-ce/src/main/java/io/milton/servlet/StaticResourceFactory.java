@@ -86,13 +86,12 @@ public class StaticResourceFactory implements ResourceFactory {
 	@Override
 	public Resource getResource(String host, String url) {
 		Path p = Path.path(url);
-		String contentType = ContentTypeUtils.findContentTypes(p.getName());
 		String s = stripContext(url);
 
 		for (File root : roots) {
 			File file = new File(root, s);
 			if (file.exists() && file.isFile()) {
-				return new StaticResource(file, url, contentType);
+				return new StaticResource(file);
 			}
 		}
 		return null;

@@ -37,8 +37,8 @@
  */
 package io.milton.ldap;
 
+import io.milton.http.webdav.PropFindPropertyBuilder;
 import io.milton.http.webdav.WebDavProtocol;
-import io.milton.property.PropertySource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -47,7 +47,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
-import java.util.List;
 import javax.net.ServerSocketFactory;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -65,9 +64,9 @@ public class LdapServer extends Thread {
      */
     public static final int DEFAULT_PORT = 389;
     private final UserFactory userSessionFactory;
-    private final List<PropertySource> propertySources;
     private final SearchManager searchManager;
     private final LdapTransactionManager txManager;
+	private final PropFindPropertyBuilder propFindPropertyBuilder;
     protected boolean nosslFlag;
     private int port;
     private String bindAddress;
@@ -82,7 +81,7 @@ public class LdapServer extends Thread {
      *
      * @param port pop listen port, 389 if not defined (0)
      */
-    public LdapServer(LdapTransactionManager txManager, UserFactory userSessionFactory, List<PropertySource> propertySources, int port, boolean nosslFlag, String bindAddress) {
+    public LdapServer(LdapTransactionManager txManager, UserFactory userSessionFactory, int port, boolean nosslFlag, String bindAddress, PropFindPropertyBuilder propFindPropertyBuilder) {
         super(LdapServer.class.getName());
         this.txManager = txManager;
         searchManager = new SearchManager(txManager);
@@ -94,17 +93,17 @@ public class LdapServer extends Thread {
         }
         this.bindAddress = bindAddress;
         this.userSessionFactory = userSessionFactory;
-        this.propertySources = propertySources;
         this.nosslFlag = nosslFlag;
+		this.propFindPropertyBuilder = propFindPropertyBuilder;
     }
 
-    public LdapServer(LdapTransactionManager txManager, UserFactory userSessionFactory, List<PropertySource> propertySources) {
+    public LdapServer(LdapTransactionManager txManager, UserFactory userSessionFactory, PropFindPropertyBuilder propFindPropertyBuilder) {
         super(LdapServer.class.getName());
         this.txManager = txManager;
         searchManager = new SearchManager(txManager);
         setDaemon(true);
         this.userSessionFactory = userSessionFactory;
-        this.propertySources = propertySources;
+		this.propFindPropertyBuilder = propFindPropertyBuilder;
         this.port = LdapServer.DEFAULT_PORT;
     }
 
@@ -116,14 +115,14 @@ public class LdapServer extends Thread {
      * @param userSessionFactory
      * @param webDavProtocol
      */
-    public LdapServer(LdapTransactionManager txManager, UserFactory userSessionFactory, WebDavProtocol webDavProtocol) {
+    public LdapServer(LdapTransactionManager txManager, UserFactory userSessionFactory, WebDavProtocol webDavProtocol, PropFindPropertyBuilder propFindPropertyBuilder) {
         super(LdapServer.class.getName());
         this.txManager = txManager;
         searchManager = new SearchManager(txManager);
         setDaemon(true);
         this.userSessionFactory = userSessionFactory;
-        this.propertySources = webDavProtocol.getPropertySources();
         this.port = LdapServer.DEFAULT_PORT;
+		this.propFindPropertyBuilder = propFindPropertyBuilder;
     }
 
     public boolean isNosslFlag() {
@@ -151,7 +150,7 @@ public class LdapServer extends Thread {
     }
 
     public LdapConnection createConnectionHandler(Socket clientSocket) {
-        return new LdapConnection(clientSocket, userSessionFactory, propertySources, searchManager, txManager);
+        return new LdapConnection(clientSocket, userSessionFactory, searchManager, txManager, propFindPropertyBuilder);
     }
 
     @Override

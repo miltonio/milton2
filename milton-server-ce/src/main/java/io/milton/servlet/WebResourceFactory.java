@@ -95,7 +95,7 @@ public class WebResourceFactory implements ResourceFactory, Initable {
 			}
 			return null;
 		} else {
-			return new StaticResource(file, url, contentType);
+			return new StaticResource(file);
 		}
 	}
 

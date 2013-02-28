@@ -45,14 +45,12 @@ import io.milton.resource.Resource;
 public class StaticResource implements GetableResource {
 
 	private final File file;
-	private String contentType;
 
-	public StaticResource(File file, String url, String contentType) {
+	public StaticResource(File file) {
 		if (file.isDirectory()) {
 			throw new IllegalArgumentException("Static resource must be a file, this is a directory: " + file.getAbsolutePath());
 		}
 		this.file = file;
-		this.contentType = contentType;
 	}
 
 	@Override

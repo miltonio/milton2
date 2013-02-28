@@ -37,3 +37,5 @@
 /external/bootstrap/target/
 /examples/milton-anno-bandstand/target/
 /milton-server-ent/target/
+/out/
+/milton.iml
