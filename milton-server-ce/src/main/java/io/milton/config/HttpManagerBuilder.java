@@ -1143,6 +1143,24 @@ public class HttpManagerBuilder {
 		this.fsHomeDir = fsHomeDir;
 	}
 
+	public PropFindPropertyBuilder getPropFindPropertyBuilder() {
+		return propFindPropertyBuilder;
+	}
+
+	public void setPropFindPropertyBuilder(PropFindPropertyBuilder propFindPropertyBuilder) {
+		this.propFindPropertyBuilder = propFindPropertyBuilder;
+	}
+
+	public PropFindRequestFieldParser getPropFindRequestFieldParser() {
+		return propFindRequestFieldParser;
+	}
+
+	public void setPropFindRequestFieldParser(PropFindRequestFieldParser propFindRequestFieldParser) {
+		this.propFindRequestFieldParser = propFindRequestFieldParser;
+	}
+
+	
+	
 	private void initAnnotatedResourceFactory() {
 		try {
 			if (getMainResourceFactory() instanceof AnnotationResourceFactory) {
