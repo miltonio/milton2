@@ -48,7 +48,7 @@ public class MyMiltonConfigurator extends DefaultMiltonConfigurator {
         resourceFactory = (TResourceFactory) builder.getMainResourceFactory(); // get our resource factory from the builder
         userFactory = new TLdapUserFactory(resourceFactory);
         LdapTransactionManager transactionManager = new NullLdapTransactionManager();
-        ldapServer = new LdapServer(transactionManager, userFactory, builder.getWebDavProtocol());
+        ldapServer = new LdapServer(transactionManager, userFactory, builder.getWebDavProtocol(), builder.getPropFindPropertyBuilder());
         ldapServer.setPort(8369);
         ldapServer.start();
         
