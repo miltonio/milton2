@@ -94,7 +94,7 @@ public class PropertySourcePatchSetter implements PropPatchSetter {
 						try {
 							log.trace("setProperties: name: {} source: {}", name, source.getClass());
 							source.setProperty(name, val, r);
-							knownProps.put(name, new ValueAndType(null, meta.getValueType()));
+							knownProps.put(name, new ValueAndType(val, meta.getValueType()));
 							break;
 						} catch (NotAuthorizedException e) {
 							log.warn("setProperties: NotAuthorised to write property: {}", name, e);
