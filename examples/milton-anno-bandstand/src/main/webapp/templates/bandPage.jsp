@@ -75,7 +75,7 @@
 
                         <h2>Images</h2>
                         <ul class="thumbnails">
-                            <c:forEach items="${model.page.childrenMap['images'].children}" var="image">
+                            <c:forEach items="${model.page.childrenMap.images.childrenOfType.image}" var="image">
                                 <li class="span4">
                                     <a href="${image.href}" class="thumbnail">
                                         <img src="${image.href}" alt="">

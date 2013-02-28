@@ -32,7 +32,7 @@ public class CommonPropertyAnnotationHandler<T> extends AbstractAnnotationHandle
 		propertyNames = new String[0];
 	}
 
-	public CommonPropertyAnnotationHandler(Class annoClass, final AnnotationResourceFactory outer, String ... propNames) {
+	public CommonPropertyAnnotationHandler(Class annoClass, final AnnotationResourceFactory outer, String... propNames) {
 		super(outer, annoClass);
 		propertyNames = propNames;
 	}
@@ -40,23 +40,24 @@ public class CommonPropertyAnnotationHandler<T> extends AbstractAnnotationHandle
 	public T get(Object source) {
 		try {
 			ControllerMethod cm = getBestMethod(source.getClass(), null, null, Object.class);
-			if (cm == null) {
+			if (cm != null) {
+				T val = (T) invoke(cm, source);
+				return val;
+			} else {
 				// look for an annotation on the source itself
 				java.lang.reflect.Method m = outer.findMethodForAnno(source.getClass(), annoClass);
 				if (m != null) {
 					T val = (T) m.invoke(source, (Object) null);
 					return val;
 				}
-				for( String propName : propertyNames) {
+				for (String propName : propertyNames) {
 					Object s = attemptToReadProperty(source, propName);
 					if (s != null) {
-						return (T)s;
-					}					
+						return (T) s;
+					}
 				}
-				return defaultValue;
+				return deriveDefaultValue(source);
 			}
-			T val = (T) invoke(cm, source);
-			return val;
 		} catch (Exception e) {
 			throw new RuntimeException("Exception executing " + annoClass + " - " + source.getClass(), e);
 		}
@@ -70,12 +71,12 @@ public class CommonPropertyAnnotationHandler<T> extends AbstractAnnotationHandle
 				java.lang.reflect.Method m = outer.findMethodForAnno(source.getClass(), annoClass);
 				if (m != null) {
 					m.invoke(source, (Object) null);
-					return ;
+					return;
 				}
 				// look for a bean property
-				for( String propName : propertyNames) {
-					if( attemptToSetProperty(source, propName) ) {
-						return ;
+				for (String propName : propertyNames) {
+					if (attemptToSetProperty(source, propName)) {
+						return;
 					}
 				}
 			} else {
@@ -84,9 +85,9 @@ public class CommonPropertyAnnotationHandler<T> extends AbstractAnnotationHandle
 		} catch (Exception e) {
 			throw new RuntimeException("Exception executing " + annoClass + " - " + source.getClass(), e);
 		}
-		
+
 	}
-	
+
 	public T getDefaultValue() {
 		return defaultValue;
 	}
@@ -94,7 +95,7 @@ public class CommonPropertyAnnotationHandler<T> extends AbstractAnnotationHandle
 	public void setDefaultValue(T defaultValue) {
 		this.defaultValue = defaultValue;
 	}
-	
+
 	protected T deriveDefaultValue(Object source) {
 		return getDefaultValue();
 	}

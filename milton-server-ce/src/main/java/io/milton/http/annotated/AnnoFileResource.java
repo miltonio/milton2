@@ -35,4 +35,16 @@ public class AnnoFileResource extends AnnoResource implements GetableResource, R
 	public void replaceContent(InputStream in, Long length) throws BadRequestException, ConflictException, NotAuthorizedException {
 		annoFactory.putChildAnnotationHandler.replace(this, in, length);
 	}
+
+	@Override
+	public boolean is(String type) {
+		boolean b = super.is(type);
+		if( b ) {
+			return true;
+		}
+		String s = getContentType(null);
+		return s != null && s.contains(type);
+	}
+	
+	
 }

@@ -285,7 +285,11 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 		if (accepts != null && accepts.contains("application/json")) {
 			return "application/json";
 		}
-		return annoFactory.contentTypeAnnotationHandler.get(source);
+		return annoFactory.contentTypeAnnotationHandler.get(accepts, this);
+	}
+	
+	public String getContentType() {
+		return annoFactory.contentTypeAnnotationHandler.get(null, this);
 	}
 	
 	@Override

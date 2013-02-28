@@ -219,7 +219,9 @@ public class ResourceList extends ArrayList<CommonResource> {
 		Iterator<CommonResource> it = newList.iterator();
 		while (it.hasNext()) {
 			CommonResource ct = it.next();
+			System.out.println("is: " + ct.getName() + " of type " + s);
 			if (!ct.is(s)) {
+				System.out.println("no!");
 				it.remove();
 			}
 		}
@@ -241,6 +243,7 @@ public class ResourceList extends ArrayList<CommonResource> {
 	}
 
 	public Map<String, ResourceList> getOfType() {
+		System.out.println("get of type");
 		return new ChildrenOfTypeMap(this);
 	}
 
