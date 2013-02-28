@@ -3,6 +3,7 @@ package com.bandstand.domain;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.orm.hibernate3.SessionFactoryUtils;
+import org.springframework.orm.hibernate3.support.OpenSessionInViewFilter;
 
 /**
  *
@@ -13,14 +14,14 @@ public class SessionManager {
     private static ThreadLocal<Session> tlSession = new ThreadLocal<Session>(); 
     
     public static Session session() {
-        return tlSession.get();
+        return SessionFactoryUtils.getSession(sessionFactory, false);
     }    
     
-    private final SessionFactory sessionFactory;
+    private static SessionFactory sessionFactory;
     
     
-    public SessionManager(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
+    public SessionManager(SessionFactory sf) {
+        sessionFactory = sf;
     }
 
     public Session open() {

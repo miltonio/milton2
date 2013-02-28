@@ -45,6 +45,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * Loads the spring context from classpath at applicationContext.xml
@@ -85,7 +87,17 @@ public class SpringMiltonFilter implements javax.servlet.Filter {
 
 	@Override
 	public void init(FilterConfig fc) throws ServletException {
-		StaticApplicationContext parent = new StaticApplicationContext();
+		WebApplicationContext rootContext =
+				WebApplicationContextUtils.getWebApplicationContext(fc.getServletContext());
+
+		StaticApplicationContext parent;
+		if (rootContext != null) {
+			System.out.println("Got a root context, and using it!");
+			parent = new StaticApplicationContext(rootContext);
+		} else {
+			System.out.println("no root context");
+			parent = new StaticApplicationContext();
+		}
 		FilterConfigWrapper configWrapper = new FilterConfigWrapper(fc);
 		parent.getBeanFactory().registerSingleton("config", configWrapper);
 		parent.getBeanFactory().registerSingleton("servletContext", fc.getServletContext());
@@ -100,9 +112,17 @@ public class SpringMiltonFilter implements javax.servlet.Filter {
 		String sExcludePaths = fc.getInitParameter("milton.exclude.paths");
 		log.info("init: exclude paths: " + sExcludePaths);
 		excludeMiltonPaths = sExcludePaths.split(",");
+
+		String sFiles = fc.getInitParameter("contextConfigLocation");
+		String[] contextFiles;
+		if (sFiles != null && sFiles.trim().length() > 0) {
+			contextFiles = sFiles.split(" ");
+		} else {
+			contextFiles = new String[]{"applicationContext.xml"};
+		}
+
+		context = new ClassPathXmlApplicationContext(contextFiles, parent);
 		
-		
-		context = new ClassPathXmlApplicationContext(new String[]{"applicationContext.xml"}, parent);
 		Object milton = context.getBean("milton.http.manager");
 		if (milton instanceof HttpManager) {
 			this.httpManager = (HttpManager) milton;
@@ -114,7 +134,7 @@ public class SpringMiltonFilter implements javax.servlet.Filter {
 				if (arf.getViewResolver() == null) {
 					ViewResolver viewResolver = new JspViewResolver(servletContext);
 					arf.setViewResolver(viewResolver);
-				}				
+				}
 			}
 			this.httpManager = builder.buildHttpManager();
 		}
@@ -179,5 +199,5 @@ public class SpringMiltonFilter implements javax.servlet.Filter {
 			resp.getOutputStream().flush();
 			resp.flushBuffer();
 		}
-	}	
+	}
 }

@@ -3,32 +3,6 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
-		<property name="ignoreResourceNotFound" value="true"/>
-		<property name="locations" >
-			<list>
-                <!-- Default properties, should run out of the box -->
-				<value>classpath:default.properties</value>
-				
-                <!-- This refers to an optional file which should be outside the WAR (ie in tomcat/shared/classes -->
-                <!-- It contains environment specific configuration, such as database connection information -->
-				<value>classpath:env.properties</value>				
-			</list>
-		</property>
-	</bean>
-
-    <import resource="classpath:database.xml"/>
-        
-    <!-- Another environment specific file. Default empty file is included, but create your own outside the WAR to 
-    environment specific bean declarations
-    -->
-    <import resource="classpath:env.xml"/>
-
-    <bean id="open.session.in.view.filter" class="com.bandstand.web.MiltonOpenSessionInViewFilter">
-        <constructor-arg ref="session.manager"/>
-    </bean>
-
 
     <bean id="resource.factory" class="io.milton.http.annotated.AnnotationResourceFactory">
         <property name="controllers">
@@ -54,11 +28,6 @@
     <bean id="milton.http.manager" class="io.milton.ent.config.HttpManagerBuilderEnt"> <!-- Note enterprise version. Only available for AGPL + Commercial users of milton -->
         <property name="mainResourceFactory" ref="resource.factory" /> 
         <property name="enableCompression" value="false"/>
-        <property name="buffering" value="never"/>
-        <property name="filters">
-            <list>
-                <ref local="open.session.in.view.filter" />
-            </list>
-        </property>        
+        <property name="buffering" value="never"/>      
     </bean>    
 </beans>
