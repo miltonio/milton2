@@ -84,9 +84,7 @@ public class ResourceHandlerHelper {
 		String url = urlAdapter.getUrl(request);
 		//log.debug( "find resource: path: " + url + " host: " + host );
 		Resource r = manager.getResourceFactory().getResource(host, url);
-		
-		response.setCookie("test", "val1");
-		
+			
 		if (r == null) {
 			// If the request is anonymous we might not want to send a 404 for a couple of reasons
 			// 1. MS Office 2010 requires a challenge prior to PUT to create a new file
