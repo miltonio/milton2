@@ -248,10 +248,15 @@ public class HttpManagerBuilder {
 					if (enableCookieAuth) {
 						if (cookieDelegateHandlers == null) {
 							// Don't add digest!
+							// why not???
 							cookieDelegateHandlers = new ArrayList<AuthenticationHandler>();
 							if (basicHandler != null) {
 								cookieDelegateHandlers.add(basicHandler);
 								authenticationHandlers.remove(basicHandler);
+							}
+							if( digestHandler != null ) {
+								cookieDelegateHandlers.add(digestHandler);
+								authenticationHandlers.remove(digestHandler);
 							}
 							if (formAuthenticationHandler != null) {
 								cookieDelegateHandlers.add(formAuthenticationHandler);
@@ -327,7 +332,7 @@ public class HttpManagerBuilder {
 		}
 		handlerHelper.setEnableExpectContinue(enableExpectContinue);
 		if (resourceHandlerHelper == null) {
-			resourceHandlerHelper = new ResourceHandlerHelper(handlerHelper, urlAdapter, webdavResponseHandler);
+			resourceHandlerHelper = new ResourceHandlerHelper(handlerHelper, urlAdapter, webdavResponseHandler, authenticationService);
 			showLog("resourceHandlerHelper", resourceHandlerHelper);
 		}
 		buildProtocolHandlers(webdavResponseHandler, resourceTypeHelper);
@@ -442,13 +447,6 @@ public class HttpManagerBuilder {
 					propertySources.add(ps);
 				}
 			}
-			if (propPatchSetter == null) {
-				propPatchSetter = new PropertySourcePatchSetter(propertySources);
-			}
-			if (propFindRequestFieldParser == null) {
-				DefaultPropFindRequestFieldParser defaultFieldParse = new DefaultPropFindRequestFieldParser();
-				this.propFindRequestFieldParser = new MsPropFindRequestFieldParser(defaultFieldParse); // use MS decorator for windows support				
-			}
 			initWebdavProtocol();
 			if (webDavProtocol != null) {
 				protocols.add(webDavProtocol);
@@ -461,6 +459,13 @@ public class HttpManagerBuilder {
 	}
 
 	protected void initWebdavProtocol() {
+		if (propPatchSetter == null) {
+			propPatchSetter = new PropertySourcePatchSetter(propertySources);
+		}
+		if (propFindRequestFieldParser == null) {
+			DefaultPropFindRequestFieldParser defaultFieldParse = new DefaultPropFindRequestFieldParser();
+			this.propFindRequestFieldParser = new MsPropFindRequestFieldParser(defaultFieldParse); // use MS decorator for windows support				
+		}
 		if (webDavProtocol == null && webdavEnabled) {
 			webDavProtocol = new WebDavProtocol(handlerHelper, resourceTypeHelper, webdavResponseHandler, propertySources, quotaDataAccessor, propPatchSetter, initPropertyAuthoriser(), eTagGenerator, urlAdapter, resourceHandlerHelper, userAgentHelper(), propFindRequestFieldParser, propFindPropertyBuilder());
 		}
@@ -1159,8 +1164,6 @@ public class HttpManagerBuilder {
 		this.propFindRequestFieldParser = propFindRequestFieldParser;
 	}
 
-	
-	
 	private void initAnnotatedResourceFactory() {
 		try {
 			if (getMainResourceFactory() instanceof AnnotationResourceFactory) {

@@ -9,6 +9,7 @@ package io.milton.sso;
 import io.milton.http.AuthenticationHandler;
 import io.milton.http.Request;
 import io.milton.resource.Resource;
+import java.util.List;
 
 /**
  * This is a post resource-resolution authentication handler. 
@@ -33,13 +34,21 @@ public class SsoAuthenticationHandler implements AuthenticationHandler {
 		return request.getAttributes().get("_sso_user");
 	}
 
-	@Override
-	public String getChallenge(Resource resource, Request request) {
-		return null;
-	}
+    @Override
+    public void appendChallenges(Resource resource, Request request, List<String> challenges) {
+    }
+    
+    
 
 	@Override
 	public boolean isCompatible(Resource resource, Request request) {
 		return true;
 	}	
+
+    @Override
+    public boolean credentialsPresent(Request request) {
+        return request.getParams() != null && request.getAttributes().containsKey("_sso_user");
+    }
+    
+    
 }

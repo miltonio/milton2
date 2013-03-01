@@ -24,6 +24,7 @@ import io.milton.http.Auth.Scheme;
 import io.milton.http.AuthenticationHandler;
 import io.milton.http.Request;
 import io.milton.resource.Resource;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +36,13 @@ public class BasicAuthHandler implements AuthenticationHandler {
 
     private static final Logger log = LoggerFactory.getLogger( BasicAuthHandler.class );
 
+	@Override
+	public boolean credentialsPresent(Request request) {
+		return request.getAuthorization() != null;
+	}
+
+	
+	
 	@Override
     public boolean supports( Resource r, Request request ) {
         Auth auth = request.getAuthorization();
@@ -55,11 +63,11 @@ public class BasicAuthHandler implements AuthenticationHandler {
     }
 
 	@Override
-    public String getChallenge( Resource resource, Request request ) {
+    public void appendChallenges( Resource resource, Request request, List<String> challenges ) {
 		if( resource == null ) {
 			throw new RuntimeException("Can't generate challenge because resource is null, so can't get realm");
 		}
-        return "Basic realm=\"" + resource.getRealm() + "\"";
+        challenges.add("Basic realm=\"" + resource.getRealm() + "\"");
     }
 
 	@Override

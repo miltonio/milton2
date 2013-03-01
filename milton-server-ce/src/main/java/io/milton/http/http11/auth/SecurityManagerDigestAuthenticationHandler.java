@@ -24,6 +24,7 @@ import io.milton.http.AuthenticationHandler;
 import io.milton.http.Request;
 import io.milton.resource.Resource;
 import io.milton.http.SecurityManager;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -58,6 +59,11 @@ public class SecurityManagerDigestAuthenticationHandler implements Authenticatio
     }
 
 	@Override
+	public boolean credentialsPresent(Request request) {
+		return request.getAuthorization() != null;
+	}	
+	
+	@Override
     public boolean supports( Resource r, Request request ) {
         Auth auth = request.getAuthorization();
         if( auth == null ) {
@@ -81,9 +87,9 @@ public class SecurityManagerDigestAuthenticationHandler implements Authenticatio
     }
 
 	@Override
-    public String getChallenge( Resource resource, Request request ) {
+    public void appendChallenges( Resource resource, Request request, List<String> challenges ) {
         String nonceValue = nonceProvider.createNonce( resource, request );
-        return digestHelper.getChallenge(nonceValue, request.getAuthorization(), securityManager.getRealm(request.getHostHeader()));
+        challenges.add( digestHelper.getChallenge(nonceValue, request.getAuthorization(), securityManager.getRealm(request.getHostHeader())) );
     }
 
 	@Override
