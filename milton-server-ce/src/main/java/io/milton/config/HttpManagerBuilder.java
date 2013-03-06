@@ -445,10 +445,7 @@ public class HttpManagerBuilder {
 			if (propPatchSetter == null) {
 				propPatchSetter = new PropertySourcePatchSetter(propertySources);
 			}
-			if (propFindRequestFieldParser == null) {
-				DefaultPropFindRequestFieldParser defaultFieldParse = new DefaultPropFindRequestFieldParser();
-				this.propFindRequestFieldParser = new MsPropFindRequestFieldParser(defaultFieldParse); // use MS decorator for windows support				
-			}
+
 			initWebdavProtocol();
 			if (webDavProtocol != null) {
 				protocols.add(webDavProtocol);
@@ -462,8 +459,16 @@ public class HttpManagerBuilder {
 
 	protected void initWebdavProtocol() {
 		if (webDavProtocol == null && webdavEnabled) {
-			webDavProtocol = new WebDavProtocol(handlerHelper, resourceTypeHelper, webdavResponseHandler, propertySources, quotaDataAccessor, propPatchSetter, initPropertyAuthoriser(), eTagGenerator, urlAdapter, resourceHandlerHelper, userAgentHelper(), propFindRequestFieldParser, propFindPropertyBuilder());
+			webDavProtocol = new WebDavProtocol(handlerHelper, resourceTypeHelper, webdavResponseHandler, propertySources, quotaDataAccessor, propPatchSetter, initPropertyAuthoriser(), eTagGenerator, urlAdapter, resourceHandlerHelper, userAgentHelper(), propFindRequestFieldParser(), propFindPropertyBuilder());
 		}
+	}
+
+	protected PropFindRequestFieldParser propFindRequestFieldParser() {
+		if (propFindRequestFieldParser == null) {
+			DefaultPropFindRequestFieldParser defaultFieldParse = new DefaultPropFindRequestFieldParser();
+			this.propFindRequestFieldParser = new MsPropFindRequestFieldParser(defaultFieldParse); // use MS decorator for windows support				
+		}
+		return propFindRequestFieldParser;
 	}
 
 	protected void buildOuterResourceFactory() {
@@ -1159,8 +1164,6 @@ public class HttpManagerBuilder {
 		this.propFindRequestFieldParser = propFindRequestFieldParser;
 	}
 
-	
-	
 	private void initAnnotatedResourceFactory() {
 		try {
 			if (getMainResourceFactory() instanceof AnnotationResourceFactory) {

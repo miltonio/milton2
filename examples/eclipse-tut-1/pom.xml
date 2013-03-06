@@ -50,12 +50,6 @@
             <groupId>io.milton</groupId>
             <artifactId>milton-server-ent</artifactId>
             <version>${milton.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>2.4</version>
-            <scope>provided</scope>
-        </dependency>        
+        </dependency>     
     </dependencies>
 </project>

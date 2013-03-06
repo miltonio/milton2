@@ -92,12 +92,7 @@
 			<classifier>jdk15</classifier>
 			<optional>true</optional>
 		</dependency>		
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>2.4</version>
-			<scope>provided</scope>
-		</dependency>
+
 		<dependency>
 			<groupId>commons-fileupload</groupId>
 			<artifactId>commons-fileupload</artifactId>
@@ -165,15 +160,7 @@
 			<version>2.1.1</version>
 		</dependency>
 
-		<!-- This is not a transitive dependency, only needed to run a test in this module -->
-		<dependency>
-			<groupId>org.restlet.jse</groupId>
-			<artifactId>org.restlet.ext.jetty</artifactId>
-			<version>2.1.1</version>
-			<optional>true</optional>
-			<scope>test</scope>
-		</dependency>
-
+		
 		<dependency>
 			<groupId>org.apache.ftpserver</groupId>
 			<artifactId>ftplet-api</artifactId>
@@ -191,7 +178,7 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.5.8</version>
+			<version>1.6.1</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

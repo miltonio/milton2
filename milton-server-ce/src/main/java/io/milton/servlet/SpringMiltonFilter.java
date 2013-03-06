@@ -87,15 +87,15 @@ public class SpringMiltonFilter implements javax.servlet.Filter {
 
 	@Override
 	public void init(FilterConfig fc) throws ServletException {
-		WebApplicationContext rootContext =
-				WebApplicationContextUtils.getWebApplicationContext(fc.getServletContext());
+		log.info("init");
+		WebApplicationContext rootContext = WebApplicationContextUtils.getWebApplicationContext(fc.getServletContext());
 
 		StaticApplicationContext parent;
 		if (rootContext != null) {
-			System.out.println("Got a root context, and using it!");
+			log.info("Found a root spring context, and using it");
 			parent = new StaticApplicationContext(rootContext);
 		} else {
-			System.out.println("no root context");
+			log.info("No root spring context");
 			parent = new StaticApplicationContext();
 		}
 		FilterConfigWrapper configWrapper = new FilterConfigWrapper(fc);
@@ -108,7 +108,6 @@ public class SpringMiltonFilter implements javax.servlet.Filter {
 		
 		this.filterConfig = fc;
 		servletContext = fc.getServletContext();
-		System.out.println("servletContext: " + servletContext.getClass());
 		String sExcludePaths = fc.getInitParameter("milton.exclude.paths");
 		log.info("init: exclude paths: " + sExcludePaths);
 		excludeMiltonPaths = sExcludePaths.split(",");
@@ -155,7 +154,7 @@ public class SpringMiltonFilter implements javax.servlet.Filter {
 			log.info("starting mailserver");
 			mailServer.start();
 		}
-
+		log.info("Finished init");
 	}
 
 	@Override

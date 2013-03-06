@@ -14,10 +14,10 @@
  */
 package io.milton.servlet;
 
-import io.milton.http.Response;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Collection;
 import java.util.Locale;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
@@ -71,12 +71,10 @@ public class OutputStreamWrappingHttpServletResponse extends ServletOutputStream
 
 	@Override
 	public void sendError(int sc, String msg) throws IOException {
-		
 	}
 
 	@Override
 	public void sendError(int sc) throws IOException {
-		
 	}
 
 	@Override
@@ -86,42 +84,34 @@ public class OutputStreamWrappingHttpServletResponse extends ServletOutputStream
 
 	@Override
 	public void setDateHeader(String name, long date) {
-		
 	}
 
 	@Override
 	public void addDateHeader(String name, long date) {
-		
 	}
 
 	@Override
 	public void setHeader(String name, String value) {
-		
 	}
 
 	@Override
 	public void addHeader(String name, String value) {
-		
 	}
 
 	@Override
 	public void setIntHeader(String name, int value) {
-		
 	}
 
 	@Override
 	public void addIntHeader(String name, int value) {
-		
 	}
 
 	@Override
 	public void setStatus(int sc) {
-		
 	}
 
 	@Override
 	public void setStatus(int sc, String sm) {
-		
 	}
 
 	@Override
@@ -141,12 +131,10 @@ public class OutputStreamWrappingHttpServletResponse extends ServletOutputStream
 
 	@Override
 	public void setContentLength(int len) {
-		
 	}
 
 	@Override
 	public void setContentType(String type) {
-		
 	}
 
 	@Override
@@ -168,7 +156,6 @@ public class OutputStreamWrappingHttpServletResponse extends ServletOutputStream
 
 	@Override
 	public void resetBuffer() {
-		
 	}
 
 	@Override
@@ -178,7 +165,6 @@ public class OutputStreamWrappingHttpServletResponse extends ServletOutputStream
 
 	@Override
 	public void reset() {
-		
 	}
 
 	@Override
@@ -213,6 +199,25 @@ public class OutputStreamWrappingHttpServletResponse extends ServletOutputStream
 
 	@Override
 	public void setCharacterEncoding(String charset) {
-		
+	}
+
+	@Override
+	public Collection<String> getHeaderNames() {
+		return response.getHeaderNames();
+	}
+
+	@Override
+	public Collection<String> getHeaders(String name) {
+		return response.getHeaders(name);
+	}
+
+	@Override
+	public String getHeader(String name) {
+		return response.getHeader(name);
+	}
+
+	@Override
+	public int getStatus() {
+		return response.getStatus();
 	}
 }

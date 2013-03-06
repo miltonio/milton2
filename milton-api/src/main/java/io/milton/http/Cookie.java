@@ -181,4 +181,7 @@ public interface Cookie {
     */
    void setDomain(String domain);
 
+   boolean isHttpOnly();
+   
+   void setHttpOnly(boolean  b);
 }

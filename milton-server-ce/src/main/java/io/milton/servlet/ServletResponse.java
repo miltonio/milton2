@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.milton.servlet;
 
 import io.milton.http.AbstractResponse;
@@ -35,91 +34,91 @@ import org.slf4j.LoggerFactory;
 
 public class ServletResponse extends AbstractResponse {
 
-    private static final Logger log = LoggerFactory.getLogger(ServletResponse.class);
-    private static ThreadLocal<HttpServletResponse> tlResponse = new ThreadLocal<HttpServletResponse>();
+	private static final Logger log = LoggerFactory.getLogger(ServletResponse.class);
+	private static ThreadLocal<HttpServletResponse> tlResponse = new ThreadLocal<HttpServletResponse>();
 
-    /**
-     * We make this available via a threadlocal so it can be accessed from parts
-     * of the application which don't have a reference to the servletresponse
-     */
-    public static HttpServletResponse getResponse() {
-        return tlResponse.get();
-    }
-    private final HttpServletResponse r;
+	/**
+	 * We make this available via a threadlocal so it can be accessed from parts
+	 * of the application which don't have a reference to the servletresponse
+	 */
+	public static HttpServletResponse getResponse() {
+		return tlResponse.get();
+	}
+	private final HttpServletResponse r;
 //    private ByteArrayOutputStream out = new ByteArrayOutputStream();
-    private Response.Status status;
-    private Map<String, String> headers = new HashMap<String, String>();
+	private Response.Status status;
+	private Map<String, String> headers = new HashMap<String, String>();
 
-    public ServletResponse(HttpServletResponse r) {
-        this.r = r;
-        tlResponse.set(r);
-    }
+	public ServletResponse(HttpServletResponse r) {
+		this.r = r;
+		tlResponse.set(r);
+	}
 
-    /**
-     * Override to use servlets own date setting
-     *
-     * @param name
-     * @param date
-     */
-    @Override
-    protected void setAnyDateHeader(Header name, Date date) {
-		if( date != null ) {
+	/**
+	 * Override to use servlets own date setting
+	 *
+	 * @param name
+	 * @param date
+	 */
+	@Override
+	protected void setAnyDateHeader(Header name, Date date) {
+		if (date != null) {
 			r.setDateHeader(name.code, date.getTime());
 		} else {
 			r.setHeader(name.code, null);
 		}
-    }
+	}
 
-    @Override
-    public String getNonStandardHeader(String code) {
-        return headers.get(code);
-    }
+	@Override
+	public String getNonStandardHeader(String code) {
+		return headers.get(code);
+	}
 
-    @Override
-    public void setNonStandardHeader(String name, String value) {
-        r.addHeader(name, value);
-        headers.put(name, value);
-    }
+	@Override
+	public void setNonStandardHeader(String name, String value) {
+		r.addHeader(name, value);
+		headers.put(name, value);
+	}
 
-    @Override
-    public void setStatus(Response.Status status) {
-        if (status.text == null) {
-            r.setStatus(status.code);
-        } else {
-            r.setStatus(status.code, status.text);
-        }
-        this.status = status;
-    }
+	@Override
+	public void setStatus(Response.Status status) {
+		if (status.text == null) {
+			r.setStatus(status.code);
+		} else {
+			r.setStatus(status.code, status.text);
+		}
+		this.status = status;
+	}
 
-    @Override
-    public Response.Status getStatus() {
-        return status;
-    }
+	@Override
+	public Response.Status getStatus() {
+		return status;
+	}
 
-    @Override
-    public OutputStream getOutputStream() {
-        try {
+	@Override
+	public OutputStream getOutputStream() {
+		try {
 //        return out;
-            return r.getOutputStream();
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
+			return r.getOutputStream();
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+	}
 
-    @Override
-    public void close() {
-        try {
-            r.flushBuffer();
-        } catch (Throwable ex) {
-            log.trace("exception closing and flushing", ex);
-        }
-    }
+	@Override
+	public void close() {
+		try {
+			r.flushBuffer();
+		} catch (Throwable ex) {
+			log.trace("exception closing and flushing", ex);
+		}
+	}
 
 	@Override
 	public void sendError(Status status, String message) {
 		log.warn("sendError: " + status);
 		try {
-			r.sendError(status.code, message);			
+			r.sendError(status.code, message);
 		} catch (IOException ex) {
 			log.error("Failed to send error", ex);
 		}
@@ -131,55 +130,60 @@ public class ServletResponse extends AbstractResponse {
 		}
 	}
 
-
-	
-	
-
-    @Override
-    public void sendRedirect(String url) {
-        String u = r.encodeRedirectURL(url);
-        try {
-            r.sendRedirect(u);
-        } catch (IOException ex) {
-            log.warn("exception sending redirect", ex);
-        }
-    }
+	@Override
+	public void sendRedirect(String url) {
+		String u = r.encodeRedirectURL(url);
+		try {
+			r.sendRedirect(u);
+		} catch (IOException ex) {
+			log.warn("exception sending redirect", ex);
+		}
+	}
 
 	@Override
-    public Map<String, String> getHeaders() {
-        return Collections.unmodifiableMap(headers);
-    }
+	public Map<String, String> getHeaders() {
+		return Collections.unmodifiableMap(headers);
+	}
 
 	@Override
-    public void setAuthenticateHeader(List<String> challenges) {
-        for (String ch : challenges) {
-            r.addHeader(Response.Header.WWW_AUTHENTICATE.code, ch);
-        }
-    }
+	public void setAuthenticateHeader(List<String> challenges) {
+		for (String ch : challenges) {
+			r.addHeader(Response.Header.WWW_AUTHENTICATE.code, ch);
+		}
+	}
 
 	@Override
-    public Cookie setCookie(Cookie cookie) {
-        if (cookie instanceof ServletCookie) {
-            ServletCookie sc = (ServletCookie) cookie;
-            r.addCookie(sc.getWrappedCookie());
-            return cookie;
-        } else {
-            javax.servlet.http.Cookie c = new javax.servlet.http.Cookie(cookie.getName(), cookie.getValue());
-            c.setDomain(cookie.getDomain());
-            c.setMaxAge(cookie.getExpiry());
-            c.setPath(cookie.getPath());
-            c.setSecure(cookie.getSecure());
-            c.setVersion(cookie.getVersion());
+	public Cookie setCookie(Cookie cookie) {
+		if (cookie instanceof ServletCookie) {
+			ServletCookie sc = (ServletCookie) cookie;
+			r.addCookie(sc.getWrappedCookie());
+			return cookie;
+		} else {
+			javax.servlet.http.Cookie c = new javax.servlet.http.Cookie(cookie.getName(), cookie.getValue());
+			c.setPath(cookie.getPath());
+			c.setValue(cookie.getValue());
+			c.setHttpOnly(cookie.isHttpOnly());
+			if (cookie.getDomain() != null) {
+				c.setDomain(cookie.getDomain());
+			}
+			if (cookie.getExpiry() != 0) {
+				c.setMaxAge(cookie.getExpiry());
+			}			
+			c.setSecure(cookie.getSecure());
+			if (cookie.getVersion() != 0) {
+				c.setVersion(cookie.getVersion());
+			}
 
-            r.addCookie(c);
-            return new ServletCookie(c);
-        }
-    }
+			r.addCookie(c);
+			return new ServletCookie(c);
+		}
+	}
 
-    public Cookie setCookie(String name, String value) {
-        javax.servlet.http.Cookie c = new javax.servlet.http.Cookie(name, value);
-        c.setPath("/");
-        r.addCookie(c);
-        return new ServletCookie(c);
-    }
+	@Override
+	public Cookie setCookie(String name, String value) {
+		javax.servlet.http.Cookie c = new javax.servlet.http.Cookie(name, value);
+		c.setPath("/");
+		r.addCookie(c);
+		return new ServletCookie(c);
+	}
 }

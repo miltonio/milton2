@@ -58,56 +58,79 @@ public class CookieAdapter implements Cookie {
         return target;
     }
 
+	@Override
     public int getVersion() {
         return target.getVersion();
     }
 
+	@Override
     public void setVersion(int version) {
         target.setVersion(version);
     }
 
+	@Override
     public String getName() {
         return target.getName();
     }
 
+	@Override
     public String getValue() {
         return target.getValue();
     }
 
+	@Override
     public void setValue(String value) {
         target.setValue(value);
     }
 
+	@Override
     public boolean getSecure() {
         return target.isSecure();
     }
 
+	@Override
     public void setSecure(boolean secure) {
         target.setSecure(secure);
     }
 
+	@Override
     public int getExpiry() {
         return target.getMaxAge();
     }
 
+	@Override
     public void setExpiry(int expiry) {
         target.setMaxAge(expiry);
     }
 
+	@Override
     public String getPath() {
         return target.getPath();
     }
 
+	@Override
     public void setPath(String path) {
         target.setPath(path);
     }
 
+	@Override
     public String getDomain() {
         return target.getDomain();
     }
 
+	@Override
     public void setDomain(String domain) {
         target.setDomain(domain);
     }
+
+	@Override
+	public boolean isHttpOnly() {
+		return false;
+	}
+
+	@Override
+	public void setHttpOnly(boolean b) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
 
 }

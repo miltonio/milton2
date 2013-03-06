@@ -84,6 +84,9 @@ public class PropFindHandler implements ExistingEntityHandler, PropertyHandler {
     public PropFindHandler( ResourceHandlerHelper resourceHandlerHelper, PropFindRequestFieldParser requestFieldParser, WebDavResponseHandler responseHandler, PropFindPropertyBuilder propertyBuilder ) {
         this.resourceHandlerHelper = resourceHandlerHelper;
         this.requestFieldParser = requestFieldParser;
+		if( requestFieldParser == null ) {
+			throw new NullPointerException("requestFieldParser");
+		}
         this.responseHandler = responseHandler;
         this.propertyBuilder = propertyBuilder;
     }

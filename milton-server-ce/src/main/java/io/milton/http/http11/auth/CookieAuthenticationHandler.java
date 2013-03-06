@@ -25,12 +25,14 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 
 	private static final Logger log = LoggerFactory.getLogger(CookieAuthenticationHandler.class);
 	private static final String HANDLER_ATT_NAME = "_delegatedAuthenticationHandler";
+	public static final int SECONDS_PER_YEAR = 60 * 60 * 24 * 365;
 	private String requestParamLogout = "miltonLogout";
 	private String cookieUserUrlValue = "miltonUserUrl"; // TODO: make this a HTTP Only cookie, to avoid XSS attacks
 	private String cookieUserUrlHash = "miltonUserUrlHash";
 	private final List<AuthenticationHandler> handlers;
 	private final ResourceFactory principalResourceFactory;
 	private String userUrlAttName = "userUrl";
+	private boolean useLongLivedCookies = true;
 
 	public CookieAuthenticationHandler(List<AuthenticationHandler> handlers, ResourceFactory principalResourceFactory) {
 		this.handlers = handlers;
@@ -65,12 +67,14 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 	}
 
 	@Override
-	public Object authenticate(Resource resource, Request request) {
-		log.trace("authenticate");
+	public Object authenticate(Resource resource, Request request) {		
 		// If there is a delegating handler which supports the request then we MUST use it
 		// This would have been selected in the supports method
 		AuthenticationHandler delegateHandler = (AuthenticationHandler) request.getAttributes().get(HANDLER_ATT_NAME);
 		if (delegateHandler != null) {
+			if( log.isTraceEnabled()) {
+			log.trace("authenticate: use delegateHandler: " + delegateHandler);
+			}
 			// Attempt to authenticate against wrapped handler
 			// If successful generate a signed cookie and put into a request attribute
 			Object tag = delegateHandler.authenticate(resource, request);
@@ -91,13 +95,18 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 			// No delegating handler means that we expect either to get a previous login token
 			// via a cookie, or this is an anonymous request
 			if (isLogout(request)) {
+				log.trace("authenticate: is logout");
 				return null;
 			} else {
 				String userUrl = getUserUrl(request);
 				if (userUrl == null) {
+					log.trace("authenticate: no userUrl in request or cookie, nothing to di");
 					// no token in request, so is anonymous
 					return null;
 				} else {
+					if( log.isTraceEnabled()) {
+						log.trace("authenticate: userUrl=" + userUrl);
+					}
 					// we found a userUrl
 					String host = request.getHostHeader();
 					Resource r;
@@ -116,11 +125,15 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 					} else {
 						// Logged in ok with details. Check if details came from request parameter, in
 						// which case we need to set cookies
-						if (r instanceof DiscretePrincipal) {
-							DiscretePrincipal dp = (DiscretePrincipal) r;
-							setLoginCookies(dp, request);
+						if (request.getParams() != null && request.getParams().containsKey(cookieUserUrlValue)) {
+							if (r instanceof DiscretePrincipal) {
+								DiscretePrincipal dp = (DiscretePrincipal) r;
+								setLoginCookies(dp, request);
+							} else {
+								log.warn("Found user from request, but user object is not expected type. Should be " + DiscretePrincipal.class + " but is " + r.getClass());
+							}
 						} else {
-							log.warn("Found user from request, but user object is not expected type. Should be " + DiscretePrincipal.class + " but is " + r.getClass());
+							log.trace("Do not set cookies, because token did not come from request variable");
 						}
 					}
 					return r;
@@ -140,6 +153,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 	 * @param request
 	 */
 	public void setLoginCookies(DiscretePrincipal user, Request request) {
+		log.trace("setLoginCookies");
 		String userUrl = user.getIdenitifer().getValue();
 		setLoginCookies(userUrl, request);
 	}
@@ -160,7 +174,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 		String signing = salt + ":" + DigestUtils.md5Hex(userUrl + ":" + salt);
 		return signing;
 	}
-	
+
 	@Override
 	public String getChallenge(Resource resource, Request request) {
 		for (AuthenticationHandler h : handlers) {
@@ -246,8 +260,23 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 	}
 
 	private void setCookieValues(Response response, String userUrl, String hash) {
-		response.setCookie(cookieUserUrlValue, userUrl);
-		response.setCookie(cookieUserUrlHash, hash);
+		log.trace("setCookieValues");
+		BeanCookie c = new BeanCookie(cookieUserUrlValue);
+		c.setValue(userUrl);
+		c.setPath("/");
+		if (useLongLivedCookies) {
+			c.setExpiry(SECONDS_PER_YEAR);
+		}
+		response.setCookie(c);
+		
+		c = new BeanCookie(cookieUserUrlHash);
+		c.setValue(hash);
+		c.setHttpOnly(true); // http only so not accessible from JS. Helps prevent XSS attacks
+		c.setPath("/");
+		if (useLongLivedCookies) {
+			c.setExpiry(SECONDS_PER_YEAR);			
+		}
+		response.setCookie(c);
 	}
 
 	private void clearCookieValue(Response response) {
@@ -287,6 +316,4 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 	public void setUserUrlAttName(String userUrlAttName) {
 		this.userUrlAttName = userUrlAttName;
 	}
-	
-	
 }
