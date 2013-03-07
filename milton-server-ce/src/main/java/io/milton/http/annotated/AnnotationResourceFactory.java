@@ -203,11 +203,26 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		Resource r = null;
 		for (String s : p.getParts()) {
 			if (col == null) {
+				if(log.isTraceEnabled()) {
+					log.trace("findFromRoot: collection is null, can't look for child: " + s);
+				}
 				return null;
 			}
 			r = col.child(s);
 			if (r == null) {
+				if(log.isTraceEnabled()) {
+					log.trace("findFromRoot: Couldnt find child: " + s + " of parent: " + col.getName() + " with type: " + col.getClass());
+				}				
 				return null;
+			} else {
+				if(log.isTraceEnabled()) {
+					if( r instanceof AnnoResource) {
+						AnnoResource ar = (AnnoResource) r;
+						log.trace("findFromRoot: found a child: " + r.getName() + " with source type: " + ar.getSource().getClass());
+					} else {
+						log.trace("findFromRoot: found a child: " + r.getName() + " of type: " + r.getClass());
+					}
+				}				
 			}
 			if (r instanceof CollectionResource) {
 				col = (CollectionResource) r;
