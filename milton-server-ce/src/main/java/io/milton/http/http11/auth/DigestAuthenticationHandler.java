@@ -24,6 +24,7 @@ import io.milton.http.AuthenticationHandler;
 import io.milton.resource.DigestResource;
 import io.milton.http.Request;
 import io.milton.resource.Resource;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,6 +44,11 @@ public class DigestAuthenticationHandler implements AuthenticationHandler {
         this.digestHelper = new DigestHelper(nonceProvider);
     }
 
+	@Override
+	public boolean credentialsPresent(Request request) {
+		return request.getAuthorization() != null;
+	}	
+	
 	@Override
     public boolean supports( Resource r, Request request ) {
         Auth auth = request.getAuthorization();
@@ -83,10 +89,10 @@ public class DigestAuthenticationHandler implements AuthenticationHandler {
     }
 
 	@Override
-    public String getChallenge( Resource resource, Request request ) {
+    public void appendChallenges( Resource resource, Request request, List<String> challenges ) {
 
         String nonceValue = nonceProvider.createNonce( resource, request );
-        return digestHelper.getChallenge(nonceValue, request.getAuthorization(), resource.getRealm());
+        challenges.add( digestHelper.getChallenge(nonceValue, request.getAuthorization(), resource.getRealm()) );
     }
 
 	@Override

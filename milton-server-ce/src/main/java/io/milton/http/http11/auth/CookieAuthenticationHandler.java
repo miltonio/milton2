@@ -40,7 +40,24 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 	}
 
 	@Override
+	public boolean credentialsPresent(Request request) {
+		String userUrl = getUserUrlFromRequest(request);
+		if( userUrl != null && userUrl.length() > 0) {
+			return true;
+		}
+		for( AuthenticationHandler h : handlers ) {
+			if( h.credentialsPresent(request)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	
+
+	@Override
 	public boolean supports(Resource r, Request request) {
+		log.info("supprts");
 		// find the authId, if any, from the request
 		String userUrl = getUserUrl(request);
 
@@ -77,6 +94,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 			}
 			// Attempt to authenticate against wrapped handler
 			// If successful generate a signed cookie and put into a request attribute
+			log.info("use handler: " + delegateHandler);
 			Object tag = delegateHandler.authenticate(resource, request);
 			if (tag != null) {
 				if (tag instanceof DiscretePrincipal) {
@@ -92,6 +110,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 				return null;
 			}
 		} else {
+			log.info("no delegating handler");
 			// No delegating handler means that we expect either to get a previous login token
 			// via a cookie, or this is an anonymous request
 			if (isLogout(request)) {
@@ -99,6 +118,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 				return null;
 			} else {
 				String userUrl = getUserUrl(request);
+				log.info("userurl: " + userUrl);
 				if (userUrl == null) {
 					log.trace("authenticate: no userUrl in request or cookie, nothing to di");
 					// no token in request, so is anonymous
@@ -112,6 +132,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 					Resource r;
 					try {
 						r = principalResourceFactory.getResource(host, userUrl);
+						log.info("found current user: " + r);
 					} catch (NotAuthorizedException ex) {
 						log.error("Couldnt check userUrl in cookie", ex);
 						r = null;
@@ -176,13 +197,12 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 	}
 
 	@Override
-	public String getChallenge(Resource resource, Request request) {
+	public void appendChallenges(Resource resource, Request request, List<String> challenges) {
 		for (AuthenticationHandler h : handlers) {
 			if (h.isCompatible(resource, request)) {
-				return h.getChallenge(resource, request);
+				h.appendChallenges(resource, request, challenges);
 			}
 		}
-		throw new UnsupportedOperationException("Not supported because no delegate handler accepted the request");
 	}
 
 	@Override

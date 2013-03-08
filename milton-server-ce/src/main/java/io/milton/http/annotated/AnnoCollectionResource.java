@@ -121,6 +121,9 @@ public class AnnoCollectionResource extends AnnoResource implements CollectionRe
 		return getChildren().getMap();
 	}
 
+	public Map<String,ResourceList> getChildrenOfType() throws NotAuthorizedException, BadRequestException {
+		return getChildren().getOfType();
+	}
 	@Override
 	public CollectionResource createCollection(String newName) throws NotAuthorizedException, ConflictException, BadRequestException {
 		Object newlyCreatedSource = annoFactory.makCollectionAnnotationHandler.execute(source, newName);

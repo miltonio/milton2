@@ -20,6 +20,7 @@
 package io.milton.http;
 
 import io.milton.resource.Resource;
+import java.util.List;
 
 /**
  * Implementations of this interface are authentication methods for use
@@ -57,13 +58,15 @@ public interface AuthenticationHandler {
     
     /**
      * Create a challenge for this authentication method. This should be completely
-     * formatted as per http://tools.ietf.org/html/rfc2617
+     * formatted as per http://tools.ietf.org/html/rfc2617 and appended to the
+	 * given list of challenges. It is allowable to append more then one challenge
+	 * if appropriate
      * 
      * @param resource
      * @param request
      * @return
      */
-    String getChallenge( Resource resource, Request request );
+    void appendChallenges( Resource resource, Request request, List<String> challenges );
 
     /**
      * Returns true if this authentication handler is compatible with the given
@@ -78,4 +81,13 @@ public interface AuthenticationHandler {
      * http challenge
      */
     boolean isCompatible( Resource resource, Request request );
+
+	/**
+	 * Determine if there are login credentials present. Should not attempt to 
+	 * validate credentials. Should only determine if something has been provided
+	 * 
+	 * @param request
+	 * @return 
+	 */
+	boolean credentialsPresent(Request request);
 }

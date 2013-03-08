@@ -52,14 +52,16 @@ public class ResourceHandlerHelper {
 	private final HandlerHelper handlerHelper;
 	private final Http11ResponseHandler responseHandler; // set after construction
 	private final UrlAdapter urlAdapter;
+	private final AuthenticationService authenticationService;
 
-	public ResourceHandlerHelper(HandlerHelper handlerHelper, UrlAdapter urlAdapter, Http11ResponseHandler responseHandler) {
+	public ResourceHandlerHelper(HandlerHelper handlerHelper, UrlAdapter urlAdapter, Http11ResponseHandler responseHandler, AuthenticationService authenticationService) {
 		if (handlerHelper == null) {
 			throw new IllegalArgumentException("handlerHelper may not be null");
 		}
 		this.responseHandler = responseHandler;
 		this.urlAdapter = urlAdapter;
 		this.handlerHelper = handlerHelper;
+		this.authenticationService = authenticationService;
 	}
 
 	public void process(HttpManager manager, Request request, Response response, ResourceHandler handler) throws NotAuthorizedException, ConflictException, BadRequestException {
@@ -84,22 +86,22 @@ public class ResourceHandlerHelper {
 		String url = urlAdapter.getUrl(request);
 		//log.debug( "find resource: path: " + url + " host: " + host );
 		Resource r = manager.getResourceFactory().getResource(host, url);
-			
+
 		if (r == null) {
 			// If the request is anonymous we might not want to send a 404 for a couple of reasons
 			// 1. MS Office 2010 requires a challenge prior to PUT to create a new file
 			// 2. Potentially unsafe, because an anonymous user could determine the existence (though not content) of certain files
 
-			if (HttpManager.request().getAuthorization() == null) {
+			if (!authenticationService.authenticateDetailsPresent(request)) {
 				// Find first existing parent, and test if it allows read access
 				Resource parent = findClosestParent(manager, host, url);
 				if (parent != null) {
 					// If its a write operation then definitely challenge, otherwise test if HEAD is permitted
-					if( request.getMethod().isWrite) {
+					if (request.getMethod().isWrite) {
 						throw new NotAuthorizedException("Authentication is required for write access", parent);
 					} else {
 						boolean allowsHead = parent.authorise(request, Method.HEAD, null);
-						if( !allowsHead ) {
+						if (!allowsHead) {
 							throw new NotAuthorizedException("Authentication is required for read access", parent);
 						}
 					}
@@ -124,7 +126,6 @@ public class ResourceHandlerHelper {
 		log.trace("processResource");
 		long t = System.currentTimeMillis();
 		try {
-
 			manager.onProcessResourceStart(request, response, resource);
 
 			if (handlerHelper.isNotCompatible(resource, request.getMethod()) || !handler.isCompatible(resource)) {
@@ -198,21 +199,21 @@ public class ResourceHandlerHelper {
 		return responseHandler;
 	}
 
-	private Resource findClosestParent(HttpManager manager, String host, String url) throws NotAuthorizedException, BadRequestException{
+	private Resource findClosestParent(HttpManager manager, String host, String url) throws NotAuthorizedException, BadRequestException {
 		Path p = Path.path(url);
 		return findClosestParent(manager, host, p);
 
 	}
-	
+
 	private Resource findClosestParent(HttpManager manager, String host, Path p) throws NotAuthorizedException, BadRequestException {
 		p = p.getParent();
-		if( p == null ) {
+		if (p == null) {
 			return null;
 		}
 		Resource parent = manager.getResourceFactory().getResource(host, p.toString());
-		if( parent != null ) {
+		if (parent != null) {
 			return parent;
 		}
-		return findClosestParent(manager, host, p);		
+		return findClosestParent(manager, host, p);
 	}
 }

@@ -135,8 +135,7 @@ public class PreAuthenticationFilter implements Filter {
         List<String> challenges = new ArrayList<String>();
 
         for( AuthenticationHandler h : authenticationHandlers ) {
-            String ch = h.getChallenge( null, request );
-            challenges.add( ch );
+            h.appendChallenges(null, request, challenges);            
         }
         return challenges;
     }

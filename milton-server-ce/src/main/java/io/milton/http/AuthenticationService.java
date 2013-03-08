@@ -69,6 +69,12 @@ public class AuthenticationService {
 			log.trace("request is pre-authenticated");
 			return new AuthStatus(auth, false);
 		}
+		if(log.isTraceEnabled()) {
+			log.trace("Checking authentication with auth handlers: " + authenticationHandlers.size());
+			for( AuthenticationHandler h : authenticationHandlers) {
+				log.trace(" - " + h);
+			}
+		}
 		for (AuthenticationHandler h : authenticationHandlers) {
 			if (h.supports(resource, request)) {
 				Object loginToken = h.authenticate(resource, request);
@@ -109,10 +115,7 @@ public class AuthenticationService {
 		for (AuthenticationHandler h : authenticationHandlers) {
 			if (h.isCompatible(resource, request)) {
 				log.debug("challenge for auth: " + h.getClass());
-				String ch = h.getChallenge(resource, request);
-				if (ch != null) {
-					challenges.add(ch);
-				}
+				h.appendChallenges(resource, request, challenges);
 			} else {
 				log.debug("not challenging for auth: " + h.getClass() + " for resource type: " + (resource == null ? "" : resource.getClass()));
 			}
@@ -187,6 +190,22 @@ public class AuthenticationService {
 			return false;
 		}
 
+	}
+
+	/**
+	 * Determine if there are any credentials present. Note this does not check
+	 * if the provided credentials are valid, only if they are available
+	 * 
+	 * @param request
+	 * @return 
+	 */
+	public boolean authenticateDetailsPresent(Request request) {
+		for( AuthenticationHandler h : authenticationHandlers) {
+			if( h.credentialsPresent(request)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static class AuthStatus {

@@ -4,6 +4,7 @@ import io.milton.http.AuthenticationHandler;
 import io.milton.http.Request;
 import io.milton.http.Request.Method;
 import io.milton.resource.Resource;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,10 +64,14 @@ public class FormAuthenticationHandler implements AuthenticationHandler {
         return o;
     }
 
+	@Override
+	public boolean credentialsPresent(Request request) {
+		return request.getParams() != null && request.getParams().containsKey(userNameParam);
+	}	
+	
     @Override
-    public String getChallenge( Resource resource, Request request ) {
+    public void appendChallenges( Resource resource, Request request, List<String> challenges ) {
         // doesnt do http challenge
-        throw new UnsupportedOperationException( "Not supported yet." );
     }
 
     @Override

@@ -112,10 +112,24 @@ public class MiltonFilter implements javax.servlet.Filter {
 	}
 
 	private void doMiltonProcessing(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		// Do this part in its own try/catch block, because if there's a classpath
+		// problem it will probably be seen here
+		Request request;
+		Response response;
+		try{
+			request = new io.milton.servlet.ServletRequest(req, servletContext);
+			response = new io.milton.servlet.ServletResponse(resp);
+		} catch(Throwable e) {		
+			// OK, I know its not cool to log AND throw. But we really want to log the error
+			// so it goes to the log4j logs, but we also want the container to handle
+			// the exception because we're outside the milton response handling framework
+			// So log and throw it is. But should never happen anyway...
+			log.error("Exception creating milton request/response objects", e);
+			throw new IOException("Exception creating milton request/response objects", e);
+		}
+		
 		try {
 			MiltonServlet.setThreadlocals(req, resp);
-			Request request = new io.milton.servlet.ServletRequest(req, servletContext);
-			Response response = new io.milton.servlet.ServletResponse(resp);
 			httpManager.process(request, response);
 		} finally {
 			MiltonServlet.clearThreadlocals();

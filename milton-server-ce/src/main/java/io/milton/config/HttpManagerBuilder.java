@@ -90,6 +90,7 @@ public class HttpManagerBuilder {
 	protected FileContentService fileContentService = new SimpleFileContentService(); // Used for FileSystemResourceFactory
 	protected DefaultHttp11ResponseHandler.BUFFERING buffering;
 	protected List<AuthenticationHandler> authenticationHandlers;
+	protected List<AuthenticationHandler> extraAuthenticationHandlers;
 	protected List<AuthenticationHandler> cookieDelegateHandlers;
 	protected DigestAuthenticationHandler digestHandler;
 	protected BasicAuthHandler basicHandler;
@@ -244,14 +245,23 @@ public class HttpManagerBuilder {
 				if (formAuthenticationHandler != null) {
 					authenticationHandlers.add(formAuthenticationHandler);
 				}
+				if( extraAuthenticationHandlers != null && !extraAuthenticationHandlers.isEmpty() ) {
+					log.info("Adding extra auth handlers: " + extraAuthenticationHandlers.size());
+					authenticationHandlers.addAll(extraAuthenticationHandlers);
+				}
 				if (cookieAuthenticationHandler == null) {
 					if (enableCookieAuth) {
 						if (cookieDelegateHandlers == null) {
 							// Don't add digest!
+							// why not???
 							cookieDelegateHandlers = new ArrayList<AuthenticationHandler>();
 							if (basicHandler != null) {
 								cookieDelegateHandlers.add(basicHandler);
 								authenticationHandlers.remove(basicHandler);
+							}
+							if( digestHandler != null ) {
+								cookieDelegateHandlers.add(digestHandler);
+								authenticationHandlers.remove(digestHandler);
 							}
 							if (formAuthenticationHandler != null) {
 								cookieDelegateHandlers.add(formAuthenticationHandler);
@@ -327,7 +337,7 @@ public class HttpManagerBuilder {
 		}
 		handlerHelper.setEnableExpectContinue(enableExpectContinue);
 		if (resourceHandlerHelper == null) {
-			resourceHandlerHelper = new ResourceHandlerHelper(handlerHelper, urlAdapter, webdavResponseHandler);
+			resourceHandlerHelper = new ResourceHandlerHelper(handlerHelper, urlAdapter, webdavResponseHandler, authenticationService);
 			showLog("resourceHandlerHelper", resourceHandlerHelper);
 		}
 		buildProtocolHandlers(webdavResponseHandler, resourceTypeHelper);
@@ -442,9 +452,6 @@ public class HttpManagerBuilder {
 					propertySources.add(ps);
 				}
 			}
-			if (propPatchSetter == null) {
-				propPatchSetter = new PropertySourcePatchSetter(propertySources);
-			}
 
 			initWebdavProtocol();
 			if (webDavProtocol != null) {
@@ -458,6 +465,13 @@ public class HttpManagerBuilder {
 	}
 
 	protected void initWebdavProtocol() {
+		if (propPatchSetter == null) {
+			propPatchSetter = new PropertySourcePatchSetter(propertySources);
+		}
+		if (propFindRequestFieldParser == null) {
+			DefaultPropFindRequestFieldParser defaultFieldParse = new DefaultPropFindRequestFieldParser();
+			this.propFindRequestFieldParser = new MsPropFindRequestFieldParser(defaultFieldParse); // use MS decorator for windows support				
+		}
 		if (webDavProtocol == null && webdavEnabled) {
 			webDavProtocol = new WebDavProtocol(handlerHelper, resourceTypeHelper, webdavResponseHandler, propertySources, quotaDataAccessor, propPatchSetter, initPropertyAuthoriser(), eTagGenerator, urlAdapter, resourceHandlerHelper, userAgentHelper(), propFindRequestFieldParser(), propFindPropertyBuilder());
 		}
@@ -517,6 +531,22 @@ public class HttpManagerBuilder {
 		this.authenticationHandlers = authenticationHandlers;
 	}
 
+	/**
+	 * You can add some extra auth handlers here, which will be added to the default
+	 * auth handler structure such as basic, digest and cookie. 
+	 * 
+	 * @return 
+	 */
+	public List<AuthenticationHandler> getExtraAuthenticationHandlers() {
+		return extraAuthenticationHandlers;
+	}
+
+	public void setExtraAuthenticationHandlers(List<AuthenticationHandler> extraAuthenticationHandlers) {
+		this.extraAuthenticationHandlers = extraAuthenticationHandlers;
+	}
+
+	
+	
 	/**
 	 * Map holding nonce values issued in Digest authentication challenges
 	 *

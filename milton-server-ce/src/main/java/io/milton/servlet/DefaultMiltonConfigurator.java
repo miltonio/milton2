@@ -39,12 +39,14 @@ import org.slf4j.LoggerFactory;
  * The default means of configuring milton's HttpManager.
  *
  * Provide init-params to the filter or servlet to configure it:
- * resource.factory.class - the class of your resource factory
- * response.handler.class - specify if you want a different response handler
- * authenticationHandlers - a list of class names for the authentication
- * handlers filter_X - define an ordered list of milton filters, where the name
- * is in the form filter_1, filter_2, etc and the value is the name of the
- * filter class
+ * <ul>
+ * <li>resource.factory.class - the class of your resource factory</li>
+ * <li>response.handler.class - specify if you want a different response handler</li>
+ * <li>authenticationHandlers - a list of class names for the authentication, replaces the default auth handler structure</li>
+ * <li>extraAuthenticationHandlers - a list of class names for the authentication, is added to the default auth handler structure</li>
+ * <li>handlers filter_X - define an ordered list of milton filters, where the name
+ * is in the form filter_1, filter_2, etc and the value is the name of the filter class</li>
+ * </ul>
  *
  * @author brad
  */
@@ -92,6 +94,14 @@ public class DefaultMiltonConfigurator implements MiltonConfigurator {
 			props.remove("authenticationHandlers"); // so the bub doesnt try to set it
 			initAuthHandlers(authHandlers);
 		}
+
+		String extraAuthHandlers = config.getInitParameter("extraAuthenticationHandlers");
+		if (extraAuthHandlers != null) {
+			props.remove("extraAuthHandlers"); // so the bub doesnt try to set it
+			initExtraAuthHandlers(extraAuthHandlers);
+		}
+
+
 		String resourceFactoryClassName = config.getInitParameter("resource.factory.class");
 		if (resourceFactoryClassName != null) {
 			ResourceFactory rf = instantiate(resourceFactoryClassName);
@@ -192,6 +202,24 @@ public class DefaultMiltonConfigurator implements MiltonConfigurator {
 			}
 		}
 		builder.setAuthenticationHandlers(list);
+	}
+
+	private void initExtraAuthHandlers(String classNames) throws ServletException {
+		List<String> authHandlers = loadAuthHandlersIfAny(classNames);
+		if (authHandlers == null) {
+			return;
+		}
+		List<AuthenticationHandler> list = new ArrayList<AuthenticationHandler>();
+		for (String authHandlerClassName : authHandlers) {
+			Object o = instantiate(authHandlerClassName);
+			if (o instanceof AuthenticationHandler) {
+				AuthenticationHandler auth = (AuthenticationHandler) o;
+				list.add(auth);
+			} else {
+				throw new ServletException("Class: " + authHandlerClassName + " is not a: " + AuthenticationHandler.class.getCanonicalName());
+			}
+		}
+		builder.setExtraAuthenticationHandlers(list);
 	}
 
 	public static <T> T instantiate(String className) throws ServletException {

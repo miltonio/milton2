@@ -20,7 +20,7 @@ import java.lang.annotation.Annotation;
  *
  * @author brad
  */
-class ControllerMethod {
+public class ControllerMethod {
 
 	final Object controller;
 	final java.lang.reflect.Method method;

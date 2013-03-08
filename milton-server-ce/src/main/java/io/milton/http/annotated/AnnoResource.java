@@ -122,7 +122,12 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 		if (nameOverride != null) {
 			return nameOverride;
 		}
-		return annoFactory.nameAnnotationHandler.get(source);
+		String name = annoFactory.nameAnnotationHandler.get(source);
+		if( name == null ) {
+			log.warn("No @Name for source class: " + source.getClass() + " Please implement a @Name method to identify the name of this type" );
+			name = source.toString();
+		}
+		return name;
 	}
 	
 	@Override
@@ -285,7 +290,11 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 		if (accepts != null && accepts.contains("application/json")) {
 			return "application/json";
 		}
-		return annoFactory.contentTypeAnnotationHandler.get(source);
+		return annoFactory.contentTypeAnnotationHandler.get(accepts, this);
+	}
+	
+	public String getContentType() {
+		return annoFactory.contentTypeAnnotationHandler.get(null, this);
 	}
 	
 	@Override
