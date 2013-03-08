@@ -36,20 +36,12 @@ public class SsoAuthenticationHandler implements AuthenticationHandler {
     }
 
     @Override
-    public void appendChallenges(Resource resource, Request request, List<String> challenges) {
+    public boolean isCompatible(Resource resource, Request request) {
+        return true;
     }
-    
-    
-
-	@Override
-	public boolean isCompatible(Resource resource, Request request) {
-		return true;
-	}	
 
     @Override
     public boolean credentialsPresent(Request request) {
         return request.getParams() != null && request.getAttributes().containsKey("_sso_user");
     }
-    
-    
 }
