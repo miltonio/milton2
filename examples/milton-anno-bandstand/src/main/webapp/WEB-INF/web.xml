@@ -38,7 +38,7 @@
         <init-param>
             <param-name>contextConfigLocation</param-name>	
             <param-value>classpath:miltonContext.xml</param-value>
-        </init-param>        
+        </init-param>
     </filter>
     
     <filter-mapping>
