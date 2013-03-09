@@ -17,6 +17,7 @@ package com.bandstand.domain;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.OneToMany;
 import org.hibernate.Criteria;
@@ -67,6 +68,7 @@ public class Musician extends BaseEntity {
     private String telephonenumber;
     private String contactUid;
 
+    @Column(nullable = false)
     public String getContactUid() {
         return contactUid;
     }

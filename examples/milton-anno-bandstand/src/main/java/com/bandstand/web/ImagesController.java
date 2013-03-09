@@ -59,6 +59,7 @@ public class ImagesController {
 
     @PutChild
     public Image uploadImage(ImagesRoot root, String newName, byte[] bytes) throws IOException {
+        Transaction tx = SessionManager.session().beginTransaction();
         File fRoot = getContentRoot();
         File content = new File(fRoot, UUID.randomUUID().toString());
         FileUtils.writeByteArrayToFile(content, bytes);
@@ -73,6 +74,8 @@ public class ImagesController {
         root.getEntity().getImages().add(i);
         SessionManager.session().save(i);
         SessionManager.session().save(root.getEntity());
+        SessionManager.session().flush();
+        tx.commit();
         System.out.println("added image: " + i.getDisplayName());
         return i;
     }
@@ -89,7 +92,7 @@ public class ImagesController {
         Transaction tx = SessionManager.session().beginTransaction();
         try {
             SessionManager.session().delete(image);
-            
+            SessionManager.session().flush();
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
@@ -114,6 +117,7 @@ public class ImagesController {
     
     @Move
     public void move(Image image, BaseEntity newParent, String newName) {
+        Transaction tx = SessionManager.session().beginTransaction();
         if( newParent != image.getBaseEntity()) {
             BaseEntity oldParent = image.getBaseEntity();
             image.setBaseEntity(newParent);
@@ -124,6 +128,8 @@ public class ImagesController {
         }
         image.setDisplayName(newName);
         SessionManager.session().save(image);
+        SessionManager.session().flush();
+        tx.commit();
     }
     
     @Delete

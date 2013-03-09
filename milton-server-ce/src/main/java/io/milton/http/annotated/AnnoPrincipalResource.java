@@ -18,6 +18,7 @@
  */
 package io.milton.http.annotated;
 
+import io.milton.annotations.Calendars;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.values.HrefList;
@@ -27,12 +28,17 @@ import io.milton.principal.CardDavPrincipal;
 import io.milton.principal.DiscretePrincipal;
 import io.milton.principal.HrefPrincipleId;
 import io.milton.resource.Resource;
+import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author brad
  */
-public class AnnoPrincipalResource extends AnnoCollectionResource implements DiscretePrincipal, CalDavPrincipal, CardDavPrincipal{
+public class AnnoPrincipalResource extends AnnoCollectionResource implements DiscretePrincipal, CalDavPrincipal, CardDavPrincipal {
+
+	private static final Logger log = LoggerFactory.getLogger(AnnoPrincipalResource.class);
 
 	public AnnoPrincipalResource(AnnotationResourceFactory outer, Object source, AnnoCollectionResource parent) {
 		super(outer, source, parent);
@@ -41,12 +47,36 @@ public class AnnoPrincipalResource extends AnnoCollectionResource implements Dis
 	@Override
 	public HrefList getCalendarHomeSet() {
 		try {
-			HrefList list = new HrefList();			
+			HrefList list = new HrefList();
 			for (Resource r : getChildren()) {
 				if (r instanceof AnnoCollectionResource) {
 					AnnoCollectionResource col = (AnnoCollectionResource) r;
 					if (annoFactory.calendarsAnnotationHandler.hasCalendars(col.getSource())) {
 						list.add(col.getHref());
+					}
+				}
+			}
+			if (list.isEmpty()) {
+				ResourceList topDirs = getChildren().getDirs();
+				if (topDirs.isEmpty()) {
+					log.warn("Could not find any calendar home directories for user type: " + getSource().getClass() + ". In fact there are no child diretories at all!");
+				} else {
+					log.warn("Could not find any calendar home directories for user type: " + getSource().getClass() + " You should have a @" + Calendars.class + " annotation on one of the following methods");
+					for (Resource r : topDirs) {
+						if (r instanceof AnnoCollectionResource) {
+							AnnoCollectionResource col = (AnnoCollectionResource) r;							
+							List<ControllerMethod> candMethods = annoFactory.calendarsAnnotationHandler.getMethods(col.getSource().getClass());
+							if (candMethods.isEmpty()) {
+								log.info("	- inspecting: " + col.getName() + " for source: " + col.getSource().getClass() + " - has NO child methods");
+							} else {
+								log.info("	- inspecting: " + col.getName() + " for source: " + col.getSource().getClass() );
+								for (ControllerMethod cm : candMethods) {
+									log.warn("	- candidate method: " + cm.controller.getClass() + "::" + cm.method.getName());
+								}
+							}
+						} else {
+							log.warn("	- found a directory which is not a AnnoCollectionResource: " + r.getClass() + " which cannot be inspected");
+						}
 					}
 				}
 			}
@@ -57,10 +87,11 @@ public class AnnoPrincipalResource extends AnnoCollectionResource implements Dis
 			throw new RuntimeException(e);
 		}
 	}
+
 	@Override
 	public HrefList getAddressBookHomeSet() {
 		try {
-			HrefList list = new HrefList();			
+			HrefList list = new HrefList();
 			for (Resource r : getChildren()) {
 				if (r instanceof AnnoCollectionResource) {
 					AnnoCollectionResource col = (AnnoCollectionResource) r;
@@ -75,8 +106,8 @@ public class AnnoPrincipalResource extends AnnoCollectionResource implements Dis
 		} catch (BadRequestException e) {
 			throw new RuntimeException(e);
 		}
-	}	
-	
+	}
+
 	@Override
 	public String getPrincipalURL() {
 		return getHref();
@@ -86,7 +117,6 @@ public class AnnoPrincipalResource extends AnnoCollectionResource implements Dis
 	public PrincipleId getIdenitifer() {
 		return new HrefPrincipleId(getHref());
 	}
-
 
 	@Override
 	public HrefList getCalendarUserAddressSet() {
@@ -117,5 +147,4 @@ public class AnnoPrincipalResource extends AnnoCollectionResource implements Dis
 	public String getAddress() {
 		return getHref();
 	}
-	
 }

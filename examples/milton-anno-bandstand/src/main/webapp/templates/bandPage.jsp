@@ -15,6 +15,22 @@
             <h1>${model.page.displayName}</h1>            
             <p>${model.page.source.description}</p>
             <div class="row">
+                <div class="span12">
+
+                    <h2>Images</h2>
+                    <ul class="thumbnails">
+                        <c:forEach items="${model.page.childrenMap.images.childrenOfType.image}" var="image">
+                            <li class="span4">
+                                <a href="${image.href}" class="thumbnail">
+                                    <img src="${image.href}" alt="">
+                                </a>
+                            </li>
+                        </c:forEach>
+                    </ul>
+
+                </div>
+            </div>            
+            <div class="row">
                 <div class="span6">
                     <div class="well">
                         <h2>Gigs</h2>
@@ -70,22 +86,7 @@
                     </div>                                
                 </div>
             </div>
-            <div class="row">
-                <div class="span12">
 
-                        <h2>Images</h2>
-                        <ul class="thumbnails">
-                            <c:forEach items="${model.page.childrenMap.images.childrenOfType.image}" var="image">
-                                <li class="span4">
-                                    <a href="${image.href}" class="thumbnail">
-                                        <img src="${image.href}" alt="">
-                                    </a>
-                                </li>
-                            </c:forEach>
-                        </ul>
-
-                </div>
-            </div>
         </div> <!-- /container -->
 
         <%@include file="includes/theme-bottom.jsp" %>

@@ -65,24 +65,24 @@ public class GigController {
     
     private static final Logger log = LoggerFactory.getLogger(GigController.class);
 
-    /**
-     * Get calendar placeholder objects for the musician
-     *
-     * @param m
-     * @return
-     */
+    @ChildrenOf
+    public MusicianCalendarsHome getCalendarsHomeForMusician(Musician m) {
+        return new MusicianCalendarsHome(m);
+    }
+        
     @Calendars
     @ChildrenOf
-    public List<MusicianCalendar> getCalendarsForMusician(Musician m) {
+    public List<MusicianCalendar> getCalendarsForMusician(MusicianCalendarsHome calHome) {
         List<MusicianCalendar> cals = new ArrayList<MusicianCalendar>();
-        if (m.getBandMembers() != null) {
-            for (BandMember bm : m.getBandMembers()) {
-                MusicianCalendar cal = new MusicianCalendar(m, bm.getBand());
+        if (calHome.musician.getBandMembers() != null) {
+            for (BandMember bm : calHome.musician.getBandMembers()) {
+                MusicianCalendar cal = new MusicianCalendar(calHome.musician, bm.getBand());
                 cals.add(cal);
             }
         }
         return cals;
     }
+    
 
     @Delete
     public void delete(Gig gig) {
@@ -196,6 +196,18 @@ public class GigController {
         return gig.getCreatedDate();
     }
 
+    public class MusicianCalendarsHome {
+        private final Musician musician;
+
+        public MusicianCalendarsHome(Musician musician) {
+            this.musician = musician;
+        }
+        
+        public String getName() {
+            return "cals";
+        }
+    }
+    
     public class MusicianCalendar {
 
         private final Musician musician;

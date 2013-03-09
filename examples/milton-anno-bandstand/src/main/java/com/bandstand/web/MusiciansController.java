@@ -14,7 +14,6 @@
  */
 package com.bandstand.web;
 
-import com.bandstand.domain.Band;
 import com.bandstand.domain.BandMember;
 import com.bandstand.domain.Gig;
 import com.bandstand.domain.Musician;
@@ -39,6 +38,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import net.fortuna.ical4j.data.ParserException;
 import org.hibernate.Transaction;
 import org.slf4j.Logger;
@@ -83,8 +83,13 @@ public class MusiciansController {
 
     @Post(bindData=true)
     public Musician saveMusician(Musician musician) {
+        log.info("saveMusician: " + musician.getName());
         Transaction tx = SessionManager.session().beginTransaction();
+        if( musician.getContactUid() == null ) {
+            musician.setContactUid(UUID.randomUUID().toString());
+        }
         SessionManager.session().save(musician);
+        SessionManager.session().flush();
         tx.commit();
         log.info("saved musician");
         return musician;
@@ -118,7 +123,11 @@ public class MusiciansController {
     public void move(Musician musician, MusiciansController newParent, String newName) {
         Transaction tx = SessionManager.session().beginTransaction();
         musician.setName(newName);
+        if( musician.getContactUid() == null ) {
+            musician.setContactUid(UUID.randomUUID().toString());
+        }
         SessionManager.session().save(musician);
+        SessionManager.session().flush();
         tx.commit();
     }
 
@@ -130,6 +139,7 @@ public class MusiciansController {
         m.setModifiedDate(new Date());
         m.setName(newName);
         SessionManager.session().save(m);
+        SessionManager.session().flush();
         tx.commit();
         return m;
     }
@@ -151,6 +161,7 @@ public class MusiciansController {
             }
         }
         SessionManager.session().delete(musician);
+        SessionManager.session().flush();
         tx.commit();        
     }
     

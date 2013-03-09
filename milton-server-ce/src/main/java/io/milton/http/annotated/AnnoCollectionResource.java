@@ -17,10 +17,12 @@ package io.milton.http.annotated;
 import io.milton.http.LockInfo;
 import io.milton.http.LockTimeout;
 import io.milton.http.LockToken;
+import io.milton.http.Request;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.resource.CollectionResource;
+import io.milton.resource.DeletableCollectionResource;
 import io.milton.resource.LockingCollectionResource;
 import io.milton.resource.MakeCollectionableResource;
 import io.milton.resource.PutableResource;
@@ -35,7 +37,7 @@ import java.util.Set;
  *
  * @author brad
  */
-public class AnnoCollectionResource extends AnnoResource implements CollectionResource, PutableResource, MakeCollectionableResource, LockingCollectionResource {
+public class AnnoCollectionResource extends AnnoResource implements CollectionResource, PutableResource, MakeCollectionableResource, LockingCollectionResource, DeletableCollectionResource {
 
 	/**
 	 * lazy loaded list of all children of this collection
@@ -177,6 +179,11 @@ public class AnnoCollectionResource extends AnnoResource implements CollectionRe
 				}
 			}
 		}
+	}
+
+	@Override
+	public boolean isLockedOutRecursive(Request request) {
+		return false; // TODO
 	}
 	
 }

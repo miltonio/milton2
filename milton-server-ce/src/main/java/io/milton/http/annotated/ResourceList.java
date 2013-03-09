@@ -16,6 +16,7 @@
  */
 package io.milton.http.annotated;
 
+import io.milton.resource.CollectionResource;
 import java.util.*;
 import io.milton.resource.Resource;
 
@@ -39,6 +40,16 @@ public class ResourceList extends ArrayList<CommonResource> {
 		super(copyFrom);
 	}
 
+	public ResourceList getDirs() {
+		ResourceList list = new ResourceList(this);
+		for( CommonResource cr : this ) {
+			if( cr instanceof CollectionResource) {
+				list.add(cr);
+			}
+		}
+		return list;		
+	}
+	
 	@Override
 	public boolean add(CommonResource e) {
 		if (e == null) {

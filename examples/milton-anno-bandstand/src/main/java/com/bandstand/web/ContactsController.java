@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 import net.sourceforge.cardme.engine.VCardEngine;
 import net.sourceforge.cardme.io.VCardWriter;
 import net.sourceforge.cardme.vcard.VCard;
@@ -44,6 +45,7 @@ import net.sourceforge.cardme.vcard.types.EndType;
 import net.sourceforge.cardme.vcard.types.FormattedNameType;
 import net.sourceforge.cardme.vcard.types.NameType;
 import net.sourceforge.cardme.vcard.types.TelephoneType;
+import net.sourceforge.cardme.vcard.types.UIDType;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Transaction;
 import org.slf4j.Logger;
@@ -87,6 +89,11 @@ public class ContactsController {
             VCardImpl vcard = new VCardImpl();
             vcard.setBegin(new BeginType());
             vcard.setID(m.getContactUid());
+            String uid = m.getContactUid();
+            if (uid == null || uid.length() == 0) {
+                uid = m.getName();
+            }
+            vcard.setUID(new UIDType(uid));
             vcard.setFormattedName(new FormattedNameType(m.getGivenName() + " " + m.getSurName()));
             vcard.setName(new NameType(m.getSurName(), m.getGivenName()));
             if (!StringUtils.isBlank(m.getTelephonenumber())) {
@@ -106,7 +113,7 @@ public class ContactsController {
 
     @PutChild
     public MusicianContact createMusicianContact(MusicianAddressBook abook, String newName, byte[] vcardData) throws BadRequestException {
-        
+
         Transaction tx = SessionManager.session().beginTransaction();
         try {
             VCardEngine cardEngine = new VCardEngine();
@@ -116,8 +123,10 @@ public class ContactsController {
             System.out.println("-------");
             VCard vcard = cardEngine.parse(vc);
             Musician m = new Musician();
-            if( vcard.getUID() != null ) {
+            if (vcard.getUID() != null) {
                 m.setContactUid(vcard.getUID().getUID());
+            } else {
+                m.setContactUid(UUID.randomUUID().toString());
             }
             m.setName(newName);
             m.setCreatedDate(new Date());
@@ -138,6 +147,7 @@ public class ContactsController {
             }
 
             SessionManager.session().save(m);
+            SessionManager.session().flush();
             tx.commit();
             return new MusicianContact(m);
         } catch (Exception e) {
@@ -149,6 +159,7 @@ public class ContactsController {
 
     @PutChild
     public MusicianContact updateMusicianContact(MusicianContact contact, byte[] vcardData) throws BadRequestException {
+        log.info("updateMusicianContact");
         Transaction tx = SessionManager.session().beginTransaction();
         try {
             Musician m = contact.getMusician();
@@ -157,12 +168,12 @@ public class ContactsController {
             System.out.println("---- contact ----");
             System.out.println(vc);
             System.out.println("-------");
-            
+
             VCard vcard = cardEngine.parse(vc);
-            if( vcard.getUID() != null ) {
+            if (vcard.getUID() != null) {
                 m.setContactUid(vcard.getUID().getUID());
             }
-            
+
             if (vcard.getName() != null) {
                 m.setGivenName(vcard.getName().getGivenName());
                 m.setSurName(vcard.getName().getFamilyName());
@@ -182,8 +193,9 @@ public class ContactsController {
                     m.setMail(itEmails.next().getEmail());
                 }
             }
-
+            m.setModifiedDate(new Date());
             SessionManager.session().save(m);
+            SessionManager.session().flush();
             tx.commit();
             return contact;
         } catch (Exception e) {
