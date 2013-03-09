@@ -51,6 +51,8 @@ import net.fortuna.ical4j.model.property.ProdId;
 import net.fortuna.ical4j.model.property.Uid;
 import net.fortuna.ical4j.model.property.Version;
 import org.hibernate.Transaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A Gig is a calendar item (ie an event), and it is inside a logical calendar,
@@ -60,6 +62,8 @@ import org.hibernate.Transaction;
  */
 @ResourceController
 public class GigController {
+    
+    private static final Logger log = LoggerFactory.getLogger(GigController.class);
 
     /**
      * Get calendar placeholder objects for the musician
@@ -118,6 +122,7 @@ public class GigController {
 
     @PutChild
     public Gig updateGig(Gig gig, byte[] ical) throws IOException, ParserException {
+        log.info("updateGig: " + gig.getDisplayName());
         Transaction tx = SessionManager.session().beginTransaction();
         try {
             CalendarBuilder builder = new CalendarBuilder();
@@ -139,6 +144,7 @@ public class GigController {
             gig.setModifiedDate(new Date());
 
             SessionManager.session().save(gig);
+            SessionManager.session().flush();
             tx.commit();
             System.out.println("Updated gig: " + gig.getStartDate() + " - " + gig.getEndDate());
         } catch (Exception e) {

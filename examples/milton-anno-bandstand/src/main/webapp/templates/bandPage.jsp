@@ -15,7 +15,7 @@
             <h1>${model.page.displayName}</h1>            
             <p>${model.page.source.description}</p>
             <div class="row">
-                <div class="span4 offset2">
+                <div class="span6">
                     <div class="well">
                         <h2>Gigs</h2>
                         <table>
@@ -36,7 +36,7 @@
                         </table>
                     </div>
                 </div>
-                <div class="span4">
+                <div class="span6">
                     <div class="well">
                         <h2>
                             Members 

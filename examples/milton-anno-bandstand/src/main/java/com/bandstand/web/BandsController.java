@@ -21,11 +21,9 @@ package com.bandstand.web;
 import com.bandstand.domain.Band;
 import com.bandstand.domain.BandMember;
 import com.bandstand.domain.Gig;
-import com.bandstand.domain.Musician;
 import com.bandstand.domain.SessionManager;
 import io.milton.annotations.ChildOf;
 import io.milton.annotations.ChildrenOf;
-import io.milton.annotations.Delete;
 import io.milton.annotations.DisplayName;
 import io.milton.annotations.Get;
 import io.milton.annotations.MakeCollection;
@@ -39,7 +37,10 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -48,6 +49,8 @@ import org.hibernate.Transaction;
 @ResourceController
 public class BandsController {
 
+    private static final Logger log = LoggerFactory.getLogger(BandsController.class);
+    
     @Get
     public ModelAndView renderBandPage(Band band) throws UnsupportedEncodingException {
         return new ModelAndView("band", band, "bandPage");
@@ -114,7 +117,9 @@ public class BandsController {
     }
 
     /**
-     * Instantiate but do not save a new Band object. For use in .new page
+     * Instantiate but do not save a new Band object. For use in .new page with
+     * web browser editing. Note used for webdav
+     * 
      * @param root
      * @return 
      */
@@ -123,16 +128,19 @@ public class BandsController {
         Band b = new Band();
         b.setCreatedDate(new Date());
         b.setModifiedDate(new Date());
-
         return b;
     }
     
     @Move
     public void move(Band band, BandsController newParent, String newName) {
-        Transaction tx = SessionManager.session().beginTransaction();
+        log.info("MOVE: band=" + band.getName() + " - to name=" + newName);
+        Session session = SessionManager.session();
+        Transaction tx = session.beginTransaction();
         band.setName(newName);
-        SessionManager.session().save(band);
+        session.save(band);
+        session.flush();
         tx.commit();
+        log.info("Saved band: " + band.getId());
     }
 
     @Move

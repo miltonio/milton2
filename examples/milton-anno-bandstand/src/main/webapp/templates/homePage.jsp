@@ -12,7 +12,7 @@
 
         <div class="container">
             <div class="row">
-                <div class="span4 offset1">
+                <div class="span6">
                     <div class="well" id="bandsDiv">                        
                         <h1>
                             Bands
@@ -27,8 +27,7 @@
                     </div>
 
                 </div>
-                <div class="span2"></div>
-                <div class="span4">
+                <div class="span6">
                     <div class="well" id="musosDiv">
                         <h1>
                             Musicians
