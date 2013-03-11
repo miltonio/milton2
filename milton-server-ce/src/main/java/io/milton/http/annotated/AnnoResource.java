@@ -114,7 +114,12 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 
 	@Override
 	public String getUniqueId() {
-		return annoFactory.uniqueIdAnnotationHandler.get(source);
+		Object o = annoFactory.uniqueIdAnnotationHandler.get(source);
+		if( o == null ) {
+			return null;
+		} else {
+			return o.toString();
+		}
 	}
 
 	@Override
@@ -199,7 +204,16 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 
 	@Override
 	public Date getModifiedDate() {
-		return annoFactory.modifiedDateAnnotationHandler.get(source);
+		Object o = annoFactory.modifiedDateAnnotationHandler.get(source);
+		if( o instanceof Date) {
+			return (Date) o;
+		} else if( o == null ) {
+			return null;
+		} else {
+			log.warn("Got an incompatible value for ModifiedDate for source object: " + source.getClass() + " Is a: " + o.getClass() + " should be: " + Date.class);
+			log.warn(" ModifiedDate=" + o);
+			return null;
+		}
 	}
 
 	@Override

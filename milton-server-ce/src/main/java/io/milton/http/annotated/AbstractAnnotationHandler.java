@@ -165,16 +165,12 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 		return m != null;
 	}
 
-	protected String attemptToReadProperty(Object source, String... propNames) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+	protected Object attemptToReadProperty(Object source, String... propNames) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		for (String propName : propNames) {
 			if (PropertyUtils.isReadable(source, propName)) {
 				// found a readable property, so return it				
 				Object oName = PropertyUtils.getProperty(source, propName);
-				if (oName != null) {
-					return oName.toString();
-				} else {
-					return null;
-				}
+				return oName;
 			}
 		}
 		return null;

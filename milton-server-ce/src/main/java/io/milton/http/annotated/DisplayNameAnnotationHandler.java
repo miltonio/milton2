@@ -31,9 +31,9 @@ public class DisplayNameAnnotationHandler extends AbstractAnnotationHandler {
 		try {
 			ControllerMethod cm = getBestMethod(source.getClass());
 			if (cm == null) {
-				String s = attemptToReadProperty(source, "displayName", "title");
-				if( s != null ) {
-					return s;
+				Object o = attemptToReadProperty(source, "displayName", "title");
+				if( o != null ) {
+					return o.toString();
 				}
 				return res.getName();
 			}
