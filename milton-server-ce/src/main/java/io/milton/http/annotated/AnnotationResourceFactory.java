@@ -446,7 +446,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 			return new AnnoContactResource(this, childSource, parent);
 		}
 		
-		if (childrenOfAnnotationHandler.isCompatible(childSource)) {
+		if (childrenOfAnnotationHandler.isCompatible(childSource) || childOfAnnotationHandler.isCompatible(childSource) ) {
 			return new AnnoCollectionResource(this, childSource, parent);
 		} else {
 			return new AnnoFileResource(this, childSource, parent);
