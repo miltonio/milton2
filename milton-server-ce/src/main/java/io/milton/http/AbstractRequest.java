@@ -179,6 +179,13 @@ public abstract class AbstractRequest implements Request {
 	}
 
 	@Override
+	public String getOriginHeader() {
+		return getRequestHeader(Header.ORIGIN);
+	}
+
+	
+	
+	@Override
 	public String getAbsolutePath() {
 		return stripToPath(getAbsoluteUrl());
 	}

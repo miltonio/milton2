@@ -18,6 +18,7 @@
  */
 package io.milton.http.http11;
 
+import io.milton.event.GetEvent;
 import io.milton.http.ResourceHandlerHelper;
 import io.milton.http.Response;
 import io.milton.resource.Resource;
@@ -70,6 +71,7 @@ public class GetHandler implements ExistingEntityHandler {
 		if (log.isTraceEnabled()) {
 			log.trace("process: " + request.getAbsolutePath());
 		}
+		manager.getEventManager().fireEvent(new GetEvent(resource));
 		GetableResource r = (GetableResource) resource;
 		if (checkConditional(r, request)) {
 			if (log.isTraceEnabled()) {

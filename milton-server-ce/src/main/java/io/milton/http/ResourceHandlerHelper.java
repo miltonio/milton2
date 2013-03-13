@@ -89,20 +89,23 @@ public class ResourceHandlerHelper {
 
 		if (r == null) {
 			// If the request is anonymous we might not want to send a 404 for a couple of reasons
-			// 1. MS Office 2010 requires a challenge prior to PUT to create a new file
+			// 1. MS Office 2010 requires a challenge from a HEAD request prior to PUT to create a new file
 			// 2. Potentially unsafe, because an anonymous user could determine the existence (though not content) of certain files
-
-			if (!authenticationService.authenticateDetailsPresent(request)) {
-				// Find first existing parent, and test if it allows read access
-				Resource parent = findClosestParent(manager, host, url);
-				if (parent != null) {
-					// If its a write operation then definitely challenge, otherwise test if HEAD is permitted
-					if (request.getMethod().isWrite) {
-						throw new NotAuthorizedException("Authentication is required for write access", parent);
-					} else {
-						boolean allowsHead = parent.authorise(request, Method.HEAD, null);
-						if (!allowsHead) {
-							throw new NotAuthorizedException("Authentication is required for read access", parent);
+			
+			// But dont check on OPTIONS, because some clients need unauthenticated OPTIONS (i think)
+			if (!request.getMethod().equals(Method.OPTIONS)) {
+				if (!authenticationService.authenticateDetailsPresent(request)) {
+					// Find first existing parent, and test if it allows read access
+					Resource parent = findClosestParent(manager, host, url);
+					if (parent != null) {
+						// If its a write operation then definitely challenge, otherwise test if HEAD is permitted
+						if (request.getMethod().isWrite) {
+							throw new NotAuthorizedException("Authentication is required for write access", parent);
+						} else {
+							boolean allowsHead = parent.authorise(request, Method.HEAD, null);
+							if (!allowsHead) {
+								throw new NotAuthorizedException("Authentication is required for read access", parent);
+							}
 						}
 					}
 				}

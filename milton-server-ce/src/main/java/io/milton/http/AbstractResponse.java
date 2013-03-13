@@ -176,6 +176,18 @@ public abstract class AbstractResponse implements Response {
         setResponseHeader(Header.VARY, value);
     }
 
+	@Override
+	public String getAccessControlAllowOrigin() {
+		return getResponseHeader(Header.ACCESS_CONTROL_ALLOW_ORIGIN);
+	}
+
+	@Override
+	public void setAccessControlAllowOrigin(String s) {
+		setResponseHeader(Header.ACCESS_CONTROL_ALLOW_ORIGIN, s);
+	}
+	
+	
+
     @Override
     public void setEntity(Entity entity) {
         this.entity = entity;

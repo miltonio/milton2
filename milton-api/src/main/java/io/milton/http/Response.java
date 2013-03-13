@@ -65,6 +65,7 @@ public interface Response {
         EXPIRES( "Expires" ),
         ETAG( "ETag" ),
         VARY( "Vary" ),
+        ACCESS_CONTROL_ALLOW_ORIGIN("Access-Control-Allow-Origin"),
         CONTENT_RANGE( "Content-Range" );
         public String code;
 
@@ -238,6 +239,15 @@ public interface Response {
 
     void setDateHeader( Date date );
 
+    /**
+     * Used for CORS responses
+     * 
+     * @return 
+     */
+    String getAccessControlAllowOrigin();
+    
+    void setAccessControlAllowOrigin(String s);
+    
     /**
      * Called to indicate that the request is completed. Some response implementations
      * might choose to close the http connection, while others which implement pipelining

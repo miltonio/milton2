@@ -76,6 +76,7 @@ public interface Request {
         LOCK_TOKEN("Lock-Token"),
         EXPECT("Expect"),
         OVERWRITE("Overwrite"),
+        ORIGIN("Origin"),
         USER_AGENT("User-Agent"),
         /**
          * For compatibility with macOS finder from 10.5.3
@@ -216,6 +217,9 @@ public interface Request {
      */
     Boolean getOverwriteHeader();
 
+    
+    String getOriginHeader();
+    
     /**
      *
      * @return - the user agent header field

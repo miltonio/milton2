@@ -23,59 +23,74 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author brad
  */
 public class ReflectionUtils {
-    public static List<Class> getClassNamesFromPackage(String packageName) throws IOException, ClassNotFoundException {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        URL packageURL;
-        ArrayList<Class> classes = new ArrayList<Class>();
 
-        String packagePath = packageName.replace(".", "/");
-        packageURL = classLoader.getResource(packagePath);
+	private static final Logger log = LoggerFactory.getLogger(ReflectionUtils.class);
 
-        ClassLoader cld = Thread.currentThread().getContextClassLoader();
+	public static List<Class> getClassNamesFromPackage(String packageName) throws IOException, ClassNotFoundException {
+		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+		URL packageURL;
+		ArrayList<Class> classes = new ArrayList<Class>();
 
-        if (packageURL.getProtocol().equals("jar")) {
-            String jarFileName;
-            JarFile jf;
-            Enumeration<JarEntry> jarEntries;
-            String entryName;
+		String packagePath = packageName.replace(".", "/");
+		packageURL = classLoader.getResource(packagePath);
+		if (packageURL == null) {
+			log.warn("getClassNamesFromPackage: No package could be found: " + packagePath + " from classloader: " + classLoader);
+			return classes;
+		}
 
-            // build jar file name, then loop through zipped entries
-            jarFileName = URLDecoder.decode(packageURL.getFile(), "UTF-8");
-            jarFileName = jarFileName.substring(5, jarFileName.indexOf("!"));
-            System.out.println(">" + jarFileName);
-            jf = new JarFile(jarFileName);
-            jarEntries = jf.entries();
-            while (jarEntries.hasMoreElements()) {
-                entryName = jarEntries.nextElement().getName();
-                if (entryName.startsWith(packagePath) && entryName.length() > packagePath.length() + 5) {
-                    if (entryName.endsWith(".class")) {
-                        System.out.println("entryName: " + entryName);
-                        //entryName = entryName.substring(packageName.length()+1, entryName.lastIndexOf('.'));
-                        String className = entryName.replace("/", ".");
-                        className = className.substring(0, className.length() - 6);
-                        System.out.println("classname: " + className);
-                        Class c = cld.loadClass(className);
-                        classes.add(c);
-                    }
-                }
-            }
+		ClassLoader cld = Thread.currentThread().getContextClassLoader();
 
-            // loop through files in classpath
-        } else {
-            File directory = new File(packageURL.getFile());
-            String[] files = directory.list();
-            for (int i = 0; i < files.length; i++) {
-                if (files[i].endsWith(".class")) {
-                    classes.add(Class.forName(packageName + '.' + files[i].substring(0, files[i].length() - 6)));
-                }
-            }            
-        }
-        return classes;
-    }	
+		if (packageURL.getProtocol().equals("jar")) {
+			String jarFileName;
+			JarFile jf;
+			Enumeration<JarEntry> jarEntries;
+			String entryName;
+
+			// build jar file name, then loop through zipped entries
+			jarFileName = URLDecoder.decode(packageURL.getFile(), "UTF-8");
+			jarFileName = jarFileName.substring(5, jarFileName.indexOf("!"));
+			System.out.println(">" + jarFileName);
+			jf = new JarFile(jarFileName);
+			jarEntries = jf.entries();
+			while (jarEntries.hasMoreElements()) {
+				entryName = jarEntries.nextElement().getName();
+				if (entryName.startsWith(packagePath) && entryName.length() > packagePath.length() + 5) {
+					if (entryName.endsWith(".class")) {
+						//entryName = entryName.substring(packageName.length()+1, entryName.lastIndexOf('.'));
+						String className = entryName.replace("/", ".");
+						className = className.substring(0, className.length() - 6);
+						Class c = cld.loadClass(className);
+						classes.add(c);
+					}
+				}
+			}
+
+			// loop through files in classpath
+		} else {
+			File directory = new File(packageURL.getFile());
+			String[] files = directory.list();
+			if (files != null && files.length > 0) {
+				if (log.isTraceEnabled()) {
+					log.trace("Loading classes from directory: " + directory.getAbsolutePath() + " files=" + files.length);
+				}
+
+				for (int i = 0; i < files.length; i++) {
+					if (files[i].endsWith(".class")) {
+						classes.add(Class.forName(packageName + '.' + files[i].substring(0, files[i].length() - 6)));
+					}
+				}
+			} else {
+				log.info("No files found in package: " + packageName + " with physical path=" + directory.getAbsolutePath());
+			}
+		}
+		return classes;
+	}
 }

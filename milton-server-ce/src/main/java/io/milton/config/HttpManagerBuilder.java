@@ -1200,9 +1200,10 @@ public class HttpManagerBuilder {
 				AnnotationResourceFactory arf = (AnnotationResourceFactory) getMainResourceFactory();
 				if (arf.getControllers() == null) {
 					List controllers = new ArrayList();
-					if (controllerPackagesToScan != null) {
+					if (controllerPackagesToScan != null) {						
 						for (String packageName : controllerPackagesToScan.split(",")) {
 							packageName = packageName.trim();
+							log.info("init annotations controllers from package: " + packageName);
 							List<Class> classes = ReflectionUtils.getClassNamesFromPackage(packageName);
 							for (Class c : classes) {
 								Annotation a = c.getAnnotation(ResourceController.class);
