@@ -46,6 +46,10 @@
             <layout>default</layout>
             <name>Repository for library Library[hibernate-support]</name>
         </repository>
+        <repository>
+            <id>ettrema-repo</id>
+            <url>http://milton.io/maven/</url>
+        </repository>       
     </repositories>     
     <dependencies>
         <!--
