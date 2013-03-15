@@ -163,7 +163,7 @@ public class MkColHandler implements Handler {
 
 		Resource existingChild = existingCol.child(newName);
 		if (existingChild != null) {
-			log.warn("item already exists: " + existingChild.getName());
+			log.warn("found already existing item: " + newName + " of type: " + existingChild.getClass() + " with actual name: " + existingChild.getName());
 			//throw new ConflictException( existingChild );
 			// See http://www.ettrema.com:8080/browse/MIL-86
 			// 405 (Method Not Allowed) - MKCOL can only be executed on a deleted/non-existent resource.

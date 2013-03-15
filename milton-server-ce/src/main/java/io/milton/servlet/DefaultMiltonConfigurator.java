@@ -41,11 +41,15 @@ import org.slf4j.LoggerFactory;
  * Provide init-params to the filter or servlet to configure it:
  * <ul>
  * <li>resource.factory.class - the class of your resource factory</li>
- * <li>response.handler.class - specify if you want a different response handler</li>
- * <li>authenticationHandlers - a list of class names for the authentication, replaces the default auth handler structure</li>
- * <li>extraAuthenticationHandlers - a list of class names for the authentication, is added to the default auth handler structure</li>
- * <li>handlers filter_X - define an ordered list of milton filters, where the name
- * is in the form filter_1, filter_2, etc and the value is the name of the filter class</li>
+ * <li>response.handler.class - specify if you want a different response
+ * handler</li>
+ * <li>authenticationHandlers - a list of class names for the authentication,
+ * replaces the default auth handler structure</li>
+ * <li>extraAuthenticationHandlers - a list of class names for the
+ * authentication, is added to the default auth handler structure</li>
+ * <li>handlers filter_X - define an ordered list of milton filters, where the
+ * name is in the form filter_1, filter_2, etc and the value is the name of the
+ * filter class</li>
  * </ul>
  *
  * @author brad
@@ -224,7 +228,8 @@ public class DefaultMiltonConfigurator implements MiltonConfigurator {
 
 	public static <T> T instantiate(String className) throws ServletException {
 		try {
-			Class c = Class.forName(className);
+			// use thread classloader, because this class might be on a child classloader without access to other classes
+			Class c = Class.forName(className, true, Thread.currentThread().getContextClassLoader()); 
 			T rf = (T) c.newInstance();
 			return rf;
 		} catch (Throwable ex) {
