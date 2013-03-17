@@ -169,8 +169,12 @@ public class HttpManagerBuilder {
 				mapOfNameAndPasswords.put(defaultUser, defaultPassword);
 				log.info("Configuring default user and password: " + defaultUser + "/" + defaultPassword + " for SimpleSecurityManager");
 			}
+			if( fsRealm == null ) {
+				fsRealm = "milton";
+			}
 			securityManager = new SimpleSecurityManager(fsRealm, mapOfNameAndPasswords);
 		}
+		log.info("Using securityManager: " + securityManager.getClass());
 		return securityManager;
 	}
 
@@ -202,8 +206,7 @@ public class HttpManagerBuilder {
 			rootDir = new File(fsHomeDir);
 			if (!rootDir.exists() || !rootDir.isDirectory()) {
 				throw new RuntimeException("Root directory is not valid: " + rootDir.getAbsolutePath());
-			}
-			log.info("Using securityManager: " + securityManager.getClass());
+			}			
 			FileSystemResourceFactory fsResourceFactory = new FileSystemResourceFactory(rootDir, securityManager(), fsContextPath);
 			fsResourceFactory.setContentService(fileContentService);
 			mainResourceFactory = fsResourceFactory;

@@ -229,7 +229,14 @@ public class DefaultMiltonConfigurator implements MiltonConfigurator {
 	public static <T> T instantiate(String className) throws ServletException {
 		try {
 			// use thread classloader, because this class might be on a child classloader without access to other classes
-			Class c = Class.forName(className, true, Thread.currentThread().getContextClassLoader()); 
+			Class c;
+			try {
+				c = Class.forName(className, true, Thread.currentThread().getContextClassLoader());
+			} catch (ClassNotFoundException e) {
+				// there are some frameworks where a class might be loadable from the local classloader, but
+				// not from the parent. So if not found on parent lets try local
+				c = Class.forName(className, true, Thread.currentThread().getContextClassLoader());
+			}
 			T rf = (T) c.newInstance();
 			return rf;
 		} catch (Throwable ex) {

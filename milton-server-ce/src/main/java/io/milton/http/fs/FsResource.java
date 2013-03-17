@@ -85,10 +85,16 @@ public abstract class FsResource implements Resource, MoveableResource, Copyable
         return b;
     }
 
+	@Override
     public String getRealm() {
-        return factory.getRealm(this.host);
+        String r = factory.getRealm(this.host);
+		if( r == null ) {
+			throw new NullPointerException("Got null realm from: " + factory.getClass() + " for host=" + this.host);
+		}
+		return r;
     }
 
+	@Override
     public Date getModifiedDate() {
         return new Date(file.lastModified());
     }

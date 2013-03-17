@@ -6,11 +6,11 @@
     <version>0.0.1-SNAPSHOT</version>
     <packaging>war</packaging>
 
-    <name>tuts-anno1</name>
+    <name>tuts-anno1-hello-world</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <milton.version>2.4.2.1</milton.version>
+        <milton.version>2.4.2.2-SNAPSHOT</milton.version>
     </properties>
 
     <build>

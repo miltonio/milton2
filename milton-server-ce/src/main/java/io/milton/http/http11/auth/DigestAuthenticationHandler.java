@@ -75,7 +75,11 @@ public class DigestAuthenticationHandler implements AuthenticationHandler {
     public Object authenticate( Resource r, Request request ) {
         DigestResource digestResource = (DigestResource) r;
         Auth auth = request.getAuthorization();
-        DigestResponse resp = digestHelper.calculateResponse(auth, r.getRealm(), request.getMethod());
+		String realm = r.getRealm();
+		if( realm == null ) {
+			throw new NullPointerException("Got null realm from resource: " + r.getClass());
+		}
+        DigestResponse resp = digestHelper.calculateResponse(auth, realm, request.getMethod());
         if( resp == null ) {
             log.info("requested digest authentication is invalid or incorrectly formatted");
             return null;

@@ -153,7 +153,11 @@ public final class FileSystemResourceFactory implements ResourceFactory {
     }
 
     public String getRealm(String host) {
-        return securityManager.getRealm(host);
+        String s = securityManager.getRealm(host);
+		if( s == null ) {
+			throw new NullPointerException("Got null realm from securityManager: " + securityManager + " for host=" + host);
+		}
+		return s;
     }
 
     /**

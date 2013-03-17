@@ -30,22 +30,31 @@ import io.milton.http.http11.auth.DigestResponse;
  */
 public class NullSecurityManager implements io.milton.http.SecurityManager {
 
-    String realm;
+    private String realm = "milton";
+
+	public NullSecurityManager() {
+	}
     
+	
+	
+	@Override
     public Object authenticate(String user, String password) {
         return user;
     }
 
+	@Override
     public Object authenticate( DigestResponse digestRequest ) {
         return digestRequest.getUser();
     }
 
 
 
+	@Override
     public boolean authorise(Request request, Method method, Auth auth, Resource resource) {
         return true;
     }
 
+	@Override
     public String getRealm(String host) {
         return realm;
     }
@@ -54,6 +63,7 @@ public class NullSecurityManager implements io.milton.http.SecurityManager {
         this.realm = realm;
     }
 
+	@Override
 	public boolean isDigestAllowed() {
 		return true;
 	}
