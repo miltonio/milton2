@@ -43,7 +43,7 @@ grails.project.dependency.resolution = {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes e.g.
 
         // runtime 'mysql:mysql-connector-java:5.1.22'
-        compile 'io.milton:milton-server-ent:2.4.2.1'
+        compile 'io.milton:milton-server-ent:2.4.2.2-SNAPSHOT'
     }
 
     plugins {

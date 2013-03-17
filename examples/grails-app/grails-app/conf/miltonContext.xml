@@ -4,9 +4,11 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
 
-
+    <bean id="resource.factory" class="com.mycompany.MyResourceFactory">
+    </bean>
 
     <bean id="milton.http.manager" class="io.milton.ent.config.HttpManagerBuilderEnt"> <!-- Note enterprise version. Only available for AGPL + Commercial users of milton -->
+        <property name="mainResourceFactory" ref="resource.factory" /> 
         <property name="enableCompression" value="false"/>
         <property name="buffering" value="never"/>      
     </bean>    
