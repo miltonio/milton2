@@ -113,7 +113,7 @@ public class GigController {
     }
 
     @PutChild
-    public Gig uploadGig(MusicianCalendar cal, String name, byte[] arr) throws IOException, ParserException {
+        public Gig uploadGig(MusicianCalendar cal, String name, byte[] arr) throws IOException, ParserException {
         Gig gig = cal.band.addGig(name, null);
         gig.setFileName(name);
         updateGig(gig, arr);

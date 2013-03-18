@@ -20,7 +20,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks the method which returns the name for a resource
+ * Marks the method which returns the name for a resource. The name of a resource
+ * must be unique within its collection. That means that when you implement
+ * ChildrenOf the name for each item must be unique within that list
  *
  * @author brad
  */

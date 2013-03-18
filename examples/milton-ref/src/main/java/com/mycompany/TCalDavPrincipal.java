@@ -51,7 +51,7 @@ import javax.mail.internet.MimeMessage;
  * @author brad
  */
 @BeanPropertyResource(value = "ldap")
-public class TCalDavPrincipal extends TFolderResource implements CalDavPrincipal, Mailbox, CalendarResource, CardDavPrincipal, LdapPrincipal, LdapContact {
+public class TCalDavPrincipal extends TFolderResource implements CalDavPrincipal, Mailbox, CalendarResource, CardDavPrincipal, LdapPrincipal, LdapContact { 
 
     private static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(AbstractResource.class);
     private HrefPrincipleId principleId;
