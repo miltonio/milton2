@@ -20,7 +20,6 @@ import com.bandstand.domain.Gig;
 import com.bandstand.domain.Musician;
 import com.bandstand.domain.SessionManager;
 import com.bandstand.util.CalUtils;
-import io.milton.annotations.CTag;
 import io.milton.annotations.Calendars;
 import io.milton.annotations.ChildrenOf;
 import io.milton.annotations.CreatedDate;
@@ -33,6 +32,7 @@ import io.milton.annotations.ResourceController;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -46,7 +46,10 @@ import net.fortuna.ical4j.model.TimeZoneRegistry;
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.component.VTimeZone;
+import net.fortuna.ical4j.model.parameter.Role;
+import net.fortuna.ical4j.model.parameter.Rsvp;
 import net.fortuna.ical4j.model.parameter.TzId;
+import net.fortuna.ical4j.model.property.Attendee;
 import net.fortuna.ical4j.model.property.ProdId;
 import net.fortuna.ical4j.model.property.Uid;
 import net.fortuna.ical4j.model.property.Version;
@@ -62,14 +65,14 @@ import org.slf4j.LoggerFactory;
  */
 @ResourceController
 public class GigController {
-    
+
     private static final Logger log = LoggerFactory.getLogger(GigController.class);
 
     @ChildrenOf
     public MusicianCalendarsHome getCalendarsHomeForMusician(Musician m) {
         return new MusicianCalendarsHome(m);
     }
-        
+
     @Calendars
     @ChildrenOf
     public List<MusicianCalendar> getCalendarsForMusician(MusicianCalendarsHome calHome) {
@@ -82,7 +85,6 @@ public class GigController {
         }
         return cals;
     }
-    
 
     @Delete
     public void delete(Gig gig) {
@@ -94,18 +96,18 @@ public class GigController {
             tx.rollback();
         }
     }
-    
+
     @Delete
     public void delete(MusicianCalendar cal) {
         Transaction tx = SessionManager.session().beginTransaction();
         try {
             cal.musician.removeFromBand(cal.band, SessionManager.session());
-            
+
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
         }
-    }    
+    }
 
     @ChildrenOf
     public List<Gig> getGigs(MusicianCalendar cal) {
@@ -113,7 +115,7 @@ public class GigController {
     }
 
     @PutChild
-        public Gig uploadGig(MusicianCalendar cal, String name, byte[] arr) throws IOException, ParserException {
+    public Gig uploadGig(MusicianCalendar cal, String name, byte[] arr) throws IOException, ParserException {
         Gig gig = cal.band.addGig(name, null);
         gig.setFileName(name);
         updateGig(gig, arr);
@@ -127,9 +129,10 @@ public class GigController {
         try {
             CalendarBuilder builder = new CalendarBuilder();
             ByteArrayInputStream bin = new ByteArrayInputStream(ical);
+            System.out.println(bin.toString());
             Calendar calendar = builder.build(bin);
             VEvent ev = (VEvent) calendar.getComponent("VEVENT");
-            gig.setStartDate(ev.getStartDate().getDate());            
+            gig.setStartDate(ev.getStartDate().getDate());
             Date endDate = null;
             if (ev.getEndDate() != null) {
                 endDate = ev.getEndDate().getDate();
@@ -174,6 +177,11 @@ public class GigController {
         TzId tzParam = new TzId(tz.getProperties().getProperty(Property.TZID).getValue());
         vevent.getProperties().getProperty(Property.DTSTART).getParameters().add(tzParam);
 
+        Attendee attendee = new Attendee(URI.create("mailto:xxx1@bradmcevoy.com"));
+        attendee.getParameters().add(Role.REQ_PARTICIPANT);//required participants.
+        attendee.getParameters().add(Rsvp.TRUE);//to get the status request from the attendees
+        vevent.getProperties().add(attendee);
+
         calendar.getComponents().add(vevent);
 
         CalendarOutputter outputter = new CalendarOutputter();
@@ -183,6 +191,7 @@ public class GigController {
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
+        System.out.println("ical: " + bout.toString());
         return bout.toByteArray();
     }
 
@@ -197,17 +206,18 @@ public class GigController {
     }
 
     public class MusicianCalendarsHome {
+
         private final Musician musician;
 
         public MusicianCalendarsHome(Musician musician) {
             this.musician = musician;
         }
-        
+
         public String getName() {
             return "cals";
         }
     }
-    
+
     public class MusicianCalendar {
 
         private final Musician musician;

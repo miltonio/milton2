@@ -1,11 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>io.milton</groupId>
-        <artifactId>milton</artifactId>
-        <version>2.4.2.3-SNAPSHOT</version>
-    </parent>
+
     <groupId>io.milton.tuts</groupId>
     <artifactId>eclipse-tut-1</artifactId>
     <version>0.0.1-SNAPSHOT</version>
@@ -16,7 +12,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <milton.version>2.4.2.3-SNAPSHOT</milton.version>
+        <milton.version>2.4.2.2</milton.version>
     </properties>
 
     <build>
@@ -40,11 +36,18 @@
         </plugins>
     </build>
 
+    <repositories>
+        <repository>
+            <id>ettrema-repo</id>
+            <url>http://milton.io/maven/</url>
+        </repository>       
+    </repositories>     
+
     <dependencies>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-            <version>1.5.2</version>
+            <version>1.6.1</version>
         </dependency>
         <dependency>
             <groupId>io.milton</groupId>
