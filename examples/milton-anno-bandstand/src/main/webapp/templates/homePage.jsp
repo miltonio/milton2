@@ -31,7 +31,7 @@
                     <div class="well" id="musosDiv">
                         <h1>
                             Musicians
-                            <a href="/musicians/new?editMode  .container form" class="btn pull-right newItem modalLink" data-toggle="modal" data-target="#newItemModal" ><i class="icon-plus-sign"></i> Add</a>
+                            <a href="/musicians/new?editMode .container form" class="btn pull-right newItem modalLink" data-toggle="modal" data-target="#newItemModal" ><i class="icon-plus-sign"></i> Add</a>
                         </h1>
                         <p>Here are all the musicians in our database</p>
                         <ul>
