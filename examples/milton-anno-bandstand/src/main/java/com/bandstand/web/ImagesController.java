@@ -26,6 +26,8 @@ import io.milton.annotations.Move;
 import io.milton.annotations.Name;
 import io.milton.annotations.PutChild;
 import io.milton.annotations.ResourceController;
+import io.milton.http.annotated.AnnoCollectionResource;
+import io.milton.http.annotated.AnnoResource;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -58,7 +60,8 @@ public class ImagesController {
     }
 
     @PutChild
-    public Image uploadImage(ImagesRoot root, String newName, byte[] bytes) throws IOException {
+    public Image uploadImage(ImagesRoot root, String newName, byte[] bytes, AnnoCollectionResource parentCol) throws IOException {
+        System.out.println("upload. parent=" + parentCol);
         Transaction tx = SessionManager.session().beginTransaction();
         File fRoot = getContentRoot();
         File content = new File(fRoot, UUID.randomUUID().toString());
@@ -80,8 +83,12 @@ public class ImagesController {
         return i;
     }
     
+    /**
+     *  Shows you can request a parent object in the arguments list, ie ImagesRoot
+     */
     @PutChild
-    public Image uploadImage(Image image, byte[] bytes) throws IOException {
+    public Image uploadImage(Image image, byte[] bytes, ImagesRoot root) throws IOException {
+        System.out.println("replacing image in: " + root );
         File content = new File(image.getFileName());
         FileUtils.writeByteArrayToFile(content, bytes);
         return image;

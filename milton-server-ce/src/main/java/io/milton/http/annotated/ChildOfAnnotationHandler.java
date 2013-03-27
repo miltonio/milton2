@@ -52,7 +52,7 @@ public class ChildOfAnnotationHandler extends AbstractAnnotationHandler {
 			
 			for (ControllerMethod cm : availMethods) {
 				if (matchesSuffix(cm, childName)) {
-					Object o = invoke(cm, source, parent, childName);
+					Object o = invoke(cm, parent, childName);
 					if (o == null) {
 						// ignore
 					} else {

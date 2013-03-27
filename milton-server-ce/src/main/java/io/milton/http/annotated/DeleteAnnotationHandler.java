@@ -31,14 +31,15 @@ public class DeleteAnnotationHandler extends AbstractAnnotationHandler {
 		super(outer, Delete.class, Method.DELETE);
 	}
 
-	void execute(Object source) {
+	void execute(AnnoResource res) {
 		log.trace("execute DELETE method");
+		Object source = res.getSource();
 		ControllerMethod cm = getBestMethod(source.getClass());
 		if (cm == null) {
 			throw new RuntimeException("Method not found: " + getClass() + " - " + source.getClass());
 		}
 		try {
-			Object[] args = outer.buildInvokeArgs(source, cm.method);
+			Object[] args = outer.buildInvokeArgs(res, cm.method);
 			cm.method.invoke(cm.controller, args);
 		} catch (Exception e) {
 			throw new RuntimeException(e);

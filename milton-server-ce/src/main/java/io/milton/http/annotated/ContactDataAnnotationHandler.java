@@ -52,7 +52,7 @@ public class ContactDataAnnotationHandler extends AbstractAnnotationHandler {
 					}
 				}
 			} else {
-				value = invoke(cm, source, contactRes);
+				value = invoke(cm, contactRes);
 			}
 			if (value != null) {
 				if( value instanceof String ) {

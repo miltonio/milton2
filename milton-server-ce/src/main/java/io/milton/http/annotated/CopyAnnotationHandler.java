@@ -32,8 +32,9 @@ public class CopyAnnotationHandler extends AbstractAnnotationHandler {
 		super(outer, Copy.class, Method.COPY);
 	}
 
-	void execute(Object source, CollectionResource rDest, String newName) {
+	void execute(AnnoResource res, CollectionResource rDest, String newName) {
 		log.trace("execute COPY method");
+		Object source = res.getSource();
 		ControllerMethod cm = getBestMethod(source.getClass());
 		if (cm == null) {
 			throw new RuntimeException("Method not found: " + getClass() + " - " + source.getClass());
@@ -44,7 +45,7 @@ public class CopyAnnotationHandler extends AbstractAnnotationHandler {
 				AnnoResource arDest = (AnnoResource) rDest;
 				destObject = arDest.getSource();
 			}
-			invoke(cm, source, newName, rDest, destObject);
+			invoke(cm, res, newName, rDest, destObject);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

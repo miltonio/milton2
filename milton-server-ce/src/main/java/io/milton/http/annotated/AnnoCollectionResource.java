@@ -128,7 +128,7 @@ public class AnnoCollectionResource extends AnnoResource implements CollectionRe
 	}
 	@Override
 	public CollectionResource createCollection(String newName) throws NotAuthorizedException, ConflictException, BadRequestException {
-		Object newlyCreatedSource = annoFactory.makCollectionAnnotationHandler.execute(source, newName);
+		Object newlyCreatedSource = annoFactory.makCollectionAnnotationHandler.execute(this, newName);
 		AnnoCollectionResource r = new AnnoCollectionResource(annoFactory, newlyCreatedSource, this);
 		if (children != null) {
 			children.add(r);
@@ -138,7 +138,7 @@ public class AnnoCollectionResource extends AnnoResource implements CollectionRe
 
 	@Override
 	public Resource createNew(String newName, InputStream inputStream, Long length, String contentType) throws IOException, ConflictException, NotAuthorizedException, BadRequestException {
-		Object newChildSource = annoFactory.putChildAnnotationHandler.execute(source, newName, inputStream, length, contentType);
+		Object newChildSource = annoFactory.putChildAnnotationHandler.execute(this, newName, inputStream, length, contentType);
 		AnnoCollectionResource newRes = new AnnoCollectionResource(annoFactory, newChildSource, this);
 		if (children != null) {
 			CommonResource oldRes = children.get(newName);

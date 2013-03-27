@@ -35,7 +35,7 @@ public class ChildrenOfAnnotationHandler extends AbstractAnnotationHandler {
 		Set<AnnoResource> result = new HashSet<AnnoResource>();
 		for (ControllerMethod cm : getMethods(source.getClass())) {
 			try {
-				Object o = invoke(cm, source, parent);
+				Object o = invoke(cm, parent);
 				if( o == null ) {
 					// ignore
 				} else if( o instanceof Collection ) {

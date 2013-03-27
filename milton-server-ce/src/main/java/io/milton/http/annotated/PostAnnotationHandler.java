@@ -48,7 +48,7 @@ public class PostAnnotationHandler extends AbstractAnnotationHandler {
 	 * @param contentType
 	 * @return
 	 */
-	public Object execute(AnnoResource resource,Request request, Map<String, String> params) {
+	public Object execute(AnnoResource resource, Request request, Map<String, String> params) {
 		Object source = resource.getSource();
 		ControllerMethod cm = getBestMethod(source.getClass(), null, params, null);
 		if (cm == null) {
@@ -73,17 +73,17 @@ public class PostAnnotationHandler extends AbstractAnnotationHandler {
 			log.warn("Exception running DataBinder:", e);
 			return JsonResult.error(e.getMessage());
 		}
-		
+
 		try {
-			Object[] args = outer.buildInvokeArgs(source, cm.method, params);
+			Object[] args = outer.buildInvokeArgs(resource, cm.method, params);
 			Object result = cm.method.invoke(cm.controller, args);
 			return result;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
-	
-	public ControllerMethod getPostMethod(AnnoResource resource,Request request, Map<String, String> params) {
+
+	public ControllerMethod getPostMethod(AnnoResource resource, Request request, Map<String, String> params) {
 		Object source = resource.getSource();
 		ControllerMethod cm = getBestMethod(source.getClass(), null, params, null);
 		return cm;

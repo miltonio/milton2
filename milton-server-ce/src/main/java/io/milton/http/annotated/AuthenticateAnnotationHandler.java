@@ -49,7 +49,7 @@ public class AuthenticateAnnotationHandler extends AbstractAnnotationHandler {
 			for (ControllerMethod cm : availMethods) {
 				// if it returns String then it returns a password. Otherwise is authenticate method
 				if (cm.method.getReturnType().equals(String.class)) {
-					String result = (String) invoke(cm, source, cm.method, userRes);
+					String result = (String) invoke(cm, userRes, cm.method, userRes);
 					if (result == null) {
 						log.warn("Null password from: " + cm + " for user: " + userRes.getHref());
 						return false;
@@ -57,7 +57,7 @@ public class AuthenticateAnnotationHandler extends AbstractAnnotationHandler {
 						return result.equals(requestedPassword);
 					}
 				} else if (cm.method.getReturnType().equals(Boolean.class)) {
-					Object[] args = outer.buildInvokeArgs(source, cm.method, userRes, requestedPassword);
+					Object[] args = outer.buildInvokeArgs(userRes, cm.method, requestedPassword);
 					Boolean result = (Boolean) cm.method.invoke(cm.controller, args);
 					if (result != null) {
 						return result;
@@ -82,7 +82,7 @@ public class AuthenticateAnnotationHandler extends AbstractAnnotationHandler {
 			for (ControllerMethod cm : availMethods) {
 				// if it returns String then it returns a password. Otherwise is authenticate method
 				if (cm.method.getReturnType().equals(String.class)) {
-					Object[] args = outer.buildInvokeArgs(source, cm.method, userRes);
+					Object[] args = outer.buildInvokeArgs(userRes, cm.method, userRes);
 					String result = (String) cm.method.invoke(cm.controller, args);
 					if (result == null) {
 						log.warn("Null password from: " + cm + " for user: " + userRes.getHref());
@@ -98,7 +98,7 @@ public class AuthenticateAnnotationHandler extends AbstractAnnotationHandler {
 						}
 					}
 				} else if (cm.method.getReturnType().equals(Boolean.class)) {
-					Object[] args = outer.buildInvokeArgs(source, cm.method, userRes, digestRequest);
+					Object[] args = outer.buildInvokeArgs(userRes, cm.method, digestRequest);
 					Boolean result = (Boolean) cm.method.invoke(cm.controller, args);
 					if (result != null) {
 						return result;

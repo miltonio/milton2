@@ -349,22 +349,30 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	 * @return
 	 * @throws Exception
 	 */
-	public Object[] buildInvokeArgs(Object source, java.lang.reflect.Method m, Object... otherValues) throws Exception {
+	public Object[] buildInvokeArgs(AnnoResource sourceRes, java.lang.reflect.Method m, Object... otherValues) throws Exception {
 		Request request = HttpManager.request();
 		Response response = HttpManager.response();
 		Object[] args = new Object[m.getParameterTypes().length];
-		args[0] = source; // first arg is required to be source
 		List list = new ArrayList();
+		
+		// put this resource and all its parents on the stack
+		AnnoResource r = sourceRes;
+		while( r != null ) {
+			list.add(r.getSource()); // First argument MUST be the source object!!!
+			list.add(r);			
+			r = r.getParent();
+		}
+		
 		for (Object s : otherValues) {
 			list.add(s);
 		}
-		for (int i = 1; i < m.getParameterTypes().length; i++) {
+		for (int i = 0; i < m.getParameterTypes().length; i++) {
 			Class type = m.getParameterTypes()[i];
 			Object argValue;
 			try {
 				argValue = findArgValue(type, request, response, list);
 			} catch (UnresolvableParameterException e) {
-				//throw new Exception("Couldnt find parameter " + type + " for method: " + m);
+				//System.out.println("Couldnt find parameter " + type + " for method: " + m);				
 				argValue = null;
 			}
 			args[i] = argValue;

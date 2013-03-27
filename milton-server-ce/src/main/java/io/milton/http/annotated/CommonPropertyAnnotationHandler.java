@@ -37,11 +37,12 @@ public class CommonPropertyAnnotationHandler<T> extends AbstractAnnotationHandle
 		propertyNames = propNames;
 	}
 
-	public T get(Object source) {
+	public T get(AnnoResource res) {
+		Object source = res.getSource();
 		try {
 			ControllerMethod cm = getBestMethod(source.getClass(), null, null, Object.class);
 			if (cm != null) {
-				T val = (T) invoke(cm, source);
+				T val = (T) invoke(cm, res);
 				return val;
 			} else {
 				// look for an annotation on the source itself
@@ -63,7 +64,8 @@ public class CommonPropertyAnnotationHandler<T> extends AbstractAnnotationHandle
 		}
 	}
 
-	public void set(Object source, T newValue) {
+	public void set(AnnoResource res, T newValue) {
+		Object source = res.getSource();
 		try {
 			ControllerMethod cm = getBestMethod(source.getClass(), null, null, Void.TYPE);
 			if (cm == null) {
@@ -80,7 +82,7 @@ public class CommonPropertyAnnotationHandler<T> extends AbstractAnnotationHandle
 					}
 				}
 			} else {
-				invoke(cm, source, newValue);
+				invoke(cm, res, newValue);
 			}
 		} catch (Exception e) {
 			throw new RuntimeException("Exception executing " + annoClass + " - " + source.getClass(), e);

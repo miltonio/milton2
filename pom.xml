@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.milton</groupId>
 	<artifactId>milton</artifactId>
-	<version>2.4.2.3-SNAPSHOT</version>
+	<version>2.4.2.3</version>
 	<packaging>pom</packaging>
 	<name>milton</name>
 	<url>http://milton.io</url>

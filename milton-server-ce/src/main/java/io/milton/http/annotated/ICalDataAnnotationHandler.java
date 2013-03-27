@@ -53,7 +53,7 @@ public class ICalDataAnnotationHandler extends AbstractAnnotationHandler {
 					}
 				}
 			} else {
-				value = invoke(cm, source, eventRes);
+				value = invoke(cm, eventRes);
 			}
 			if (value != null) {
 				if( value instanceof String ) {

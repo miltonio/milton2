@@ -36,7 +36,7 @@ public class ContentTypeAnnotationHandler extends AbstractAnnotationHandler {
 		try {			
 			ControllerMethod cm = getBestMethod(source.getClass(), null, null, Object.class);
 			if (cm != null) {
-				String val = (String) invoke(cm, source, accepts);
+				String val = (String) invoke(cm, res, accepts);
 				return val;
 			} else {
 				// look for an annotation on the source itself

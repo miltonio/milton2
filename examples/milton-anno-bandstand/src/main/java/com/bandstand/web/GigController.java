@@ -29,6 +29,7 @@ import io.milton.annotations.ICalData;
 import io.milton.annotations.ModifiedDate;
 import io.milton.annotations.PutChild;
 import io.milton.annotations.ResourceController;
+import io.milton.http.annotated.AnnoResource;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

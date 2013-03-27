@@ -114,7 +114,7 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 
 	@Override
 	public String getUniqueId() {
-		Object o = annoFactory.uniqueIdAnnotationHandler.get(source);
+		Object o = annoFactory.uniqueIdAnnotationHandler.get(this);
 		if( o == null ) {
 			return null;
 		} else {
@@ -127,7 +127,7 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 		if (nameOverride != null) {
 			return nameOverride;
 		}
-		String name = annoFactory.nameAnnotationHandler.get(source);
+		String name = annoFactory.nameAnnotationHandler.get(this);
 		if (name == null) {
 			log.warn("No @Name for source class: " + source.getClass() + " Please implement a @Name method to identify the name of this type");
 			name = source.toString();
@@ -204,7 +204,7 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 
 	@Override
 	public Date getModifiedDate() {
-		Object o = annoFactory.modifiedDateAnnotationHandler.get(source);
+		Object o = annoFactory.modifiedDateAnnotationHandler.get(this);
 		if( o instanceof Date) {
 			return (Date) o;
 		} else if( o == null ) {
@@ -223,7 +223,7 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 
 	@Override
 	public void delete() throws NotAuthorizedException, ConflictException, BadRequestException {
-		annoFactory.deleteAnnotationHandler.execute(source);
+		annoFactory.deleteAnnotationHandler.execute(this);
 	}
 
 	@Override
@@ -251,13 +251,13 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 
 	@Override
 	public Date getCreateDate() {
-		return annoFactory.createdDateAnnotationHandler.get(source);
+		return annoFactory.createdDateAnnotationHandler.get(this);
 	}
 
 	@Override
 	public void moveTo(CollectionResource rDest, String name) throws ConflictException, NotAuthorizedException, BadRequestException {
 		nameOverride = null; // reset any explicitly set name (eg for creating new resources)
-		annoFactory.moveAnnotationHandler.execute(source, rDest, name);
+		annoFactory.moveAnnotationHandler.execute(this, rDest, name);
 	}
 
 	public Object getSource() {
@@ -275,7 +275,7 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 
 	@Override
 	public void copyTo(CollectionResource toCollection, String name) throws NotAuthorizedException, BadRequestException, ConflictException {
-		annoFactory.copyAnnotationHandler.execute(source, toCollection, name);
+		annoFactory.copyAnnotationHandler.execute(this, toCollection, name);
 	}
 
 	@Override
@@ -295,7 +295,7 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 				return null;
 			}
 		}
-		Long l = annoFactory.maxAgeAnnotationHandler.get(source);
+		Long l = annoFactory.maxAgeAnnotationHandler.get(this);
 		return l;
 	}
 
@@ -313,7 +313,7 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 
 	@Override
 	public Long getContentLength() {
-		return annoFactory.contentLengthAnnotationHandler.get(source);
+		return annoFactory.contentLengthAnnotationHandler.get(this);
 	}
 
 	@Override

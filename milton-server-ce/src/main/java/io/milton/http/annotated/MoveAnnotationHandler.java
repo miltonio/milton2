@@ -32,8 +32,9 @@ public class MoveAnnotationHandler extends AbstractAnnotationHandler {
 		super(outer, Move.class, Method.MOVE);
 	}
 
-	void execute(Object source, CollectionResource rDest, String newName) {
+	void execute(AnnoResource res, CollectionResource rDest, String newName) {
 		log.trace("execute MOVE method");
+		Object source = res.getSource();
 		ControllerMethod cm = getBestMethod(source.getClass());
 		if (cm == null) {
 			throw new RuntimeException("Method not found: " + getClass() + " - " + source.getClass());
@@ -44,7 +45,7 @@ public class MoveAnnotationHandler extends AbstractAnnotationHandler {
 				AnnoResource arDest = (AnnoResource) rDest;
 				destObject = arDest.getSource();
 			}
-			Object[] args = outer.buildInvokeArgs(source, cm.method, newName, rDest, destObject);
+			Object[] args = outer.buildInvokeArgs(res, cm.method, newName, rDest, destObject);
 			cm.method.invoke(cm.controller, args);
 		} catch (Exception e) {
 			throw new RuntimeException(e);

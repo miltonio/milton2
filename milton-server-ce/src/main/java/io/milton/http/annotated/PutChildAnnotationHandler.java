@@ -33,8 +33,9 @@ public class PutChildAnnotationHandler extends AbstractAnnotationHandler {
 		super(outer, PutChild.class, Method.PUT);
 	}
 
-	public Object execute(Object source, String newName, InputStream inputStream, Long length, String contentType) {
+	public Object execute(AnnoResource res, String newName, InputStream inputStream, Long length, String contentType) {
 		log.trace("execute PUT method");
+		Object source = res.getSource();
 		ControllerMethod cm = getBestMethod(source.getClass());
 		if (cm == null) {
 			if (controllerMethods.isEmpty()) {
@@ -48,8 +49,9 @@ public class PutChildAnnotationHandler extends AbstractAnnotationHandler {
 			throw new RuntimeException("Method not found: " + getClass() + " - " + source.getClass());
 		}
 		try {
-			Object[] args = outer.buildInvokeArgs(source, cm.method, newName, inputStream, length, contentType);
-			return cm.method.invoke(cm.controller, args); 
+			//Object[] args = outer.buildInvokeArgs(source, cm.method, newName, inputStream, length, contentType);
+			//return cm.method.invoke(cm.controller, args); 
+			return invoke(cm, res, newName, inputStream, length, contentType);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -62,12 +64,12 @@ public class PutChildAnnotationHandler extends AbstractAnnotationHandler {
 		if (cm == null) {
 			// ok, cant replace. Maybe we can delete and PUT?
 			String name = fileRes.getName();
-			outer.deleteAnnotationHandler.execute(source);
-			execute(fileRes.getParent().getSource(), name, inputStream, length, null);
+			outer.deleteAnnotationHandler.execute(fileRes);
+			execute(fileRes.getParent(), name, inputStream, length, null);
 
 		} else {
 			try {
-				invoke(cm, source, inputStream, length, fileRes);
+				invoke(cm, fileRes, inputStream, length, fileRes);
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}

@@ -239,13 +239,13 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 		return 0;
 	}
 
-	protected Object invoke(ControllerMethod cm, Object source, Object... values) throws Exception {
+	protected Object invoke(ControllerMethod cm, AnnoResource sourceRes, Object... values) throws Exception {
 		try {
 			Object[] args;
 			if( values == null || values.length == 0) {
-				args = outer.buildInvokeArgs(source, cm.method);
+				args = outer.buildInvokeArgs(sourceRes, cm.method);
 			} else {
-				args = outer.buildInvokeArgs(source, cm.method, values);
+				args = outer.buildInvokeArgs(sourceRes, cm.method, values);
 			}
 			return cm.method.invoke(cm.controller, args);
 		} catch (Exception e) {

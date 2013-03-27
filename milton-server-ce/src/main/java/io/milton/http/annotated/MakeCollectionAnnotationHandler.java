@@ -31,14 +31,15 @@ public class MakeCollectionAnnotationHandler extends AbstractAnnotationHandler {
 		super(outer, MakeCollection.class, Method.MKCOL);
 	}
 
-	public Object execute(Object source, String newName) {
+	public Object execute(AnnoResource res, String newName) {
 		log.trace("execute MKCOL method");
+		Object source = res.getSource();
 		ControllerMethod cm = getBestMethod(source.getClass());
 		if (cm == null) {
 			throw new RuntimeException("Method not found: " + getClass() + " - " + source.getClass());
 		}
 		try {
-			Object[] args = outer.buildInvokeArgs(source, cm.method, newName);
+			Object[] args = outer.buildInvokeArgs(res, cm.method, newName);
 			Object o = cm.method.invoke(cm.controller, args);
 			if( o == null ) {
 				throw new RuntimeException("Method returned null object or void: " + cm.controller.getClass() + "::" + cm.method.getName() + " - should return newly created object");
