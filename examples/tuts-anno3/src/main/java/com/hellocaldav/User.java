@@ -2,11 +2,8 @@ package com.hellocaldav;
 
 import java.util.List;
 
-/**
- *
- * @author brad
- */
 public class User {
+
     private String name;
     private String password;
     private List<Meeting> meetings;
@@ -27,7 +24,6 @@ public class User {
         this.password = password;
     }
 
-    
     public List<Meeting> getMeetings() {
         return meetings;
     }
@@ -35,5 +31,4 @@ public class User {
     public void setMeetings(List<Meeting> meetings) {
         this.meetings = meetings;
     }
-    
 }

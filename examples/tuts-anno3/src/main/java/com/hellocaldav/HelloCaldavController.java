@@ -22,6 +22,7 @@ import io.milton.annotations.Authenticate;
 import io.milton.annotations.Calendars;
 import io.milton.annotations.ChildrenOf;
 import io.milton.annotations.Get;
+import io.milton.annotations.ICalData;
 import io.milton.annotations.ModifiedDate;
 import io.milton.annotations.PutChild;
 import io.milton.annotations.ResourceController;
@@ -71,11 +72,12 @@ public class HelloCaldavController {
     }
 
     @ChildrenOf
-    public List<Meeting> getCalendarsHome(Calendar cal) {
+    public List<Meeting> getCalendar(Calendar cal) {
         return cal.user.getMeetings();
     }
 
     @Get
+    @ICalData
     public byte[] getMeetingData(Meeting m) {
         return m.getIcalData();
     }
@@ -114,7 +116,6 @@ public class HelloCaldavController {
     }
 
     public class UsersHome {
-
         public String getName() {
             return "users";
         }
