@@ -75,7 +75,8 @@ public class ReflectionUtils {
 
 			// loop through files in classpath
 		} else {
-			File directory = new File(packageURL.getFile());
+			String f = URLDecoder.decode( packageURL.getFile(), "UTF-8" ) ;
+			File directory = new File(f);
 			String[] files = directory.list();
 			if (files != null && files.length > 0) {
 				if (log.isTraceEnabled()) {
