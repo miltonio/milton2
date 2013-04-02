@@ -85,7 +85,9 @@ public class ReflectionUtils {
 
 				for (int i = 0; i < files.length; i++) {
 					if (files[i].endsWith(".class")) {
-						classes.add(Class.forName(packageName + '.' + files[i].substring(0, files[i].length() - 6)));
+						String className = packageName + '.' + files[i].substring(0, files[i].length() - 6);
+						Class c = cld.loadClass(className);
+						classes.add(c);
 					}
 				}
 			} else {
@@ -93,5 +95,10 @@ public class ReflectionUtils {
 			}
 		}
 		return classes;
+	}
+	
+	public static Class loadClass(String className) throws ClassNotFoundException {
+		ClassLoader cld = Thread.currentThread().getContextClassLoader();
+		return cld.loadClass(className);
 	}
 }

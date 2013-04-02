@@ -157,6 +157,7 @@ public class HttpManagerBuilder {
 	protected LoginResponseHandler.LoginPageTypeHandler loginPageTypeHandler = new LoginResponseHandler.ContentTypeLoginPageTypeHandler();
 	protected boolean enableExpectContinue = false;
 	protected String controllerPackagesToScan;
+	protected String controlleClassNames;
 	private Long maxAgeSeconds = 10l;
 	private String fsHomeDir = null;
 	private PropFindRequestFieldParser propFindRequestFieldParser;
@@ -169,7 +170,7 @@ public class HttpManagerBuilder {
 				mapOfNameAndPasswords.put(defaultUser, defaultPassword);
 				log.info("Configuring default user and password: " + defaultUser + "/" + defaultPassword + " for SimpleSecurityManager");
 			}
-			if( fsRealm == null ) {
+			if (fsRealm == null) {
 				fsRealm = "milton";
 			}
 			securityManager = new SimpleSecurityManager(fsRealm, mapOfNameAndPasswords);
@@ -206,7 +207,7 @@ public class HttpManagerBuilder {
 			rootDir = new File(fsHomeDir);
 			if (!rootDir.exists() || !rootDir.isDirectory()) {
 				throw new RuntimeException("Root directory is not valid: " + rootDir.getAbsolutePath());
-			}			
+			}
 			FileSystemResourceFactory fsResourceFactory = new FileSystemResourceFactory(rootDir, securityManager(), fsContextPath);
 			fsResourceFactory.setContentService(fileContentService);
 			mainResourceFactory = fsResourceFactory;
@@ -248,7 +249,7 @@ public class HttpManagerBuilder {
 				if (formAuthenticationHandler != null) {
 					authenticationHandlers.add(formAuthenticationHandler);
 				}
-				if( extraAuthenticationHandlers != null && !extraAuthenticationHandlers.isEmpty() ) {
+				if (extraAuthenticationHandlers != null && !extraAuthenticationHandlers.isEmpty()) {
 					log.info("Adding extra auth handlers: " + extraAuthenticationHandlers.size());
 					authenticationHandlers.addAll(extraAuthenticationHandlers);
 				}
@@ -262,7 +263,7 @@ public class HttpManagerBuilder {
 								cookieDelegateHandlers.add(basicHandler);
 								authenticationHandlers.remove(basicHandler);
 							}
-							if( digestHandler != null ) {
+							if (digestHandler != null) {
 								cookieDelegateHandlers.add(digestHandler);
 								authenticationHandlers.remove(digestHandler);
 							}
@@ -535,10 +536,10 @@ public class HttpManagerBuilder {
 	}
 
 	/**
-	 * You can add some extra auth handlers here, which will be added to the default
-	 * auth handler structure such as basic, digest and cookie. 
-	 * 
-	 * @return 
+	 * You can add some extra auth handlers here, which will be added to the
+	 * default auth handler structure such as basic, digest and cookie.
+	 *
+	 * @return
 	 */
 	public List<AuthenticationHandler> getExtraAuthenticationHandlers() {
 		return extraAuthenticationHandlers;
@@ -548,8 +549,6 @@ public class HttpManagerBuilder {
 		this.extraAuthenticationHandlers = extraAuthenticationHandlers;
 	}
 
-	
-	
 	/**
 	 * Map holding nonce values issued in Digest authentication challenges
 	 *
@@ -1134,6 +1133,12 @@ public class HttpManagerBuilder {
 		this.enableExpectContinue = enableExpectContinue;
 	}
 
+	/**
+	 * If true milton will response to Expect: Continue requests. This can
+	 * cause a problem on some web servers
+	 * 
+	 * @return 
+	 */
 	public boolean isEnableExpectContinue() {
 		return enableExpectContinue;
 	}
@@ -1142,6 +1147,13 @@ public class HttpManagerBuilder {
 		return outerWebdavResponseHandler;
 	}
 
+	/**
+	 * If not null, is expected to be a comma seperated list of package names. These
+	 * will be scanned for classes which contain classes annotated with ResourceController,
+	 * and those found will be added to the controllers list
+	 * 
+	 * @return 
+	 */
 	public String getControllerPackagesToScan() {
 		return controllerPackagesToScan;
 	}
@@ -1150,6 +1162,27 @@ public class HttpManagerBuilder {
 		this.controllerPackagesToScan = controllerPackagesToScan;
 	}
 
+	/**
+	 * As an alternative to package scanning via the controllerPackagesToScan property,
+	 * set this property to a comma seperated list of class names. These will be
+	 * loaded and checked for the ResourceController annotation, and if present,
+	 * will be added to the controllers list
+	 * 
+	 * @return 
+	 */
+	public String getControlleClassNames() {
+		return controlleClassNames;
+	}
+
+	public void setControlleClassNames(String controlleClassNames) {
+		this.controlleClassNames = controlleClassNames;
+	}
+
+	/**
+	 * Default max-age to use for certain resource types which can use a default value
+	 * 
+	 * @return 
+	 */
 	public Long getMaxAgeSeconds() {
 		return maxAgeSeconds;
 	}
@@ -1203,7 +1236,7 @@ public class HttpManagerBuilder {
 				AnnotationResourceFactory arf = (AnnotationResourceFactory) getMainResourceFactory();
 				if (arf.getControllers() == null) {
 					List controllers = new ArrayList();
-					if (controllerPackagesToScan != null) {						
+					if (controllerPackagesToScan != null) {
 						for (String packageName : controllerPackagesToScan.split(",")) {
 							packageName = packageName.trim();
 							log.info("init annotations controllers from package: " + packageName);
@@ -1217,8 +1250,24 @@ public class HttpManagerBuilder {
 							}
 						}
 					}
+					if (controlleClassNames != null) {
+						for (String className : controlleClassNames.split(",")) {
+							className = className.trim();
+							log.info("init annotation controller: " + className);
+							Class c = ReflectionUtils.loadClass(className);
+							Annotation a = c.getAnnotation(ResourceController.class);
+							if (a != null) {
+								Object controller = c.newInstance();
+								controllers.add(controller);
+							} else {
+								log.warn("No " + ResourceController.class + " annotation on class: " + c.getCanonicalName() + " provided in controlleClassNames");
+							}
+						}
+
+					}
 					arf.setControllers(controllers);
 				}
+
 				if (arf.getMaxAgeSeconds() == null) {
 					arf.setMaxAgeSeconds(maxAgeSeconds);
 				}
