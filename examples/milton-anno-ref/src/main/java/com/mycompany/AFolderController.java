@@ -36,12 +36,7 @@ import java.util.List;
  */
 @ResourceController
 public class AFolderController {
-    
-    @Root
-    public MyDatabase.FolderContentItem getRoot() {
-        return MyDatabase.getRoot();
-    }
-    
+        
     @ChildrenOf
     public List<MyDatabase.AbstractContentItem> children(MyDatabase.FolderContentItem folder) {
         return folder.getChildren();

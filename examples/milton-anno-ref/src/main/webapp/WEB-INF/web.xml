@@ -21,18 +21,18 @@
         </init-param>
         
         <!-- List packages where milton should find, and instantiate, controllers -->
+        <!--
         <init-param>
             <param-name>controllerPackagesToScan</param-name>
             <param-value>com.mycompany</param-value>
         </init-param>
+        -->
 
         <!-- Package scanning doesnt work in some situations, instead you can provide each controller in a comma seperated list -->
-        <!--
         <init-param>
             <param-name>controlleClassNames</param-name>
-            <param-value>com.mycompany.AFolderController</param-value>
+            <param-value>com.mycompany.RootController,com.mycompany.AFolderController</param-value>
         </init-param>        
-        -->        
         
         <!-- If using DefaultMiltonConfigurator, or a subclass, you can set any bean property of the HttpManagerBuilder here -->
         <init-param>
