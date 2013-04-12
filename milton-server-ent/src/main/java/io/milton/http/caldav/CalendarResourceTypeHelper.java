@@ -90,7 +90,7 @@ public class CalendarResourceTypeHelper implements ResourceTypeHelper {
         list.add("calendar-access");
         
         // if present (but not actually implemented) causes problems with thunderbird
-        //list.add("calendar-schedule");
+        LockUtils.add(list, "calendar-schedule");
         LockUtils.add(list, "extended-mkcol");
         list.add("calendar-proxy");
 //        }
