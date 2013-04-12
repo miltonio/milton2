@@ -5,6 +5,7 @@
 
 package io.milton.http.caldav;
 
+import io.milton.http.HttpManager;
 import io.milton.http.ResourceFactory;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
@@ -65,6 +66,7 @@ public class MultiGetReport implements Report {
         List<PropFindResponse> respProps = new ArrayList<PropFindResponse>();
 
         for (String href : hrefs) {
+            href = HttpManager.decodeUrl( href );
             Resource r = resourceFactory.getResource(host, href);
             if (r != null) {
                 if (r instanceof PropFindableResource) {
