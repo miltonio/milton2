@@ -6,7 +6,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <packaging>war</packaging>
 
-    <name>tuts-anno1-hello-world</name>
+    <name>tuts-anno4-carddav</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -17,11 +17,14 @@
         <plugins>
             <plugin>
                 <groupId>org.mortbay.jetty</groupId>
-                <artifactId>maven-jetty-plugin</artifactId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>8.1.8.v20121106</version>
                 <configuration>
-                    <contextPath>/</contextPath>
+                    <webAppConfig>
+                        <contextPath>/</contextPath>
+                    </webAppConfig>
                     <connectors>
-                        <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
+                        <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
                             <!--<port>8085</port>-->
                             <port>8080</port>
                             <maxIdleTime>60000</maxIdleTime>
@@ -36,7 +39,7 @@
 
     <repositories>
         <repository>
-            <id>ettrema-repo</id>
+            <id>milton-repo</id>
             <url>http://milton.io/maven/</url>
         </repository>       
     </repositories>     
@@ -50,7 +53,7 @@
         </dependency>
         <dependency>
             <groupId>io.milton</groupId>
-            <artifactId>milton-server-ce</artifactId>
+            <artifactId>milton-server-ent</artifactId>
             <version>${milton.version}</version>
         </dependency>     
     </dependencies>

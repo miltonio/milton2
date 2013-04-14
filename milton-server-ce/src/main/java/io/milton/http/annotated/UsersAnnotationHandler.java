@@ -28,19 +28,28 @@ import java.util.List;
 public class UsersAnnotationHandler extends AbstractAnnotationHandler {
 
 	public static final String NOT_ATTEMPTED = "NotAttempted";
-	
+
 	public UsersAnnotationHandler(final AnnotationResourceFactory outer) {
 		super(outer, Users.class);
 	}
 
-	public AnnoPrincipalResource findUser(AnnoCollectionResource root, String name)  {
+	public AnnoPrincipalResource findUser(AnnoCollectionResource root, String name) {
 		try {
+			List<ControllerMethod> availMethods = getMethods(root.getSource().getClass());
+			if (!availMethods.isEmpty()) {
+				Resource r = root.child(name);
+				if (r instanceof AnnoPrincipalResource) {
+					AnnoPrincipalResource apr = (AnnoPrincipalResource) r;
+					return apr;
+				}
+			}
+
 			// iterate over each root collection, looking for objects which have
 			// a @Authenticate annotation on their ChildOf or ChildrenOf methods
-			for (CommonResource col : root.getChildren()) {				
+			for (CommonResource col : root.getChildren()) {
 				if (col instanceof AnnoCollectionResource) {
 					AnnoCollectionResource acr = (AnnoCollectionResource) col;
-					List<ControllerMethod> availMethods = getMethods(acr.getSource().getClass());
+					availMethods = getMethods(acr.getSource().getClass());
 					if (!availMethods.isEmpty()) {
 						Resource r = acr.child(name);
 						if (r instanceof AnnoPrincipalResource) {
@@ -58,12 +67,12 @@ public class UsersAnnotationHandler extends AbstractAnnotationHandler {
 		return null;
 	}
 
-	public List<AnnoCollectionResource> findUsersCollections(AnnoCollectionResource root)  {
+	public List<AnnoCollectionResource> findUsersCollections(AnnoCollectionResource root) {
 		try {
 			// iterate over each root collection, looking for objects which have
 			// a @Authenticate annotation on their ChildOf or ChildrenOf methods
 			List<AnnoCollectionResource> list = new ArrayList<AnnoCollectionResource>();
-			for (CommonResource col : root.getChildren()) {				
+			for (CommonResource col : root.getChildren()) {
 				if (col instanceof AnnoCollectionResource) {
 					AnnoCollectionResource acr = (AnnoCollectionResource) col;
 					List<ControllerMethod> availMethods = getMethods(acr.getSource().getClass());
@@ -79,5 +88,4 @@ public class UsersAnnotationHandler extends AbstractAnnotationHandler {
 			throw new RuntimeException(e);
 		}
 	}
-	
 }

@@ -21,6 +21,7 @@ package io.milton.http;
 
 import io.milton.common.Utils;
 import io.milton.http.webdav.Dest;
+import static junit.framework.Assert.assertEquals;
 import junit.framework.TestCase;
 
 /**
@@ -112,6 +113,12 @@ public class UtilsTest extends TestCase {
 //        showBytes(result);
 //        assertEquals( "/ä", result );
     }
+	
+	public void testDecodeHref_AtSymbol() {
+		String href = "/a%40b";
+		String result = Utils.decodePath( href );
+		assertEquals( "/a@b", result );
+	}
 
     private void showBytes(String result) {
         System.out.print("ShowBytes: ");

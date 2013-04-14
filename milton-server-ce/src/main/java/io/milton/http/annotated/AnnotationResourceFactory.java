@@ -275,9 +275,15 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		return contextPath;
 	}
 
-	private String stripContext(String url) {
-		if (this.contextPath != null && contextPath.length() > 0) {
-			url = url.replaceFirst('/' + contextPath, "");
+	public String stripContext(String url) {
+		if (this.contextPath != null && contextPath.length() > 0 && !contextPath.equals("/") ) {			
+			String c;
+			if( !contextPath.startsWith("/")) {
+				c = "/" + contextPath;
+			} else {
+				c = contextPath;
+			}
+			url = url.replaceFirst(c, "");
 			//log.debug("stripped context: " + url);
 			return url;
 		} else {
@@ -372,6 +378,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 			try {
 				argValue = findArgValue(type, request, response, list);
 			} catch (UnresolvableParameterException e) {
+				log.warn("Could not resolve parameter: " + i + "  in method: " + m.getName() );
 				//System.out.println("Couldnt find parameter " + type + " for method: " + m);				
 				argValue = null;
 			}

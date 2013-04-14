@@ -48,6 +48,10 @@ public class AnnoPrincipalResource extends AnnoCollectionResource implements Dis
 	public HrefList getCalendarHomeSet() {
 		try {
 			HrefList list = new HrefList();
+			if (annoFactory.calendarsAnnotationHandler.hasCalendars(this.getSource())) {
+				list.add(this.getHref());
+			}
+
 			for (Resource r : getChildren()) {
 				if (r instanceof AnnoCollectionResource) {
 					AnnoCollectionResource col = (AnnoCollectionResource) r;
@@ -58,25 +62,21 @@ public class AnnoPrincipalResource extends AnnoCollectionResource implements Dis
 			}
 			if (list.isEmpty()) {
 				ResourceList topDirs = getChildren().getDirs();
-				if (topDirs.isEmpty()) {
-					log.warn("Could not find any calendar home directories for user type: " + getSource().getClass() + ". In fact there are no child diretories at all!");
-				} else {
-					log.warn("Could not find any calendar home directories for user type: " + getSource().getClass() + " You should have a @" + Calendars.class + " annotation on one of the following methods");
-					for (Resource r : topDirs) {
-						if (r instanceof AnnoCollectionResource) {
-							AnnoCollectionResource col = (AnnoCollectionResource) r;							
-							List<ControllerMethod> candMethods = annoFactory.calendarsAnnotationHandler.getMethods(col.getSource().getClass());
-							if (candMethods.isEmpty()) {
-								log.info("	- inspecting: " + col.getName() + " for source: " + col.getSource().getClass() + " - has NO child methods");
-							} else {
-								log.info("	- inspecting: " + col.getName() + " for source: " + col.getSource().getClass() );
-								for (ControllerMethod cm : candMethods) {
-									log.warn("	- candidate method: " + cm.controller.getClass() + "::" + cm.method.getName());
-								}
-							}
+				log.warn("Could not find any calendar home directories for user type: " + getSource().getClass() + " You should have a @" + Calendars.class + " annotation for the user object itself, or for a directory within the user home");
+				for (Resource r : topDirs) {
+					if (r instanceof AnnoCollectionResource) {
+						AnnoCollectionResource col = (AnnoCollectionResource) r;
+						List<ControllerMethod> candMethods = annoFactory.calendarsAnnotationHandler.getMethods(col.getSource().getClass());
+						if (candMethods.isEmpty()) {
+							log.info("	- inspecting: " + col.getName() + " for source: " + col.getSource().getClass() + " - has NO child methods");
 						} else {
-							log.warn("	- found a directory which is not a AnnoCollectionResource: " + r.getClass() + " which cannot be inspected");
+							log.info("	- inspecting: " + col.getName() + " for source: " + col.getSource().getClass());
+							for (ControllerMethod cm : candMethods) {
+								log.warn("	- candidate method: " + cm.controller.getClass() + "::" + cm.method.getName());
+							}
 						}
+					} else {
+						log.warn("	- found a directory which is not a AnnoCollectionResource: " + r.getClass() + " which cannot be inspected");
 					}
 				}
 			}
@@ -92,6 +92,10 @@ public class AnnoPrincipalResource extends AnnoCollectionResource implements Dis
 	public HrefList getAddressBookHomeSet() {
 		try {
 			HrefList list = new HrefList();
+			if (annoFactory.addressBooksAnnotationHandler.hasAddressBooks(this.getSource())) {
+				list.add(this.getHref());
+			}
+
 			for (Resource r : getChildren()) {
 				if (r instanceof AnnoCollectionResource) {
 					AnnoCollectionResource col = (AnnoCollectionResource) r;
