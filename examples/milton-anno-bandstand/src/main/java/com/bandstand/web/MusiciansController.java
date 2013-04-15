@@ -110,7 +110,11 @@ public class MusiciansController {
         if( target == currentUser ) {
             return AccessControlledResource.READ_WRITE;
         } else {
-            return AccessControlledResource.READ_CONTENT;
+            // This prevents read access to each others calendars
+            return null;
+            
+            // This gives read access to each others calendars
+            //return AccessControlledResource.READ_CONTENT;
         }
     }
     
