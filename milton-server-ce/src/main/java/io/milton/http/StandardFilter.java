@@ -55,6 +55,7 @@ public class StandardFilter implements Filter {
 				} else {
 					log.debug("No response entity to send to client for method: " + request.getMethod());
 				}
+				response.close();
 
 			}
 
