@@ -175,7 +175,16 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 	 */
 	public void setLoginCookies(DiscretePrincipal user, Request request) {
 		log.trace("setLoginCookies");
+		if( user == null ) {
+			throw new NullPointerException("user object is null");
+		}
+		if( user.getIdenitifer() == null ) {
+			throw new NullPointerException("getIdenitifer object is null");
+		}
 		String userUrl = user.getIdenitifer().getValue();
+		if( userUrl == null ) {
+			throw new NullPointerException("user identifier returned a null value");
+		}
 		setLoginCookies(userUrl, request);
 	}
 
