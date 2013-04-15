@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +50,6 @@ public class RangeUtils {
     }
 
     public static void sendBytes(InputStream in, OutputStream out, long length) throws IOException {
-        log.trace("sendBytes: " + length);
         long numRead = 0;
         byte[] b = new byte[1024];
         while (numRead < length) {
@@ -66,9 +66,13 @@ public class RangeUtils {
     }
 
     public static void writeRange(InputStream in, Range r, OutputStream responseOut) throws IOException {
-        long skip = r.getStart();
-        in.skip(skip);
-        long length = r.getFinish() - r.getStart();
-        sendBytes(in, responseOut, length);
+        if (r != null) {
+            long skip = r.getStart();
+            in.skip(skip);
+            long length = r.getFinish() - r.getStart();
+            sendBytes(in, responseOut, length);
+        } else {
+            IOUtils.copy(in, responseOut);
+        }
     }
 }
