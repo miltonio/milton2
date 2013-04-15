@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.milton.http.fs;
 
 import io.milton.http.ResourceFactory;
@@ -26,6 +25,7 @@ import io.milton.http.Range;
 import io.milton.resource.GetableResource;
 import io.milton.common.ContentTypeUtils;
 import io.milton.common.Path;
+import io.milton.common.RangeUtils;
 import io.milton.http.*;
 import io.milton.http.Request.Method;
 import io.milton.resource.Resource;
@@ -39,7 +39,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
 import java.util.Map;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,11 +78,11 @@ public class ClassPathResourceFactory implements ResourceFactory {
 	}
 
 	/**
-	 *  The resource factory will only serve resources with a path which
-	 * begins with this
+	 * The resource factory will only serve resources with a path which begins
+	 * with this
 	 *
 	 * May be null
-	 * 
+	 *
 	 * Eg static
 	 */
 	public String getBasePath() {
@@ -121,8 +120,8 @@ public class ClassPathResourceFactory implements ResourceFactory {
 	}
 
 	/**
-	 * Security manager to delegate authentication and authorisation to. May
-	 * be null
+	 * Security manager to delegate authentication and authorisation to. May be
+	 * null
 	 *
 	 * @return
 	 */
@@ -152,7 +151,7 @@ public class ClassPathResourceFactory implements ResourceFactory {
 		@Override
 		public void sendContent(OutputStream out, Range range, Map<String, String> params, String contentType) throws IOException, NotAuthorizedException, BadRequestException {
 			try {
-				IOUtils.copy(content, out);
+				RangeUtils.writeRange(content, range, out);
 			} catch (NullPointerException npe) {
 				log.debug("NullPointerException, this is often expected");
 			}
