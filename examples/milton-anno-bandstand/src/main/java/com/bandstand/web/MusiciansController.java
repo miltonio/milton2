@@ -61,7 +61,9 @@ public class MusiciansController {
     @ChildrenOf
     @Users // ties in with the @AccessControlList and @Authenticate methods below
     public List<Musician> getMusicians(MusiciansController root) {
-        return Musician.findAll(SessionManager.session());
+        List<Musician> list = Musician.findAll(SessionManager.session());
+        System.out.println("musicians=" + list.size());
+        return list;
     }
     
     @ChildOf

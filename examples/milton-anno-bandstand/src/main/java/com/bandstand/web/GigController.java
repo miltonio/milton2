@@ -20,6 +20,7 @@ import com.bandstand.domain.Gig;
 import com.bandstand.domain.Musician;
 import com.bandstand.domain.SessionManager;
 import com.bandstand.util.CalUtils;
+import io.milton.annotations.AccessControlList;
 import io.milton.annotations.Calendars;
 import io.milton.annotations.ChildrenOf;
 import io.milton.annotations.CreatedDate;
@@ -30,6 +31,7 @@ import io.milton.annotations.ModifiedDate;
 import io.milton.annotations.PutChild;
 import io.milton.annotations.ResourceController;
 import io.milton.http.annotated.AnnoResource;
+import io.milton.resource.AccessControlledResource;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -85,6 +87,42 @@ public class GigController {
             }
         }
         return cals;
+    }
+
+    /**
+     * This method is just a bogus example showing that you can have ACL methods
+     * for different objects in a hierarchy. In this case we make a rule that a band
+     * with a name ending with 'ReadOnly' will be read-only for everyone.
+     * 
+     * @param target
+     * @param currentUser
+     * @return 
+     */
+    @AccessControlList
+    public List<AccessControlledResource.Priviledge> getMusicianCalendarPrivs(MusicianCalendar target, Musician currentUser) {
+        System.out.println("getMusicianCalendarPrivs");
+        if (target.musician == currentUser) {
+            Band band = target.band;
+            if (band.getName().endsWith("ReadOnly")) {
+                return AccessControlledResource.READ_CONTENT;
+            }
+            return AccessControlledResource.READ_WRITE;
+        } else {
+            return null;
+        }
+    }
+
+    @AccessControlList
+    public List<AccessControlledResource.Priviledge> getMusicianPrivs(Musician target, Musician currentUser) {
+        if (target == currentUser) {
+            return AccessControlledResource.READ_WRITE;
+        } else {
+            // This prevents read access to each others calendars
+            return null;
+
+            // This gives read access to each others calendars
+            //return AccessControlledResource.READ_CONTENT;
+        }
     }
 
     @Delete

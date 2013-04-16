@@ -20,9 +20,11 @@ import io.milton.http.Range;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import static junit.framework.Assert.assertEquals;
 import junit.framework.TestCase;
 
 /**
@@ -81,4 +83,16 @@ public class RangeUtilsTest extends TestCase {
         assertEquals(1500, out.toByteArray().length);
 
     }
+    
+    public void testWrite_OpenRange() throws IOException {
+        InputStream in = this.getClass().getResourceAsStream("/jquery-ui-1.8.20.custom.min.js");
+        if( in == null ) {
+            throw new RuntimeException("Couldnt find test file");
+        }
+        Range r = Range.parse("30357-71179");
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        RangeUtils.writeRange(in, r, out);
+        assertEquals(40822, out.toByteArray().length);
+
+    }    
 }

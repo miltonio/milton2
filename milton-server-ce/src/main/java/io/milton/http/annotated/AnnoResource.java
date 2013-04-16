@@ -77,6 +77,7 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 	protected AnnoCollectionResource parent;
 	protected JsonResult jsonResult;
 	protected String nameOverride;
+	protected Set<AccessControlledResource.Priviledge> acl;
 
 	public AnnoResource(final AnnotationResourceFactory outer, Object source, AnnoCollectionResource parent) {
 		if (source == null) {
@@ -115,7 +116,7 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 	@Override
 	public String getUniqueId() {
 		Object o = annoFactory.uniqueIdAnnotationHandler.get(this);
-		if( o == null ) {
+		if (o == null) {
 			return null;
 		} else {
 			return o.toString();
@@ -171,27 +172,25 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 		}
 		// only check ACL if current user is null (ie guest) or the current user is an AnnoPrincipal
 		if (oUser == null || p != null) {
-			Set<AccessControlledResource.Priviledge> acl = annoFactory.accessControlListAnnotationHandler.availablePrivs(p, this, method, auth);
-			if (acl != null) {
-				AccessControlledResource.Priviledge requiredPriv = annoFactory.accessControlListAnnotationHandler.requiredPriv(this, method, request);
-				boolean allows;
-				if (requiredPriv == null) {
-					allows = true;
-				} else {
-					allows = AclUtils.containsPriviledge(requiredPriv, acl);
-					if (!allows) {
-						if (p != null) {
-							log.info("Authorisation declined for user: " + p.getName());
-						} else {
-							log.info("Authorisation declined for anonymous access");
-						}
-						log.info("Required priviledge: " + requiredPriv + " was not found in assigned priviledge list of size: " + acl.size());
-					}
-				}
-				return allows;
-			} else {
-				// null ACL means do not apply ACL
+			if (acl == null) {
+				acl = annoFactory.accessControlListAnnotationHandler.availablePrivs(p, this, auth);
 			}
+			AccessControlledResource.Priviledge requiredPriv = annoFactory.accessControlListAnnotationHandler.requiredPriv(this, method, request);
+			boolean allows;
+			if (requiredPriv == null) {
+				allows = true;
+			} else {
+				allows = AclUtils.containsPriviledge(requiredPriv, acl);
+				if (!allows) {
+					if (p != null) {
+						log.info("Authorisation declined for user: " + p.getName());
+					} else {
+						log.info("Authorisation declined for anonymous access");
+					}
+					log.info("Required priviledge: " + requiredPriv + " was not found in assigned priviledge list of size: " + acl.size());
+				}
+			}
+			return allows;
 		}
 		// if we get here it means ACL was not applied, so we check default SM
 		return annoFactory.getSecurityManager().authorise(request, method, auth, this);
@@ -205,9 +204,9 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 	@Override
 	public Date getModifiedDate() {
 		Object o = annoFactory.modifiedDateAnnotationHandler.get(this);
-		if( o instanceof Date) {
+		if (o instanceof Date) {
 			return (Date) o;
-		} else if( o == null ) {
+		} else if (o == null) {
 			return null;
 		} else {
 			log.warn("Got an incompatible value for ModifiedDate for source object: " + source.getClass() + " Is a: " + o.getClass() + " should be: " + Date.class);
@@ -413,7 +412,7 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 		if (auth != null && auth.getTag() instanceof AnnoPrincipalResource) {
 			curUser = (AnnoPrincipalResource) auth.getTag();
 		}
-		Set<Priviledge> set = annoFactory.accessControlListAnnotationHandler.availablePrivs(curUser, this, null, auth);
+		Set<Priviledge> set = annoFactory.accessControlListAnnotationHandler.availablePrivs(curUser, this, auth);
 		if (set != null && !set.isEmpty()) {
 			return new ArrayList<Priviledge>(set);
 		} else {

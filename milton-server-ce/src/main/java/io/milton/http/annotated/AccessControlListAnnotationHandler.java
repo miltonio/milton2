@@ -52,14 +52,14 @@ public class AccessControlListAnnotationHandler extends AbstractAnnotationHandle
 	 * @param auth
 	 * @return
 	 */
-	public Set<AccessControlledResource.Priviledge> availablePrivs(AnnoPrincipalResource curUser, AnnoResource res, Request.Method method, Auth auth) {
-		Set<Priviledge> privs = directPrivs(curUser, res, method, auth);
+	public Set<AccessControlledResource.Priviledge> availablePrivs(AnnoPrincipalResource curUser, AnnoResource res,  Auth auth) {
+		Set<Priviledge> privs = directPrivs(curUser, res, auth);
 		if (privs != null) {
 			return privs;
 		}
 		AnnoCollectionResource p = res.getParent();
 		while (p != null) {
-			privs = directPrivs(curUser, p, method, auth);
+			privs = directPrivs(curUser, p, auth);
 			if (privs != null) {
 				return privs;
 			}
@@ -73,7 +73,7 @@ public class AccessControlListAnnotationHandler extends AbstractAnnotationHandle
 		return privs;
 	}
 
-	public Set<AccessControlledResource.Priviledge> directPrivs(AnnoPrincipalResource curUser, AnnoResource res, Request.Method method, Auth auth) {
+	public Set<AccessControlledResource.Priviledge> directPrivs(AnnoPrincipalResource curUser, AnnoResource res, Auth auth) {
 		Set<AccessControlledResource.Priviledge> acl = new HashSet<Priviledge>();
 		Object source = res.getSource();
 		List<ControllerMethod> availMethods = getMethods(source.getClass());
@@ -86,7 +86,7 @@ public class AccessControlListAnnotationHandler extends AbstractAnnotationHandle
 				if (curUser != null) {
 					currentUserSource = curUser.getSource();
 				}
-				Object[] args = outer.buildInvokeArgs(res, cm.method, curUser, res, method, auth, currentUserSource);
+				Object[] args = outer.buildInvokeArgs(res, cm.method, curUser, res, auth, currentUserSource);
 				Object result = cm.method.invoke(cm.controller, args);
 				if (result == null) {
 					// ignore

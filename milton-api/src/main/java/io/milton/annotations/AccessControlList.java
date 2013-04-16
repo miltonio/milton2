@@ -24,6 +24,27 @@ import java.util.List;
  * Marks a method as one which returns the Access Control List for a user
  * on a given resource
  * 
+ * The method must have at least 2 parameters
+ *  <ul>
+ *  <li>The object to return an access control list for. For example, if you want to return permissions for a Calendar, then this should be a Calendar</li>
+ *  <li>The current user. This is the object returned by the @Authenticate method</li>
+ * </ul>
+ * 
+ * Milton will search up the object hierarchy to find a @AccessControlList method. The
+ * first one found will be used
+ * 
+ * So if a request is made to a URL like this: /users/brad/calenars/cal1
+ * 
+ * Then if cal1 represents an instance of a MyCalendar, and @Authenticate returned
+ * an instance of MyUser, then you should have a method like this:
+ * 
+ * @AccessControlList public List<AccessControlledResource.Priviledge> getUserPrivs(MyCalendar target, MyUser currentUser)
+ * 
+ * But if you want to apply permissions at a higher level, say at the level of the user
+ * object, and lets say that "brad" is an instance of a MyUser object then you would have this:
+ * 
+ * @AccessControlList public List<AccessControlledResource.Priviledge> getUserPrivs(MyUser target, MyUser currentUser)
+ * 
  *
  * @author brad
  */

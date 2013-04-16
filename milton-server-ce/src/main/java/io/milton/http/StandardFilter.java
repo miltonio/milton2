@@ -54,9 +54,7 @@ public class StandardFilter implements Filter {
 					manager.sendResponseEntity(response);
 				} else {
 					log.debug("No response entity to send to client for method: " + request.getMethod());
-				}
-				response.close();
-
+				}				
 			}
 
 		} catch (BadRequestException ex) {
@@ -75,7 +73,7 @@ public class StandardFilter implements Filter {
 			log.error("exception sending content", e);
 			response.sendError(Response.Status.SC_INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR_HTML);
 		} finally {
-			//manager.closeResponse(response);
+			manager.closeResponse(response);
 		}
 	}
 }

@@ -80,7 +80,11 @@ public class ResourceList extends ArrayList<CommonResource> {
 	}
 	
 	public Resource remove(String name ) {
-		return map.remove(name);
+		CommonResource r = map.remove(name);
+		if( r != null ) {
+			super.remove(r);
+		}
+		return r;
 	}
 
 	public boolean hasChild(String name) {

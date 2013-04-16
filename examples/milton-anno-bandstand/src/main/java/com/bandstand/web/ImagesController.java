@@ -17,7 +17,9 @@ package com.bandstand.web;
 import com.bandstand.domain.BandMember;
 import com.bandstand.domain.BaseEntity;
 import com.bandstand.domain.Image;
+import com.bandstand.domain.Musician;
 import com.bandstand.domain.SessionManager;
+import io.milton.annotations.AccessControlList;
 import io.milton.annotations.ChildrenOf;
 import io.milton.annotations.ContentLength;
 import io.milton.annotations.Delete;
@@ -28,6 +30,7 @@ import io.milton.annotations.PutChild;
 import io.milton.annotations.ResourceController;
 import io.milton.http.annotated.AnnoCollectionResource;
 import io.milton.http.annotated.AnnoResource;
+import io.milton.resource.AccessControlledResource;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,6 +51,19 @@ public class ImagesController {
     public ImagesRoot getImagesRoot(BaseEntity entity) {
         return new ImagesRoot(entity);
     }
+    
+//    @AccessControlList
+//    public List<AccessControlledResource.Priviledge> getPrivsOnImages(ImagesRoot target, Musician currentUser) {
+//        System.out.println("getPrivsOnImages");
+//        return AccessControlledResource.READ_WRITE;
+//    }        
+
+//    @AccessControlList
+//    public List<AccessControlledResource.Priviledge> getPrivsOnBaseEntity(BaseEntity target, Musician currentUser) {
+//        System.out.println("getPrivsOnBaseEntity");
+//        return AccessControlledResource.READ_WRITE;
+//    }        
+    
     
     @ChildrenOf
     public ImagesRoot getImagesRoot(BandMember bandMember) {

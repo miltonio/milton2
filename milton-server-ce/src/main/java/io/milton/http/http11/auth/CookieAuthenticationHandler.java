@@ -42,22 +42,19 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 	@Override
 	public boolean credentialsPresent(Request request) {
 		String userUrl = getUserUrlFromRequest(request);
-		if( userUrl != null && userUrl.length() > 0) {
+		if (userUrl != null && userUrl.length() > 0) {
 			return true;
 		}
-		for( AuthenticationHandler h : handlers ) {
-			if( h.credentialsPresent(request)) {
+		for (AuthenticationHandler h : handlers) {
+			if (h.credentialsPresent(request)) {
 				return true;
 			}
 		}
 		return false;
 	}
-	
-	
 
 	@Override
 	public boolean supports(Resource r, Request request) {
-		log.info("supprts");
 		// find the authId, if any, from the request
 		String userUrl = getUserUrl(request);
 
@@ -84,13 +81,13 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 	}
 
 	@Override
-	public Object authenticate(Resource resource, Request request) {		
+	public Object authenticate(Resource resource, Request request) {
 		// If there is a delegating handler which supports the request then we MUST use it
 		// This would have been selected in the supports method
 		AuthenticationHandler delegateHandler = (AuthenticationHandler) request.getAttributes().get(HANDLER_ATT_NAME);
 		if (delegateHandler != null) {
-			if( log.isTraceEnabled()) {
-			log.trace("authenticate: use delegateHandler: " + delegateHandler);
+			if (log.isTraceEnabled()) {
+				log.trace("authenticate: use delegateHandler: " + delegateHandler);
 			}
 			// Attempt to authenticate against wrapped handler
 			// If successful generate a signed cookie and put into a request attribute
@@ -110,7 +107,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 				return null;
 			}
 		} else {
-			log.info("no delegating handler");
+			log.trace("no delegating handler");
 			// No delegating handler means that we expect either to get a previous login token
 			// via a cookie, or this is an anonymous request
 			if (isLogout(request)) {
@@ -118,13 +115,12 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 				return null;
 			} else {
 				String userUrl = getUserUrl(request);
-				log.info("userurl: " + userUrl);
 				if (userUrl == null) {
 					log.trace("authenticate: no userUrl in request or cookie, nothing to di");
 					// no token in request, so is anonymous
 					return null;
 				} else {
-					if( log.isTraceEnabled()) {
+					if (log.isTraceEnabled()) {
 						log.trace("authenticate: userUrl=" + userUrl);
 					}
 					// we found a userUrl
@@ -175,14 +171,14 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 	 */
 	public void setLoginCookies(DiscretePrincipal user, Request request) {
 		log.trace("setLoginCookies");
-		if( user == null ) {
+		if (user == null) {
 			throw new NullPointerException("user object is null");
 		}
-		if( user.getIdenitifer() == null ) {
+		if (user.getIdenitifer() == null) {
 			throw new NullPointerException("getIdenitifer object is null");
 		}
 		String userUrl = user.getIdenitifer().getValue();
-		if( userUrl == null ) {
+		if (userUrl == null) {
 			throw new NullPointerException("user identifier returned a null value");
 		}
 		setLoginCookies(userUrl, request);
@@ -297,13 +293,13 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 			c.setExpiry(SECONDS_PER_YEAR);
 		}
 		response.setCookie(c);
-		
+
 		c = new BeanCookie(cookieUserUrlHash);
 		c.setValue(hash);
 		c.setHttpOnly(true); // http only so not accessible from JS. Helps prevent XSS attacks
 		c.setPath("/");
 		if (useLongLivedCookies) {
-			c.setExpiry(SECONDS_PER_YEAR);			
+			c.setExpiry(SECONDS_PER_YEAR);
 		}
 		response.setCookie(c);
 	}
