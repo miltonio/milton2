@@ -40,7 +40,7 @@ public class ContentTypeAnnotationHandler extends AbstractAnnotationHandler {
 				return val;
 			} else {
 				// look for an annotation on the source itself
-				java.lang.reflect.Method m = outer.findMethodForAnno(source.getClass(), annoClass);
+				java.lang.reflect.Method m = annoResourceFactory.findMethodForAnno(source.getClass(), annoClass);
 				if (m != null) {
 					String val = (String) m.invoke(source, accepts);
 					return val;

@@ -56,7 +56,7 @@ public class ChildOfAnnotationHandler extends AbstractAnnotationHandler {
 					if (o == null) {
 						// ignore
 					} else {
-						AnnoResource r = outer.instantiate(o, parent, cm.method);
+						AnnoResource r = annoResourceFactory.instantiate(o, parent, cm.method);
 						r.setNameOverride(childName);
 						return r;
 					}

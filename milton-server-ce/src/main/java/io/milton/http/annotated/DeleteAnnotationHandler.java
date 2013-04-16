@@ -39,7 +39,7 @@ public class DeleteAnnotationHandler extends AbstractAnnotationHandler {
 			throw new RuntimeException("Method not found: " + getClass() + " - " + source.getClass());
 		}
 		try {
-			Object[] args = outer.buildInvokeArgs(res, cm.method);
+			Object[] args = annoResourceFactory.buildInvokeArgs(res, cm.method);
 			cm.method.invoke(cm.controller, args);
 		} catch (Exception e) {
 			throw new RuntimeException(e);

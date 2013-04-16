@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 
 	private static final Logger log = LoggerFactory.getLogger(AbstractAnnotationHandler.class);
-	protected final AnnotationResourceFactory outer;
+	protected final AnnotationResourceFactory annoResourceFactory;
 	protected final Class annoClass;
 	protected final Method[] methods;
 	/**
@@ -43,7 +43,7 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 	List<ControllerMethod> controllerMethods = new ArrayList<ControllerMethod>();
 
 	public AbstractAnnotationHandler(AnnotationResourceFactory outer, Class annoClass, Method... methods) {
-		this.outer = outer;
+		this.annoResourceFactory = outer;
 		this.annoClass = annoClass;
 		this.methods = methods;
 	}
@@ -243,9 +243,9 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 		try {
 			Object[] args;
 			if( values == null || values.length == 0) {
-				args = outer.buildInvokeArgs(sourceRes, cm.method);
+				args = annoResourceFactory.buildInvokeArgs(sourceRes, cm.method);
 			} else {
-				args = outer.buildInvokeArgs(sourceRes, cm.method, values);
+				args = annoResourceFactory.buildInvokeArgs(sourceRes, cm.method, values);
 			}
 			return cm.method.invoke(cm.controller, args);
 		} catch (Exception e) {

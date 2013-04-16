@@ -39,7 +39,7 @@ public class MakeCollectionAnnotationHandler extends AbstractAnnotationHandler {
 			throw new RuntimeException("Method not found: " + getClass() + " - " + source.getClass());
 		}
 		try {
-			Object[] args = outer.buildInvokeArgs(res, cm.method, newName);
+			Object[] args = annoResourceFactory.buildInvokeArgs(res, cm.method, newName);
 			Object o = cm.method.invoke(cm.controller, args);
 			if( o == null ) {
 				throw new RuntimeException("Method returned null object or void: " + cm.controller.getClass() + "::" + cm.method.getName() + " - should return newly created object");

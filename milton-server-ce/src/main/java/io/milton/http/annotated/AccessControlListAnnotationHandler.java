@@ -52,7 +52,7 @@ public class AccessControlListAnnotationHandler extends AbstractAnnotationHandle
 	 * @param auth
 	 * @return
 	 */
-	public Set<AccessControlledResource.Priviledge> availablePrivs(AnnoPrincipalResource curUser, AnnoResource res,  Auth auth) {
+	public Set<AccessControlledResource.Priviledge> availablePrivs(AnnoPrincipalResource curUser, AnnoResource res, Auth auth) {
 		Set<Priviledge> privs = directPrivs(curUser, res, auth);
 		if (privs != null) {
 			return privs;
@@ -78,37 +78,50 @@ public class AccessControlListAnnotationHandler extends AbstractAnnotationHandle
 		Object source = res.getSource();
 		List<ControllerMethod> availMethods = getMethods(source.getClass());
 		if (availMethods.isEmpty()) {
-			return null;
-		}
-		try {
-			for (ControllerMethod cm : availMethods) {
-				Object currentUserSource = null;
-				if (curUser != null) {
-					currentUserSource = curUser.getSource();
-				}
-				Object[] args = outer.buildInvokeArgs(res, cm.method, curUser, res, auth, currentUserSource);
-				Object result = cm.method.invoke(cm.controller, args);
-				if (result == null) {
-					// ignore
-				} else if (result instanceof Collection) {
-					Collection col = (Collection) result;
-					for (Object o : col) {
-						if (o instanceof Priviledge) {
-							Priviledge p = (Priviledge) o;
-							acl.add(p);
-						}
-					}
-				} else {
-					if (result instanceof Priviledge) {
-						Priviledge p = (Priviledge) result;
-						acl.add(p);
-					}
-				}
+			java.lang.reflect.Method m = annoResourceFactory.findMethodForAnno(source.getClass(), annoClass);
+			if (m == null) {
+				return null;
 			}
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+			try {
+				addPrivsFromMethod(m, source, acl, curUser, res, auth);
+			} catch (Exception ex) {
+				throw new RuntimeException(ex);
+			}
+		} else {
+			try {
+				for (ControllerMethod cm : availMethods) {
+					addPrivsFromMethod(cm.method, cm.controller, acl, curUser, res, auth);
+				}
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
 		}
 		return acl;
+	}
+
+	private void addPrivsFromMethod(java.lang.reflect.Method method, Object target, Set<AccessControlledResource.Priviledge> acl, AnnoPrincipalResource curUser, AnnoResource res, Auth auth) throws Exception {
+		Object currentUserSource = null;
+		if (curUser != null) {
+			currentUserSource = curUser.getSource();
+		}
+		Object[] args = annoResourceFactory.buildInvokeArgs(res, method, curUser, res, auth, currentUserSource);
+		Object result = method.invoke(target, args);
+		if (result == null) {
+			// ignore
+		} else if (result instanceof Collection) {
+			Collection col = (Collection) result;
+			for (Object o : col) {
+				if (o instanceof Priviledge) {
+					Priviledge p = (Priviledge) o;
+					acl.add(p);
+				}
+			}
+		} else {
+			if (result instanceof Priviledge) {
+				Priviledge p = (Priviledge) result;
+				acl.add(p);
+			}
+		}
 	}
 
 	public Priviledge requiredPriv(AnnoResource res, Method httpMethod, Request request) {
@@ -126,7 +139,7 @@ public class AccessControlListAnnotationHandler extends AbstractAnnotationHandle
 	}
 
 	private Priviledge getRequiredPostPriviledge(Request request, AnnoResource res) {
-		ControllerMethod cm = outer.postAnnotationHandler.getPostMethod(res, request, HttpManager.request().getParams());
+		ControllerMethod cm = annoResourceFactory.postAnnotationHandler.getPostMethod(res, request, HttpManager.request().getParams());
 		if (cm == null) {
 			return null;
 		} else {

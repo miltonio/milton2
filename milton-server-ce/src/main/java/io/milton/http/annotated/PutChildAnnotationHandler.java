@@ -64,7 +64,7 @@ public class PutChildAnnotationHandler extends AbstractAnnotationHandler {
 		if (cm == null) {
 			// ok, cant replace. Maybe we can delete and PUT?
 			String name = fileRes.getName();
-			outer.deleteAnnotationHandler.execute(fileRes);
+			annoResourceFactory.deleteAnnotationHandler.execute(fileRes);
 			execute(fileRes.getParent(), name, inputStream, length, null);
 
 		} else {

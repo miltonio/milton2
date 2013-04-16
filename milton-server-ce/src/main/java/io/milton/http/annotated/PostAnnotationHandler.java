@@ -75,7 +75,7 @@ public class PostAnnotationHandler extends AbstractAnnotationHandler {
 		}
 
 		try {
-			Object[] args = outer.buildInvokeArgs(resource, cm.method, params);
+			Object[] args = annoResourceFactory.buildInvokeArgs(resource, cm.method, params);
 			Object result = cm.method.invoke(cm.controller, args);
 			return result;
 		} catch (Exception e) {

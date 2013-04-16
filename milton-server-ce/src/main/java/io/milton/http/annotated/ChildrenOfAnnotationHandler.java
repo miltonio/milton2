@@ -41,15 +41,15 @@ public class ChildrenOfAnnotationHandler extends AbstractAnnotationHandler {
 				} else if( o instanceof Collection ) {
 					Collection l = (Collection)o;
 					for( Object item : l) {
-						result.add(outer.instantiate(item, parent, cm.method));
+						result.add(annoResourceFactory.instantiate(item, parent, cm.method));
 					}
 				} else if( o.getClass().isArray()) {
 					Object[] arr = (Object[]) o;
 					for( Object item : arr) {
-						result.add(outer.instantiate(item, parent, cm.method));
+						result.add(annoResourceFactory.instantiate(item, parent, cm.method));
 					}
 				} else {
-					result.add(outer.instantiate(o, parent, cm.method));
+					result.add(annoResourceFactory.instantiate(o, parent, cm.method));
 				}
 			} catch (Exception e) {
 				throw new RuntimeException(e);

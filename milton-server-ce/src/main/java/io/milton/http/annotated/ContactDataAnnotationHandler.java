@@ -39,7 +39,7 @@ public class ContactDataAnnotationHandler extends AbstractAnnotationHandler {
 			ControllerMethod cm = getBestMethod(source.getClass());
 			if (cm == null) {
 				// look for an annotation on the source itself
-				java.lang.reflect.Method m = outer.findMethodForAnno(source.getClass(), annoClass);
+				java.lang.reflect.Method m = annoResourceFactory.findMethodForAnno(source.getClass(), annoClass);
 				if (m != null) {
 					value = m.invoke(source, (Object) null);
 				} else {

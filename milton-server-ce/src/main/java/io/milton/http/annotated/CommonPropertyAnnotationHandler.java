@@ -46,7 +46,7 @@ public class CommonPropertyAnnotationHandler<T> extends AbstractAnnotationHandle
 				return val;
 			} else {
 				// look for an annotation on the source itself
-				java.lang.reflect.Method m = outer.findMethodForAnno(source.getClass(), annoClass);
+				java.lang.reflect.Method m = annoResourceFactory.findMethodForAnno(source.getClass(), annoClass);
 				if (m != null && m.getParameterTypes().length ==0 ) {
 					T val = (T) m.invoke(source);
 					return val;
@@ -70,7 +70,7 @@ public class CommonPropertyAnnotationHandler<T> extends AbstractAnnotationHandle
 			ControllerMethod cm = getBestMethod(source.getClass(), null, null, Void.TYPE);
 			if (cm == null) {
 				// look for an annotation on the source itself
-				java.lang.reflect.Method m = outer.findMethodForAnno(source.getClass(), annoClass);
+				java.lang.reflect.Method m = annoResourceFactory.findMethodForAnno(source.getClass(), annoClass);
 				if (m != null) {
 					m.invoke(source, (Object) null);
 					return;

@@ -45,7 +45,7 @@ public class MoveAnnotationHandler extends AbstractAnnotationHandler {
 				AnnoResource arDest = (AnnoResource) rDest;
 				destObject = arDest.getSource();
 			}
-			Object[] args = outer.buildInvokeArgs(res, cm.method, newName, rDest, destObject);
+			Object[] args = annoResourceFactory.buildInvokeArgs(res, cm.method, newName, rDest, destObject);
 			cm.method.invoke(cm.controller, args);
 		} catch (Exception e) {
 			throw new RuntimeException(e);

@@ -54,7 +54,7 @@ public class GetAnnotationHandler extends AbstractAnnotationHandler {
 		}
 		log.trace("execute GET method: " + cm.method.getName());
 		try {
-			Object[] args = outer.buildInvokeArgs(resource, cm.method, range, params, contentType, out);
+			Object[] args = annoResourceFactory.buildInvokeArgs(resource, cm.method, range, params, contentType, out);
 			Object result = cm.method.invoke(cm.controller, args);
 			if (result != null) {
 				log.trace("method returned a value, so write it to output");
@@ -93,7 +93,7 @@ public class GetAnnotationHandler extends AbstractAnnotationHandler {
 	}
 
 	private void processTemplate(ModelAndView modelAndView, AnnoResource resource, OutputStream out) {
-		TemplateProcessor templateProc = outer.getViewResolver().resolveView(modelAndView.getView());
+		TemplateProcessor templateProc = annoResourceFactory.getViewResolver().resolveView(modelAndView.getView());
 		modelAndView.getModel().put("page", resource);
 		templateProc.execute(modelAndView.getModel(), out);
 	}
