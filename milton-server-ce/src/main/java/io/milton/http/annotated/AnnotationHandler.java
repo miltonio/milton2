@@ -15,6 +15,7 @@
 package io.milton.http.annotated;
 
 import io.milton.http.Request.Method;
+import java.util.List;
 
 /**
  * Common interface for handlers which implement the logic for annotations. Includes
@@ -49,4 +50,9 @@ public interface AnnotationHandler {
 	 */
 	boolean isCompatible(Object source);
     
+	/**
+	 * List the methods found when parsing annotations on the controller
+	 * @return 
+	 */
+	List<ControllerMethod> getControllerMethods();
 }

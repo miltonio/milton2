@@ -24,7 +24,7 @@ import java.util.List;
  * @author brad
  */
 public class RootAnnotationHandler implements AnnotationHandler {
-	List<ControllerMethod> controllerMethods = new ArrayList<ControllerMethod>();
+	private List<ControllerMethod> controllerMethods = new ArrayList<ControllerMethod>();
 	private final AnnotationResourceFactory outer;
 
 	public RootAnnotationHandler(final AnnotationResourceFactory outer) {
@@ -72,5 +72,11 @@ public class RootAnnotationHandler implements AnnotationHandler {
 	public boolean isCompatible(Object source) {
 		return false;
 	}
+
+	@Override
+	public List<ControllerMethod> getControllerMethods() {
+		return controllerMethods;
+	}
     
+	
 }

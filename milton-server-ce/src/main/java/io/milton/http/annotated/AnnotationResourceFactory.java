@@ -103,7 +103,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	GetAnnotationHandler getAnnotationHandler = new GetAnnotationHandler(this);
 	PostAnnotationHandler postAnnotationHandler = new PostAnnotationHandler(this);
 	ChildrenOfAnnotationHandler childrenOfAnnotationHandler = new ChildrenOfAnnotationHandler(this);
-	ChildOfAnnotationHandler childOfAnnotationHandler = new ChildOfAnnotationHandler(this);	
+	ChildOfAnnotationHandler childOfAnnotationHandler = new ChildOfAnnotationHandler(this);
 	DisplayNameAnnotationHandler displayNameAnnotationHandler = new DisplayNameAnnotationHandler(this);
 	MakeCollectionAnnotationHandler makCollectionAnnotationHandler = new MakeCollectionAnnotationHandler(this);
 	MoveAnnotationHandler moveAnnotationHandler = new MoveAnnotationHandler(this);
@@ -118,7 +118,6 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	CalendarsAnnotationHandler calendarsAnnotationHandler = new CalendarsAnnotationHandler(this);
 	AddressBooksAnnotationHandler addressBooksAnnotationHandler = new AddressBooksAnnotationHandler(this);
 	ContactDataAnnotationHandler contactDataAnnotationHandler = new ContactDataAnnotationHandler(this);
-	
 	CommonPropertyAnnotationHandler<String> nameAnnotationHandler = new CommonPropertyAnnotationHandler(Name.class, this, "name", "fileName");
 	CommonPropertyAnnotationHandler<Date> modifiedDateAnnotationHandler = new CommonPropertyAnnotationHandler<Date>(ModifiedDate.class, this, "modifiedDate");
 	CommonPropertyAnnotationHandler<Date> createdDateAnnotationHandler = new CommonPropertyAnnotationHandler<Date>(CreatedDate.class, this);
@@ -131,7 +130,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	public AnnotationResourceFactory() {
 		mapOfAnnotationHandlers.put(Root.class, rootAnnotationHandler);
 		mapOfAnnotationHandlers.put(Get.class, getAnnotationHandler);
-		mapOfAnnotationHandlers.put(Post.class, postAnnotationHandler);		
+		mapOfAnnotationHandlers.put(Post.class, postAnnotationHandler);
 		mapOfAnnotationHandlers.put(ChildrenOf.class, childrenOfAnnotationHandler);
 		mapOfAnnotationHandlers.put(ChildOf.class, childOfAnnotationHandler);
 		mapOfAnnotationHandlers.put(Name.class, nameAnnotationHandler);
@@ -145,18 +144,18 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		mapOfAnnotationHandlers.put(Users.class, usersAnnotationHandler);
 		mapOfAnnotationHandlers.put(Authenticate.class, authenticateAnnotationHandler);
 		mapOfAnnotationHandlers.put(AccessControlList.class, accessControlListAnnotationHandler);
-		mapOfAnnotationHandlers.put(AddressBooks.class, addressBooksAnnotationHandler);		
-		mapOfAnnotationHandlers.put(Calendars.class, calendarsAnnotationHandler);		
+		mapOfAnnotationHandlers.put(AddressBooks.class, addressBooksAnnotationHandler);
+		mapOfAnnotationHandlers.put(Calendars.class, calendarsAnnotationHandler);
 
 		mapOfAnnotationHandlers.put(ModifiedDate.class, modifiedDateAnnotationHandler);
 		mapOfAnnotationHandlers.put(CreatedDate.class, createdDateAnnotationHandler);
 		mapOfAnnotationHandlers.put(ContentType.class, contentTypeAnnotationHandler);
 		mapOfAnnotationHandlers.put(MaxAge.class, maxAgeAnnotationHandler);
 		mapOfAnnotationHandlers.put(UniqueId.class, uniqueIdAnnotationHandler);
-		mapOfAnnotationHandlers.put(CTag.class, cTagAnnotationHandler);		
-		mapOfAnnotationHandlers.put(ICalData.class, iCalDataAnnotationHandler);				
+		mapOfAnnotationHandlers.put(CTag.class, cTagAnnotationHandler);
+		mapOfAnnotationHandlers.put(ICalData.class, iCalDataAnnotationHandler);
 		mapOfAnnotationHandlers.put(CalendarColor.class, calendarColorAnnotationHandler);
-		mapOfAnnotationHandlers.put(ContactData.class, contactDataAnnotationHandler);		
+		mapOfAnnotationHandlers.put(ContactData.class, contactDataAnnotationHandler);
 
 		for (AnnotationHandler ah : mapOfAnnotationHandlers.values()) {
 			Method[] methods = ah.getSupportedMethods();
@@ -171,10 +170,14 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	@Override
 	public Resource getResource(String host, String url) throws NotAuthorizedException, BadRequestException {
 		log.info("getResource: host: " + host + " - url:" + url);
-		
+
 		AnnoCollectionResource hostRoot = locateHostRoot(host, HttpManager.request());
 		if (hostRoot == null) {
-			log.warn("Could not find a root resource for host: " + host + " Using " + rootAnnotationHandler.controllerMethods.size() + " root methods");
+			if (rootAnnotationHandler.getControllerMethods().isEmpty()) {
+				log.warn("No @Root methods were found, so i cant find a root resource. Note that controller methods are displayed on startup");
+			} else {
+				log.warn("Could not find a root resource for host: " + host + " Using " + rootAnnotationHandler.getControllerMethods().size() + " root methods");
+			}
 			return null;
 		}
 
@@ -188,8 +191,8 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 			if (r == null) {
 				log.info("Resource not found: host=" + host + " path=" + path);
 			} else {
-				if( r instanceof AnnoResource) {
-					AnnoResource ar = (AnnoResource) r;					
+				if (r instanceof AnnoResource) {
+					AnnoResource ar = (AnnoResource) r;
 					log.info("Found AnnoResource: " + r.getClass() + "  for path=" + path + "  with source: " + ar.getSource());
 				} else {
 					log.info("Found resource: " + r.getClass() + "  for path=" + path);
@@ -204,26 +207,26 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		Resource r = null;
 		for (String s : p.getParts()) {
 			if (col == null) {
-				if(log.isTraceEnabled()) {
+				if (log.isTraceEnabled()) {
 					log.trace("findFromRoot: collection is null, can't look for child: " + s);
 				}
 				return null;
 			}
 			r = col.child(s);
 			if (r == null) {
-				if(log.isTraceEnabled()) {
+				if (log.isTraceEnabled()) {
 					log.trace("findFromRoot: Couldnt find child: " + s + " of parent: " + col.getName() + " with type: " + col.getClass());
-				}				
+				}
 				return null;
 			} else {
-				if(log.isTraceEnabled()) {
-					if( r instanceof AnnoResource) {
+				if (log.isTraceEnabled()) {
+					if (r instanceof AnnoResource) {
 						AnnoResource ar = (AnnoResource) r;
 						log.trace("findFromRoot: found a child: " + r.getName() + " with source type: " + ar.getSource().getClass());
 					} else {
 						log.trace("findFromRoot: found a child: " + r.getName() + " of type: " + r.getClass());
 					}
-				}				
+				}
 			}
 			if (r instanceof CollectionResource) {
 				col = (CollectionResource) r;
@@ -275,10 +278,26 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		return contextPath;
 	}
 
+	/**
+	 * Get a context path which is definitely valid as a path. Ie it always begins
+	 * with a slash, and ends with a slash, and is a single slash if representing the root
+	 * @return 
+	 */
+	public String getValidContextPath() {
+		String s = getContextPath();
+		if (s == null || s.equals("")) {
+			return "/";
+		}
+		if (!s.endsWith("/")) {
+			s += "/";
+		}
+		return s;
+	}
+
 	public String stripContext(String url) {
-		if (this.contextPath != null && contextPath.length() > 0 && !contextPath.equals("/") ) {			
+		if (this.contextPath != null && contextPath.length() > 0 && !contextPath.equals("/")) {
 			String c;
-			if( !contextPath.startsWith("/")) {
+			if (!contextPath.startsWith("/")) {
 				c = "/" + contextPath;
 			} else {
 				c = contextPath;
@@ -298,6 +317,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	public void setControllers(Collection<Object> controllers) {
 		this.controllers = Collections.unmodifiableCollection(controllers);
 		for (Object controller : controllers) {
+			log.info("Parse controller methods: " + controller.getClass());
 			for (AnnotationHandler ah : mapOfAnnotationHandlers.values()) {
 				ah.parseController(controller);
 			}
@@ -333,7 +353,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	}
 
 	public boolean isCompatible(Object source, Method m) {
-		if( in(m, Method.REPORT, Method.LOCK, Method.UNLOCK, Method.HEAD, Method.OPTIONS, Method.PROPPATCH, Method.ACL)) {
+		if (in(m, Method.REPORT, Method.LOCK, Method.UNLOCK, Method.HEAD, Method.OPTIONS, Method.PROPPATCH, Method.ACL)) {
 			return true;
 		}
 		AnnotationHandler ah = mapOfAnnotationHandlersByMethod.get(m);
@@ -360,15 +380,15 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		Response response = HttpManager.response();
 		Object[] args = new Object[m.getParameterTypes().length];
 		List list = new ArrayList();
-		
+
 		// put this resource and all its parents on the stack
 		AnnoResource r = sourceRes;
-		while( r != null ) {
+		while (r != null) {
 			list.add(r.getSource()); // First argument MUST be the source object!!!
-			list.add(r);			
+			list.add(r);
 			r = r.getParent();
 		}
-		
+
 		for (Object s : otherValues) {
 			list.add(s);
 		}
@@ -378,7 +398,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 			try {
 				argValue = findArgValue(type, request, response, list);
 			} catch (UnresolvableParameterException e) {
-				log.warn("Could not resolve parameter: " + i + "  in method: " + m.getName() );
+				log.warn("Could not resolve parameter: " + i + "  in method: " + m.getName());
 				//System.out.println("Couldnt find parameter " + type + " for method: " + m);				
 				argValue = null;
 			}
@@ -444,24 +464,24 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	 * inspected for annotations
 	 * @return
 	 */
-	public AnnoResource instantiate(Object childSource, AnnoCollectionResource parent, java.lang.reflect.Method m) {		
+	public AnnoResource instantiate(Object childSource, AnnoCollectionResource parent, java.lang.reflect.Method m) {
 		if (authenticateAnnotationHandler.canAuthenticate(childSource)) {
 			return new AnnoPrincipalResource(this, childSource, parent);
 		}
-		if( m.getAnnotation(Calendars.class) != null ) {
+		if (m.getAnnotation(Calendars.class) != null) {
 			return new AnnoCalendarResource(this, childSource, parent);
 		}
-		if( parent instanceof AnnoCalendarResource) {
+		if (parent instanceof AnnoCalendarResource) {
 			return new AnnoEventResource(this, childSource, parent);
 		}
-		if( m.getAnnotation(AddressBooks.class) != null ) {
+		if (m.getAnnotation(AddressBooks.class) != null) {
 			return new AnnoAddressBookResource(this, childSource, parent);
 		}
-		if( parent instanceof AnnoAddressBookResource) {
+		if (parent instanceof AnnoAddressBookResource) {
 			return new AnnoContactResource(this, childSource, parent);
 		}
-		
-		if (childrenOfAnnotationHandler.isCompatible(childSource) || childOfAnnotationHandler.isCompatible(childSource) ) {
+
+		if (childrenOfAnnotationHandler.isCompatible(childSource) || childOfAnnotationHandler.isCompatible(childSource)) {
 			return new AnnoCollectionResource(this, childSource, parent);
 		} else {
 			return new AnnoFileResource(this, childSource, parent);
@@ -562,9 +582,9 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		this.mapOfTempResources = mapOfTempResources;
 	}
 
-	private boolean in(Method m, Method ... methods) {
-		for( Method listMethod : methods ) {
-			if( m.equals(listMethod)) {
+	private boolean in(Method m, Method... methods) {
+		for (Method listMethod : methods) {
+			if (m.equals(listMethod)) {
 				return true;
 			}
 		}

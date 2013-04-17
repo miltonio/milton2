@@ -50,7 +50,6 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 
 	@Override
 	public void parseController(Object controller) {
-		log.info("parseController: " + controller + " handler: " + getClass());
 		for (java.lang.reflect.Method m : controller.getClass().getMethods()) {
 			Annotation a = m.getAnnotation(annoClass);
 			if (a != null) {
@@ -261,4 +260,11 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 			return returnType.isAssignableFrom(method.getReturnType());
 		}
 	}
+
+	@Override
+	public List<ControllerMethod> getControllerMethods() {
+		return controllerMethods;
+	}
+	
+	
 }
