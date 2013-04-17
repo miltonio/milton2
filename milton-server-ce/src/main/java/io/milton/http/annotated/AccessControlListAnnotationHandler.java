@@ -131,10 +131,16 @@ public class AccessControlListAnnotationHandler extends AbstractAnnotationHandle
 				p = Priviledge.READ_CONTENT;
 			}
 			return p;
+		} else if( httpMethod == Method.ACL) {
+			return Priviledge.READ_ACL;
+		} else if( httpMethod == Method.UNLOCK) {
+			return Priviledge.UNLOCK;
+		} else if( httpMethod == Method.PROPFIND) {
+			return Priviledge.READ_PROPERTIES;
 		} else if (httpMethod.isWrite) {
-			return Priviledge.WRITE;
+			return Priviledge.WRITE_CONTENT;
 		} else {
-			return Priviledge.READ;
+			return Priviledge.READ_CONTENT;
 		}
 	}
 

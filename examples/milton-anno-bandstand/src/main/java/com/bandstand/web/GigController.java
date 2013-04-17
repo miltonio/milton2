@@ -104,7 +104,7 @@ public class GigController {
         if (target.musician == currentUser) {
             Band band = target.band;
             if (band.getName().endsWith("ReadOnly")) {
-                return AccessControlledResource.READ_CONTENT;
+                return AccessControlledResource.READ_BROWSE;
             }
             return AccessControlledResource.READ_WRITE;
         } else {

@@ -113,6 +113,8 @@ public interface AccessControlledResource extends Resource {
     
     public final static List<AccessControlledResource.Priviledge> READ_CONTENT = Arrays.asList(Priviledge.READ_CONTENT);
     
+    public final static List<AccessControlledResource.Priviledge> READ_BROWSE = Arrays.asList(Priviledge.READ_CONTENT, Priviledge.READ_PROPERTIES);
+    
 
     /**
      * A URL which identifies the principal owner of this resource
