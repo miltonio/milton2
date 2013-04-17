@@ -55,4 +55,10 @@ public interface AnnotationHandler {
 	 * @return 
 	 */
 	List<ControllerMethod> getControllerMethods();
+	
+	/**
+	 * Get the annotation class that this handler handles
+	 * @return 
+	 */
+	Class getAnnoClass();
 }

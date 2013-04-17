@@ -49,11 +49,17 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 	}
 
 	@Override
+	public Class getAnnoClass() {
+		return annoClass;
+	}
+
+	
+	
+	@Override
 	public void parseController(Object controller) {
 		for (java.lang.reflect.Method m : controller.getClass().getMethods()) {
 			Annotation a = m.getAnnotation(annoClass);
 			if (a != null) {
-				log.info(" found method: " + m.getName());
 				Class<?>[] params = m.getParameterTypes();
 				if (params == null || params.length == 0) {
 					throw new RuntimeException("Invalid controller method: " + m.getName() + " does not have a source argument");

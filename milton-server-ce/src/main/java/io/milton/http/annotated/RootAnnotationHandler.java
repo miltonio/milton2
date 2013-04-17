@@ -78,5 +78,9 @@ public class RootAnnotationHandler implements AnnotationHandler {
 		return controllerMethods;
 	}
     
+	@Override
+	public Class getAnnoClass() {
+		return Root.class;
+	}	
 	
 }

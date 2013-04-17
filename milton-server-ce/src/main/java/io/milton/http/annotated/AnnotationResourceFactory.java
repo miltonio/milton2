@@ -279,9 +279,11 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	}
 
 	/**
-	 * Get a context path which is definitely valid as a path. Ie it always begins
-	 * with a slash, and ends with a slash, and is a single slash if representing the root
-	 * @return 
+	 * Get a context path which is definitely valid as a path. Ie it always
+	 * begins with a slash, and ends with a slash, and is a single slash if
+	 * representing the root
+	 *
+	 * @return
 	 */
 	public String getValidContextPath() {
 		String s = getContextPath();
@@ -316,10 +318,23 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 
 	public void setControllers(Collection<Object> controllers) {
 		this.controllers = Collections.unmodifiableCollection(controllers);
+		log.info("setControllers: parsing controllers...");
 		for (Object controller : controllers) {
-			log.info("Parse controller methods: " + controller.getClass());
+			log.info("Parse controller: " + controller.getClass());
 			for (AnnotationHandler ah : mapOfAnnotationHandlers.values()) {
 				ah.parseController(controller);
+			}
+		}
+		log.info("Controller parsing complete. Listing found methods..");
+		for (AnnotationHandler ah : mapOfAnnotationHandlers.values()) {
+			log.info("Annotation: " + ah.getAnnoClass());
+			List<ControllerMethod> list = ah.getControllerMethods();
+			if (list == null || list.isEmpty()) {
+				log.info("  No methods found");
+			} else {
+				for (ControllerMethod cm : ah.getControllerMethods()) {
+					log.info("  method: " + cm.method);
+				}
 			}
 		}
 	}
