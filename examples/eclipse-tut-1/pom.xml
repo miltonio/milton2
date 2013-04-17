@@ -12,7 +12,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <milton.version>2.4.2.6</milton.version>
+        <milton.version>2.4.2.7</milton.version>
     </properties>
 
     <build>
