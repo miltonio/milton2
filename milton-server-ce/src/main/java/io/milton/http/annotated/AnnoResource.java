@@ -342,14 +342,7 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 
 	public String getHref() {
 		if (parent == null) {
-			String s  = annoFactory.getContextPath();
-			if( s == null || s.equals("")) {
-				return "/";
-			}
-			if( !s.endsWith("/")) {
-				s += "/";
-			}
-			return s;
+			return annoFactory.getValidContextPath();
 		} else {
 			String s = parent.getHref() + getName();
 			if (this instanceof CollectionResource) {
