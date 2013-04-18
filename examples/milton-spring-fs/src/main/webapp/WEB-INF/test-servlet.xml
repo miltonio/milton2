@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+   <!--<bean name="gson" class="com.google.gson.Gson"/>-->
+   
+   <!-- This bean is used to allow the UserController to contain multiple handler methods -->
+    <bean id="actionResolver"
+        class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
+        <property name="paramName"><value>action</value></property>
+        <!--<property name="defaultMethodName"><value>list</value></property> -->
+    </bean>
+
+   <!--<bean name="/desk" class="org.springframework.web.servlet.mvc.multiaction.MultiActionController">		
+		<property name="methodNameResolver">
+            <ref bean="actionResolver"/>
+        </property>
+        <property name="delegate">
+        	<bean class="com.hypermanager.web.control.DeskDelegate">
+        		  <property name="deskService" ref="deskService"/>
+        		  <property name="gson" ref="gson"/>
+        	</bean>
+    	</property>
+	</bean>-->
+	
+	
+	<!--<bean name="/milton" class="io.milton.servlet.MiltonController">
+		<constructor-arg>		
+        	<bean class="io.milton.config.HttpManagerBuilder">
+	        <property name="mainResourceFactory" ref="resource.factory" />
+	        <property name="enableCompression" value="false"/>
+	        <property name="buffering" value="never"/>      
+   		</bean> 
+		</constructor-arg>	   
+	</bean>
+	
+	<bean id="resource.factory" class="io.milton.http.fs.FileSystemResourceFactory">
+    	<constructor-arg value="C:\\Temp"/>
+    	<constructor-arg>
+    		<bean class="io.milton.http.fs.NullSecurityManager"/>
+    	</constructor-arg>
+    </bean>-->
+</beans>

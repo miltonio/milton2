@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+
+   <!-- <bean id="resource.factory" class="io.milton.http.annotated.AnnotationResourceFactory">
+        <property name="controllers">
+            <list>
+                <bean class="com.bandstand.web.BandsController" />
+            </list>
+        </property>
+    </bean>-->
+    
+    <bean id="resource.factory" class="io.milton.http.fs.FileSystemResourceFactory">
+    	<constructor-arg value="/tmp"/>
+    	<constructor-arg>
+    		<bean class="io.milton.http.fs.NullSecurityManager"/>
+    	</constructor-arg>
+    </bean>
+
+    <bean id="milton.http.manager" class="io.milton.config.HttpManagerBuilder">
+        <property name="mainResourceFactory" ref="resource.factory" />
+        <property name="enableCompression" value="false"/>
+        <property name="buffering" value="never"/>      
+    </bean>    
+</beans>
