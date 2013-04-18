@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 public final class FileSystemResourceFactory implements ResourceFactory {
 
     private static final Logger log = LoggerFactory.getLogger(FileSystemResourceFactory.class);
-    private FileContentService contentService;
+    private FileContentService contentService = new SimpleFileContentService();
     File root;
     io.milton.http.SecurityManager securityManager;
     LockManager lockManager;
@@ -66,8 +66,7 @@ public final class FileSystemResourceFactory implements ResourceFactory {
     public FileSystemResourceFactory() {
         log.debug("setting default configuration...");
         String sRoot = System.getProperty("user.home");
-        io.milton.http.SecurityManager sm = new NullSecurityManager();
-        contentService = new SimpleFileContentService();
+        io.milton.http.SecurityManager sm = new NullSecurityManager();        
         init(sRoot, sm);
     }
 

@@ -391,6 +391,9 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	 * @throws Exception
 	 */
 	public Object[] buildInvokeArgs(AnnoResource sourceRes, java.lang.reflect.Method m, Object... otherValues) throws Exception {
+		if (log.isTraceEnabled()) {
+			log.trace("buildInvokeArgs: source=" + sourceRes.getSource() + " on method: " + m);
+		}
 		Request request = HttpManager.request();
 		Response response = HttpManager.response();
 		Object[] args = new Object[m.getParameterTypes().length];
@@ -449,15 +452,21 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 				}
 			}
 		}
-		log.error("Unknown parameter type: " + type);
-		log.error("Available types are:");
-		log.error(" - " + Request.class);
-		log.error(" - " + Response.class);
-		for (Object o : otherAvailValues) {
-			if (o != null) {
-				log.error(" - " + o.getClass());
+		if (log.isInfoEnabled()) {
+			if (log.isDebugEnabled()) {
+				log.info("Unknown parameter type: " + type);
+				log.debug("Available types are:");
+				log.debug(" - " + Request.class);
+				log.debug(" - " + Response.class);
+				for (Object o : otherAvailValues) {
+					if (o != null) {
+						log.debug(" - " + o.getClass());
+					} else {
+						log.debug(" - null");
+					}
+				}
 			} else {
-				log.error(" - null");
+				log.info("Unknown parameter type: " + type + " Enable DEBUG level logging to see available objects");
 			}
 		}
 

@@ -140,12 +140,35 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 	public Object authenticate(String user, String password) {
 		AnnoPrincipalResource userRes = annoFactory.usersAnnotationHandler.findUser(getRoot(), user);
 		if (userRes != null) {
+			if (log.isTraceEnabled()) {
+				log.trace("authenticate(Basic): user=" + user + " found object: " + userRes.getSource());
+			}
 			Boolean b = annoFactory.authenticateAnnotationHandler.authenticate(userRes, password);
-			if (b != null) {
+			if (b != null && b.booleanValue()) {
+				if (log.isTraceEnabled()) {
+					log.trace("annotated authenticate method verified credentials");
+				}
 				return userRes;
+			} else {
+				if (log.isTraceEnabled()) {
+					log.trace("annotated authenticate method rejected credentials");
+				}
+			}
+		} else {
+			if (log.isTraceEnabled()) {
+				log.trace("user was not found from annotated methods");
+			}
+
+		}
+		Object oUser = annoFactory.getSecurityManager().authenticate(user, password);
+		if (log.isDebugEnabled()) {
+			if (oUser == null) {
+				log.debug("authenticate(Basic): did not find a user from: " + annoFactory.getSecurityManager());
+			} else {
+				log.debug("authenticate(Basic): found a valid user from: " + annoFactory.getSecurityManager());
 			}
 		}
-		return annoFactory.getSecurityManager().authenticate(user, password);
+		return oUser;
 	}
 
 	@Override
@@ -153,11 +176,30 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 		AnnoPrincipalResource userRes = annoFactory.usersAnnotationHandler.findUser(getRoot(), digestRequest.getUser());
 		if (userRes != null) {
 			Boolean b = annoFactory.authenticateAnnotationHandler.authenticate(userRes, digestRequest);
-			if (b != null) {
+			if (b != null && b.booleanValue()) {
+				if (log.isDebugEnabled()) {
+					log.debug("authenticate(Digest): user=" + digestRequest.getUser() + " found valid user: " + userRes.getSource());
+				}
 				return userRes;
+			} else {
+				if (log.isDebugEnabled()) {
+					log.debug("authenticate(Digest): user=" + digestRequest.getUser() + " found user: " + userRes.getSource() + " but authentication failed");
+				}
+			}
+		} else {
+			if (log.isDebugEnabled()) {
+				log.debug("authenticate(Digest): user=" + digestRequest.getUser() + " was not found from annotated methods.");
 			}
 		}
-		return annoFactory.getSecurityManager().authenticate(digestRequest);
+		Object oUser = annoFactory.getSecurityManager().authenticate(digestRequest);
+		if (log.isDebugEnabled()) {
+			if (oUser == null) {
+				log.debug("authenticate(Digest): did not find a user from: " + annoFactory.getSecurityManager());
+			} else {
+				log.debug("authenticate(Digest): found a valid user from: " + annoFactory.getSecurityManager());
+			}
+		}
+		return oUser;
 	}
 
 	@Override
@@ -166,18 +208,32 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 		if (auth != null) {
 			oUser = auth.getTag();
 		}
+
 		AnnoPrincipalResource p = null;
 		if (oUser instanceof AnnoPrincipalResource) {
 			p = (AnnoPrincipalResource) oUser;
 		}
+
 		// only check ACL if current user is null (ie guest) or the current user is an AnnoPrincipal
-		if (oUser == null || p != null) {
+		if (p != null || (oUser == null && !annoFactory.accessControlListAnnotationHandler.getControllerMethods().isEmpty())) {
 			if (acl == null) {
+				if (log.isDebugEnabled()) {
+					if (p != null) {
+						log.debug("authorise: find ACL for principle=" + p.getSource());
+					} else if (oUser == null) {
+						log.debug("authorise: no logged in user, get ACL for anonymous access");
+					}
+				}
+
 				acl = annoFactory.accessControlListAnnotationHandler.availablePrivs(p, this, auth);
 			}
 			AccessControlledResource.Priviledge requiredPriv = annoFactory.accessControlListAnnotationHandler.requiredPriv(this, method, request);
 			boolean allows;
 			if (requiredPriv == null) {
+				if( log.isDebugEnabled()) {
+					// This should never happen, but generally we accept that a null-priv means no restriction
+					log.debug("authorise: request permitted because required priviledge is null");
+				}
 				allows = true;
 			} else {
 				allows = AclUtils.containsPriviledge(requiredPriv, acl);
@@ -191,6 +247,9 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 				}
 			}
 			return allows;
+		}
+		if( log.isDebugEnabled()) {
+			log.debug("authorise: ACL cannot be calculated so use security manager: " + annoFactory.getSecurityManager());
 		}
 		// if we get here it means ACL was not applied, so we check default SM
 		return annoFactory.getSecurityManager().authorise(request, method, auth, this);

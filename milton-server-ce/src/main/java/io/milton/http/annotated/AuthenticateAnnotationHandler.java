@@ -38,17 +38,23 @@ public class AuthenticateAnnotationHandler extends AbstractAnnotationHandler {
 		List<ControllerMethod> availMethods = getMethods(source.getClass());
 		return !availMethods.isEmpty();
 	}
-	
+
 	public Boolean authenticate(AnnoPrincipalResource userRes, String requestedPassword) {
 		Object source = userRes.getSource();
 		List<ControllerMethod> availMethods = getMethods(source.getClass());
 		if (availMethods.isEmpty()) {
+			if (!controllerMethods.isEmpty()) {
+				if (log.isInfoEnabled()) {
+					log.warn("No @Authenticate methods were found for user object: " + source + " located at: " + userRes.getHref());
+				}
+			}
 			return null;
 		}
-		try {
-			for (ControllerMethod cm : availMethods) {
-				// if it returns String then it returns a password. Otherwise is authenticate method
-				if (cm.method.getReturnType().equals(String.class)) {
+
+		for (ControllerMethod cm : availMethods) {
+			// if it returns String then it returns a password. Otherwise is authenticate method
+			if (cm.method.getReturnType().equals(String.class)) {
+				try {
 					String result = (String) invoke(cm, userRes, cm.method, userRes);
 					if (result == null) {
 						log.warn("Null password from: " + cm + " for user: " + userRes.getHref());
@@ -56,20 +62,25 @@ public class AuthenticateAnnotationHandler extends AbstractAnnotationHandler {
 					} else {
 						return result.equals(requestedPassword);
 					}
-				} else if (cm.method.getReturnType().equals(Boolean.class)) {
+				} catch (Exception ex) {
+					throw new RuntimeException("Exception invoking @Authenticate method: " + cm.method, ex);
+				}
+			} else if (cm.method.getReturnType().equals(Boolean.class)) {
+				try {
 					Object[] args = annoResourceFactory.buildInvokeArgs(userRes, cm.method, requestedPassword);
 					Boolean result = (Boolean) cm.method.invoke(cm.controller, args);
 					if (result != null) {
 						return result;
 					}
-				} else {
-					throw new RuntimeException("@Authenticate method does not return either String or Boolean: " + cm);
+				} catch (Exception ex) {
+					throw new RuntimeException("Exception invoking @Authenticate method: " + cm.method, ex);
 				}
+			} else {
+				throw new RuntimeException("@Authenticate method does not return either String or Boolean: " + cm);
 			}
-			return null;
-		} catch (Exception e) {
-			throw new RuntimeException(e);
 		}
+		return null;
+
 	}
 
 	public Boolean authenticate(AnnoPrincipalResource userRes, DigestResponse digestRequest) {

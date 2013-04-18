@@ -158,19 +158,22 @@ public class SpringMiltonFilter implements javax.servlet.Filter {
 	}
 
 	@Override
-	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain fc) throws IOException, ServletException {
-		if (req instanceof HttpServletRequest) {
+	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain fc) throws IOException, ServletException {		
+		if (req instanceof HttpServletRequest) {			
 			HttpServletRequest hsr = (HttpServletRequest) req;
 			String url = hsr.getRequestURI();
 			// Allow certain paths to be excluded from milton, these might be other servlets, for example
 			for (String s : excludeMiltonPaths) {
 				if (url.startsWith(s)) {
+					log.trace("doFilter: is excluded path");
 					fc.doFilter(req, resp);
 					return;
 				}
 			}
+			log.trace("doFilter: begin milton processing");
 			doMiltonProcessing((HttpServletRequest) req, (HttpServletResponse) resp);
 		} else {
+			log.trace("doFilter: request is not a supported type, continue with filter chain");
 			fc.doFilter(req, resp);
 			return;
 		}
