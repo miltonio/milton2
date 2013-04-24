@@ -125,11 +125,21 @@ public class GigController {
         }
     }
 
+    /**
+     * Deletes the given Gig object. This method also takes a Musician object as
+     * a parameter to demonstrate how it is possible to get a reference to a parent
+     * object in the hierarchy
+     * 
+     * @param gig
+     * @param musician 
+     */
     @Delete
-    public void delete(Gig gig) {
+    public void delete(Gig gig, Musician musician) {
+        log.info("delete gig gigId=" + gig.getId() + " - musicianId=" + musician.getId());
         Transaction tx = SessionManager.session().beginTransaction();
         try {
             SessionManager.session().delete(gig);
+            SessionManager.session().flush();
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
