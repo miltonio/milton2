@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 
 import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
-import io.milton.http.webdav.DefaultUserAgentHelper;
 
 public class StandardFilter implements Filter {
 
