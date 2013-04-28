@@ -10,7 +10,7 @@
         use milton annotations in a "sort of" real life app.
     </description>
     <properties>
-        <milton.version>2.4.2.7</milton.version>
+        <milton.version>2.4.2.8</milton.version>
     </properties>    
     <build>
         <plugins>
