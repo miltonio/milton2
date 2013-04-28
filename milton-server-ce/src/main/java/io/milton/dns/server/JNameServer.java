@@ -214,6 +214,7 @@ public class JNameServer implements Service {
 		}
 		Name domainName;
 		try {
+			// TODO: got a NPE here
 			domainName = Utils.stringToName(zdr.getName());
 		} catch (TextParseException ex) {
 			System.out.println("parse ex");
