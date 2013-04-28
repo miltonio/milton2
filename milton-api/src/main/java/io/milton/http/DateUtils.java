@@ -54,6 +54,13 @@ public class DateUtils {
      * Date format pattern used to parse HTTP date headers in RFC 1123 format.
      */
     public static final String PATTERN_RFC1123 = "EEE, dd MMM yyyy HH:mm:ss zzz";
+    
+    /**
+     * Like PATTERN_RFC1123 but with hyphens between the date components
+     * 
+     */
+    public static final String PATTERN_RFC1123_HYPHENS = "EEE, dd-MMM-yyyy HH:mm:ss zzz";
+    
     /**
      * Date format pattern used to parse HTTP date headers in RFC 1123 format.
      */
@@ -282,6 +289,10 @@ public class DateUtils {
     public static String formatForWebDavModifiedDate(Date date) {
         return formatDate(date, PATTERN_RFC1123);
     }
+    
+    public static String formatForCookieExpiry(Date date) {
+        return formatDate(date, PATTERN_RFC1123_HYPHENS);
+    }    
 
     /**
      * This class should not be instantiated.

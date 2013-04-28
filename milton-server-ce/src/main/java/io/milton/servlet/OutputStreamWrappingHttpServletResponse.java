@@ -200,24 +200,4 @@ public class OutputStreamWrappingHttpServletResponse extends ServletOutputStream
 	@Override
 	public void setCharacterEncoding(String charset) {
 	}
-
-	@Override
-	public Collection<String> getHeaderNames() {
-		return response.getHeaderNames();
-	}
-
-	@Override
-	public Collection<String> getHeaders(String name) {
-		return response.getHeaders(name);
-	}
-
-	@Override
-	public String getHeader(String name) {
-		return response.getHeader(name);
-	}
-
-	@Override
-	public int getStatus() {
-		return response.getStatus();
-	}
 }

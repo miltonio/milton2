@@ -163,36 +163,8 @@ public class ServletResource implements GetableResource {
 		}
 
 		@Override
-		public Collection<String> getHeaderNames() {
-			return response.getHeaders().keySet();
-		}
-
-		@Override
-		public Collection<String> getHeaders(String name) {
-			String val = response.getHeaders().get(name);
-			if (val == null) {
-				return Collections.EMPTY_LIST;
-			}
-			return Arrays.asList(val);
-		}
-
-		@Override
-		public String getHeader(String name) {
-			return response.getHeaders().get(name);
-		}
-
-		@Override
-		public int getStatus() {
-			if (response.getStatus() != null) {
-				return response.getStatus().code;
-			} else {
-				return 0;
-			}
-		}
-
-		@Override
 		public void addCookie(Cookie cookie) {
-			response.setCookie(new ServletCookie(cookie));
+			response.setCookie(ServletRequest.toBeanCookie(cookie));
 		}
 
 		@Override

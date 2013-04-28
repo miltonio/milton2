@@ -73,6 +73,7 @@ public class PreAuthenticationFilter implements Filter {
     }
 
 
+	@Override
     public void process( FilterChain chain, Request request, Response response ) {
         log.trace( "process" );
         try {

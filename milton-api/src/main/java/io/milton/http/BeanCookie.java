@@ -15,12 +15,48 @@
  */
 package io.milton.http;
 
+import java.util.Date;
+
 /**
  *
  * @author brad
  */
-public class BeanCookie implements Cookie{
+public class BeanCookie implements Cookie {
 
+    /**
+     * Formats the cookie in a suitable format for a SetCookie response
+     *
+     * @return
+     */
+    public static String toHeader(Cookie c) {
+        return toHeader(c, System.currentTimeMillis());
+    }
+    public static String toHeader(Cookie c, long nowMs) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(c.getName()).append("=").append(c.getValue());
+        if (c.getDomain() != null && c.getDomain().length() > 0) {
+            sb.append("; Domain=").append(c.getDomain());
+        }
+        if (c.getPath() != null && c.getPath().length() > 0) {
+            sb.append("; Path=").append(c.getPath());
+        }
+
+        if (c.getExpiry() > 0) {
+            System.out.println("now2=" + new Date(nowMs));
+            long expiryMs = nowMs + (c.getExpiry() * 1000);
+            Date date = new Date(expiryMs);
+            System.out.println("date=" + date);
+            String sDate = DateUtils.formatForCookieExpiry(date);
+            sb.append("; Expires=").append(sDate);
+        }
+        if (c.getSecure()) {
+            sb.append("; Secure");
+        }
+        if (c.isHttpOnly()) {
+            sb.append("; HttpOnly");
+        }
+        return sb.toString();
+    }
     private int version;
     private final String name;
     private String value;
@@ -33,8 +69,7 @@ public class BeanCookie implements Cookie{
     public BeanCookie(String name) {
         this.name = name;
     }
-    
-    
+
     @Override
     public int getVersion() {
         return version;
@@ -49,7 +84,6 @@ public class BeanCookie implements Cookie{
     public String getName() {
         return name;
     }
-
 
     @Override
     public String getValue() {
@@ -69,7 +103,7 @@ public class BeanCookie implements Cookie{
     public boolean getSecure() {
         return secure;
     }
-       
+
     @Override
     public void setSecure(boolean secure) {
         this.secure = secure;
@@ -114,6 +148,4 @@ public class BeanCookie implements Cookie{
     public boolean isHttpOnly() {
         return httpOnly;
     }
-
-    
 }

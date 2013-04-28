@@ -21,6 +21,7 @@ package io.milton.servlet;
 
 import io.milton.http.AbstractRequest;
 import io.milton.http.Auth;
+import io.milton.http.BeanCookie;
 import io.milton.http.Cookie;
 import io.milton.http.Request;
 import io.milton.http.RequestParseException;
@@ -54,6 +55,19 @@ import org.slf4j.LoggerFactory;
 public class ServletRequest extends AbstractRequest {
 
     private static final Logger log = LoggerFactory.getLogger(ServletRequest.class);
+	
+	public static BeanCookie toBeanCookie(javax.servlet.http.Cookie c) {
+		BeanCookie bc = new BeanCookie(c.getName());
+		bc.setDomain(c.getDomain());
+		bc.setExpiry(c.getMaxAge());
+		bc.setHttpOnly(true); // http only by default
+		bc.setPath(c.getPath());
+		bc.setSecure(c.getSecure());
+		bc.setValue(c.getValue());
+		bc.setVersion(c.getVersion());
+		return bc;
+	}	
+	
     private final HttpServletRequest request;
     private final ServletContext servletContext;
     private final Request.Method method;
@@ -282,7 +296,7 @@ public class ServletRequest extends AbstractRequest {
         if (request.getCookies() != null) {
             for (javax.servlet.http.Cookie c : request.getCookies()) {
                 if (c.getName().equals(name)) {
-                    return new ServletCookie(c);
+                    return toBeanCookie(c);
                 }
             }
         }
@@ -294,13 +308,13 @@ public class ServletRequest extends AbstractRequest {
         ArrayList<Cookie> list = new ArrayList<Cookie>();
         if (request.getCookies() != null) {
             for (javax.servlet.http.Cookie c : request.getCookies()) {
-                list.add(new ServletCookie(c));
+                list.add(toBeanCookie(c));
 
             }
         }
         return list;
     }
-
+	
     @Override
     public String getRemoteAddr() {
         return request.getRemoteAddr();

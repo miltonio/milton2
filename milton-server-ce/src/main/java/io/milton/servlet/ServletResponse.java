@@ -19,6 +19,7 @@
 package io.milton.servlet;
 
 import io.milton.http.AbstractResponse;
+import io.milton.http.BeanCookie;
 import io.milton.http.Cookie;
 import io.milton.http.Response;
 import java.io.IOException;
@@ -154,36 +155,16 @@ public class ServletResponse extends AbstractResponse {
 
 	@Override
 	public Cookie setCookie(Cookie cookie) {
-		if (cookie instanceof ServletCookie) {
-			ServletCookie sc = (ServletCookie) cookie;
-			r.addCookie(sc.getWrappedCookie());
-			return cookie;
-		} else {
-			javax.servlet.http.Cookie c = new javax.servlet.http.Cookie(cookie.getName(), cookie.getValue());
-			c.setPath(cookie.getPath());
-			c.setValue(cookie.getValue());
-			c.setHttpOnly(cookie.isHttpOnly());
-			if (cookie.getDomain() != null) {
-				c.setDomain(cookie.getDomain());
-			}
-			if (cookie.getExpiry() != 0) {
-				c.setMaxAge(cookie.getExpiry());
-			}			
-			c.setSecure(cookie.getSecure());
-			if (cookie.getVersion() != 0) {
-				c.setVersion(cookie.getVersion());
-			}
-
-			r.addCookie(c);
-			return new ServletCookie(c);
-		}
+		String h = BeanCookie.toHeader(cookie);
+		r.addHeader("Set-Cookie", h);
+		return cookie;		
 	}
 
 	@Override
 	public Cookie setCookie(String name, String value) {
-		javax.servlet.http.Cookie c = new javax.servlet.http.Cookie(name, value);
+		BeanCookie c = new BeanCookie(name);
+		c.setValue(value);
 		c.setPath("/");
-		r.addCookie(c);
-		return new ServletCookie(c);
+		return c;
 	}
 }
