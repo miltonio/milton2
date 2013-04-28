@@ -40,7 +40,10 @@ public class RangeUtils {
             for (Range r : ranges) {
                 long skip = r.getStart() - pos;
                 bufIn.skip(skip);
-                long length = r.getFinish() - r.getStart();
+                Long length = r.getLength();
+                if( length == null ) { // will return null if cant calculate
+                    throw new IOException("Unable to write range because either start or finish index are not provided: " + r);
+                }
                 sendBytes(bufIn, responseOut, length);
                 pos = r.getFinish();
             }

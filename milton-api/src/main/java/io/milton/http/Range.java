@@ -63,6 +63,21 @@ public class Range {
         return finish;
     }
 
+    /**
+     * Calculate the length of this range if both start and finish indexes are non-null,
+     * otherwise return null
+     * 
+     * @return 
+     */
+    public Long getLength() {
+        if( start != null && finish != null ) {
+            // ranges are inclusive, ie 0-499 is length 500
+            return finish - start + 1; //see http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.35.1
+        } else {
+            return null;
+        }
+    }
+    
     @Override
     public String toString() {
         return "bytes " + start + "-" + finish;
