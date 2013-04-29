@@ -27,7 +27,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 	private static final String HANDLER_ATT_NAME = "_delegatedAuthenticationHandler";
 	public static final int SECONDS_PER_YEAR = 60 * 60 * 24 * 365;
 	private String requestParamLogout = "miltonLogout";
-	private String cookieUserUrlValue = "miltonUserUrl"; // TODO: make this a HTTP Only cookie, to avoid XSS attacks
+	private String cookieUserUrlValue = "miltonUserUrl"; 
 	private String cookieUserUrlHash = "miltonUserUrlHash";
 	private final List<AuthenticationHandler> handlers;
 	private final ResourceFactory principalResourceFactory;
@@ -59,8 +59,9 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 		String userUrl = getUserUrl(request);
 
 		// check for a logout command, if so logout
-		if (isLogout(request)) {
-			if (userUrl != null && userUrl.length() > 0) {
+		if (isLogout(request)) {			
+			log.info("Is LogOut request, clear cookie");
+			if (userUrl != null && userUrl.length() > 0) {				
 				clearCookieValue(HttpManager.response());
 			}
 		}
@@ -305,6 +306,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 	}
 
 	private void clearCookieValue(Response response) {
+		log.info("clearCookieValue");
 		response.setCookie(cookieUserUrlValue, "");
 		response.setCookie(cookieUserUrlHash, "");
 	}

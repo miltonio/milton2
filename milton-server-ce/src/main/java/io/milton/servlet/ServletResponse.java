@@ -165,6 +165,7 @@ public class ServletResponse extends AbstractResponse {
 		BeanCookie c = new BeanCookie(name);
 		c.setValue(value);
 		c.setPath("/");
+		setCookie(c);
 		return c;
 	}
 }
