@@ -18,6 +18,8 @@ import io.milton.annotations.CTag;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import org.apache.commons.beanutils.PropertyUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -25,6 +27,7 @@ import org.apache.commons.beanutils.PropertyUtils;
  */
 public class CTagAnnotationHandler extends AbstractAnnotationHandler {
 
+	private static final Logger log = LoggerFactory.getLogger(CTagAnnotationHandler.class);
 	private final String[] CTAG_PROP_NAMES = {"ctag"};
 
 	public CTagAnnotationHandler(final AnnotationResourceFactory outer) {
@@ -41,40 +44,59 @@ public class CTagAnnotationHandler extends AbstractAnnotationHandler {
 				java.lang.reflect.Method m = annoResourceFactory.findMethodForAnno(source.getClass(), annoClass);
 				if (m != null) {
 					rawId = m.invoke(source, (Object) null);
+					if (log.isDebugEnabled()) {
+						log.debug("Got ctag from source object. ctag=" + rawId);
+					}
+
 				} else {
 					for (String nameProp : CTAG_PROP_NAMES) {
 						if (PropertyUtils.isReadable(source, nameProp)) {
 							Object oPropVal = PropertyUtils.getProperty(source, nameProp);
 							rawId = oPropVal;
+							if (log.isDebugEnabled()) {
+								log.debug("Got ctag from bean property:" + nameProp + "  ctag=" + rawId);
+							}
+
 							break;
 						}
 					}
 					if (rawId == null) {
 						// last ditch effort, use latest mod date on the collection or any member
 						Date latest = col.getModifiedDate();
-						if (latest != null) {
-							for (CommonResource r : col.getChildren()) {
-								Date d = r.getModifiedDate();
-								if (latest == null || d.after(latest)) {
-									latest = d;
-								}
+						for (CommonResource r : col.getChildren()) {
+							Date d = r.getModifiedDate();
+							if (latest == null || d.after(latest)) {
+								latest = d;
 							}
 						}
-						if( latest != null ) {
+
+						if (latest != null) {
 							rawId = "T" + latest.getTime();
 						}
+						if (log.isInfoEnabled()) {
+							log.debug("Derived ctag from directory members. This is not recommended, you should implement an @CTag method. Ctag=" + rawId);
+						}
 					}
+
 				}
 			} else {
 				rawId = cm.method.invoke(cm.controller, source);
+				if (log.isDebugEnabled()) {
+					log.debug("Got ctag from annotated method. ctag=" + rawId);
+				}
 			}
 			if (rawId != null) {
-				return rawId.toString();
+				String s = rawId.toString();
+				if (s == null || s.length() == 0) {
+					log.warn("CTAG value is null or blank");
+				}
+				return s;
 			} else {
+				log.warn("CTAG value is null");
 				return null;
 			}
 		} catch (Exception e) {
-			throw new RuntimeException("Exception executing " + getClass() + " - " + source.getClass());
+			throw new RuntimeException("Exception executing " + getClass() + " - " + source.getClass(), e);
 		}
 	}
 }

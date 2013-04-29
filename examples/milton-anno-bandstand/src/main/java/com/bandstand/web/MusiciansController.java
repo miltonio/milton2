@@ -90,6 +90,7 @@ public class MusiciansController {
         if( musician.getContactUid() == null ) {
             musician.setContactUid(UUID.randomUUID().toString());
         }
+        musician.setModifiedDate(new Date());
         SessionManager.session().save(musician);
         SessionManager.session().flush();
         tx.commit();
