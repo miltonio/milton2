@@ -42,10 +42,8 @@ public class BeanCookie implements Cookie {
         }
 
         if (c.getExpiry() > 0) {
-            System.out.println("now2=" + new Date(nowMs));
             long expiryMs = nowMs + (c.getExpiry() * 1000);
             Date date = new Date(expiryMs);
-            System.out.println("date=" + date);
             String sDate = DateUtils.formatForCookieExpiry(date);
             sb.append("; Expires=").append(sDate);
         }
