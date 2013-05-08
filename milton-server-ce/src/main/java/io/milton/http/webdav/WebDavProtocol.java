@@ -20,6 +20,9 @@ package io.milton.http.webdav;
 
 import io.milton.common.NameSpace;
 import io.milton.http.*;
+import io.milton.http.exceptions.BadRequestException;
+import io.milton.http.exceptions.NotAuthorizedException;
+import io.milton.http.exceptions.NotFoundException;
 import io.milton.resource.CollectionResource;
 import io.milton.resource.GetableResource;
 import io.milton.http.http11.CustomPostHandler;
@@ -35,6 +38,8 @@ import io.milton.http.webdav.PropertyMap.StandardProperty;
 import io.milton.http.report.Report;
 import io.milton.http.report.ReportHandler;
 import io.milton.property.PropertyAuthoriser;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -111,6 +116,8 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 		propertyMap.add(new QuotaUsedBytesPropertyWriter());
 
 		propertyMap.add(new SupportedReportSetProperty());
+		propertyMap.add(new MiltonExtTextContentProperty());
+				
 
 
 		// note valuewriters is also used in DefaultWebDavResponseHandler
@@ -504,6 +511,43 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 			return SupportedReportSetList.class;
 		}
 	}
+	
+	class MiltonExtTextContentProperty implements StandardProperty<String> {
+
+		@Override
+		public String fieldName() {
+			return "textcontent";
+		}
+
+		@Override
+		public String getValue(PropFindableResource res) {
+			if( res instanceof GetableResource) {
+				GetableResource gr = (GetableResource) res;
+				String ct = gr.getContentType("text");
+				if( ct != null && ct.startsWith("text")) {
+					ByteArrayOutputStream bout = new ByteArrayOutputStream();
+					try {
+						gr.sendContent(bout, null, Collections.EMPTY_MAP, ct);
+						return bout.toString("UTF-8");
+					} catch (IOException e) {
+						throw new RuntimeException(e);
+					} catch (NotAuthorizedException e) {
+						return null;
+					} catch (BadRequestException e) {
+						return null;
+					} catch (NotFoundException e) {
+						return null;
+					}
+				}
+			}
+			return null;
+		}
+
+		@Override
+		public Class getValueClass() {
+			return String.class;
+		}
+	}	
 
 	protected void sendStringProp(XmlWriter writer, String name, String value) {
 		String s = value;

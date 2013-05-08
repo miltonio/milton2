@@ -32,10 +32,12 @@ import io.milton.resource.DeletableResource;
 import io.milton.resource.PostableResource;
 import io.milton.resource.PutableResource;
 import io.milton.resource.Resource;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -92,11 +94,25 @@ public class PutJsonResource extends JsonResource implements PostableResource {
 	@Override
 	public String processForm(Map<String, String> parameters, Map<String, FileItem> files) throws ConflictException, NotAuthorizedException, BadRequestException {
 		log.info("processForm: " + wrapped.getClass());
-		if (files.isEmpty()) {
-			log.debug("no files uploaded");
-			return null;
-		}
+
 		newFiles = new ArrayList<NewFile>();
+
+		if (parameters.containsKey("content")) {
+			String name = parameters.get("name");
+			String content = parameters.get("content");
+			String contentType = parameters.get("Content-Type");
+			byte[] arr = toArray(content);
+			ByteArrayInputStream in = new ByteArrayInputStream(arr);
+			long length = arr.length;
+			NewFile nf = new NewFile();
+			nf.setOriginalName(name);
+			nf.setContentType(contentType);
+			nf.setLength(length);
+			newFiles.add(nf);
+			
+			processFile(name, in, length, contentType, nf);
+		}
+
 		for (FileItem file : files.values()) {
 			NewFile nf = new NewFile();
 			String ua = HttpManager.request().getUserAgentHeader();
@@ -106,53 +122,70 @@ public class PutJsonResource extends JsonResource implements PostableResource {
 			nf.setLength(file.getSize());
 			newFiles.add(nf);
 			String newName = getName(f, parameters);
+			
 			log.info("creating resource: " + newName + " size: " + file.getSize());
 			InputStream in = null;
-			Resource newResource;
 			try {
 				in = file.getInputStream();
-				Resource existing = wrapped.child(newName);
-				if (existing != null) {
-					if (existing instanceof ReplaceableResource) {
-						log.trace("existing resource is replaceable, so replace content");
-						ReplaceableResource rr = (ReplaceableResource) existing;
-						rr.replaceContent(in, null);
-						log.trace("completed POST processing for file. Updated: " + existing.getName());
-						eventManager.fireEvent(new PutEvent(rr));
-						newResource = rr;
-					} else {
-						log.trace("existing resource is not replaceable, will be deleted");
-						if (existing instanceof DeletableResource) {
-							DeletableResource dr = (DeletableResource) existing;
-							dr.delete();
-							newResource = wrapped.createNew(newName, in, file.getSize(), file.getContentType());
-							log.trace("completed POST processing for file. Deleted, then created: " + newResource.getName());
-							eventManager.fireEvent(new PutEvent(newResource));
-						} else {
-							throw new BadRequestException(existing, "existing resource could not be deleted, is not deletable");
-						}
-					}
-				} else {
-					newResource = wrapped.createNew(newName, in, file.getSize(), file.getContentType());
-					log.info("completed POST processing for file. Created: " + newResource.getName());
-					eventManager.fireEvent(new PutEvent(newResource));
-				}
-				String newHref = buildNewHref(href, newResource.getName());
-				nf.setHref(newHref);
-			} catch (NotAuthorizedException ex) {
-				throw new RuntimeException(ex);
-			} catch (BadRequestException ex) {
-				throw new RuntimeException(ex);
-			} catch (ConflictException ex) {
-				throw new RuntimeException(ex);
-			} catch (IOException ex) {
-				throw new RuntimeException("Exception creating resource", ex);
+				processFile(newName, in, file.getSize(), file.getContentType(), nf);
 			} finally {
 				FileUtils.close(in);
 			}
 		}
 		log.trace("completed all POST processing");
 		return null;
+	}
+	
+	private byte[] toArray(String s) {
+		try {
+			return s.getBytes("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private void processFile(String newName, InputStream in, Long length, String contentType, NewFile nf) {
+		Resource newResource;
+
+		try {
+			Resource existing = wrapped.child(newName);
+			if (existing != null) {
+				if (existing instanceof ReplaceableResource) {
+					log.trace("existing resource is replaceable, so replace content");
+					ReplaceableResource rr = (ReplaceableResource) existing;
+					rr.replaceContent(in, null);
+					log.trace("completed POST processing for file. Updated: " + existing.getName());
+					eventManager.fireEvent(new PutEvent(rr));
+					newResource = rr;
+				} else {
+					log.trace("existing resource is not replaceable, will be deleted");
+					if (existing instanceof DeletableResource) {
+						DeletableResource dr = (DeletableResource) existing;
+						dr.delete();
+						newResource = wrapped.createNew(newName, in, length, contentType);
+						log.trace("completed POST processing for file. Deleted, then created: " + newResource.getName());
+						eventManager.fireEvent(new PutEvent(newResource));
+					} else {
+						throw new BadRequestException(existing, "existing resource could not be deleted, is not deletable");
+					}
+				}
+			} else {
+				newResource = wrapped.createNew(newName, in, length, contentType);
+				log.info("completed POST processing for file. Created: " + newResource.getName());
+				eventManager.fireEvent(new PutEvent(newResource));
+			}
+			String newHref = buildNewHref(href, newResource.getName());
+			nf.setHref(newHref);
+		} catch (NotAuthorizedException ex) {
+			throw new RuntimeException(ex);
+		} catch (BadRequestException ex) {
+			throw new RuntimeException(ex);
+		} catch (ConflictException ex) {
+			throw new RuntimeException(ex);
+		} catch (IOException ex) {
+			throw new RuntimeException("Exception creating resource", ex);
+		} finally {
+		}
 	}
 
 	/**
