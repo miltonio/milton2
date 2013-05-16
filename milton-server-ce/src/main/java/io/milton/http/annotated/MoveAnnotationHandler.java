@@ -33,7 +33,6 @@ public class MoveAnnotationHandler extends AbstractAnnotationHandler {
 	}
 
 	void execute(AnnoResource res, CollectionResource rDest, String newName) {
-		System.out.println("move!");
 		log.trace("execute MOVE method");
 		Object source = res.getSource();
 		ControllerMethod cm = getBestMethod(source.getClass());
@@ -47,7 +46,6 @@ public class MoveAnnotationHandler extends AbstractAnnotationHandler {
 				destObject = arDest.getSource();
 			}
 			Object[] args = annoResourceFactory.buildInvokeArgs(res, cm.method, newName, rDest, destObject);
-			System.out.println("move args: " + args);
 			cm.method.invoke(cm.controller, args);
 		} catch (Exception e) {
 			throw new RuntimeException(e);

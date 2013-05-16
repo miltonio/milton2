@@ -403,11 +403,9 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		
 		// put otherValues on. Note these are more specific then parents so must be added first
 		for (Object s : otherValues) {
-			System.out.println("add other: " + s);
 			list.add(s);
 			if( s instanceof AnnoResource) {
 				AnnoResource otherRes = (AnnoResource) s;
-				System.out.println("add other source: " + otherRes.getHref());
 				list.add(otherRes.getSource());
 			}
 		}
