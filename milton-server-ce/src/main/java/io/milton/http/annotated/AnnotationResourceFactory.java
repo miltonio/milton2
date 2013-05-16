@@ -399,17 +399,28 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		Object[] args = new Object[m.getParameterTypes().length];
 		List list = new ArrayList();
 
-		// put this resource and all its parents on the stack
-		AnnoResource r = sourceRes;
+		list.add(sourceRes.getSource()); // First argument MUST be the source object!!!
+		
+		// put otherValues on. Note these are more specific then parents so must be added first
+		for (Object s : otherValues) {
+			System.out.println("add other: " + s);
+			list.add(s);
+			if( s instanceof AnnoResource) {
+				AnnoResource otherRes = (AnnoResource) s;
+				System.out.println("add other source: " + otherRes.getHref());
+				list.add(otherRes.getSource());
+			}
+		}
+		
+		// put this resource's parents on the stack
+		AnnoResource r = sourceRes.getParent();
 		while (r != null) {
 			list.add(r.getSource()); // First argument MUST be the source object!!!
 			list.add(r);
 			r = r.getParent();
 		}
-
-		for (Object s : otherValues) {
-			list.add(s);
-		}
+		
+		
 		for (int i = 0; i < m.getParameterTypes().length; i++) {
 			Class type = m.getParameterTypes()[i];
 			Object argValue;
@@ -424,6 +435,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		}
 		return args;
 	}
+	
 
 	public java.lang.reflect.Method findMethodForAnno(Class sourceClass, Class annoClass) {
 		for (java.lang.reflect.Method m : sourceClass.getMethods()) {

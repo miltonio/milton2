@@ -139,7 +139,9 @@ public class ImagesController {
     }
     
     @Move
-    public void move(Image image, BaseEntity newParent, String newName) {
+    public void move(Image image, ImagesRoot newParentImagesRoot, String newName) {
+        BaseEntity newParent = newParentImagesRoot.getEntity();
+        System.out.println("Move image: " + image.getFileName() + " to " + newParent.getName());
         Transaction tx = SessionManager.session().beginTransaction();
         if( newParent != image.getBaseEntity()) {
             BaseEntity oldParent = image.getBaseEntity();
