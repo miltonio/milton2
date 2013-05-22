@@ -17,7 +17,17 @@
  * under the License.
  */
 
-package io.milton.resource;
+package io.milton.http.caldav;
+
+import io.milton.http.Auth;
+import io.milton.http.Request;
+import io.milton.http.exceptions.BadRequestException;
+import io.milton.http.exceptions.NotAuthorizedException;
+import io.milton.principal.CalDavPrincipal;
+import io.milton.resource.CalendarCollection;
+import io.milton.resource.Resource;
+import java.util.Date;
+import java.util.List;
 
 /**
  * 4.2. Scheduling Inbox Collection
@@ -120,6 +130,32 @@ Internet-Draft        CalDAV Scheduling Extensions          October 2010
  *
  * @author brad
  */
-public interface SchedulingInboxResource extends BaseSchedulingResource {
+public class SchedulingInboxResource extends BaseSchedulingXBoxResource implements CalendarCollection {
+
+    public SchedulingInboxResource(CalDavPrincipal principal, SchedulingResourceFactory schedulingResourceFactory) {
+        super(principal, schedulingResourceFactory);
+    }
+
+    @Override
+    public String getName() {
+        return schedulingResourceFactory.getInboxName();
+    }
+        
+    
+    @Override
+    public Resource child(String childName) throws NotAuthorizedException, BadRequestException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public List<? extends Resource> getChildren() throws NotAuthorizedException, BadRequestException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getCTag() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 
 }

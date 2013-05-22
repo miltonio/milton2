@@ -32,6 +32,11 @@ public class ICalFormatter {
     // Changed T to space. removed trailing Z
     private static final String PATTERN_ICAL = "yyyyMMdd HHmmss";
 
+    public ICalFormatter() {
+    }
+
+    
+    
     public void parseEvent( EventResource r, String data ) {
         String[] lines = data.split( "\n" );
         Map<String, String> mapOfPairs = new HashMap<String, String>();

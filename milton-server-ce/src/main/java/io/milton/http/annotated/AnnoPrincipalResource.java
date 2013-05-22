@@ -128,16 +128,6 @@ public class AnnoPrincipalResource extends AnnoCollectionResource implements Dis
 	}
 
 	@Override
-	public String getScheduleInboxUrl() {
-		return null;
-	}
-
-	@Override
-	public String getScheduleOutboxUrl() {
-		return null;
-	}
-
-	@Override
 	public String getDropBoxUrl() {
 		return null;
 	}

@@ -413,7 +413,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		// put this resource's parents on the stack
 		AnnoResource r = sourceRes.getParent();
 		while (r != null) {
-			list.add(r.getSource()); // First argument MUST be the source object!!!
+			list.add(r.getSource());
 			list.add(r);
 			r = r.getParent();
 		}

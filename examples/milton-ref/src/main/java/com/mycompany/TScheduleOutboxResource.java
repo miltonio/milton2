@@ -24,7 +24,7 @@ import io.milton.http.caldav.ITip;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
-import io.milton.resource.SchedulingOutboxResource;
+import io.milton.http.caldav.SchedulingOutboxResource;
 import io.milton.resource.SchedulingResponseItem;
 import java.io.IOException;
 import java.io.LineNumberReader;

@@ -9,7 +9,6 @@ import io.milton.http.Request;
 import io.milton.http.Response;
 import io.milton.http.entity.StringEntity;
 import io.milton.http.http11.CustomPostHandler;
-import io.milton.resource.SchedulingOutboxResource;
 import io.milton.resource.SchedulingResponseItem;
 import io.milton.resource.Resource;
 import java.io.ByteArrayOutputStream;

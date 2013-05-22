@@ -12,6 +12,8 @@ import io.milton.http.acl.AccessControlledResourceTypeHelper;
 import io.milton.http.annotated.AnnotationResourceFactory;
 import io.milton.http.caldav.CalDavProtocol;
 import io.milton.http.caldav.CalendarResourceTypeHelper;
+import io.milton.http.caldav.CalendarSearchService;
+import io.milton.http.caldav.DefaultCalendarSearchService;
 import io.milton.http.caldav.SupportedCalendarComponentListValueWriter;
 import io.milton.http.caldav.SupportedCalendarComponentListsSetValueWriter;
 import io.milton.http.carddav.AddressBookResourceTypeHelper;
@@ -70,6 +72,7 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
     private WebDavLevel2Protocol webDavLevel2Protocol;
     private boolean webdavLevel2Enabled = true;
     private LockManager lockManager = new SimpleLockManager();
+    private CalendarSearchService calendarSearchService = new DefaultCalendarSearchService();
 
     @Override
     protected void afterInit() {
@@ -168,7 +171,7 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
             }
 
             if (calDavProtocol == null && caldavEnabled) {
-                calDavProtocol = new CalDavProtocol(mainResourceFactory, webdavResponseHandler, handlerHelper, webDavProtocol, propFindXmlGenerator, propFindPropertyBuilder());
+                calDavProtocol = new CalDavProtocol(mainResourceFactory, webdavResponseHandler, handlerHelper, webDavProtocol, propFindXmlGenerator, propFindPropertyBuilder(), calendarSearchService);
             }
             if (calDavProtocol != null) {
                 protocols.add(calDavProtocol);

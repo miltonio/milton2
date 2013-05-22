@@ -70,12 +70,11 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
     private final PropertyMap propertyMapCalServer;
     private final PropertyMap propertyMapAppleCal;
     private final SchedulingCustomPostHandler schedulingCustomPostHandler;
+    private final CalendarSearchService calendarSearchService;    
     private final List<CustomPostHandler> customPostHandlers;
 
-    public CalDavProtocol(ResourceFactory resourceFactory, WebDavResponseHandler responseHandler, HandlerHelper handlerHelper, WebDavProtocol webDavProtocol, PropFindXmlGenerator gen, PropFindPropertyBuilder propertyBuilder) {
-        if( gen == null ) {
-            throw new NullPointerException("PropFindXmlGenerator is null");
-        }
+    public CalDavProtocol(ResourceFactory resourceFactory, WebDavResponseHandler responseHandler, HandlerHelper handlerHelper, WebDavProtocol webDavProtocol, PropFindXmlGenerator gen, PropFindPropertyBuilder propertyBuilder, CalendarSearchService calendarSearchService) {
+        this.calendarSearchService = calendarSearchService;        
         propertyMapCalDav = new PropertyMap(CALDAV_NS);
         propertyMapCalDav.add(new CalenderDescriptionProperty());
         propertyMapCalDav.add(new CalendarDataProperty());
@@ -109,7 +108,7 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
         webDavProtocol.addReport(new PrincipalMatchReport());
         webDavProtocol.addReport(new PrincipalPropertySearchReport());
         //webDavProtocol.addReport(new ExpandPropertyReport());
-        webDavProtocol.addReport(new CalendarQueryReport(propertyBuilder, gen));
+        webDavProtocol.addReport(new CalendarQueryReport(propertyBuilder, gen, calendarSearchService));
 
         schedulingCustomPostHandler = new SchedulingCustomPostHandler();
         List<CustomPostHandler> l = new ArrayList<CustomPostHandler>();
@@ -296,7 +295,7 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
         @Override
         public WrappedHref getValue(PropFindableResource res) {
             if (res instanceof CalDavPrincipal) {
-                String s = ((CalDavPrincipal) res).getScheduleInboxUrl();
+                String s = ((CalDavPrincipal) res).getPrincipalURL() + "/scheduling/inbox/";
                 return new WrappedHref(s);
             } else {
                 return null;
@@ -324,7 +323,7 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
         @Override
         public WrappedHref getValue(PropFindableResource res) {
             if (res instanceof CalDavPrincipal) {
-                String s = ((CalDavPrincipal) res).getScheduleOutboxUrl();
+                String s = ((CalDavPrincipal) res).getPrincipalURL() + "/scheduling/outbox/";
                 return new WrappedHref(s);
             } else {
                 return null;

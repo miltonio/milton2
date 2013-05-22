@@ -19,7 +19,7 @@
 
 package com.mycompany;
 
-import io.milton.resource.SchedulingInboxResource;
+import io.milton.http.caldav.SchedulingInboxResource;
 
 
 /**

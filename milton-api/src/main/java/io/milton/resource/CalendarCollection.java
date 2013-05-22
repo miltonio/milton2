@@ -22,7 +22,7 @@ package io.milton.resource;
 import io.milton.resource.CollectionResource;
 
 /**
- * Base interface for scheduling inboxes and outboxes
+ * 
  *
  * @author brad
  */

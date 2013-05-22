@@ -78,28 +78,6 @@ public interface CalDavPrincipal extends DiscretePrincipal {
     HrefList getCalendarUserAddressSet();
 
     /**
-     * Return the path to the scheduling inbox. This should refer to a
-     * collection with a resource type of schedule-inbox
-     *
-     * Scheduling is used to show when the principal is free or busy
-     *
-     * @return
-     */
-    String getScheduleInboxUrl();
-
-    /**
-     * Return the path to the scheduling outbox. This should refer to a
-     * collection with a resource type of schedule-outbox
-     *
-     * Scheduling is used to show when the principal is free or busy
-     *
-     *
-     *
-     * @return
-     */
-    String getScheduleOutboxUrl();
-
-    /**
      * Couldnt find any info about this property. Can only guess what its
      * supposed to do.
      *

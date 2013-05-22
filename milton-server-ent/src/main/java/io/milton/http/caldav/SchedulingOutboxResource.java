@@ -17,10 +17,25 @@
  * under the License.
  */
 
-package io.milton.resource;
+package io.milton.http.caldav;
 
+import io.milton.http.Auth;
+import io.milton.http.FileItem;
+import io.milton.http.Range;
+import io.milton.http.exceptions.BadRequestException;
+import io.milton.http.exceptions.ConflictException;
+import io.milton.http.exceptions.NotAuthorizedException;
+import io.milton.http.exceptions.NotFoundException;
+import io.milton.principal.CalDavPrincipal;
 import io.milton.resource.PostableResource;
+import io.milton.resource.PostableResource;
+import io.milton.resource.Resource;
+import io.milton.resource.SchedulingResponseItem;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -161,8 +176,14 @@ Internet-Draft        CalDAV Scheduling Extensions          October 2010
  *
  * @author brad
  */
-public interface SchedulingOutboxResource extends BaseSchedulingResource, PostableResource {
+public class SchedulingOutboxResource extends BaseSchedulingXBoxResource implements PostableResource {
 
+    public SchedulingOutboxResource(CalDavPrincipal principal, SchedulingResourceFactory schedulingResourceFactory) {
+        super(principal, schedulingResourceFactory);
+    }
+
+    
+    
     /**
      * A POST request may deliver a scheduling message to one or more
    Calendar Users.  Thus the response needs to contain separate status
@@ -187,5 +208,48 @@ public interface SchedulingOutboxResource extends BaseSchedulingResource, Postab
      * @param iCalText
      * @return
      */
-    List<SchedulingResponseItem> queryFreeBusy(String iCalText);
+    public List<SchedulingResponseItem> queryFreeBusy(String iCalText) {
+        return schedulingService.queryFreeBusy(principal, iCalText);
+    } 
+
+    @Override
+    public Resource child(String childName) throws NotAuthorizedException, BadRequestException {
+        return null;
+
+    }
+
+    @Override
+    public List<? extends Resource> getChildren() throws NotAuthorizedException, BadRequestException {
+        return Collections.EMPTY_LIST;
+    }
+
+    @Override
+    public String getName() {
+        return schedulingResourceFactory.getOutboxName();
+    }
+
+    @Override
+    public String processForm(Map<String, String> parameters, Map<String, FileItem> files) throws BadRequestException, NotAuthorizedException, ConflictException {
+        return null;
+    }
+
+    @Override
+    public void sendContent(OutputStream out, Range range, Map<String, String> params, String contentType) throws IOException, NotAuthorizedException, BadRequestException, NotFoundException {
+        
+    }
+
+    @Override
+    public Long getMaxAgeSeconds(Auth auth) {
+        return null;
+    }
+
+    @Override
+    public String getContentType(String accepts) {
+        return null;
+    }
+
+    @Override
+    public Long getContentLength() {
+        return null;
+    }
 }
