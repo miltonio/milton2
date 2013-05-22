@@ -21,6 +21,7 @@ package com.mycompany;
 import io.milton.common.StreamUtils;
 import io.milton.http.Range;
 import io.milton.http.Request;
+import io.milton.http.annotated.CommonResource;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
@@ -34,6 +35,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -140,18 +142,33 @@ public class TFolderResource extends TResource implements PutableResource, MakeC
     }
 
     public String getCTag() {
-        int x = this.hashCode();
-        for (Resource r : this.children) {
+        Date d = getMostRecentModDate();
+        if( d == null ) {
+            System.out.println("No ctag");
+            return "000";
+        } else {
+            
+            String s = d.getTime() + "t";                    
+            System.out.println("ctag=" + s);
+            return s;
+        }
+    }
+
+    public Date getMostRecentModDate() {
+        Date latest = this.getModifiedDate();
+        for (Resource r : this.getChildren()) {
+            Date d;
             if (r instanceof TFolderResource) {
-                TFolderResource tfr = (TFolderResource) r;
-                x = x ^ tfr.getCTag().hashCode();
+                TFolderResource tf = (TFolderResource) r;
+                d = tf.getMostRecentModDate();
             } else {
-                x = x ^ r.getUniqueId().hashCode();
+                d = r.getModifiedDate();
+            }
+            if (d != null && (latest == null || d.after(latest))) {
+                latest = d;
             }
         }
-        String ctag = "c" + x;
-        log.trace("ctag is: " + ctag + " for: " + this.getHref());
-        return ctag;
+        return latest;
     }
 
     @Override

@@ -55,7 +55,7 @@ public class TResourceFactory implements ResourceFactory {
     }
 
     private static void addUser(TFolderResource users, String name, String password, String email, String org, String phone) {
-        TCalDavPrincipal user = new TCalDavPrincipal(users, name, password, null, null, null, null, null);
+        TCalDavPrincipal user = new TCalDavPrincipal(users, name, password, null, null, null);
         user.setGivenName("joe");
         user.setSurName("blogs" + users.children.size());
         user.setMail(email);
@@ -78,12 +78,7 @@ public class TResourceFactory implements ResourceFactory {
         addContact(addressBook1, "sam@blah.com", "sam", "smith", "111 222 444", "contact2.vcf");
         addContact(addressBook1, "john@blah.com", "john", "long", "111 222 555", "contact3.vcf");
 
-
-        TScheduleInboxResource scheduleInbox = new TScheduleInboxResource(calendars, "inbox");
-        TScheduleOutboxResource scheduleOutbox = new TScheduleOutboxResource(calendars, "outbox");
         user.setCalendarHome(calendars);
-        user.setScheduleInboxResource(scheduleInbox);
-        user.setScheduleOutboxResource(scheduleOutbox);
     }
 
     private static void addContact(TAddressBookResource ab, String email, String givenName, String surName, String phone, String filename) {

@@ -38,12 +38,12 @@ import java.util.Date;
 public abstract class BaseSchedulingResource implements CollectionResource, ReportableResource, DigestResource {
     protected final CalDavPrincipal principal;
     protected final SchedulingResourceFactory schedulingResourceFactory;
-    protected final SchedulingService schedulingService;
+    protected final CalendarSearchService calendarSearchService;
 
     public BaseSchedulingResource(CalDavPrincipal principal, SchedulingResourceFactory schedulingResourceFactory) {
         this.principal = principal;
         this.schedulingResourceFactory = schedulingResourceFactory;
-        this.schedulingService = schedulingResourceFactory.getSchedulingService();
+        this.calendarSearchService = schedulingResourceFactory.getCalendarSearchService();
     }
 
 

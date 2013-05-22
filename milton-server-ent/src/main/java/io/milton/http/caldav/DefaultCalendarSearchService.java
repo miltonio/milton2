@@ -17,10 +17,13 @@ package io.milton.http.caldav;
 
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
+import io.milton.principal.CalDavPrincipal;
 import io.milton.resource.CalendarResource;
 import io.milton.resource.ICalResource;
 import io.milton.resource.Resource;
+import io.milton.resource.SchedulingResponseItem;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -80,4 +83,14 @@ public class DefaultCalendarSearchService implements CalendarSearchService{
 
         return false;
     }    
+
+    @Override
+    public List<SchedulingResponseItem> queryFreeBusy(CalDavPrincipal principal, String iCalText) {
+        return Collections.EMPTY_LIST;
+    }
+
+    @Override
+    public List<ICalResource> findAttendeeResources(CalDavPrincipal attendee) throws NotAuthorizedException, BadRequestException {
+        return Collections.EMPTY_LIST;
+    }
 }

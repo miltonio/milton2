@@ -17,8 +17,10 @@ package io.milton.http.caldav;
 
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
+import io.milton.principal.CalDavPrincipal;
 import io.milton.resource.CalendarResource;
 import io.milton.resource.ICalResource;
+import io.milton.resource.SchedulingResponseItem;
 import java.util.Date;
 import java.util.List;
 
@@ -31,5 +33,19 @@ import java.util.List;
  * @author brad
  */
 public interface CalendarSearchService {
+    
+    /**
+     * Query the free busy status of the given principal
+     * 
+     * http://tools.ietf.org/html/rfc6638#section-2.1
+     * 
+     * @param principal
+     * @param iCalText
+     * @return 
+     */
+    List<SchedulingResponseItem> queryFreeBusy(CalDavPrincipal principal, String iCalText);    
+    
     List<ICalResource> findCalendarResources(CalendarResource calendar, Date start, Date finish) throws NotAuthorizedException, BadRequestException;
+    
+    List<ICalResource> findAttendeeResources(CalDavPrincipal attendee) throws NotAuthorizedException, BadRequestException;
 }

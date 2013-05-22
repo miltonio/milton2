@@ -209,7 +209,7 @@ public class SchedulingOutboxResource extends BaseSchedulingXBoxResource impleme
      * @return
      */
     public List<SchedulingResponseItem> queryFreeBusy(String iCalText) {
-        return schedulingService.queryFreeBusy(principal, iCalText);
+        return calendarSearchService.queryFreeBusy(principal, iCalText);
     } 
 
     @Override

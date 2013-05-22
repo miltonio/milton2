@@ -157,7 +157,7 @@ public class HttpManagerBuilder {
 	protected LoginResponseHandler.LoginPageTypeHandler loginPageTypeHandler = new LoginResponseHandler.ContentTypeLoginPageTypeHandler();
 	protected boolean enableExpectContinue = false;
 	protected String controllerPackagesToScan;
-	protected String controlleClassNames;
+	protected String controllerClassNames;
 	private Long maxAgeSeconds = 10l;
 	private String fsHomeDir = null;
 	private PropFindRequestFieldParser propFindRequestFieldParser;
@@ -1170,12 +1170,12 @@ public class HttpManagerBuilder {
 	 * 
 	 * @return 
 	 */
-	public String getControlleClassNames() {
-		return controlleClassNames;
+	public String getControllerClassNames() {
+		return controllerClassNames;
 	}
 
-	public void setControlleClassNames(String controlleClassNames) {
-		this.controlleClassNames = controlleClassNames;
+	public void setControllerClassNames(String controlleClassNames) {
+		this.controllerClassNames = controlleClassNames;
 	}
 
 	/**
@@ -1250,8 +1250,8 @@ public class HttpManagerBuilder {
 							}
 						}
 					}
-					if (controlleClassNames != null) {
-						for (String className : controlleClassNames.split(",")) {
+					if (controllerClassNames != null) {
+						for (String className : controllerClassNames.split(",")) {
 							className = className.trim();
 							log.info("init annotation controller: " + className);
 							Class c = ReflectionUtils.loadClass(className);

@@ -41,16 +41,16 @@ import io.milton.resource.Resource;
 public class SchedulingResourceFactory implements ResourceFactory {
 
     private final ResourceFactory wrapped;
-    private final SchedulingService schedulingService;
+    private final CalendarSearchService calendarSearchService;
     
     private String schedulingColName = "scheduling";
     private String inboxName = "inbox";
     private String outBoxName = "outbox";
     private boolean decorator = true;
 
-    public SchedulingResourceFactory(ResourceFactory wrapped, SchedulingService schedulingService) {
+    public SchedulingResourceFactory(ResourceFactory wrapped, CalendarSearchService calendarSearchService) {
         this.wrapped = wrapped;
-        this.schedulingService = schedulingService;
+        this.calendarSearchService = calendarSearchService;
     }
 
     @Override
@@ -108,11 +108,9 @@ public class SchedulingResourceFactory implements ResourceFactory {
         return wrapped;
     }
 
-    public SchedulingService getSchedulingService() {
-        return schedulingService;
+    public CalendarSearchService getCalendarSearchService() {
+        return calendarSearchService;
     }
-    
-    
-    
+ 
     
 }

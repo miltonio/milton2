@@ -57,8 +57,6 @@ public class TCalDavPrincipal extends TFolderResource implements CalDavPrincipal
     private HrefPrincipleId principleId;
     private TFolderResource calendarHome;
     private TFolderResource addressBookHome;
-    private TScheduleInboxResource scheduleInboxResource;
-    private TScheduleOutboxResource scheduleOutboxResource;
     private TFolderResource dropBox;
     private String password;
     private final TMailFolder mailInbox;
@@ -70,13 +68,11 @@ public class TCalDavPrincipal extends TFolderResource implements CalDavPrincipal
     private String organizationName;
     private String telephonenumber;
 
-    public TCalDavPrincipal(TFolderResource parent, String name, String password, TFolderResource calendarHome, TScheduleInboxResource scheduleInboxResource, TScheduleOutboxResource scheduleOutboxResource, TFolderResource dropBox, TFolderResource addressBookHome) {
+    public TCalDavPrincipal(TFolderResource parent, String name, String password, TFolderResource calendarHome, TFolderResource dropBox, TFolderResource addressBookHome) {
         super(parent, name);
         this.principleId = new HrefPrincipleId(getHref());
         this.calendarHome = calendarHome;
         this.addressBookHome = addressBookHome;
-        this.scheduleInboxResource = scheduleInboxResource;
-        this.scheduleOutboxResource = scheduleOutboxResource;
         this.dropBox = dropBox;
         this.mailInbox = new TMailFolder(this, "Inbox");
         this.password = password;
@@ -171,22 +167,6 @@ public class TCalDavPrincipal extends TFolderResource implements CalDavPrincipal
         this.calendarHome = calendarHome;
     }
 
-    public TScheduleInboxResource getScheduleInboxResource() {
-        return scheduleInboxResource;
-    }
-
-    public void setScheduleInboxResource(TScheduleInboxResource scheduleInboxResource) {
-        this.scheduleInboxResource = scheduleInboxResource;
-    }
-
-    public TScheduleOutboxResource getScheduleOutboxResource() {
-        return scheduleOutboxResource;
-    }
-
-    public void setScheduleOutboxResource(TScheduleOutboxResource scheduleOutboxResource) {
-        this.scheduleOutboxResource = scheduleOutboxResource;
-    }
-
     @Override
     public HrefList getCalendarHomeSet() {
         return HrefList.asList(calendarHome.getHref());
@@ -208,25 +188,6 @@ public class TCalDavPrincipal extends TFolderResource implements CalDavPrincipal
     }
 
     @Override
-    public String getScheduleInboxUrl() {
-        if (scheduleInboxResource != null) {
-            return scheduleInboxResource.getHref();
-        } else {
-            return null;
-        }
-    }
-
-    @Override
-    public String getScheduleOutboxUrl() {
-        if (scheduleOutboxResource != null) {
-            return scheduleOutboxResource.getHref();
-        } else {
-            return null;
-        }
-
-    }
-
-    @Override
     public String getDropBoxUrl() {
         if (dropBox != null) {
             return dropBox.getHref();
@@ -242,7 +203,7 @@ public class TCalDavPrincipal extends TFolderResource implements CalDavPrincipal
 
     @Override
     protected Object clone(TFolderResource newParent, String newName) {
-        return new TCalDavPrincipal(newParent, newName, password, calendarHome, scheduleInboxResource, scheduleOutboxResource, dropBox, addressBookHome);
+        return new TCalDavPrincipal(newParent, newName, password, calendarHome, dropBox, addressBookHome);
     }
 
     /**

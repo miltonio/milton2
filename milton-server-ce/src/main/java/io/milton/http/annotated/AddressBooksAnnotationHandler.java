@@ -48,6 +48,7 @@ public class AddressBooksAnnotationHandler extends AbstractAnnotationHandler {
 				return true;
 			}
 		}
+		log.warn("No address books found from annotation handler for source: " + source.getClass());
 		return false;
 	}
 

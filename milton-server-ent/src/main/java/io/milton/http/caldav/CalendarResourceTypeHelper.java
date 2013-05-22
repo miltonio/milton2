@@ -92,6 +92,9 @@ public class CalendarResourceTypeHelper implements ResourceTypeHelper {
         LockUtils.add(list, "extended-mkcol");
         list.add("calendar-proxy");
 //        }
+        
+        // not sure if should be at this level
+        LockUtils.add(list, "calendar-auto-schedule");
         if (r instanceof SchedulingInboxResource) {
             LockUtils.add(list, "schedule-inbox");            
             LockUtils.add(list, "calendar-auto-schedule");
