@@ -31,7 +31,8 @@ import java.util.List;
  * </ul>
  * 
  * Milton will search up the object hierarchy to find a @AccessControlList method. The
- * first one found will be used
+ * first one found which returns a non-null value will be used. Returning null
+ * indicates the method is not able to determine an ACL, so milton will continue the search up the parents.
  * 
  * So if a request is made to a URL like this: /users/brad/calenars/cal1
  * 
