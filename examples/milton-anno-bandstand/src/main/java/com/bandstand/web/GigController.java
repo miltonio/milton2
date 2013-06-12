@@ -100,7 +100,7 @@ public class GigController {
      */
     @AccessControlList
     public List<AccessControlledResource.Priviledge> getMusicianCalendarPrivs(MusicianCalendar target, Musician currentUser) {
-        System.out.println("getMusicianCalendarPrivs");
+        System.out.println("getMusicianCalendarPrivs: " + currentUser);
         if (target.musician == currentUser) {
             Band band = target.band;
             if (band.getName().endsWith("ReadOnly")) {

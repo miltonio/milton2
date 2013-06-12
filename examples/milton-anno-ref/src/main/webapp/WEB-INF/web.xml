@@ -30,7 +30,7 @@
 
         <!-- Package scanning doesnt work in some situations, instead you can provide each controller in a comma seperated list -->
         <init-param>
-            <param-name>controlleClassNames</param-name>
+            <param-name>controllerClassNames</param-name>
             <param-value>com.mycompany.RootController,com.mycompany.AFolderController</param-value>
         </init-param>        
         

@@ -105,11 +105,13 @@ public class MusiciansController {
     
     @Authenticate
     public String getMusicianPassword(Musician m) {
+        System.out.println("Authenticate: " + m.getName());
         return m.getPassword(); // The @Authenticate also allows methods which verify a password and return Boolean
     }
     
     @AccessControlList
     public List<AccessControlledResource.Priviledge> getMusicianPrivs(Musician target, Musician currentUser) {
+        System.out.println("getMusicianPrivs: " + currentUser);
         if( target == currentUser ) {
             return AccessControlledResource.READ_WRITE;
         } else {

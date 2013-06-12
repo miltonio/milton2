@@ -318,7 +318,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 
 	public void setControllers(Collection<Object> controllers) {
 		this.controllers = Collections.unmodifiableCollection(controllers);
-		log.info("setControllers: parsing controllers...");
+		log.info("setControllers: " + controllers.size() + " parsing controllers...");
 		for (Object controller : controllers) {
 			log.info("Parse controller: " + controller.getClass());
 			for (AnnotationHandler ah : mapOfAnnotationHandlers.values()) {
@@ -391,6 +391,19 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	 * @throws Exception
 	 */
 	public Object[] buildInvokeArgs(AnnoResource sourceRes, java.lang.reflect.Method m, Object... otherValues) throws Exception {
+		return buildInvokeArgsExt(sourceRes, null, false, m, otherValues);
+	}
+
+	/**
+	 * 
+	 * @param sourceRes
+	 * @param mandatorySecondArg - if present will be used as second arg. Used by AccessControlListAnnotationHandler to always provide user to second arg, even when null
+	 * @param m
+	 * @param otherValues
+	 * @return
+	 * @throws Exception 
+	 */
+	public Object[] buildInvokeArgsExt(AnnoResource sourceRes, Object mandatorySecondArg, boolean forceUseSecondArg, java.lang.reflect.Method m, Object... otherValues) throws Exception {
 		if (log.isTraceEnabled()) {
 			log.trace("buildInvokeArgs: source=" + sourceRes.getSource() + " on method: " + m);
 		}
@@ -400,16 +413,16 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		List list = new ArrayList();
 
 		list.add(sourceRes.getSource()); // First argument MUST be the source object!!!
-		
+
 		// put otherValues on. Note these are more specific then parents so must be added first
 		for (Object s : otherValues) {
 			list.add(s);
-			if( s instanceof AnnoResource) {
+			if (s instanceof AnnoResource) {
 				AnnoResource otherRes = (AnnoResource) s;
 				list.add(otherRes.getSource());
 			}
 		}
-		
+
 		// put this resource's parents on the stack
 		AnnoResource r = sourceRes.getParent();
 		while (r != null) {
@@ -417,23 +430,26 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 			list.add(r);
 			r = r.getParent();
 		}
-		
-		
+
+
 		for (int i = 0; i < m.getParameterTypes().length; i++) {
-			Class type = m.getParameterTypes()[i];
-			Object argValue;
-			try {
-				argValue = findArgValue(type, request, response, list);
-			} catch (UnresolvableParameterException e) {
-				log.warn("Could not resolve parameter: " + i + "  in method: " + m.getName());
-				//System.out.println("Couldnt find parameter " + type + " for method: " + m);				
-				argValue = null;
+			if (i == 1 && forceUseSecondArg) {
+				args[i] = mandatorySecondArg; // hack for methods which can have a null 2nd arg. Without this any other matching object would be provided
+			} else {
+				Class type = m.getParameterTypes()[i];
+				Object argValue;
+				try {
+					argValue = findArgValue(type, request, response, list);
+				} catch (UnresolvableParameterException e) {
+					log.warn("Could not resolve parameter: " + i + "  in method: " + m.getName());
+					//System.out.println("Couldnt find parameter " + type + " for method: " + m);				
+					argValue = null;
+				}
+				args[i] = argValue;
 			}
-			args[i] = argValue;
 		}
 		return args;
 	}
-	
 
 	public java.lang.reflect.Method findMethodForAnno(Class sourceClass, Class annoClass) {
 		for (java.lang.reflect.Method m : sourceClass.getMethods()) {

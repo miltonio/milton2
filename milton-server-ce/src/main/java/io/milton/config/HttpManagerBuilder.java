@@ -1237,6 +1237,7 @@ public class HttpManagerBuilder {
 				if (arf.getControllers() == null) {
 					List controllers = new ArrayList();
 					if (controllerPackagesToScan != null) {
+						log.info("Scan for controller classes: " + controllerPackagesToScan);
 						for (String packageName : controllerPackagesToScan.split(",")) {
 							packageName = packageName.trim();
 							log.info("init annotations controllers from package: " + packageName);
@@ -1251,6 +1252,7 @@ public class HttpManagerBuilder {
 						}
 					}
 					if (controllerClassNames != null) {
+						log.info("Initialise controller classes: " + controllerClassNames);
 						for (String className : controllerClassNames.split(",")) {
 							className = className.trim();
 							log.info("init annotation controller: " + className);
@@ -1264,6 +1266,9 @@ public class HttpManagerBuilder {
 							}
 						}
 
+					}
+					if( controllers.isEmpty() ) {
+						log.warn("No controllers found in controllerClassNames=" + controllerClassNames + "  or controllerPackagesToScan=" + controllerPackagesToScan);
 					}
 					arf.setControllers(controllers);
 				}

@@ -172,12 +172,13 @@ public class FsDirectoryResource extends FsResource implements MakeCollectionabl
                 + "    var L_EditDocumentError_Text = \"The edit feature requires a SharePoint-compatible application and Microsoft Internet Explorer 4.0 or greater.\";\n"
                 + "    var L_EditDocumentRuntimeError_Text = \"Sorry, couldnt open the document.\";\n"
                 + "    function editDocument(strDocument) {\n"
+				+ "      strDocument = 'http://192.168.1.2:8080' + strDocument; "
                 + "      if (fNewDoc) {\n"
                 + "        if (!EditDocumentButton.EditDocument(strDocument)) {\n"
-                + "          alert(L_EditDocumentRuntimeError_Text); \n"
+                + "          alert(L_EditDocumentRuntimeError_Text + ' - ' + strDocument); \n"
                 + "        }\n"
                 + "      } else { \n"
-                + "        alert(L_EditDocumentError_Text); \n"
+                + "        alert(L_EditDocumentError_Text + ' - ' + strDocument); \n"
                 + "      }\n"
                 + "    }\n"
                 + "  </script>\n");
@@ -193,6 +194,7 @@ public class FsDirectoryResource extends FsResource implements MakeCollectionabl
 
             w.open("td");
             String path = buildHref(uri, r.getName());
+			System.out.println("path=" + path);
             w.begin("a").writeAtt("href", path).open().writeText(r.getName()).close();
 
             w.begin("a").writeAtt("href", "#").writeAtt("onclick", "editDocument('" + path + "')").open().writeText("(edit with office)").close();
@@ -224,6 +226,7 @@ public class FsDirectoryResource extends FsResource implements MakeCollectionabl
     }
 
     private String buildHref(String uri, String name) {
+		System.out.println("buildHref: " + uri + " --- " + name);
         String abUrl = uri;
 
         if (!abUrl.endsWith("/")) {

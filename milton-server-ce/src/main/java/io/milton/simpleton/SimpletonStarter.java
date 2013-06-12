@@ -16,18 +16,29 @@ package io.milton.simpleton;
 
 import io.milton.config.HttpManagerBuilder;
 import io.milton.http.HttpManager;
+import io.milton.http.fs.FileSystemResourceFactory;
+import io.milton.http.fs.NullSecurityManager;
+import java.io.File;
 
 /**
  *
  * @author brad
  */
 public class SimpletonStarter {
+
 	public static void main(String[] args) {
+		String homeFolder = "/tmp";
+		int port = 8080;
+		FileSystemResourceFactory resourceFactory = new FileSystemResourceFactory(new File(homeFolder),
+				new NullSecurityManager(), "/");
+		resourceFactory.setAllowDirectoryBrowsing(true);
 		HttpManagerBuilder b = new HttpManagerBuilder();
 		b.setEnableFormAuth(false);
+		b.setResourceFactory(resourceFactory);
 		HttpManager httpManager = b.buildHttpManager();
 		SimpletonServer ss = new SimpletonServer(httpManager, b.getOuterWebdavResponseHandler(), 100, 10);
-		ss.setHttpPort(8080);
+		ss.setHttpPort(port);
 		ss.start();
+
 	}
 }
