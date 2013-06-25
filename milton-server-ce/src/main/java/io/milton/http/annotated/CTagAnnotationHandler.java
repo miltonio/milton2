@@ -15,7 +15,6 @@
 package io.milton.http.annotated;
 
 import io.milton.annotations.CTag;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.slf4j.Logger;
@@ -43,7 +42,7 @@ public class CTagAnnotationHandler extends AbstractAnnotationHandler {
 				// look for an annotation on the source itself
 				java.lang.reflect.Method m = annoResourceFactory.findMethodForAnno(source.getClass(), annoClass);
 				if (m != null) {
-					rawId = m.invoke(source, (Object) null);
+					rawId = m.invoke(source);
 					if (log.isDebugEnabled()) {
 						log.debug("Got ctag from source object. ctag=" + rawId);
 					}
