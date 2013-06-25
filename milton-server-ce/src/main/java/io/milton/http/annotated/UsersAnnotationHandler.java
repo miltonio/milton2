@@ -45,7 +45,7 @@ public class UsersAnnotationHandler extends AbstractAnnotationHandler {
 			}
 
 			// iterate over each root collection, looking for objects which have
-			// a @Authenticate annotation on their ChildOf or ChildrenOf methods
+			// a @Users annotation on their ChildOf or ChildrenOf methods
 			for (CommonResource col : root.getChildren()) {
 				if (col instanceof AnnoCollectionResource) {
 					AnnoCollectionResource acr = (AnnoCollectionResource) col;
