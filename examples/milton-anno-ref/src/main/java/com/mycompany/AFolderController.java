@@ -18,6 +18,7 @@ import com.mycompany.MyDatabase.FileContentItem;
 import io.milton.annotations.ChildrenOf;
 import io.milton.annotations.Copy;
 import io.milton.annotations.Delete;
+import io.milton.annotations.DisplayName;
 import io.milton.annotations.Get;
 import io.milton.annotations.MakeCollection;
 import io.milton.annotations.Move;
@@ -83,6 +84,11 @@ public class AFolderController {
     @Delete
     public void delete(MyDatabase.AbstractContentItem source) {
         source.delete();
+    }
+    
+    @DisplayName
+    public String getDisplayName(MyDatabase.AbstractContentItem source) {
+        return "Hello " + source.getName();
     }
     
 }

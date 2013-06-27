@@ -75,7 +75,7 @@ public class ReflectionUtils {
 
 			// loop through files in classpath
 		} else {
-			String f = URLDecoder.decode( packageURL.getFile(), "UTF-8" ) ;
+			String f = URLDecoder.decode(packageURL.getFile(), "UTF-8");
 			File directory = new File(f);
 			String[] files = directory.list();
 			if (files != null && files.length > 0) {
@@ -96,7 +96,7 @@ public class ReflectionUtils {
 		}
 		return classes;
 	}
-	
+
 	public static Class loadClass(String className) throws ClassNotFoundException {
 		ClassLoader cld = Thread.currentThread().getContextClassLoader();
 		return cld.loadClass(className);

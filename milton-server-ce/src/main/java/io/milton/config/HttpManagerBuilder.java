@@ -322,8 +322,9 @@ public class HttpManagerBuilder {
 			}
 		}
 
+		initAnnotatedResourceFactory();		
+		
 		init(authenticationService, outerWebdavResponseHandler, resourceTypeHelper);
-		initAnnotatedResourceFactory();
 
 		afterInit();
 	}
@@ -1134,10 +1135,10 @@ public class HttpManagerBuilder {
 	}
 
 	/**
-	 * If true milton will response to Expect: Continue requests. This can
-	 * cause a problem on some web servers
-	 * 
-	 * @return 
+	 * If true milton will response to Expect: Continue requests. This can cause
+	 * a problem on some web servers
+	 *
+	 * @return
 	 */
 	public boolean isEnableExpectContinue() {
 		return enableExpectContinue;
@@ -1148,11 +1149,11 @@ public class HttpManagerBuilder {
 	}
 
 	/**
-	 * If not null, is expected to be a comma seperated list of package names. These
-	 * will be scanned for classes which contain classes annotated with ResourceController,
-	 * and those found will be added to the controllers list
-	 * 
-	 * @return 
+	 * If not null, is expected to be a comma seperated list of package names.
+	 * These will be scanned for classes which contain classes annotated with
+	 * ResourceController, and those found will be added to the controllers list
+	 *
+	 * @return
 	 */
 	public String getControllerPackagesToScan() {
 		return controllerPackagesToScan;
@@ -1163,12 +1164,12 @@ public class HttpManagerBuilder {
 	}
 
 	/**
-	 * As an alternative to package scanning via the controllerPackagesToScan property,
-	 * set this property to a comma seperated list of class names. These will be
-	 * loaded and checked for the ResourceController annotation, and if present,
-	 * will be added to the controllers list
-	 * 
-	 * @return 
+	 * As an alternative to package scanning via the controllerPackagesToScan
+	 * property, set this property to a comma seperated list of class names.
+	 * These will be loaded and checked for the ResourceController annotation,
+	 * and if present, will be added to the controllers list
+	 *
+	 * @return
 	 */
 	public String getControllerClassNames() {
 		return controllerClassNames;
@@ -1179,9 +1180,10 @@ public class HttpManagerBuilder {
 	}
 
 	/**
-	 * Default max-age to use for certain resource types which can use a default value
-	 * 
-	 * @return 
+	 * Default max-age to use for certain resource types which can use a default
+	 * value
+	 *
+	 * @return
 	 */
 	public Long getMaxAgeSeconds() {
 		return maxAgeSeconds;
@@ -1267,7 +1269,7 @@ public class HttpManagerBuilder {
 						}
 
 					}
-					if( controllers.isEmpty() ) {
+					if (controllers.isEmpty()) {
 						log.warn("No controllers found in controllerClassNames=" + controllerClassNames + "  or controllerPackagesToScan=" + controllerPackagesToScan);
 					}
 					arf.setControllers(controllers);
