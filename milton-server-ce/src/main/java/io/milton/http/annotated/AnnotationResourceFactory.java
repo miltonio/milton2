@@ -164,7 +164,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 					mapOfAnnotationHandlersByMethod.put(m, ah);
 				}
 			}
-		}
+		}	
 	}
 
 	@Override

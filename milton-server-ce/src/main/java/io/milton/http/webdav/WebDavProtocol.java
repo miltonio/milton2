@@ -79,12 +79,13 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 	private final ETagGenerator eTagGenerator;
 	private final HandlerHelper handlerHelper;
 	private final UserAgentHelper userAgentHelper;
-	private DisplayNameFormatter displayNameFormatter = new DefaultDisplayNameFormatter();
+	private final DisplayNameFormatter displayNameFormatter;
 	private final MkColHandler mkColHandler;
 	private final PropPatchHandler propPatchHandler;
 	private List<CustomPostHandler> customPostHandlers;
 
-	public WebDavProtocol(HandlerHelper handlerHelper, ResourceTypeHelper resourceTypeHelper, WebDavResponseHandler responseHandler, List<PropertySource> propertySources, QuotaDataAccessor quotaDataAccessor, PropPatchSetter patchSetter, PropertyAuthoriser propertyAuthoriser, ETagGenerator eTagGenerator, UrlAdapter urlAdapter, ResourceHandlerHelper resourceHandlerHelper, UserAgentHelper userAgentHelper, PropFindRequestFieldParser requestFieldParser, PropFindPropertyBuilder propertyBuilder) {
+	public WebDavProtocol(HandlerHelper handlerHelper, ResourceTypeHelper resourceTypeHelper, WebDavResponseHandler responseHandler, List<PropertySource> propertySources, QuotaDataAccessor quotaDataAccessor, PropPatchSetter patchSetter, PropertyAuthoriser propertyAuthoriser, ETagGenerator eTagGenerator, UrlAdapter urlAdapter, ResourceHandlerHelper resourceHandlerHelper, UserAgentHelper userAgentHelper, PropFindRequestFieldParser requestFieldParser, PropFindPropertyBuilder propertyBuilder, DisplayNameFormatter displayNameFormatter) {
+		this.displayNameFormatter = displayNameFormatter;
 		this.userAgentHelper = userAgentHelper;
 		this.handlerHelper = handlerHelper;
 		this.eTagGenerator = eTagGenerator;
@@ -249,10 +250,6 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 	 */
 	public DisplayNameFormatter getDisplayNameFormatter() {
 		return displayNameFormatter;
-	}
-
-	public void setDisplayNameFormatter(DisplayNameFormatter displayNameFormatter) {
-		this.displayNameFormatter = displayNameFormatter;
 	}
 
 	class DisplayNamePropertyWriter implements StandardProperty<String> {

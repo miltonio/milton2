@@ -477,7 +477,7 @@ public class HttpManagerBuilder {
 			this.propFindRequestFieldParser = new MsPropFindRequestFieldParser(defaultFieldParse); // use MS decorator for windows support				
 		}
 		if (webDavProtocol == null && webdavEnabled) {
-			webDavProtocol = new WebDavProtocol(handlerHelper, resourceTypeHelper, webdavResponseHandler, propertySources, quotaDataAccessor, propPatchSetter, initPropertyAuthoriser(), eTagGenerator, urlAdapter, resourceHandlerHelper, userAgentHelper(), propFindRequestFieldParser(), propFindPropertyBuilder());
+			webDavProtocol = new WebDavProtocol(handlerHelper, resourceTypeHelper, webdavResponseHandler, propertySources, quotaDataAccessor, propPatchSetter, initPropertyAuthoriser(), eTagGenerator, urlAdapter, resourceHandlerHelper, userAgentHelper(), propFindRequestFieldParser(), propFindPropertyBuilder(), displayNameFormatter);
 		}
 	}
 
