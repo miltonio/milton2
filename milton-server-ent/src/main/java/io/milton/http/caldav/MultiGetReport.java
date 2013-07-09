@@ -66,8 +66,8 @@ public class MultiGetReport implements Report {
         List<PropFindResponse> respProps = new ArrayList<PropFindResponse>();
 
         for (String href : hrefs) {
-            href = HttpManager.decodeUrl( href );
-            Resource r = resourceFactory.getResource(host, href);
+            String decodedHref = HttpManager.decodeUrl( href );
+            Resource r = resourceFactory.getResource(host, decodedHref);
             if (r != null) {
                 if (r instanceof PropFindableResource) {
                     PropFindableResource pfr = (PropFindableResource) r;
