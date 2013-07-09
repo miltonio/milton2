@@ -17,15 +17,30 @@
  * under the License.
  */
 
-package io.milton.http.webdav;
+package io.milton.resource;
 
-import java.io.InputStream;
+import io.milton.http.exceptions.BadRequestException;
+import io.milton.http.exceptions.ConflictException;
+import io.milton.http.exceptions.NotAuthorizedException;
+import io.milton.http.webdav.PropPatchParseResult;
+import java.util.Map;
+import javax.xml.namespace.QName;
 
 /**
  *
  * @author brad
  */
-public interface PropPatchRequestParser {
+public interface ExtMakeCalendarResource extends CollectionResource {
 
-    PropPatchParseResult getRequestedFields( InputStream in );
+    /**
+     * Create an empty calendar, and set appropriate fields
+     *
+     * @param newName
+     * @return
+     * @throws NotAuthorizedException
+     * @throws ConflictException
+     * @throws BadRequestException
+     */
+    CollectionResource createCalendar(String newName, Map<QName, String> fieldsToSet) throws NotAuthorizedException, ConflictException, BadRequestException;
+
 }

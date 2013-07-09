@@ -158,6 +158,7 @@ public class HttpManagerBuilder {
 	protected boolean enableExpectContinue = false;
 	protected String controllerPackagesToScan;
 	protected String controllerClassNames;
+	protected List controllers = new ArrayList();
 	private Long maxAgeSeconds = 10l;
 	private String fsHomeDir = null;
 	private PropFindRequestFieldParser propFindRequestFieldParser;
@@ -322,8 +323,8 @@ public class HttpManagerBuilder {
 			}
 		}
 
-		initAnnotatedResourceFactory();		
-		
+		initAnnotatedResourceFactory();
+
 		init(authenticationService, outerWebdavResponseHandler, resourceTypeHelper);
 
 		afterInit();
@@ -1180,6 +1181,20 @@ public class HttpManagerBuilder {
 	}
 
 	/**
+	 * Instead of setting controller packages to scan or controller class names,
+	 * you can set a list of actual controller instances
+	 *
+	 * @return
+	 */
+	public List getControllers() {
+		return controllers;
+	}
+
+	public void setControllers(List controllers) {
+		this.controllers = controllers;
+	}
+
+	/**
 	 * Default max-age to use for certain resource types which can use a default
 	 * value
 	 *
@@ -1237,37 +1252,37 @@ public class HttpManagerBuilder {
 			if (getMainResourceFactory() instanceof AnnotationResourceFactory) {
 				AnnotationResourceFactory arf = (AnnotationResourceFactory) getMainResourceFactory();
 				if (arf.getControllers() == null) {
-					List controllers = new ArrayList();
-					if (controllerPackagesToScan != null) {
-						log.info("Scan for controller classes: " + controllerPackagesToScan);
-						for (String packageName : controllerPackagesToScan.split(",")) {
-							packageName = packageName.trim();
-							log.info("init annotations controllers from package: " + packageName);
-							List<Class> classes = ReflectionUtils.getClassNamesFromPackage(packageName);
-							for (Class c : classes) {
+					if (controllers == null) {
+						if (controllerPackagesToScan != null) {
+							log.info("Scan for controller classes: " + controllerPackagesToScan);
+							for (String packageName : controllerPackagesToScan.split(",")) {
+								packageName = packageName.trim();
+								log.info("init annotations controllers from package: " + packageName);
+								List<Class> classes = ReflectionUtils.getClassNamesFromPackage(packageName);
+								for (Class c : classes) {
+									Annotation a = c.getAnnotation(ResourceController.class);
+									if (a != null) {
+										Object controller = c.newInstance();
+										controllers.add(controller);
+									}
+								}
+							}
+						}
+						if (controllerClassNames != null) {
+							log.info("Initialise controller classes: " + controllerClassNames);
+							for (String className : controllerClassNames.split(",")) {
+								className = className.trim();
+								log.info("init annotation controller: " + className);
+								Class c = ReflectionUtils.loadClass(className);
 								Annotation a = c.getAnnotation(ResourceController.class);
 								if (a != null) {
 									Object controller = c.newInstance();
 									controllers.add(controller);
+								} else {
+									log.warn("No " + ResourceController.class + " annotation on class: " + c.getCanonicalName() + " provided in controlleClassNames");
 								}
 							}
 						}
-					}
-					if (controllerClassNames != null) {
-						log.info("Initialise controller classes: " + controllerClassNames);
-						for (String className : controllerClassNames.split(",")) {
-							className = className.trim();
-							log.info("init annotation controller: " + className);
-							Class c = ReflectionUtils.loadClass(className);
-							Annotation a = c.getAnnotation(ResourceController.class);
-							if (a != null) {
-								Object controller = c.newInstance();
-								controllers.add(controller);
-							} else {
-								log.warn("No " + ResourceController.class + " annotation on class: " + c.getCanonicalName() + " provided in controlleClassNames");
-							}
-						}
-
 					}
 					if (controllers.isEmpty()) {
 						log.warn("No controllers found in controllerClassNames=" + controllerClassNames + "  or controllerPackagesToScan=" + controllerPackagesToScan);

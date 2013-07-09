@@ -27,7 +27,7 @@ import io.milton.http.AuthenticationService.AuthStatus;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
-import io.milton.http.webdav.PropPatchRequestParser.ParseResult;
+import io.milton.http.webdav.PropPatchParseResult;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -46,12 +46,9 @@ import io.milton.property.PropertyAuthoriser;
 import io.milton.event.PropPatchEvent;
 import io.milton.http.Request;
 import io.milton.http.Response;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.util.HashSet;
 import java.util.Set;
 import javax.xml.namespace.QName;
-import org.apache.commons.io.IOUtils;
 
 /**
  * Example request (from ms office)
@@ -211,9 +208,13 @@ public class PropPatchHandler implements ExistingEntityHandler, PropertyHandler 
         }
     }
 
-    public PropFindResponse doPropPatch(Request request, Resource resource) throws NotAuthorizedException, IOException, BadRequestException {
+	public PropFindResponse doPropPatch(Request request, Resource resource) throws NotAuthorizedException, IOException, BadRequestException, ConflictException {
+		return doPropPatch(request, resource, patchSetter);
+	}
+		
+    public PropFindResponse doPropPatch(Request request, Resource resource, PropPatchSetter propPatchSetter) throws NotAuthorizedException, IOException, BadRequestException, ConflictException {
         InputStream in = request.getInputStream();
-        ParseResult parseResult = requestParser.getRequestedFields(in);
+        PropPatchParseResult parseResult = requestParser.getRequestedFields(in);
         // Check that the current user has permission to write requested fields
         Set<QName> allFields = getAllFields(parseResult);
         if (log.isTraceEnabled()) {
@@ -225,11 +226,11 @@ public class PropPatchHandler implements ExistingEntityHandler, PropertyHandler 
         }
         String href = request.getAbsoluteUrl();
 		href = DefaultPropFindPropertyBuilder.fixUrlForWindows(href);
-        PropFindResponse resp = patchSetter.setProperties(href, parseResult, resource);
+        PropFindResponse resp = propPatchSetter.setProperties(href, parseResult, resource);
         return resp;
     }
 
-    private Set<QName> getAllFields( ParseResult parseResult ) {
+    private Set<QName> getAllFields( PropPatchParseResult parseResult ) {
         Set<QName> set = new HashSet<QName>();
         if( parseResult.getFieldsToRemove() != null ) {
             set.addAll( parseResult.getFieldsToRemove() );

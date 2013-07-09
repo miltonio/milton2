@@ -9,7 +9,7 @@
     <groupId>io.milton</groupId>
     <artifactId>milton-anno-ref</artifactId>
     <packaging>war</packaging>
-    <name>Annotations Example</name>
+    <name>Annotations Example - Simple</name>
     <description>A complete web application which uses an in memory content database.
         Demonstrates in a very simple manner how to use milton annotations
     </description>

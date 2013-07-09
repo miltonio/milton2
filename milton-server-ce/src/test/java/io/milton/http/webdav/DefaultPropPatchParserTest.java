@@ -21,7 +21,7 @@
 package io.milton.http.webdav;
 
 import io.milton.http.webdav.DefaultPropPatchParser;
-import io.milton.http.webdav.PropPatchRequestParser.ParseResult;
+import io.milton.http.webdav.PropPatchParseResult;
 import java.io.ByteArrayInputStream;
 import junit.framework.TestCase;
 
@@ -54,7 +54,7 @@ public class DefaultPropPatchParserTest extends TestCase {
 	public void testGetRequestedFields() {
 		System.out.println(XML_list_property);
 		DefaultPropPatchParser parser = new DefaultPropPatchParser();
-		ParseResult result = parser.getRequestedFields(new ByteArrayInputStream(XML_list_property.getBytes()));
+		PropPatchParseResult result = parser.getRequestedFields(new ByteArrayInputStream(XML_list_property.getBytes()));
 		assertEquals(1, result.getFieldsToSet().size());
 		String s = result.getFieldsToSet().values().iterator().next();
 		System.out.println(s);

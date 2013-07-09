@@ -15,8 +15,10 @@
 package com.mycompany;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * This MOCK class just pretends to be a database. In reality you would use a DAO
@@ -40,21 +42,40 @@ public class MyDatabase {
         
     
     public abstract static class AbstractContentItem {
+        private UUID id; // this for a uniqueId
         private String name;
         private FolderContentItem parent;
+        private Date createdDate;
+        protected Date modifiedDate;
 
         public abstract AbstractContentItem copyTo(FolderContentItem newParent, String newName);
         
         public AbstractContentItem(String name, FolderContentItem parent) {
             this.name = name;
             this.parent = parent;
+            this.id = UUID.randomUUID();
+            this.createdDate = new Date();
+            this.modifiedDate = new Date();
         }
-                
+
+        public UUID getId() {
+            return id;
+        }
+
+        public Date getCreatedDate() {
+            return createdDate;
+        }
+
+        public Date getModifiedDate() {
+            return modifiedDate;
+        }
+                                
         public String getName() {
             return name;
         }
 
         public void setName(String name) {
+            this.modifiedDate = new Date();
             this.name = name;
         }                
 
@@ -63,6 +84,7 @@ public class MyDatabase {
         }     
         
         public void moveTo(FolderContentItem newParent) {
+            this.modifiedDate = new Date();
             parent.children.remove(this);
             newParent.children.add(this);
             this.parent = newParent;
@@ -149,6 +171,7 @@ public class MyDatabase {
         }
 
         public void setBytes(byte[] bytes) {
+            this.modifiedDate = new Date();
             this.bytes = bytes;
         }
 

@@ -106,6 +106,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	ChildOfAnnotationHandler childOfAnnotationHandler = new ChildOfAnnotationHandler(this);
 	DisplayNameAnnotationHandler displayNameAnnotationHandler = new DisplayNameAnnotationHandler(this);
 	MakeCollectionAnnotationHandler makCollectionAnnotationHandler = new MakeCollectionAnnotationHandler(this);
+	MakeCalendarAnnotationHandler makeCalendarAnnotationHandler = new MakeCalendarAnnotationHandler(this);
 	MoveAnnotationHandler moveAnnotationHandler = new MoveAnnotationHandler(this);
 	DeleteAnnotationHandler deleteAnnotationHandler = new DeleteAnnotationHandler(this);
 	CopyAnnotationHandler copyAnnotationHandler = new CopyAnnotationHandler(this);

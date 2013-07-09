@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+		<property name="ignoreResourceNotFound" value="true"/>
+		<property name="locations" >
+			<list>
+                <!-- Default properties, should run out of the box -->
+				<value>classpath:spliffy-default.properties</value>
+				
+                <!-- This refers to an optional file which should be outside the WAR (ie in tomcat/shared/classes -->
+                <!-- It contains environment specific configuration, such as database connection information -->
+				<value>classpath:spliffy-env.properties</value>				
+			</list>
+		</property>
+	</bean>
+
+    <import resource="classpath:database.xml"/>
+    
+    
+    <!-- Another environment specific file. Default empty file is included, but create your own outside the WAR to 
+    environment specific bean declarations
+    -->
+    <import resource="classpath:env.xml"/>
+
+    <bean id="open.session.in.view.filter" class="io.milton.cloud.server.db.utils.MiltonOpenSessionInViewFilter">
+        <constructor-arg ref="session.manager"/>
+        <constructor-arg ref="root.context" />
+    </bean>
+
+    <bean id="milton.http.manager" class="io.milton.ent.config.HttpManagerBuilderEnt"> <!-- Note enterprise version. Only available for AGPL + Commercial users of milton -->
+        <property name="controllers">
+            <list>
+                <bean class="io.milton.mini.MiltonMiniController"/>
+            </list>
+        </property>
+        <property name="buffering" value="never"/>
+        <property name="filters">
+            <list>
+                <ref local="open.session.in.view.filter" />
+            </list>
+        </property>        
+
+    </bean>
+    
+
+
+    <!--
+    <bean id="ftp.security.manager" class="com.ettrema.ftp.WrappingFtpSecurityManager">
+        <constructor-arg ref="security.manager"/>
+    </bean>
+    -->
+
+    <!-- Adapts the specified milton security manager to the FTP server -->
+    <!--
+    <bean id="ftp.user.manager" class="com.ettrema.ftp.UserManagerAdapter">
+        <constructor-arg ref="resource.factory"/>
+        <constructor-arg ref="ftp.security.manager"/>
+    </bean>
+    -->
+
+    <!-- This server will provide access to the same resources available on webdav
+    via FTP -->
+    <!--
+    <bean id="ftp.server" class="com.ettrema.ftp.MiltonFtpAdapter">
+        <constructor-arg ref="resource.factory"/>
+        <constructor-arg ref="ftp.user.manager"/>
+    </bean>
+    -->
+      
+</beans>

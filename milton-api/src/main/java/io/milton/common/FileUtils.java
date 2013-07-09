@@ -180,11 +180,16 @@ public class FileUtils {
     }
     
     public static String getExtension(String nm) {
-        if( nm.indexOf(".") >= 0 ) {
-            String[] arr = nm.split("[.]");
-            return arr[arr.length-1];
-        } else {
-            return null;
+        try {
+            int pos = nm.lastIndexOf(".");
+            if (pos > -1) {
+                String ext = nm.substring(pos + 1);
+                return ext;
+            } else {
+                return null;
+            }
+        } catch (Throwable e) {
+            throw new RuntimeException(nm, e);
         }
     }
     

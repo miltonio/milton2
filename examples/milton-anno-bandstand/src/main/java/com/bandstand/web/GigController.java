@@ -27,6 +27,7 @@ import io.milton.annotations.CreatedDate;
 import io.milton.annotations.Delete;
 import io.milton.annotations.Get;
 import io.milton.annotations.ICalData;
+import io.milton.annotations.MakeCalendar;
 import io.milton.annotations.ModifiedDate;
 import io.milton.annotations.PutChild;
 import io.milton.annotations.ResourceController;
@@ -39,6 +40,8 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import javax.xml.namespace.QName;
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.data.CalendarOutputter;
 import net.fortuna.ical4j.data.ParserException;
@@ -88,6 +91,7 @@ public class GigController {
         }
         return cals;
     }
+    
 
     /**
      * This method is just a bogus example showing that you can have ACL methods

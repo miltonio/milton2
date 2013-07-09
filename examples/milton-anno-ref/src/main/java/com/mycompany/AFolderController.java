@@ -17,18 +17,21 @@ package com.mycompany;
 import com.mycompany.MyDatabase.FileContentItem;
 import io.milton.annotations.ChildrenOf;
 import io.milton.annotations.Copy;
+import io.milton.annotations.CreatedDate;
 import io.milton.annotations.Delete;
 import io.milton.annotations.DisplayName;
 import io.milton.annotations.Get;
 import io.milton.annotations.MakeCollection;
+import io.milton.annotations.ModifiedDate;
 import io.milton.annotations.Move;
 import io.milton.annotations.Name;
 import io.milton.annotations.PutChild;
 import io.milton.annotations.ResourceController;
-import io.milton.annotations.Root;
+import io.milton.annotations.UniqueId;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -91,4 +94,18 @@ public class AFolderController {
         return "Hello " + source.getName();
     }
     
+    @UniqueId
+    public String getUniqueId(MyDatabase.AbstractContentItem source) {
+        return source.getId().toString();
+    }    
+    
+    @ModifiedDate
+    public Date getModifiedDate(MyDatabase.AbstractContentItem source) {
+        return source.getModifiedDate();
+    }
+    
+    @CreatedDate
+    public Date getCreatedDate(MyDatabase.AbstractContentItem source) {
+        return source.getCreatedDate();
+    }    
 }

@@ -64,7 +64,8 @@ public class TCalendarResource extends TFolderResource implements CalendarResour
             ByteArrayOutputStream bout = new ByteArrayOutputStream();
             StreamUtils.readTo(inputStream, bout);
             bout.close();
-            String data = bout.toString();
+            String data = bout.toString("UTF-8");
+            System.out.println(data);
             e.setiCalData(data);
             return e;
 //        } else {

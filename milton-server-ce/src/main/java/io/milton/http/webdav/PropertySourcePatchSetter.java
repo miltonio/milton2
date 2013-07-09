@@ -27,7 +27,7 @@ import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.values.ValueAndType;
 import io.milton.http.values.ValueWriters;
 import io.milton.http.webdav.PropFindResponse.NameAndError;
-import io.milton.http.webdav.PropPatchRequestParser.ParseResult;
+import io.milton.http.webdav.PropPatchParseResult;
 import io.milton.property.PropertySource;
 import io.milton.property.PropertySource.PropertyMetaData;
 import io.milton.property.PropertySource.PropertySetException;
@@ -77,7 +77,7 @@ public class PropertySourcePatchSetter implements PropPatchSetter {
 	}
 
 	@Override
-	public PropFindResponse setProperties(String href, ParseResult parseResult, Resource r) throws NotAuthorizedException, BadRequestException {
+	public PropFindResponse setProperties(String href, PropPatchParseResult parseResult, Resource r) throws NotAuthorizedException, BadRequestException {
 		log.trace("setProperties: resource type: {}", r.getClass());
 		Map<QName, ValueAndType> knownProps = new HashMap<QName, ValueAndType>();
 

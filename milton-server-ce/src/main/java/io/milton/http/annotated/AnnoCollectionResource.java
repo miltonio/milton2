@@ -23,6 +23,7 @@ import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.resource.CollectionResource;
 import io.milton.resource.DeletableCollectionResource;
+import io.milton.resource.ExtMakeCalendarResource;
 import io.milton.resource.LockingCollectionResource;
 import io.milton.resource.MakeCollectionableResource;
 import io.milton.resource.PutableResource;
@@ -32,12 +33,13 @@ import java.io.InputStream;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import javax.xml.namespace.QName;
 
 /**
  *
  * @author brad
  */
-public class AnnoCollectionResource extends AnnoResource implements CollectionResource, PutableResource, MakeCollectionableResource, LockingCollectionResource, DeletableCollectionResource {
+public class AnnoCollectionResource extends AnnoResource implements CollectionResource, PutableResource, MakeCollectionableResource, LockingCollectionResource, DeletableCollectionResource, ExtMakeCalendarResource {
 
 	/**
 	 * lazy loaded list of all children of this collection
@@ -136,6 +138,19 @@ public class AnnoCollectionResource extends AnnoResource implements CollectionRe
 		return r;
 	}
 
+
+	@Override
+	public CollectionResource createCalendar(String newName, Map<QName, String> fieldsToSet) throws NotAuthorizedException, ConflictException, BadRequestException {
+		Object newlyCreatedSource = annoFactory.makeCalendarAnnotationHandler.execute(this, newName, fieldsToSet);
+		AnnoCollectionResource r = new AnnoCalendarResource(annoFactory, newlyCreatedSource, this);
+		if (children != null) {
+			children.add(r);
+		}
+		return r;
+	}
+
+	
+	
 	@Override
 	public Resource createNew(String newName, InputStream inputStream, Long length, String contentType) throws IOException, ConflictException, NotAuthorizedException, BadRequestException {
 		Object newChildSource = annoFactory.putChildAnnotationHandler.execute(this, newName, inputStream, length, contentType);

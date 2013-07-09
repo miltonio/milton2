@@ -29,7 +29,7 @@ import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.webdav.PropFindResponse;
 import io.milton.http.webdav.PropFindResponse.NameAndError;
-import io.milton.http.webdav.PropPatchRequestParser.ParseResult;
+import io.milton.http.webdav.PropPatchParseResult;
 import io.milton.http.webdav.PropPatchSetter;
 import io.milton.http.webdav.WebDavProtocol;
 import io.milton.property.PropertyAuthoriser;
@@ -80,7 +80,7 @@ public class JsonPropPatchHandler {
             fields.put(qn, sFieldValue);
         }
 
-        ParseResult parseResult = new ParseResult(fields, null);
+        PropPatchParseResult parseResult = new PropPatchParseResult(fields, null);
 
         if (log.isTraceEnabled()) {
             log.trace("check permissions with: " + permissionService.getClass());

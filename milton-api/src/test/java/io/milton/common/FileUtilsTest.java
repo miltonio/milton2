@@ -20,6 +20,8 @@
 package io.milton.common;
 
 import io.milton.common.FileUtils;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
 import junit.framework.TestCase;
 
 /**
@@ -39,4 +41,34 @@ public class FileUtilsTest extends TestCase {
         assertEquals( "", FileUtils.stripExtension( ".def"));
         assertEquals( "abc.def", FileUtils.stripExtension( "abc.def.xxx"));
     }
+    
+    public void testGetExtension() {
+        String s = FileUtils.getExtension("abc.txt");
+        assertEquals("txt", s);
+    }
+    
+    public void testGetExtension_NoPreExt() {
+        String s = FileUtils.getExtension(".txt");
+        assertEquals("txt", s);
+    }    
+    
+    public void testGetExtension_NoExt() {
+        String s = FileUtils.getExtension("abc");
+        assertNull(s);
+    }    
+    
+    public void testGetExtension_EndsWithDot() {
+        String s = FileUtils.getExtension("abc.");
+        assertEquals("", s);
+    }        
+    
+    public void testGetExtension_Blank() {
+        String s = FileUtils.getExtension("");
+        assertNull(s);
+    }        
+    
+    public void testGetExtension_Path() {
+        String s = FileUtils.getExtension("/theme/../assets/fonts/Lato-Lig-webfont.eot");
+        assertEquals("eot", s);
+    }        
 }

@@ -45,7 +45,7 @@ public class DefaultPropPatchParser implements PropPatchRequestParser {
     private final static Logger log = LoggerFactory.getLogger( DefaultPropPatchParser.class );
 
 	@Override
-    public ParseResult getRequestedFields( InputStream in ) {
+    public PropPatchParseResult getRequestedFields( InputStream in ) {
         log.debug( "getRequestedFields" );
         try {
             ByteArrayOutputStream bout = new ByteArrayOutputStream();
@@ -63,7 +63,7 @@ public class DefaultPropPatchParser implements PropPatchRequestParser {
         }
     }
 
-    private ParseResult parseContent( byte[] arr ) throws IOException, SAXException {
+    private PropPatchParseResult parseContent( byte[] arr ) throws IOException, SAXException {
         if( arr.length > 0 ) {
             log.debug( "processing content" );
             ByteArrayInputStream bin = new ByteArrayInputStream( arr );
@@ -72,10 +72,10 @@ public class DefaultPropPatchParser implements PropPatchRequestParser {
             reader.setContentHandler( handler );
             reader.parse( new InputSource( bin ) );
             log.debug( "toset: " + handler.getAttributesToSet().size());
-            return new ParseResult( handler.getAttributesToSet(), handler.getAttributesToRemove().keySet() );
+            return new PropPatchParseResult( handler.getAttributesToSet(), handler.getAttributesToRemove().keySet() );
         } else {
             log.debug( "empty content" );
-            return new ParseResult( new HashMap<QName, String>(), new HashSet<QName>() );
+            return new PropPatchParseResult( new HashMap<QName, String>(), new HashSet<QName>() );
         }
 
     }
