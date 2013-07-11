@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+         version="2.4">
+
+    <!-- Only for developing in jetty, not for deployment -->
+    <servlet>
+        <servlet-name>default</servlet-name>
+        <servlet-class>org.eclipse.jetty.servlet.DefaultServlet</servlet-class>
+        <init-param>
+            <param-name>useFileMappedBuffer</param-name>
+            <param-value>false</param-value>
+        </init-param>
+        <load-on-startup>0</load-on-startup>
+    </servlet>	
+
+    <filter>
+        <filter-name>miltonFilter</filter-name>
+        <filter-class>io.milton.servlet.SpringMiltonFilter</filter-class>
+        <init-param>
+            <param-name>milton.exclude.paths</param-name>	
+            <param-value>/static,/templates</param-value>
+        </init-param>
+    </filter>
+    
+    <filter-mapping>
+        <filter-name>miltonFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+</web-app>

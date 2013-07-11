@@ -15,6 +15,7 @@
  */
 package io.milton.http.caldav;
 
+import io.milton.http.annotated.CommonResource;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.principal.CalDavPrincipal;
@@ -32,10 +33,14 @@ import java.util.List;
  *
  * @author brad
  */
-public class DefaultCalendarSearchService implements CalendarSearchService{
+public class DefaultCalendarSearchService implements CalendarSearchService {
 
-    private final ICalFormatter formatter = new ICalFormatter();
-    
+    private final ICalFormatter formatter;
+
+    public DefaultCalendarSearchService(ICalFormatter formatter) {
+        this.formatter = formatter;
+    }
+
     @Override
     public List<ICalResource> findCalendarResources(CalendarResource calendar, Date start, Date end) throws NotAuthorizedException, BadRequestException {
         // build a list of all calendar resources
@@ -58,7 +63,6 @@ public class DefaultCalendarSearchService implements CalendarSearchService{
         return list;
 
     }
-    
 
     private boolean outsideDates(ICalResource r, Date start, Date end) {
         EventResource data;
@@ -82,7 +86,7 @@ public class DefaultCalendarSearchService implements CalendarSearchService{
         }
 
         return false;
-    }    
+    }
 
     @Override
     public List<SchedulingResponseItem> queryFreeBusy(CalDavPrincipal principal, String iCalText) {
@@ -92,5 +96,22 @@ public class DefaultCalendarSearchService implements CalendarSearchService{
     @Override
     public List<ICalResource> findAttendeeResources(CalDavPrincipal attendee) throws NotAuthorizedException, BadRequestException {
         return Collections.EMPTY_LIST;
+    }
+
+    @Override
+    public String findAttendeeResourcesCTag(CalDavPrincipal attendee) throws NotAuthorizedException, BadRequestException {
+        Date latest = null;
+        for (ICalResource r : findAttendeeResources(attendee)) {
+            Date d = r.getModifiedDate();
+            if (latest == null || d.after(latest)) {
+                latest = d;
+            }
+        }
+        if( latest != null ) {
+            return "mod-" + latest.getTime();
+        } else {
+            return "na";
+        }
+                
     }
 }

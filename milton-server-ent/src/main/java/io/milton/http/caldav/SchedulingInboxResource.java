@@ -19,15 +19,14 @@
 
 package io.milton.http.caldav;
 
-import io.milton.http.Auth;
-import io.milton.http.Request;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.principal.CalDavPrincipal;
 import io.milton.resource.CalendarCollection;
 import io.milton.resource.Resource;
-import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * 4.2. Scheduling Inbox Collection
@@ -144,17 +143,28 @@ public class SchedulingInboxResource extends BaseSchedulingXBoxResource implemen
     
     @Override
     public Resource child(String childName) throws NotAuthorizedException, BadRequestException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        for( Resource r : getChildren() ) {
+            if( r.getName().equals(childName)) {
+                return r;
+            }
+        }
+        return null;
     }
 
     @Override
     public List<? extends Resource> getChildren() throws NotAuthorizedException, BadRequestException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return calendarSearchService.findAttendeeResources(principal);
     }
 
     @Override
-    public String getCTag() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public String getCTag(){
+        try {
+            return calendarSearchService.findAttendeeResourcesCTag(principal);
+        } catch (NotAuthorizedException ex) {
+            throw new RuntimeException(ex);
+        } catch (BadRequestException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
 

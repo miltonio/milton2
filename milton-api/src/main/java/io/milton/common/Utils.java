@@ -36,6 +36,8 @@ import java.util.List;
 
 public class Utils {
     
+    public static final Charset UTF8 = Charset.forName("UTF-8");
+    
     private final static char[] hexDigits = {
         '0', '1', '2', '3', '4', '5', '6', '7',
         '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'

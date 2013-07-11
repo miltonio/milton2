@@ -26,9 +26,8 @@
     -->
     <import resource="classpath:env.xml"/>
 
-    <bean id="open.session.in.view.filter" class="io.milton.cloud.server.db.utils.MiltonOpenSessionInViewFilter">
+    <bean id="open.session.in.view.filter" class="io.milton.mini.MiltonMiniOpenSessionInViewFilter">
         <constructor-arg ref="session.manager"/>
-        <constructor-arg ref="root.context" />
     </bean>
 
     <bean id="milton.http.manager" class="io.milton.ent.config.HttpManagerBuilderEnt"> <!-- Note enterprise version. Only available for AGPL + Commercial users of milton -->
@@ -42,7 +41,8 @@
             <list>
                 <ref local="open.session.in.view.filter" />
             </list>
-        </property>        
+        </property>   
+        <property name="enableCompression" value="false" />
 
     </bean>
     

@@ -85,7 +85,7 @@ public class AnnoCollectionResource extends AnnoResource implements CollectionRe
 			}
 		}
 
-		for (Resource r : getChildren()) {
+		for (Resource r : findChildren(true)) {
 			if (r.getName().equals(childName)) {
 				return r;
 			}
@@ -95,9 +95,12 @@ public class AnnoCollectionResource extends AnnoResource implements CollectionRe
 
 	@Override
 	public ResourceList getChildren() throws NotAuthorizedException, BadRequestException {
+		return findChildren(false);
+	}
+	private ResourceList findChildren(boolean isChildLookup) throws NotAuthorizedException, BadRequestException {
 		if (children == null) {
 			children = new ResourceList();
-			Set<AnnoResource> set = annoFactory.childrenOfAnnotationHandler.execute(this);
+			Set<AnnoResource> set = annoFactory.childrenOfAnnotationHandler.execute(this, isChildLookup);
 			for (AnnoResource r : set) {
 				children.add(r);
 			}

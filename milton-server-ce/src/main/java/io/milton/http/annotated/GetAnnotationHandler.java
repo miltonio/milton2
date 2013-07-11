@@ -26,6 +26,7 @@ import io.milton.http.HttpManager;
 import io.milton.http.Range;
 import io.milton.http.Request.Method;
 import io.milton.http.template.TemplateProcessor;
+import io.milton.principal.DiscretePrincipal;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -95,6 +96,12 @@ public class GetAnnotationHandler extends AbstractAnnotationHandler {
 	private void processTemplate(ModelAndView modelAndView, AnnoResource resource, OutputStream out) {
 		TemplateProcessor templateProc = annoResourceFactory.getViewResolver().resolveView(modelAndView.getView());
 		modelAndView.getModel().put("page", resource);
+		Object principal = HttpManager.request().getAuthorization().getTag();
+		if (principal instanceof DiscretePrincipal) {
+			System.out.println("put user in model: " + principal);
+			modelAndView.getModel().put("principal", principal);
+		}
+
 		templateProc.execute(modelAndView.getModel(), out);
 	}
 }

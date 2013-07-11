@@ -15,6 +15,7 @@
 package io.milton.http.annotated;
 
 import io.milton.annotations.Get;
+import io.milton.annotations.Post;
 import io.milton.http.HttpManager;
 import io.milton.http.Request;
 import io.milton.http.Request.Method;
@@ -53,8 +54,6 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 		return annoClass;
 	}
 
-	
-	
 	@Override
 	public void parseController(Object controller) {
 		for (java.lang.reflect.Method m : controller.getClass().getMethods()) {
@@ -98,6 +97,7 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 							}
 						}
 					}
+					//System.out.println("score=" + score + " method=" + cm.method.getName() + " - foundmethod=" + foundMethod + " foundscore=" + foundMethodScore);
 				}
 			}
 		}
@@ -183,13 +183,13 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 
 	/**
 	 * Returns true if it was able to set the property
-	 * 
+	 *
 	 * @param source
 	 * @param propNames
 	 * @return
 	 * @throws IllegalAccessException
 	 * @throws InvocationTargetException
-	 * @throws NoSuchMethodException 
+	 * @throws NoSuchMethodException
 	 */
 	protected boolean attemptToSetProperty(Object source, Object value, String... propNames) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		for (String propName : propNames) {
@@ -200,7 +200,7 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Check if the annotation has a contentType specified. If so it must match
 	 * that given
@@ -226,28 +226,33 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 	}
 
 	private int isParamMatch(Map<String, String> params, Annotation anno) {
+		String[] matchParams;
 		if (anno instanceof Get) {
 			Get g = (Get) anno;
-			if (g.params().length > 0) {
-				for (String paramName : g.params()) {
-					if (params == null || !params.containsKey(paramName)) {
-						System.out.println("params: " + params);
-						//System.out.println("param not tound: " + paramName + " in map: " + params.size());
-						return -1; // does not match
-					}
-				}
-				return g.params().length;
-			} else {
-				return 0;
-			}
+			matchParams = g.params();
+		} else if (anno instanceof Post) {
+			Post p = (Post) anno;
+			matchParams = p.params();
+		} else {
+			matchParams = null;
 		}
-		return 0;
+		if (matchParams != null && matchParams.length > 0) {
+			for (String paramName : matchParams) {
+				if (params == null || !params.containsKey(paramName)) {
+					//System.out.println("param not tound: " + paramName + " in map: " + params.size());
+					return -1; // does not match
+				}
+			}
+			return matchParams.length;
+		} else {
+			return 0;
+		}
 	}
 
 	protected Object invoke(ControllerMethod cm, AnnoResource sourceRes, Object... values) throws Exception {
 		try {
 			Object[] args;
-			if( values == null || values.length == 0) {
+			if (values == null || values.length == 0) {
 				args = annoResourceFactory.buildInvokeArgs(sourceRes, cm.method);
 			} else {
 				args = annoResourceFactory.buildInvokeArgs(sourceRes, cm.method, values);
@@ -260,7 +265,7 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 	}
 
 	private boolean isReturnTypeMatch(java.lang.reflect.Method method, Class returnType) {
-		if( returnType == null ) {
+		if (returnType == null) {
 			return true;
 		} else {
 			return returnType.isAssignableFrom(method.getReturnType());
@@ -271,6 +276,4 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 	public List<ControllerMethod> getControllerMethods() {
 		return controllerMethods;
 	}
-	
-	
 }

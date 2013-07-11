@@ -18,10 +18,10 @@
  */
 package io.milton.principal;
 
-import io.milton.http.exceptions.BadRequestException;
-import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.values.HrefList;
 import io.milton.http.values.SupportedCalendarComponentListsSet;
+import io.milton.resource.ICalResource;
+import java.util.List;
 
 /**
  *
@@ -92,4 +92,5 @@ public interface CalDavPrincipal extends DiscretePrincipal {
      * @return
      */
     SupportedCalendarComponentListsSet getSupportedComponentSets();
+    
 }

@@ -131,6 +131,8 @@ public class ResourceHandlerHelper {
 		try {
 			manager.onProcessResourceStart(request, response, resource);
 
+			boolean authorised = handlerHelper.checkAuthorisation(manager, resource, request);
+
 			if (handlerHelper.isNotCompatible(resource, request.getMethod()) || !handler.isCompatible(resource)) {
 				if (log.isInfoEnabled()) {
 					log.info("resource not compatible. Resource class: " + resource.getClass() + " handler: " + handler.getClass());
@@ -138,9 +140,8 @@ public class ResourceHandlerHelper {
 				responseHandler.respondMethodNotImplemented(resource, response, request);
 				return;
 			}
-
-			boolean authorised = handlerHelper.checkAuthorisation(manager, resource, request);
-
+			
+			
 			// redirect check must be after authorisation, because the check redirect
 			// logic might depend on logged in user
 			// but the actual redirection must be before we respond unathorised, because

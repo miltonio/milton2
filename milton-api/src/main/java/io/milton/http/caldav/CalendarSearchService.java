@@ -26,26 +26,44 @@ import java.util.List;
 
 /**
  * Allows searching for calendar items by date range
- * 
- * A default implementation will be used in CaldavProtocol, but you can implement
- * your own to optimise for SQL searching, etc
+ *
+ * A default implementation will be used in CaldavProtocol, but you can
+ * implement your own to optimise for SQL searching, etc
  *
  * @author brad
  */
 public interface CalendarSearchService {
-    
+
     /**
      * Query the free busy status of the given principal
-     * 
+     *
      * http://tools.ietf.org/html/rfc6638#section-2.1
-     * 
+     *
      * @param principal
      * @param iCalText
-     * @return 
+     * @return
      */
-    List<SchedulingResponseItem> queryFreeBusy(CalDavPrincipal principal, String iCalText);    
-    
+    List<SchedulingResponseItem> queryFreeBusy(CalDavPrincipal principal, String iCalText);
+
     List<ICalResource> findCalendarResources(CalendarResource calendar, Date start, Date finish) throws NotAuthorizedException, BadRequestException;
-    
+
+    /**
+     * Return a list of events which represent invitations for the given user
+     * 
+     * @param attendee
+     * @return
+     * @throws NotAuthorizedException
+     * @throws BadRequestException 
+     */
     List<ICalResource> findAttendeeResources(CalDavPrincipal attendee) throws NotAuthorizedException, BadRequestException;
+
+    /**
+     * Return a CTag which represents the state of all events which repreent invitations for the given user
+     * 
+     * @param attendee
+     * @return
+     * @throws NotAuthorizedException
+     * @throws BadRequestException 
+     */
+    String findAttendeeResourcesCTag(CalDavPrincipal attendee) throws NotAuthorizedException, BadRequestException;
 }

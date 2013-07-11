@@ -30,26 +30,28 @@ public class ChildrenOfAnnotationHandler extends AbstractAnnotationHandler {
 		super(outer, ChildrenOf.class, Method.PROPFIND);
 	}
 
-	public Set<AnnoResource> execute(AnnoCollectionResource parent) {
+	public Set<AnnoResource> execute(AnnoCollectionResource parent, boolean isChildLookup) {
 		Object source = parent.getSource();
 		Set<AnnoResource> result = new HashSet<AnnoResource>();
 		for (ControllerMethod cm : getMethods(source.getClass())) {
 			try {
-				Object o = invoke(cm, parent);
-				if( o == null ) {
-					// ignore
-				} else if( o instanceof Collection ) {
-					Collection l = (Collection)o;
-					for( Object item : l) {
-						result.add(annoResourceFactory.instantiate(item, parent, cm.method));
+				if (lookupPermitted(isChildLookup, cm)) {
+					Object o = invoke(cm, parent);
+					if (o == null) {
+						// ignore
+					} else if (o instanceof Collection) {
+						Collection l = (Collection) o;
+						for (Object item : l) {
+							result.add(annoResourceFactory.instantiate(item, parent, cm.method));
+						}
+					} else if (o.getClass().isArray()) {
+						Object[] arr = (Object[]) o;
+						for (Object item : arr) {
+							result.add(annoResourceFactory.instantiate(item, parent, cm.method));
+						}
+					} else {
+						result.add(annoResourceFactory.instantiate(o, parent, cm.method));
 					}
-				} else if( o.getClass().isArray()) {
-					Object[] arr = (Object[]) o;
-					for( Object item : arr) {
-						result.add(annoResourceFactory.instantiate(item, parent, cm.method));
-					}
-				} else {
-					result.add(annoResourceFactory.instantiate(o, parent, cm.method));
 				}
 			} catch (Exception e) {
 				throw new RuntimeException(e);
@@ -57,5 +59,13 @@ public class ChildrenOfAnnotationHandler extends AbstractAnnotationHandler {
 
 		}
 		return result;
+	}
+
+	private boolean lookupPermitted(boolean childLookup, ControllerMethod cm) {
+		ChildrenOf anno = (ChildrenOf) cm.anno;
+		if( childLookup ) {
+			return anno.allowChildLookups();
+		}
+		return true;
 	}
 }

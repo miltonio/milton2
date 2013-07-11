@@ -37,6 +37,7 @@ public class BeanCookieTest extends TestCase {
         assertEquals("name=value", BeanCookie.toHeader(bc));
     }
     
+    
     public void testFormat_Complex() throws DateUtils.DateParseException, DateUtils.DateParseException {
         BeanCookie bc = new BeanCookie("SSID");                
         bc.setValue("XYZ");

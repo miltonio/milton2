@@ -68,7 +68,7 @@ public class HostNode extends FolderNode {
         if( path.length() == 0 ) {
             select();
         } else {
-            System.out.println( "path=" + path );
+            //System.out.println( "path=" + path );
             String[] arr = path.split( "[/]" );
             for( String s : arr ) {
                 System.out.println( " arr=" + s );

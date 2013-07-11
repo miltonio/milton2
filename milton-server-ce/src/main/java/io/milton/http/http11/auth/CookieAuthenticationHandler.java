@@ -1,10 +1,13 @@
 package io.milton.http.http11.auth;
 
+import io.milton.common.Utils;
+import io.milton.dns.utils.base64;
 import io.milton.http.*;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.principal.DiscretePrincipal;
 import io.milton.resource.Resource;
+import java.nio.charset.Charset;
 import java.util.List;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
@@ -257,7 +260,12 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 	}
 
 	public String getUserUrlFromRequest(Request request) {
-		return getCookieOrParam(request, cookieUserUrlValue);
+		String encodedUserUrl = getCookieOrParam(request, cookieUserUrlValue);
+		if( encodedUserUrl == null ) {
+			return null;
+		}
+		byte[] arr = base64.fromString(encodedUserUrl);
+		return new String(arr);
 	}
 
 	public String getHashFromRequest(Request request) {
@@ -294,7 +302,8 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 	private void setCookieValues(Response response, String userUrl, String hash) {
 		log.trace("setCookieValues");
 		BeanCookie c = new BeanCookie(cookieUserUrlValue);
-		c.setValue(userUrl);
+		String encodedUserUrl = base64.toString(userUrl.getBytes(Utils.UTF8));	
+		c.setValue(encodedUserUrl);
 		c.setPath("/");
 		c.setVersion(1);
 		if (useLongLivedCookies) {

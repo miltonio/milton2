@@ -19,6 +19,8 @@
 
 package io.milton.resource;
 
+import io.milton.http.exceptions.BadRequestException;
+import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.resource.CollectionResource;
 
 /**

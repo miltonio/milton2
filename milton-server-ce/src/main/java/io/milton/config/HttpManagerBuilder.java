@@ -1161,6 +1161,9 @@ public class HttpManagerBuilder {
 	}
 
 	public void setControllerPackagesToScan(String controllerPackagesToScan) {
+		if( mainResourceFactory == null && controllerPackagesToScan != null ) {
+			mainResourceFactory = new AnnotationResourceFactory();
+		}		
 		this.controllerPackagesToScan = controllerPackagesToScan;
 	}
 
@@ -1177,6 +1180,9 @@ public class HttpManagerBuilder {
 	}
 
 	public void setControllerClassNames(String controlleClassNames) {
+		if( mainResourceFactory == null && controlleClassNames != null ) {
+			mainResourceFactory = new AnnotationResourceFactory();
+		}		
 		this.controllerClassNames = controlleClassNames;
 	}
 
@@ -1191,6 +1197,9 @@ public class HttpManagerBuilder {
 	}
 
 	public void setControllers(List controllers) {
+		if( mainResourceFactory == null && controllers != null ) {
+			mainResourceFactory = new AnnotationResourceFactory();
+		}
 		this.controllers = controllers;
 	}
 

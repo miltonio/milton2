@@ -194,7 +194,7 @@ public class FsDirectoryResource extends FsResource implements MakeCollectionabl
 
             w.open("td");
             String path = buildHref(uri, r.getName());
-			System.out.println("path=" + path);
+			//System.out.println("path=" + path);
             w.begin("a").writeAtt("href", path).open().writeText(r.getName()).close();
 
             w.begin("a").writeAtt("href", "#").writeAtt("onclick", "editDocument('" + path + "')").open().writeText("(edit with office)").close();
@@ -226,7 +226,7 @@ public class FsDirectoryResource extends FsResource implements MakeCollectionabl
     }
 
     private String buildHref(String uri, String name) {
-		System.out.println("buildHref: " + uri + " --- " + name);
+		//System.out.println("buildHref: " + uri + " --- " + name);
         String abUrl = uri;
 
         if (!abUrl.endsWith("/")) {
