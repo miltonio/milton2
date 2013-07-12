@@ -109,6 +109,12 @@ public interface AccessControlledResource extends Resource {
         }               
     }
     
+    /**
+     * Just an empty list which conveys no permissions. This is an appropriate value
+     * to return from ACL methods when you want to deny access
+     */
+    public final static List<AccessControlledResource.Priviledge> NONE = Arrays.asList();
+    
     public final static List<AccessControlledResource.Priviledge> READ_WRITE = Arrays.asList(Priviledge.READ, Priviledge.WRITE);
     
     public final static List<AccessControlledResource.Priviledge> READ_CONTENT = Arrays.asList(Priviledge.READ_CONTENT);
