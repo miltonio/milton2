@@ -180,16 +180,6 @@ public class MiltonMiniController {
         return Profile.findAll(SessionManager.session());
     }
 
-    @ChildrenOf
-    public CalendarsHome getCalendarsHome(Profile user) {
-        return new CalendarsHome(user);
-    }
-
-    @ChildrenOf
-    @Calendars
-    public List<Calendar> getCalendars(CalendarsHome cals) {
-        return cals.user.getCalendars();
-    }
 
     @ChildrenOf
     public List getRepositoryRootItems(Repository r) {
@@ -230,18 +220,6 @@ public class MiltonMiniController {
         }
     }
 
-    public class CalendarsHome {
-
-        private final Profile user;
-
-        public CalendarsHome(Profile user) {
-            this.user = user;
-        }
-
-        public String getName() {
-            return "cals";
-        }
-    }
 	
 	public class SharedHome {
 		private final Organisation org;

@@ -34,6 +34,7 @@
         <property name="controllers">
             <list>
                 <bean class="io.milton.mini.MiltonMiniController"/>
+                <bean class="io.milton.mini.CalendarController"/>
             </list>
         </property>
         <property name="buffering" value="never"/>

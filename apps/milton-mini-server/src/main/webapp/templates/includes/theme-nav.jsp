@@ -14,7 +14,7 @@
                     <li class="active"><a href="#">Home</a></li>
                     <li><a href="/users">Users</a></li>                    
                     
-                    <li><a href="${model.principal.href}calendars/">Calendars</a></li>
+                    <li><a href="${model.principal.href}cals/">Calendars</a></li>
                     <li><a href="#contact">Contacts</a></li>
                     
                 </ul>

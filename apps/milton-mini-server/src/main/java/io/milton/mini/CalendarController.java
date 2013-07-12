@@ -18,38 +18,21 @@
  */
 package io.milton.mini;
 
-import io.milton.annotations.Authenticate;
 import io.milton.annotations.Calendars;
 import io.milton.annotations.ChildOf;
 import io.milton.annotations.ChildrenOf;
 import io.milton.annotations.Get;
-import io.milton.annotations.ModifiedDate;
 import io.milton.annotations.Post;
+import io.milton.annotations.Principal;
 import io.milton.annotations.ResourceController;
-import io.milton.annotations.Root;
-import io.milton.annotations.UniqueId;
-import io.milton.annotations.Users;
-import io.milton.cloud.common.CurrentDateService;
-import io.milton.cloud.common.DefaultCurrentDateService;
-import io.milton.cloud.common.store.FileSystemBlobStore;
 import io.milton.common.ModelAndView;
-import io.milton.vfs.content.DbHashStore;
-import io.milton.vfs.data.DataSession;
-import io.milton.vfs.db.Branch;
-import io.milton.vfs.db.CalEvent;
+import io.milton.http.HttpManager;
 import io.milton.vfs.db.Calendar;
-import io.milton.vfs.db.Organisation;
 import io.milton.vfs.db.Profile;
-import io.milton.vfs.db.Repository;
 import io.milton.vfs.db.utils.SessionManager;
-import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
-import org.hashsplit4j.api.BlobStore;
-import org.hashsplit4j.api.HashStore;
-import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 @ResourceController
@@ -74,23 +57,54 @@ public class CalendarController {
     }
     
     @ChildrenOf
-    public List<Calendar> getUserCalendars(CalendarsHome calendarsHome) {
-        return calendarsHome.profile.getCalendars();
+    public CalendarsHome getCalendarsHome(Profile user) {
+        return new CalendarsHome(user);
     }
 
+    @ChildrenOf
+    @Calendars
+    public List<Calendar> getCalendars(CalendarsHome cals) {
+        return cals.user.getCalendars();
+    }
+    
     @Get
     public String showUserCalendar(Calendar home) {
+        System.out.println("show calendar");
         return "calendar";
     }    
+    
+    @Get(params={"editMode"})
+    public ModelAndView showCalendarEditPage(Calendar calendar) {
+        System.out.println("show calendar edit page");
+        return new ModelAndView("profile", calendar, "calendarEditPage"); 
+    }      
+    
+    @ChildOf(pathSuffix="new")
+    public Calendar createNewCalendar(CalendarsHome calendarsHome, String name, @Principal Profile currentUser) {
+        Calendar newCal = calendarsHome.user.newCalendar(name, currentUser);
+        return newCal;
+    }        
+    
+    @Post(bindData=true)
+    public Calendar saveCalendar(Calendar calendar) {
+        log.info("saveCalendar: " + calendar.getName());
+        Transaction tx = SessionManager.session().beginTransaction();
+        SessionManager.session().save(calendar);
+        SessionManager.session().flush();
+        tx.commit();
+        log.info("saved cal");
+        return calendar;
+    }   
+
 
     public class CalendarsHome {
-        private final Profile profile;
 
-        public CalendarsHome(Profile profile) {
-            this.profile = profile;
+        private final Profile user;
+
+        public CalendarsHome(Profile user) {
+            this.user = user;
         }
-        
-        
+
         public String getName() {
             return "cals";
         }

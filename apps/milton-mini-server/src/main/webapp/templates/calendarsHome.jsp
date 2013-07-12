@@ -16,7 +16,7 @@
                     <div class="well" id="bandsDiv">                        
                         <h1>
                             Calendars
-                            <a href="/bands/new?editMode .container form" class="btn pull-right newItem modalLink" data-toggle="modal" data-target="#newItemModal" ><i class="icon-plus-sign"></i> Add</a>
+                            <a href="new?editMode .container form" class="btn pull-right newItem modalLink" data-toggle="modal" data-target="#newItemModal" ><i class="icon-plus-sign"></i> Add</a>
                         </h1>
                         
 

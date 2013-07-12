@@ -45,6 +45,7 @@ import io.milton.annotations.Root;
 import io.milton.annotations.UniqueId;
 import io.milton.annotations.Users;
 import io.milton.common.Path;
+import io.milton.http.Auth;
 import io.milton.http.HttpManager;
 import io.milton.http.LockInfo;
 import io.milton.http.LockManager;
@@ -57,6 +58,7 @@ import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.template.ViewResolver;
 import io.milton.http.webdav.DisplayNameFormatter;
+import io.milton.principal.Principal;
 import io.milton.resource.CollectionResource;
 import io.milton.resource.PropFindableResource;
 import io.milton.resource.Resource;
@@ -166,7 +168,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 					mapOfAnnotationHandlersByMethod.put(m, ah);
 				}
 			}
-		}	
+		}
 	}
 
 	@Override
@@ -397,13 +399,15 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param sourceRes
-	 * @param mandatorySecondArg - if present will be used as second arg. Used by AccessControlListAnnotationHandler to always provide user to second arg, even when null
+	 * @param mandatorySecondArg - if present will be used as second arg. Used
+	 * by AccessControlListAnnotationHandler to always provide user to second
+	 * arg, even when null
 	 * @param m
 	 * @param otherValues
 	 * @return
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public Object[] buildInvokeArgsExt(AnnoResource sourceRes, Object mandatorySecondArg, boolean forceUseSecondArg, java.lang.reflect.Method m, Object... otherValues) throws Exception {
 		if (log.isTraceEnabled()) {
@@ -411,6 +415,13 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		}
 		Request request = HttpManager.request();
 		Response response = HttpManager.response();
+		Auth auth = request.getAuthorization();
+		AnnoPrincipalResource principal = null;
+		if (auth != null) {
+			if (auth.getTag() instanceof AnnoPrincipalResource) {
+				principal = (AnnoPrincipalResource) auth.getTag();
+			}
+		}
 		Object[] args = new Object[m.getParameterTypes().length];
 		List list = new ArrayList();
 
@@ -438,16 +449,24 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 			if (i == 1 && forceUseSecondArg) {
 				args[i] = mandatorySecondArg; // hack for methods which can have a null 2nd arg. Without this any other matching object would be provided
 			} else {
-				Class type = m.getParameterTypes()[i];
-				Object argValue;
-				try {
-					argValue = findArgValue(type, request, response, list);
-				} catch (UnresolvableParameterException e) {
-					log.warn("Could not resolve parameter: " + i + "  in method: " + m.getName());
-					//System.out.println("Couldnt find parameter " + type + " for method: " + m);				
-					argValue = null;
+				if (isPrincipalArg(m, i)) {
+					if (principal != null) {
+						args[i] = principal.source;
+					} else {
+						args[i] = null;
+					}
+				} else {
+					Class type = m.getParameterTypes()[i];
+					Object argValue;
+					try {
+						argValue = findArgValue(type, request, response, list);
+					} catch (UnresolvableParameterException e) {
+						log.warn("Could not resolve parameter: " + i + "  in method: " + m.getName());
+						//System.out.println("Couldnt find parameter " + type + " for method: " + m);				
+						argValue = null;
+					}
+					args[i] = argValue;
 				}
-				args[i] = argValue;
 			}
 		}
 		return args;
@@ -637,6 +656,16 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	private boolean in(Method m, Method... methods) {
 		for (Method listMethod : methods) {
 			if (m.equals(listMethod)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean isPrincipalArg(java.lang.reflect.Method m, int i) {
+		Annotation[] arr = m.getParameterAnnotations()[i];
+		for (Annotation a : arr) {
+			if (a instanceof Principal) {
 				return true;
 			}
 		}
