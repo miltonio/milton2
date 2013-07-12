@@ -15,7 +15,6 @@
  */
 package io.milton.http.caldav;
 
-import io.milton.http.annotated.CommonResource;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.principal.CalDavPrincipal;
@@ -36,7 +35,11 @@ import java.util.List;
 public class DefaultCalendarSearchService implements CalendarSearchService {
 
     private final ICalFormatter formatter;
-
+    private String schedulingColName = "scheduling";
+    private String inboxName = "inbox";
+    private String outBoxName = "outbox";
+    private boolean enabled = true;
+    
     public DefaultCalendarSearchService(ICalFormatter formatter) {
         this.formatter = formatter;
     }
@@ -114,4 +117,29 @@ public class DefaultCalendarSearchService implements CalendarSearchService {
         }
                 
     }
+
+    @Override
+    public String getSchedulingColName() {
+        return schedulingColName;
+    }
+
+    @Override
+    public String getSchedulingInboxColName() {
+        return inboxName;
+    }
+
+    @Override
+    public String getSchedulingOutboxColName() {
+        return outBoxName;
+    }
+
+    @Override
+    public boolean isSchedulingEnabled() {
+        return enabled;
+    }
+    
+    public void setSchedulingEnabled(boolean  b) {
+        enabled = b;
+    }
+
 }

@@ -2,7 +2,6 @@
  * Copyright 2012 McEvoy Software Ltd.
  *
  */
-
 package io.milton.http.caldav;
 
 import io.milton.webdav.utils.CalendarDataProperty;
@@ -70,11 +69,11 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
     private final PropertyMap propertyMapCalServer;
     private final PropertyMap propertyMapAppleCal;
     private final SchedulingCustomPostHandler schedulingCustomPostHandler;
-    private final CalendarSearchService calendarSearchService;    
+    private final CalendarSearchService calendarSearchService;
     private final List<CustomPostHandler> customPostHandlers;
 
     public CalDavProtocol(ResourceFactory resourceFactory, WebDavResponseHandler responseHandler, HandlerHelper handlerHelper, WebDavProtocol webDavProtocol, PropFindXmlGenerator gen, PropFindPropertyBuilder propertyBuilder, CalendarSearchService calendarSearchService) {
-        this.calendarSearchService = calendarSearchService;        
+        this.calendarSearchService = calendarSearchService;
         propertyMapCalDav = new PropertyMap(CALDAV_NS);
         propertyMapCalDav.add(new CalenderDescriptionProperty());
         propertyMapCalDav.add(new CalendarDataProperty());
@@ -82,8 +81,10 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
         propertyMapCalDav.add(new CalenderUserAddressSetProperty());
         propertyMapCalDav.add(new SupportedCalendarComponentSetProperty());
         propertyMapCalDav.add(new SupportedCalendarComponentSetsProperty());
-        //propertyMapCalDav.add(new ScheduleInboxProperty());
-        //propertyMapCalDav.add(new ScheduleOutboxProperty());
+        if (calendarSearchService.isSchedulingEnabled()) {
+            propertyMapCalDav.add(new ScheduleInboxProperty());
+            propertyMapCalDav.add(new ScheduleOutboxProperty());
+        }
 
         propertyMapCalServer = new PropertyMap(CALSERVER_NS);
         propertyMapCalServer.add(new CTagProperty());
@@ -91,7 +92,7 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
         //propertyMapCalServer.add(new DropBoxProperty());
         //propertyMapCalServer.add(new NotificationProperty());
 //        propertyMapCalServer.add(new NotificationsProperty());
-        
+
         propertyMapAppleCal = new PropertyMap(APPLE_ICAL_NS);
         propertyMapAppleCal.add(new ColorProperty());
 
@@ -111,9 +112,13 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
         webDavProtocol.addReport(new CalendarQueryReport(propertyBuilder, gen, calendarSearchService));
 
         schedulingCustomPostHandler = new SchedulingCustomPostHandler();
-        List<CustomPostHandler> l = new ArrayList<CustomPostHandler>();
-        l.add(schedulingCustomPostHandler);
-        customPostHandlers = Collections.unmodifiableList(l);
+        if (calendarSearchService.isSchedulingEnabled()) {            
+            List<CustomPostHandler> l = new ArrayList<CustomPostHandler>();
+            l.add(schedulingCustomPostHandler);
+            customPostHandlers = Collections.unmodifiableList(l);
+        } else {
+            customPostHandlers = Collections.EMPTY_LIST;
+        }
     }
 
     @Override
@@ -128,14 +133,14 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
         Object o;
         if (propertyMapCalDav.hasProperty(name)) {
             o = propertyMapCalDav.getProperty(name, r);
-        } else if( propertyMapAppleCal.hasProperty(name)) {
+        } else if (propertyMapAppleCal.hasProperty(name)) {
             o = propertyMapAppleCal.getProperty(name, r);
         } else {
             o = propertyMapCalServer.getProperty(name, r);
         }
-		if(log.isTraceEnabled()) {
-			log.trace("getProperty result : " + o + " for property: " + name.getLocalPart());
-		}
+        if (log.isTraceEnabled()) {
+            log.trace("getProperty result : " + o + " for property: " + name.getLocalPart());
+        }
         return o;
     }
 
@@ -144,7 +149,7 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
         log.trace("setProperty: {}", name.getLocalPart());
         if (propertyMapCalDav.hasProperty(name)) {
             propertyMapCalDav.setProperty(name, r, value);
-        } else if( propertyMapAppleCal.hasProperty(name)) {
+        } else if (propertyMapAppleCal.hasProperty(name)) {
             propertyMapAppleCal.setProperty(name, r, value);
         } else {
             propertyMapCalServer.setProperty(name, r, value);
@@ -156,7 +161,7 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
         log.trace("getPropertyMetaData: {}", name.getLocalPart());
         if (propertyMapCalDav.hasProperty(name)) {
             return propertyMapCalDav.getPropertyMetaData(name, r);
-        } else if( propertyMapAppleCal.hasProperty(name)) {
+        } else if (propertyMapAppleCal.hasProperty(name)) {
             return propertyMapAppleCal.getPropertyMetaData(name, r);
         } else {
             return propertyMapCalServer.getPropertyMetaData(name, r);
@@ -183,7 +188,7 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
     }
 
     /*
-    <calendar-description xmlns='urn:ietf:params:xml:ns:caldav'/>
+     <calendar-description xmlns='urn:ietf:params:xml:ns:caldav'/>
      */
     class CalenderDescriptionProperty implements StandardProperty<String> {
 
@@ -211,9 +216,9 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
     }
 
     /*
-    <calendar-home-set xmlns='urn:ietf:params:xml:ns:caldav'>
-    <href xmlns='DAV:'>/calendars/__uids__/admin</href>
-    </calendar-home-set>     
+     <calendar-home-set xmlns='urn:ietf:params:xml:ns:caldav'>
+     <href xmlns='DAV:'>/calendars/__uids__/admin</href>
+     </calendar-home-set>     
      */
     class CalenderHomeSetProperty implements StandardProperty<HrefList> {
 
@@ -238,16 +243,16 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
     }
 
     /* Scheduling support
-    see : http://ietfreport.isoc.org/idref/draft-desruisseaux-caldav-sched/
-    for details
+     see : http://ietfreport.isoc.org/idref/draft-desruisseaux-caldav-sched/
+     for details
     
-    <calendar-user-address-set xmlns='urn:ietf:params:xml:ns:caldav'>
-    <href xmlns='DAV:'>http://polaris.home.j2anywhere.com:8008/principals/users/admin/</href>
-    <href xmlns='DAV:'>urn:uuid:admin</href>
-    <href xmlns='DAV:'>http://polaris.home.j2anywhere.com:8008/principals/__uids__/admin/</href>
-    <href xmlns='DAV:'>/principals/__uids__/admin/</href>
-    <href xmlns='DAV:'>/principals/users/admin/</href>
-    </calendar-user-address-set>
+     <calendar-user-address-set xmlns='urn:ietf:params:xml:ns:caldav'>
+     <href xmlns='DAV:'>http://polaris.home.j2anywhere.com:8008/principals/users/admin/</href>
+     <href xmlns='DAV:'>urn:uuid:admin</href>
+     <href xmlns='DAV:'>http://polaris.home.j2anywhere.com:8008/principals/__uids__/admin/</href>
+     <href xmlns='DAV:'>/principals/__uids__/admin/</href>
+     <href xmlns='DAV:'>/principals/users/admin/</href>
+     </calendar-user-address-set>
      */
     class CalenderUserAddressSetProperty implements StandardProperty<HrefList> {
 
@@ -257,11 +262,11 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
         }
 
         /**
-        <C:calendar-user-address-set xmlns:D="DAV:"
-        xmlns:C="urn:ietf:params:xml:ns:caldav">
-        <D:href>mailto:bernard@example.com</D:href>
-        <D:href>mailto:bernard.desruisseaux@example.com</D:href>
-        </C:calendar-user-address-set>
+         * <C:calendar-user-address-set xmlns:D="DAV:"
+         * xmlns:C="urn:ietf:params:xml:ns:caldav">
+         * <D:href>mailto:bernard@example.com</D:href>
+         * <D:href>mailto:bernard.desruisseaux@example.com</D:href>
+         * </C:calendar-user-address-set>
          * @param res
          * @return
          */
@@ -281,9 +286,9 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
     }
 
     /*
-    <schedule-inbox-URL xmlns='urn:ietf:params:xml:ns:caldav'>
-    <href xmlns='DAV:'>/calendars/__uids__/admin/inbox/</href>
-    </schedule-inbox-URL>
+     <schedule-inbox-URL xmlns='urn:ietf:params:xml:ns:caldav'>
+     <href xmlns='DAV:'>/calendars/__uids__/admin/inbox/</href>
+     </schedule-inbox-URL>
      */
     class ScheduleInboxProperty implements StandardProperty<WrappedHref> {
 
@@ -295,7 +300,8 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
         @Override
         public WrappedHref getValue(PropFindableResource res) {
             if (res instanceof CalDavPrincipal) {
-                String s = ((CalDavPrincipal) res).getPrincipalURL() + "/scheduling/inbox/";
+                CalDavPrincipal p = (CalDavPrincipal) res;
+                String s = ((CalDavPrincipal) res).getPrincipalURL() + "/" + calendarSearchService.getSchedulingColName() + "/" + calendarSearchService.getSchedulingInboxColName() + "/";
                 return new WrappedHref(s);
             } else {
                 return null;
@@ -309,9 +315,9 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
     }
 
     /*
-    <schedule-outbox-URL xmlns='urn:ietf:params:xml:ns:caldav'>
-    <href xmlns='DAV:'>/calendars/__uids__/admin/outbox/</href>
-    </schedule-outbox-URL>
+     <schedule-outbox-URL xmlns='urn:ietf:params:xml:ns:caldav'>
+     <href xmlns='DAV:'>/calendars/__uids__/admin/outbox/</href>
+     </schedule-outbox-URL>
      */
     class ScheduleOutboxProperty implements StandardProperty<WrappedHref> {
 
@@ -323,7 +329,7 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
         @Override
         public WrappedHref getValue(PropFindableResource res) {
             if (res instanceof CalDavPrincipal) {
-                String s = ((CalDavPrincipal) res).getPrincipalURL() + "/scheduling/outbox/";
+                String s = ((CalDavPrincipal) res).getPrincipalURL() + "/" + calendarSearchService.getSchedulingColName() + "/" + calendarSearchService.getSchedulingOutboxColName() + "/";
                 return new WrappedHref(s);
             } else {
                 return null;
@@ -338,9 +344,9 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
     }
 
     /*
-    <dropbox-home-URL xmlns='http://calendarserver.org/ns/'>
-    <href xmlns='DAV:'>/calendars/__uids__/admin/dropbox/</href>
-    </dropbox-home-URL>
+     <dropbox-home-URL xmlns='http://calendarserver.org/ns/'>
+     <href xmlns='DAV:'>/calendars/__uids__/admin/dropbox/</href>
+     </dropbox-home-URL>
      */
     class DropBoxProperty implements StandardProperty<WrappedHref> {
 
@@ -369,7 +375,7 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
      * I think this property probably isnt necessary, but will wait until things
      * are stable.
      *
-    <xmpp-uri xmlns='http://calendarserver.org/ns/'/>
+     <xmpp-uri xmlns='http://calendarserver.org/ns/'/>
      */
     class XMPPProperty implements StandardProperty<String> {
 
@@ -390,9 +396,9 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
     }
 
     /*
-    <notification-URL xmlns='http://calendarserver.org/ns/'>
-    <href xmlns='DAV:'>/calendars/__uids__/admin/notification/</href>
-    </notification-URL>
+     <notification-URL xmlns='http://calendarserver.org/ns/'>
+     <href xmlns='DAV:'>/calendars/__uids__/admin/notification/</href>
+     </notification-URL>
      */
     class NotificationsProperty implements StandardProperty<WrappedHref> {
 
@@ -431,44 +437,30 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
     }
 
     /**
-     *  CalendarServer support
+     * CalendarServer support
      *
-     *  https://trac.calendarserver.org/browser/CalendarServer/trunk/doc/Extensions/caldav-ctag.txt\
-     *  http://code.google.com/p/sabredav/wiki/ICal
+     * https://trac.calendarserver.org/browser/CalendarServer/trunk/doc/Extensions/caldav-ctag.txt\
+     * http://code.google.com/p/sabredav/wiki/ICal
      *
      *
-     * 4.1.  getctag WebDAV Property
-    173
-    174	   Name:  getctag
-    175
-    176	   Namespace:  http://calendarserver.org/ns/
-    177
-    178	   Purpose:  Specifies a "synchronization" token used to indicate when
-    179	      the contents of a calendar or scheduling Inbox or Outbox
-    180	      collection have changed.
-    181
-    182	   Conformance:  This property MUST be defined on a calendar or
-    183	      scheduling Inbox or Outbox collection resource.  It MUST be
-    184	      protected and SHOULD be returned by a PROPFIND DAV:allprop request
-    185	      (as defined in Section 12.14.1 of [RFC2518]).
-    186
-    187	   Description:  The CS:getctag property allows clients to quickly
-    188	      determine if the contents of a calendar or scheduling Inbox or
-    189	      Outbox collection have changed since the last time a
-    190	      "synchronization" operation was done.  The CS:getctag property
-    191	      value MUST change each time the contents of the calendar or
-    192	      scheduling Inbox or Outbox collection change, and each change MUST
-    193	      result in a value that is different from any other used with that
-    194	      collection URI.
-    195
-    196	   Definition:
-    197
-    198	       <!ELEMENT getctag #PCDATA>
-    199
-    200	   Example:
-    201
-    202	       <T:getctag xmlns:T="http://calendarserver.org/ns/"
-    203	       >ABCD-GUID-IN-THIS-COLLECTION-20070228T122324010340</T:getctag>
+     * 4.1. getctag WebDAV Property 173 174	Name: getctag 175 176	Namespace:
+     * http://calendarserver.org/ns/ 177 178	Purpose: Specifies a
+     * "synchronization" token used to indicate when 179	the contents of a
+     * calendar or scheduling Inbox or Outbox 180	collection have changed. 181
+     * 182	Conformance: This property MUST be defined on a calendar or 183
+     * scheduling Inbox or Outbox collection resource. It MUST be 184	protected
+     * and SHOULD be returned by a PROPFIND DAV:allprop request 185	(as defined
+     * in Section 12.14.1 of [RFC2518]). 186 187	Description: The CS:getctag
+     * property allows clients to quickly 188	determine if the contents of a
+     * calendar or scheduling Inbox or 189	Outbox collection have changed since
+     * the last time a 190	"synchronization" operation was done. The CS:getctag
+     * property 191	value MUST change each time the contents of the calendar or
+     * 192	scheduling Inbox or Outbox collection change, and each change MUST
+     * 193	result in a value that is different from any other used with that 194
+     * collection URI. 195 196	Definition: 197 198	<!ELEMENT getctag #PCDATA>
+     * 199 200	Example: 201 202	<T:getctag
+     * xmlns:T="http://calendarserver.org/ns/" 203
+     * >ABCD-GUID-IN-THIS-COLLECTION-20070228T122324010340</T:getctag>
      */
     class CTagProperty implements StandardProperty<String> {
 
@@ -522,27 +514,26 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
                 ccol.setColor(value);
             }
         }
-    }    
-    
+    }
+
     /**
      * Implemented on CalDavPrincpials
-     * 
+     *
      * See http://tools.ietf.org/html/draft-daboo-caldav-extensions-01#page-7
-     * 
-     * If servers apply restrictions on the allowed calendar
-      component sets used when creating a calendar, then those servers
-      SHOULD advertise this property on each calendar home collection
-      within which the restrictions apply.  In the absence of this
-      property, clients cannot assume anything about whether the server
-      will enforce a set of restrictions or not - in that case clients
-      need to handle the server rejecting certain combinations of
-      restricted component sets.  If this property is present, but
-      contains no child XML elements, then clients can assume that the
-      server imposes no restrictions on the combinations of component
-      types it is willing to accept.  If present, each CALDAV:supported-
-      calendar-component-set element represents a valid restriction the
-      client can use in an MKCALENDAR or extended MKCOL request when
-      creating a calendar.
+     *
+     * If servers apply restrictions on the allowed calendar component sets used
+     * when creating a calendar, then those servers SHOULD advertise this
+     * property on each calendar home collection within which the restrictions
+     * apply. In the absence of this property, clients cannot assume anything
+     * about whether the server will enforce a set of restrictions or not - in
+     * that case clients need to handle the server rejecting certain
+     * combinations of restricted component sets. If this property is present,
+     * but contains no child XML elements, then clients can assume that the
+     * server imposes no restrictions on the combinations of component types it
+     * is willing to accept. If present, each CALDAV:supported-
+     * calendar-component-set element represents a valid restriction the client
+     * can use in an MKCALENDAR or extended MKCOL request when creating a
+     * calendar.
      */
     class SupportedCalendarComponentSetsProperty implements PropertyMap.WritableStandardProperty<SupportedCalendarComponentListsSet> {
 
@@ -568,15 +559,14 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
 
         @Override
         public void setValue(PropFindableResource res, SupportedCalendarComponentListsSet value) {
-
         }
-    }    
-    
+    }
+
     /**
      * See http://www.ietf.org/rfc/rfc4791.txt
-     * 
+     *
      */
-    class SupportedCalendarComponentSetProperty implements PropertyMap.WritableStandardProperty<SupportedCalendarComponentList>{
+    class SupportedCalendarComponentSetProperty implements PropertyMap.WritableStandardProperty<SupportedCalendarComponentList> {
 
         @Override
         public String fieldName() {
@@ -600,10 +590,9 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
 
         @Override
         public void setValue(PropFindableResource res, SupportedCalendarComponentList value) {
-
-        }        
+        }
     }
-    
+
     @Override
     public String getWellKnownName() {
         return "caldav";

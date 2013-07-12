@@ -66,4 +66,35 @@ public interface CalendarSearchService {
      * @throws BadRequestException 
      */
     String findAttendeeResourcesCTag(CalDavPrincipal attendee) throws NotAuthorizedException, BadRequestException;
+    
+    /**
+     * Returns the name of the collection which contains scheduling collections
+     * such as inbox and outbox:
+     * 
+     * Eg For scheduling inbox href like /users/joe/scheduling/inbox this would return scheuduling
+     * 
+     * @return 
+     */
+    String getSchedulingColName();
+    
+    /**
+     * Returns the name of the scheduling inbox collection, eg 'inbox'
+     * 
+     * @return 
+     */
+    String getSchedulingInboxColName();
+    
+    /**
+     * Returns the name of the scheduling outbox collection, eg 'outbox'
+     * 
+     * @return 
+     */
+    String getSchedulingOutboxColName();
+    
+    /**
+     * Return true to enable scheduling properties and resources
+     * 
+     * @return 
+     */
+    boolean isSchedulingEnabled();
 }

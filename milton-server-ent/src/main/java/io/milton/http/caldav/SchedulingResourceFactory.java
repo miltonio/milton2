@@ -25,14 +25,14 @@ import io.milton.resource.Resource;
 /**
  * Adds scheduling inbox and outbox resources to the resource tree for each
  * principal
- * 
- * This class is intended to wrap the real ResourceFactory, such that calls
- * to wrapped.getResource("..","/users/brad/") will return a CalDavPrincipal
+ *
+ * This class is intended to wrap the real ResourceFactory, such that calls to
+ * wrapped.getResource("..","/users/brad/") will return a CalDavPrincipal
  * representing brad
- * 
+ *
  * By default, when no scheduling resource is found this will just return the
  * resource from the wrapped ResourceFactory, ie the decorator pattern
- * 
+ *
  * But if you want to use this with a MultiResourceFactory then set decorator to
  * false, then it will simply return null
  *
@@ -42,10 +42,6 @@ public class SchedulingResourceFactory implements ResourceFactory {
 
     private final ResourceFactory wrapped;
     private final CalendarSearchService calendarSearchService;
-    
-    private String schedulingColName = "scheduling";
-    private String inboxName = "inbox";
-    private String outBoxName = "outbox";
     private boolean decorator = true;
 
     public SchedulingResourceFactory(ResourceFactory wrapped, CalendarSearchService calendarSearchService) {
@@ -56,18 +52,18 @@ public class SchedulingResourceFactory implements ResourceFactory {
     @Override
     public Resource getResource(String host, String sPath) throws NotAuthorizedException, BadRequestException {
         Path path = Path.path(sPath);
-        if (path.getName().equals(schedulingColName)) {
+        if (path.getName() != null && path.getName().equals(getSchedulingColName())) {
             SchedulingParentResource schedulingParentResource = getSchedulingResource(host, path);
-            if( schedulingParentResource != null ) {
+            if (schedulingParentResource != null) {
                 return schedulingParentResource;
             }
-        } else if (path.getParent().getName().equals(schedulingColName)) {
+        } else if (path.getParent() != null && path.getParent().getName() != null && path.getParent().getName().equals(getSchedulingColName())) {
             SchedulingParentResource schedulingParentResource = getSchedulingResource(host, path.getParent());
-            if( schedulingParentResource != null ) {
+            if (schedulingParentResource != null) {
                 return schedulingParentResource.child(path.getName());
             }
         }
-        if( decorator ) {
+        if (decorator) {
             return wrapped.getResource(host, sPath);
         } else {
             return null;
@@ -93,15 +89,15 @@ public class SchedulingResourceFactory implements ResourceFactory {
     }
 
     public String getInboxName() {
-        return inboxName;
+        return calendarSearchService.getSchedulingInboxColName();
     }
 
     public String getOutboxName() {
-        return outBoxName;
+        return calendarSearchService.getSchedulingOutboxColName();
     }
 
     public String getSchedulingColName() {
-        return schedulingColName;
+        return calendarSearchService.getSchedulingColName();
     }
 
     public ResourceFactory getWrapped() {
@@ -111,6 +107,4 @@ public class SchedulingResourceFactory implements ResourceFactory {
     public CalendarSearchService getCalendarSearchService() {
         return calendarSearchService;
     }
- 
-    
 }

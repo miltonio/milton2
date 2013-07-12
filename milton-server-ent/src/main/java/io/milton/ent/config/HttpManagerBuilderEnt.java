@@ -15,6 +15,7 @@ import io.milton.http.caldav.CalendarResourceTypeHelper;
 import io.milton.http.caldav.CalendarSearchService;
 import io.milton.http.caldav.DefaultCalendarSearchService;
 import io.milton.http.caldav.ICalFormatter;
+import io.milton.http.caldav.SchedulingResourceFactory;
 import io.milton.http.caldav.SupportedCalendarComponentListValueWriter;
 import io.milton.http.caldav.SupportedCalendarComponentListsSetValueWriter;
 import io.milton.http.carddav.AddressBookResourceTypeHelper;
@@ -70,6 +71,7 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
     private boolean carddavEnabled = true;
     private boolean aclEnabled = true;
     private boolean enableWellKnown = true;
+    private boolean enableScheduling = true;
     private WebDavLevel2Protocol webDavLevel2Protocol;
     private boolean webdavLevel2Enabled = true;
     private LockManager lockManager = new SimpleLockManager();
@@ -96,6 +98,7 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
                 outerResourceFactory = buildJsonResourceFactory();
                 log.info("Enabled json/ajax gatewayw with: " + outerResourceFactory.getClass());
             }
+            
             if (enableWellKnown) {
                 if (wellKnownHandlers == null) {
                     wellKnownHandlers = new ArrayList<WellKnownResourceFactory.WellKnownHandler>();
@@ -108,6 +111,9 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
                 }
                 outerResourceFactory = new WellKnownResourceFactory(outerResourceFactory, wellKnownHandlers);
                 log.info("Enabled well-known protocol support with: " + outerResourceFactory.getClass());
+            }
+            if( calendarSearchService.isSchedulingEnabled() ) {
+                outerResourceFactory = new SchedulingResourceFactory(outerResourceFactory, calendarSearchService);
             }
             if (enabledCkBrowser) {
                 outerResourceFactory = new FckResourceFactory(outerResourceFactory);
@@ -173,7 +179,9 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
             }
 
             if( calendarSearchService == null ) {
-                calendarSearchService = new DefaultCalendarSearchService(iCalFormatter);
+                DefaultCalendarSearchService c = new DefaultCalendarSearchService(iCalFormatter);
+                c.setSchedulingEnabled(enableScheduling);
+                calendarSearchService = c;
             }
             
             if (calDavProtocol == null && caldavEnabled) {
