@@ -265,6 +265,9 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 			return null;
 		}
 		byte[] arr = base64.fromString(encodedUserUrl);
+		if( arr == null ) {
+			return null;
+		}
 		return new String(arr);
 	}
 
