@@ -91,6 +91,12 @@
             <groupId>io.milton</groupId>
             <artifactId>milton-cloud-vfs</artifactId>
             <version>1.0.4</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>milton-api</artifactId>
+                    <groupId>io.milton</groupId>
+                </exclusion>
+            </exclusions>            
         </dependency> 
         <dependency>
             <groupId>net.sf.ehcache</groupId>

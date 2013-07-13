@@ -36,6 +36,18 @@ import org.slf4j.LoggerFactory;
 public class LoginResponseHandler extends AbstractWrappingResponseHandler {
 
 	private static final Logger log = LoggerFactory.getLogger(LoginResponseHandler.class);
+	public static final String ATT_DISABLE = "auth.disable.html";
+
+	/**
+	 * Called when authentication has detected a user type which is not
+	 * compatible with form authentication. This will prevent a html form being
+	 * presented, so the user will be forced to login via Basic or Diget
+	 *
+	 * @param r
+	 */
+	public static void setDisableHtmlResponse(Request r) {
+		r.getAttributes().put(ATT_DISABLE, Boolean.TRUE);
+	}
 	private String loginPage = "/login.html";
 	private final ResourceFactory resourceFactory;
 	private final LoginPageTypeHandler loginPageTypeHandler;
@@ -61,14 +73,17 @@ public class LoginResponseHandler extends AbstractWrappingResponseHandler {
 	@Override
 	public void respondUnauthorised(Resource resource, Response response, Request request) {
 		log.info("respondUnauthorised");
-		String acceptHeader = request.getAcceptHeader();
-		if (isEnabled() && !excluded(request) && isGetOrPost(request)) {
-			if (loginPageTypeHandler.canLogin(resource, request)) {
-				attemptRespondLoginPage(request, resource, response);
-				return;
-			} else if (loginPageTypeHandler.isAjax(resource, request)) {
-				respondJson(request, response, resource);
-				return;
+		//String acceptHeader = request.getAcceptHeader();
+		Boolean disabled = (Boolean) request.getAttributes().get(ATT_DISABLE);
+		if (disabled == null || !disabled) {
+			if (isEnabled() && !excluded(request) && isGetOrPost(request)) {
+				if (loginPageTypeHandler.canLogin(resource, request)) {
+					attemptRespondLoginPage(request, resource, response);
+					return;
+				} else if (loginPageTypeHandler.isAjax(resource, request)) {
+					respondJson(request, response, resource);
+					return;
+				}
 			}
 		}
 		log.trace("respond with normal 401");

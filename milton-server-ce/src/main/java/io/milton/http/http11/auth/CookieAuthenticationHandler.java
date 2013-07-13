@@ -30,7 +30,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 	private static final String HANDLER_ATT_NAME = "_delegatedAuthenticationHandler";
 	public static final int SECONDS_PER_YEAR = 60 * 60 * 24 * 365;
 	private String requestParamLogout = "miltonLogout";
-	private String cookieUserUrlValue = "miltonUserUrl"; 
+	private String cookieUserUrlValue = "miltonUserUrl";
 	private String cookieUserUrlHash = "miltonUserUrlHash";
 	private final List<AuthenticationHandler> handlers;
 	private final ResourceFactory principalResourceFactory;
@@ -62,9 +62,9 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 		String userUrl = getUserUrl(request);
 
 		// check for a logout command, if so logout
-		if (isLogout(request)) {			
+		if (isLogout(request)) {
 			log.info("Is LogOut request, clear cookie");
-			if (userUrl != null && userUrl.length() > 0) {				
+			if (userUrl != null && userUrl.length() > 0) {
 				clearCookieValue(HttpManager.response());
 			}
 		}
@@ -103,7 +103,15 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 					setLoginCookies(p, request);
 					log.trace("authentication passed by delegated handler, persisted userUrl to cookie");
 				} else {
-					log.warn("auth.tag is not a " + DiscretePrincipal.class + ", is: " + tag);
+					log.warn("auth.tag is not a " + DiscretePrincipal.class + ", is: " + tag + " so is not compatible with cookie authentication");
+					// If form auth returned a non principal object then there is no way to
+					// persist the authentication state, so subsequent requests will fail. To prevent
+					// this we disable form auth and reject the login, this will result in a Basic/Digest
+					// authentication challenge
+					if (delegateHandler instanceof FormAuthenticationHandler) {
+						LoginResponseHandler.setDisableHtmlResponse(request);
+						return null;
+					}					
 				}
 				return tag;
 			} else {
@@ -261,11 +269,11 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 
 	public String getUserUrlFromRequest(Request request) {
 		String encodedUserUrl = getCookieOrParam(request, cookieUserUrlValue);
-		if( encodedUserUrl == null ) {
+		if (encodedUserUrl == null) {
 			return null;
 		}
 		byte[] arr = base64.fromString(encodedUserUrl);
-		if( arr == null ) {
+		if (arr == null) {
 			return null;
 		}
 		return new String(arr);
@@ -296,7 +304,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 		String hash = arr[1];
 		String expectedHash = DigestUtils.md5Hex(userUrl + ":" + salt);
 		boolean ok = expectedHash.equals(hash);
-		if( !ok ) {
+		if (!ok) {
 			log.warn("Cookie sig does not match expected. Given=" + hash + " Expected=" + expectedHash + "  salt=" + salt);
 		}
 		return ok;
@@ -305,7 +313,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 	private void setCookieValues(Response response, String userUrl, String hash) {
 		log.trace("setCookieValues");
 		BeanCookie c = new BeanCookie(cookieUserUrlValue);
-		String encodedUserUrl = base64.toString(userUrl.getBytes(Utils.UTF8));	
+		String encodedUserUrl = base64.toString(userUrl.getBytes(Utils.UTF8));
 		c.setValue(encodedUserUrl);
 		c.setPath("/");
 		c.setVersion(1);

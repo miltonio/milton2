@@ -112,7 +112,7 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
         webDavProtocol.addReport(new CalendarQueryReport(propertyBuilder, gen, calendarSearchService));
 
         schedulingCustomPostHandler = new SchedulingCustomPostHandler();
-        if (calendarSearchService.isSchedulingEnabled()) {            
+        if (calendarSearchService.isSchedulingEnabled()) {
             List<CustomPostHandler> l = new ArrayList<CustomPostHandler>();
             l.add(schedulingCustomPostHandler);
             customPostHandlers = Collections.unmodifiableList(l);
@@ -301,7 +301,7 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
         public WrappedHref getValue(PropFindableResource res) {
             if (res instanceof CalDavPrincipal) {
                 CalDavPrincipal p = (CalDavPrincipal) res;
-                String s = ((CalDavPrincipal) res).getPrincipalURL() + "/" + calendarSearchService.getSchedulingColName() + "/" + calendarSearchService.getSchedulingInboxColName() + "/";
+                String s = ((CalDavPrincipal) res).getPrincipalURL() + calendarSearchService.getSchedulingColName() + "/" + calendarSearchService.getSchedulingInboxColName() + "/";
                 return new WrappedHref(s);
             } else {
                 return null;
@@ -329,7 +329,7 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
         @Override
         public WrappedHref getValue(PropFindableResource res) {
             if (res instanceof CalDavPrincipal) {
-                String s = ((CalDavPrincipal) res).getPrincipalURL() + "/" + calendarSearchService.getSchedulingColName() + "/" + calendarSearchService.getSchedulingOutboxColName() + "/";
+                String s = ((CalDavPrincipal) res).getPrincipalURL() + calendarSearchService.getSchedulingColName() + "/" + calendarSearchService.getSchedulingOutboxColName() + "/";
                 return new WrappedHref(s);
             } else {
                 return null;

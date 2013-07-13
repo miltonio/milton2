@@ -18,7 +18,11 @@
                             Calendars
                             <a href="new?editMode .container form" class="btn pull-right newItem modalLink" data-toggle="modal" data-target="#newItemModal" ><i class="icon-plus-sign"></i> Add</a>
                         </h1>
-                        
+                        <ul>
+                            <c:forEach items="${model.page.children.getSortByName()}" var="calendar">    
+                                <li>${calendar.link}</li>
+                            </c:forEach>
+                        </ul>                        
 
                     </div>
 

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package io.milton.mini;
+package io.milton.mini.controllers;
 
 import io.milton.annotations.Calendars;
 import io.milton.annotations.ChildOf;
@@ -26,12 +26,9 @@ import io.milton.annotations.Post;
 import io.milton.annotations.Principal;
 import io.milton.annotations.ResourceController;
 import io.milton.common.ModelAndView;
-import io.milton.http.HttpManager;
 import io.milton.vfs.db.Calendar;
 import io.milton.vfs.db.Profile;
 import io.milton.vfs.db.utils.SessionManager;
-import java.io.UnsupportedEncodingException;
-import java.util.Date;
 import java.util.List;
 import org.hibernate.Transaction;
 
@@ -95,7 +92,7 @@ public class CalendarController {
         log.info("saved cal");
         return calendar;
     }   
-
+    
 
     public class CalendarsHome {
 

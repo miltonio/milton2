@@ -411,7 +411,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	 */
 	public Object[] buildInvokeArgsExt(AnnoResource sourceRes, Object mandatorySecondArg, boolean forceUseSecondArg, java.lang.reflect.Method m, Object... otherValues) throws Exception {
 		if (log.isTraceEnabled()) {
-			log.trace("buildInvokeArgs: source=" + sourceRes.getSource() + " on method: " + m);
+			log.trace("buildInvokeArgsExt: source=" + sourceRes.getSource() + " on method: " + m);
 		}
 		Request request = HttpManager.request();
 		Response response = HttpManager.response();
@@ -543,7 +543,12 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 			return new AnnoCalendarResource(this, childSource, parent);
 		}
 		if (parent instanceof AnnoCalendarResource) {
-			return new AnnoEventResource(this, childSource, parent);
+			if (childrenOfAnnotationHandler.isCompatible(childSource) || childOfAnnotationHandler.isCompatible(childSource)) {
+				// This is an edge case, shouldnt really have collections inside calendars
+				return new AnnoCollectionResource(this, childSource, parent);
+			} else {
+				return new AnnoEventResource(this, childSource, parent);
+			}
 		}
 		if (m.getAnnotation(AddressBooks.class) != null) {
 			return new AnnoAddressBookResource(this, childSource, parent);
@@ -664,8 +669,9 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 
 	private boolean isPrincipalArg(java.lang.reflect.Method m, int i) {
 		Annotation[] arr = m.getParameterAnnotations()[i];
+		Class annoType = io.milton.annotations.Principal.class;
 		for (Annotation a : arr) {
-			if (a instanceof Principal) {
+			if (a.annotationType().equals(annoType)) {
 				return true;
 			}
 		}

@@ -96,10 +96,12 @@ public class GetAnnotationHandler extends AbstractAnnotationHandler {
 	private void processTemplate(ModelAndView modelAndView, AnnoResource resource, OutputStream out) {
 		TemplateProcessor templateProc = annoResourceFactory.getViewResolver().resolveView(modelAndView.getView());
 		modelAndView.getModel().put("page", resource);
-		Object principal = HttpManager.request().getAuthorization().getTag();
-		if (principal instanceof DiscretePrincipal) {
-			System.out.println("put user in model: " + principal);
-			modelAndView.getModel().put("principal", principal);
+		if (HttpManager.request().getAuthorization() != null) {
+			Object principal = HttpManager.request().getAuthorization().getTag();
+			if (principal instanceof DiscretePrincipal) {
+				System.out.println("put user in model: " + principal);
+				modelAndView.getModel().put("principal", principal);
+			}
 		}
 
 		templateProc.execute(modelAndView.getModel(), out);

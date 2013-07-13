@@ -181,6 +181,12 @@
 			<version>1.6.1</version>
 			<scope>test</scope>
 		</dependency>
+	 <dependency>
+	  <groupId>javax.inject</groupId>
+	  <artifactId>javax.inject</artifactId>
+	  <version>1</version>
+	  <type>jar</type>
+	 </dependency>
 	</dependencies>
 	<repositories>
 		<repository>  

@@ -57,8 +57,10 @@ public class FormAuthenticationHandler implements AuthenticationHandler {
         Object o = resource.authenticate( userName, pwd );
         // set a request attribute that can be used when rendering
         if( o == null ) {
+			log.trace("Form authentication failed");
             request.getAttributes().put( "loginResult", Boolean.FALSE);
         } else {
+			log.trace("Form authentication succeeded");
             request.getAttributes().put( "loginResult", Boolean.TRUE);
         }
         return o;

@@ -16,60 +16,65 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package io.milton.mini;
+package io.milton.mini.controllers;
 
 import io.milton.annotations.Authenticate;
-import io.milton.annotations.Calendars;
 import io.milton.annotations.ChildOf;
 import io.milton.annotations.ChildrenOf;
 import io.milton.annotations.Get;
+import io.milton.annotations.MakeCollection;
 import io.milton.annotations.ModifiedDate;
 import io.milton.annotations.Name;
 import io.milton.annotations.Post;
+import io.milton.annotations.Principal;
 import io.milton.annotations.ResourceController;
 import io.milton.annotations.Root;
 import io.milton.annotations.UniqueId;
 import io.milton.annotations.Users;
 import io.milton.cloud.common.CurrentDateService;
-import io.milton.cloud.common.DefaultCurrentDateService;
-import io.milton.cloud.common.store.FileSystemBlobStore;
 import io.milton.common.JsonResult;
 import io.milton.common.ModelAndView;
-import io.milton.vfs.content.DbHashStore;
+import io.milton.config.HttpManagerBuilder;
+import io.milton.config.InitListener;
+import io.milton.http.HttpManager;
+import io.milton.http.http11.auth.DigestResponse;
+import io.milton.mini.PasswordManager;
 import io.milton.vfs.data.DataSession;
-import io.milton.vfs.db.Branch;
 import io.milton.vfs.db.CalEvent;
-import io.milton.vfs.db.Calendar;
 import io.milton.vfs.db.Organisation;
 import io.milton.vfs.db.Profile;
 import io.milton.vfs.db.Repository;
 import io.milton.vfs.db.utils.SessionManager;
-import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import javax.inject.Inject;
 import org.hashsplit4j.api.BlobStore;
 import org.hashsplit4j.api.HashStore;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 @ResourceController
-public class MiltonMiniController {
+public class MiltonMiniController implements InitListener {
 
     private static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(MiltonMiniController.class);
 
-	private File blobsRoot;
+    
+    @Inject
 	private BlobStore blobStore;
+    
+    @Inject
 	private HashStore hashStore;
-	private CurrentDateService currentDateService = new DefaultCurrentDateService();
-	private PasswordManager passwordManager = new PasswordManager();
+    
+    @Inject
+	private CurrentDateService currentDateService;
+    
+    @Inject
+	private PasswordManager passwordManager;
 	
-    public MiltonMiniController() {
-		blobsRoot = new File("target" + File.pathSeparator + "blobs");
-		blobStore = new FileSystemBlobStore(blobsRoot);
-		hashStore = new DbHashStore();
-    }
+    @Inject
+    private SessionManager sessionManager;
 
     @Root
     public MiltonMiniController getRoot() {
@@ -134,11 +139,9 @@ public class MiltonMiniController {
     @Post(bindData=true)
     public Profile saveProfile(Profile profile) {
         log.info("saveProfile: " + profile.getName());
-        Transaction tx = SessionManager.session().beginTransaction();
         profile.setModifiedDate(new Date());
         SessionManager.session().save(profile);
         SessionManager.session().flush();
-        tx.commit();
         log.info("saved musician");
         return profile;
     }    
@@ -146,13 +149,11 @@ public class MiltonMiniController {
     @Post(params={"password"})
     public Profile changePassword(Profile profile, Map<String,String> params) {
         log.info("changePassword: " + profile.getName());
-        Transaction tx = SessionManager.session().beginTransaction();
         profile.setModifiedDate(new Date());
         String pwd = params.get("password");
         passwordManager.setPassword(profile, pwd);
         SessionManager.session().save(profile);
         SessionManager.session().flush();
-        tx.commit();
         log.info("changed Password");
         return profile;
     }      
@@ -173,6 +174,11 @@ public class MiltonMiniController {
         return sharedHome.org.getRepositories();
     }
 	
+    @MakeCollection
+    public Repository createSharedFolder(SharedHome sharedHome, String newName, @Principal Profile user) {
+        Repository repo = sharedHome.org.createRepository(newName, user, SessionManager.session());
+        return repo;
+    }
 	
     @ChildrenOf
     @Users
@@ -180,19 +186,15 @@ public class MiltonMiniController {
         return Profile.findAll(SessionManager.session());
     }
 
-
-    @ChildrenOf
-    public List getRepositoryRootItems(Repository r) {
-        Branch b = r.liveBranch();
-		Session session = SessionManager.session();
-		DataSession dataSession = new DataSession(b, session, hashStore, blobStore, currentDateService);
-		return dataSession.getRootDataNode().getChildren();
-    }
-
     @Authenticate
-    public Boolean checkPassword(Profile user, String password) {
+    public Boolean checkPasswordBasic(Profile user, String password) {
         return passwordManager.verifyPassword(user, password);
     }
+    
+    @Authenticate
+    public Boolean checkPasswordDigest(Profile user, DigestResponse digest) {
+        return passwordManager.verifyDigest(digest, user);
+    }    
 
     @UniqueId
     public String getUniqueId(DataSession.DataNode m) {
@@ -213,6 +215,36 @@ public class MiltonMiniController {
 			return m.getBranch().getId() + "";
 		}
 	}
+
+    public void beforeInit(HttpManagerBuilder b) {
+        
+    }
+
+    public void afterInit(HttpManagerBuilder b) {
+        
+    }
+
+    /**
+     * Check the root organisation exists
+     * 
+     * @param b
+     * @param m 
+     */
+    public void afterBuild(HttpManagerBuilder b, HttpManager m) {
+        Session session = sessionManager.open();
+        Organisation rootOrg = Organisation.getRootOrg(session);
+        if( rootOrg == null ) {
+            log.info("Creating root organisation");
+            Transaction tx = session.beginTransaction();
+            rootOrg = new Organisation();
+            Date now = currentDateService.getNow();
+            rootOrg.setCreatedDate(now);
+            rootOrg.setModifiedDate(now);
+            rootOrg.setOrgId("root");
+            session.save(rootOrg);
+            tx.commit();
+        }
+    }
 
     public class UsersHome {
         public String getName() {

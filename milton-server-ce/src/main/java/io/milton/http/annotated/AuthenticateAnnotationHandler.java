@@ -17,6 +17,7 @@ package io.milton.http.annotated;
 import io.milton.annotations.Authenticate;
 import io.milton.http.http11.auth.DigestGenerator;
 import io.milton.http.http11.auth.DigestResponse;
+import java.lang.reflect.Method;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +53,7 @@ public class AuthenticateAnnotationHandler extends AbstractAnnotationHandler {
 		}
 
 		for (ControllerMethod cm : availMethods) {
+
 			// if it returns String then it returns a password. Otherwise is authenticate method
 			if (cm.method.getReturnType().equals(String.class)) {
 				try {
@@ -66,18 +68,21 @@ public class AuthenticateAnnotationHandler extends AbstractAnnotationHandler {
 					throw new RuntimeException("Exception invoking @Authenticate method: " + cm.method, ex);
 				}
 			} else if (cm.method.getReturnType().equals(Boolean.class)) {
-				try {
-					Object[] args = annoResourceFactory.buildInvokeArgs(userRes, cm.method, requestedPassword);
-					Boolean result = (Boolean) cm.method.invoke(cm.controller, args);
-					if (result != null) {
-						return result;
+				if (hasParamType(cm.method, String.class)) { // Must have a string parameter for the password
+					try {
+						Object[] args = annoResourceFactory.buildInvokeArgs(userRes, cm.method, requestedPassword);
+						Boolean result = (Boolean) cm.method.invoke(cm.controller, args);
+						if (result != null) {
+							return result;
+						}
+					} catch (Exception ex) {
+						throw new RuntimeException("Exception invoking @Authenticate method: " + cm.method, ex);
 					}
-				} catch (Exception ex) {
-					throw new RuntimeException("Exception invoking @Authenticate method: " + cm.method, ex);
 				}
 			} else {
 				throw new RuntimeException("@Authenticate method does not return either String or Boolean: " + cm);
 			}
+
 		}
 		return null;
 
@@ -91,36 +96,47 @@ public class AuthenticateAnnotationHandler extends AbstractAnnotationHandler {
 		}
 		try {
 			for (ControllerMethod cm : availMethods) {
-				// if it returns String then it returns a password. Otherwise is authenticate method
-				if (cm.method.getReturnType().equals(String.class)) {
-					Object[] args = annoResourceFactory.buildInvokeArgs(userRes, cm.method, userRes);
-					String result = (String) cm.method.invoke(cm.controller, args);
-					if (result == null) {
-						log.warn("Null password from: " + cm + " for user: " + userRes.getHref());
-						return false;
-					} else {
-						DigestGenerator gen = new DigestGenerator();
-						String actual = gen.generateDigest(digestRequest, result);
-						if (actual.equals(digestRequest.getResponseDigest())) {
-							return true;
-						} else {
-							log.warn("Password digest's dont match");
+				if (hasParamType(cm.method, DigestResponse.class)) {
+					// if it returns String then it returns a password. Otherwise is authenticate method
+					if (cm.method.getReturnType().equals(String.class)) {
+						Object[] args = annoResourceFactory.buildInvokeArgs(userRes, cm.method, userRes);
+						String result = (String) cm.method.invoke(cm.controller, args);
+						if (result == null) {
+							log.warn("Null password from: " + cm + " for user: " + userRes.getHref());
 							return false;
+						} else {
+							DigestGenerator gen = new DigestGenerator();
+							String actual = gen.generateDigest(digestRequest, result);
+							if (actual.equals(digestRequest.getResponseDigest())) {
+								return true;
+							} else {
+								log.warn("Password digest's dont match");
+								return false;
+							}
 						}
+					} else if (cm.method.getReturnType().equals(Boolean.class)) {
+						Object[] args = annoResourceFactory.buildInvokeArgs(userRes, cm.method, digestRequest);
+						Boolean result = (Boolean) cm.method.invoke(cm.controller, args);
+						if (result != null) {
+							return result;
+						}
+					} else {
+						throw new RuntimeException("@Authenticate method does not return either String or Boolean: " + cm);
 					}
-				} else if (cm.method.getReturnType().equals(Boolean.class)) {
-					Object[] args = annoResourceFactory.buildInvokeArgs(userRes, cm.method, digestRequest);
-					Boolean result = (Boolean) cm.method.invoke(cm.controller, args);
-					if (result != null) {
-						return result;
-					}
-				} else {
-					throw new RuntimeException("@Authenticate method does not return either String or Boolean: " + cm);
 				}
 			}
 			return null;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	private boolean hasParamType(Method method, Class type) {
+		for (Class c : method.getParameterTypes()) {
+			if (c.isAssignableFrom(type)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

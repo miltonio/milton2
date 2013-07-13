@@ -29,14 +29,11 @@
     <bean id="open.session.in.view.filter" class="io.milton.mini.MiltonMiniOpenSessionInViewFilter">
         <constructor-arg ref="session.manager"/>
     </bean>
+    
+    <bean id="current.date.service" class="io.milton.cloud.common.DefaultCurrentDateService"/>
 
     <bean id="milton.http.manager" class="io.milton.ent.config.HttpManagerBuilderEnt"> <!-- Note enterprise version. Only available for AGPL + Commercial users of milton -->
-        <property name="controllers">
-            <list>
-                <bean class="io.milton.mini.MiltonMiniController"/>
-                <bean class="io.milton.mini.CalendarController"/>
-            </list>
-        </property>
+        <property name="controllerPackagesToScan" value="io.milton.mini.controllers"/>
         <property name="buffering" value="never"/>
         <property name="filters">
             <list>
@@ -44,7 +41,15 @@
             </list>
         </property>   
         <property name="enableCompression" value="false" />
-
+        <property name="dependencies">
+            <list>                
+                <ref bean="blob.store" />
+                <ref bean="db.hash.store" />
+                <ref bean="current.date.service" />     
+                <ref bean="session.manager" />     
+            </list>
+        </property>   
+        <property name="enableDigestAuth" value="false"/>
     </bean>
     
 
