@@ -366,8 +366,10 @@ public class HttpManagerBuilder {
 			resourceHandlerHelper = new ResourceHandlerHelper(handlerHelper, urlAdapter, webdavResponseHandler, authenticationService);
 			showLog("resourceHandlerHelper", resourceHandlerHelper);
 		}
+		// Build stack of resource factories before protocols, because protocols use (so depend on)
+		// resource factories
+		buildOuterResourceFactory();		
 		buildProtocolHandlers(webdavResponseHandler, resourceTypeHelper);
-		buildOuterResourceFactory();
 		if (filters != null) {
 			filters = new ArrayList<Filter>(filters);
 		} else {
@@ -422,7 +424,10 @@ public class HttpManagerBuilder {
 	}
 
 	protected List<PropertySource> initDefaultPropertySources(ResourceTypeHelper resourceTypeHelper) {
-		List<PropertySource> list = new ArrayList<PropertySource>();
+		if( propertySources == null ) {
+			throw new RuntimeException("I actually expected propertySources to be created by now and set into the PropfindPropertyBuilder ");
+		}
+		List<PropertySource> list = propertySources;
 		if (multiNamespaceCustomPropertySource == null) {
 			if (multiNamespaceCustomPropertySourceEnabled) {
 				multiNamespaceCustomPropertySource = new MultiNamespaceCustomPropertySource();
@@ -468,10 +473,7 @@ public class HttpManagerBuilder {
 
 			Http11Protocol http11Protocol = new Http11Protocol(webdavResponseHandler, handlerHelper, resourceHandlerHelper, enableOptionsAuth, matchHelper, partialGetHelper);
 			protocols.add(http11Protocol);
-			if (propertySources == null) {
-				propertySources = initDefaultPropertySources(resourceTypeHelper);
-				showLog("propertySources", propertySources);
-			}
+			propertySources = initDefaultPropertySources(resourceTypeHelper);
 			if (extraPropertySources != null) {
 				for (PropertySource ps : extraPropertySources) {
 					log.info("Add extra property source: " + ps.getClass());
@@ -1363,7 +1365,7 @@ public class HttpManagerBuilder {
 	protected PropFindPropertyBuilder propFindPropertyBuilder() {
 		if (propFindPropertyBuilder == null) {
 			if (propertySources == null) {
-				throw new RuntimeException("propertySources has not been initialised yet");
+				propertySources = new ArrayList<PropertySource>();
 			}
 			propFindPropertyBuilder = new DefaultPropFindPropertyBuilder(propertySources);
 		}

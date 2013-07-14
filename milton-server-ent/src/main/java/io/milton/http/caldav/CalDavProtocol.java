@@ -72,6 +72,9 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
     private final List<CustomPostHandler> customPostHandlers;
 
     public CalDavProtocol(ResourceFactory resourceFactory, WebDavResponseHandler responseHandler, HandlerHelper handlerHelper, WebDavProtocol webDavProtocol, PropFindXmlGenerator gen, PropFindPropertyBuilder propertyBuilder, CalendarSearchService calendarSearchService) {
+        if( resourceFactory == null ) {
+            throw new NullPointerException("resourceFactory is null");
+        }
         this.calendarSearchService = calendarSearchService;
         propertyMapCalDav = new PropertyMap(CALDAV_NS);
         propertyMapCalDav.add(new CalenderDescriptionProperty());

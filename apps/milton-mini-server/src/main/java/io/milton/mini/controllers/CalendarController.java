@@ -65,11 +65,6 @@ public class CalendarController {
     public CalendarController() {
     }
 
-    @ChildrenOf
-    public CalendarsHome getUsersHome(Profile profile) {
-        return new CalendarsHome(profile);
-    }
-
     @Get
     public String showUserCalendarsHome(CalendarsHome home) {
         return "calendarsHome";

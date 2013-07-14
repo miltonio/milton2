@@ -15,6 +15,7 @@
  */
 package io.milton.http.caldav;
 
+import io.milton.http.HttpManager;
 import io.milton.http.ResourceFactory;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
@@ -27,12 +28,10 @@ import io.milton.resource.Resource;
 import io.milton.resource.SchedulingResponseItem;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import net.fortuna.ical4j.data.ParserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -147,9 +146,54 @@ public class DefaultCalendarSearchService implements CalendarSearchService {
         return list;
     }
 
+    /**
+     * Attempt to iterate over the entire users collection, and for each event
+     * in each user's calendar check if the given user is an attendee, and if
+     * return it.
+     * 
+     * Rather inefficient
+     * 
+     * @param user
+     * @return
+     * @throws NotAuthorizedException
+     * @throws BadRequestException 
+     */
     @Override
-    public List<ICalResource> findAttendeeResources(CalDavPrincipal attendee) throws NotAuthorizedException, BadRequestException {
-        return Collections.EMPTY_LIST;
+    public List<ICalResource> findAttendeeResources(CalDavPrincipal user) throws NotAuthorizedException, BadRequestException {
+        List<ICalResource> list = new ArrayList<ICalResource>();
+        String host = HttpManager.request().getHostHeader();
+        Resource rUsersHome = resourceFactory.getResource(host, usersBasePath);
+        if( rUsersHome instanceof CollectionResource ) {
+            CollectionResource usersHome = (CollectionResource) rUsersHome;
+            for( Resource rUser : usersHome.getChildren()) {
+                if( rUser instanceof CalDavPrincipal) {
+                    CalDavPrincipal p = (CalDavPrincipal) rUser;
+                    for( String href : p.getCalendarHomeSet() ) {
+                        Resource rCalHome = resourceFactory.getResource(host, href);
+                        if( rCalHome instanceof CollectionResource ) {
+                            CollectionResource calHome = (CollectionResource) rCalHome;
+                            System.out.println("List calendar home: " + calHome.getName());
+                            for( Resource rCal : calHome.getChildren()) {
+                                if( rCal instanceof CalendarResource) {
+                                    CalendarResource cal = (CalendarResource) rCal;
+                                    System.out.println("List calendar: " + cal.getName());
+                                    for( Resource rEvent : cal.getChildren()) {
+                                        System.out.println("Event: " + rEvent.getName());
+                                        if( rEvent instanceof ICalResource) {
+                                            ICalResource event = (ICalResource) rEvent;
+                                            if( isAttendeeOf(user, event) ) {
+                                                list.add(event);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return list;
     }
 
     @Override
@@ -293,5 +337,24 @@ public class DefaultCalendarSearchService implements CalendarSearchService {
         sb.append("END:VFREEBUSY\n");
         sb.append("END:VCALENDAR\n");
         return sb.toString();
+    }
+
+    /**
+     * Check if the given user is an attendee of the given event. Just does
+     * a simple check on the userId portion of the mailto address against
+     * the name of the principal
+     * 
+     * @param user
+     * @param event
+     * @return 
+     */
+    private boolean isAttendeeOf(CalDavPrincipal user, ICalResource event) {
+        for( String mailto : formatter.parseAttendees(event.getICalData()) ) {
+            MailboxAddress add = MailboxAddress.parse(mailto);
+            if( add.user.equals(user.getName())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

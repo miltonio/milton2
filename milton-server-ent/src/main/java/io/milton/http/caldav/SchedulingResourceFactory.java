@@ -20,6 +20,7 @@ import io.milton.http.ResourceFactory;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.principal.CalDavPrincipal;
+import io.milton.resource.CollectionResource;
 import io.milton.resource.Resource;
 
 /**
@@ -52,22 +53,39 @@ public class SchedulingResourceFactory implements ResourceFactory {
     @Override
     public Resource getResource(String host, String sPath) throws NotAuthorizedException, BadRequestException {
         Path path = Path.path(sPath);
-        if (path.getName() != null && path.getName().equals(getSchedulingColName())) {
-            SchedulingParentResource schedulingParentResource = getSchedulingResource(host, path);
-            if (schedulingParentResource != null) {
-                return schedulingParentResource;
-            }
-        } else if (path.getParent() != null && path.getParent().getName() != null && path.getParent().getName().equals(getSchedulingColName())) {
-            SchedulingParentResource schedulingParentResource = getSchedulingResource(host, path.getParent());
-            if (schedulingParentResource != null) {
-                return schedulingParentResource.child(path.getName());
-            }
+        Resource schedResource = find(host, path, 1);
+        if( schedResource != null ) {
+            return schedResource;
         }
         if (decorator) {
             return wrapped.getResource(host, sPath);
         } else {
             return null;
         }
+    }
+
+    private Resource find(String host, Path path, int depth) throws NotAuthorizedException, BadRequestException {
+        if( path.getName() == null ) {
+            return null;
+        }
+        if( depth > 3) {
+            return null;
+        }
+        if ( path.getName().equals(getSchedulingColName())) {
+            SchedulingParentResource schedulingParentResource = getSchedulingResource(host, path);
+            if (schedulingParentResource != null) {
+                return schedulingParentResource;
+            }
+        }
+        Resource parent = find(host, path.getParent(), depth+1);
+        if( parent == null ) {
+            return null;
+        }
+        if( parent instanceof CollectionResource) {
+            CollectionResource col = (CollectionResource) parent;
+            return col.child(path.getName());                    
+        }
+        return null;
     }
 
     private SchedulingParentResource getSchedulingResource(String host, Path path) throws NotAuthorizedException, BadRequestException {

@@ -59,6 +59,28 @@ public class ICalFormatter {
         r.setEnd(endDate);
     }
 
+    /**
+     * Return the attendee mailtos for some sort of ical request
+     * @param data
+     * @return 
+     */
+    public List<String> parseAttendees(String data) {
+        String[] lines = toLines(data);
+        List<String> attendees = new ArrayList<String>();
+        for (String line : lines) {
+            if (line != null && line.contains(":")) {
+                int pos = line.indexOf(":");
+                String key = line.substring(0, pos);
+                String val = line.substring(pos + 1);
+                if (key.contains("ATTENDEE")) {
+                    String s = getMailTo(val);
+                    attendees.add(s);
+                }
+            }
+        }
+        return attendees;
+    }
+    
     public FreeBusyRequest parseFreeBusyRequest(String data) {
         FreeBusyRequest r = new FreeBusyRequest();
         String[] lines = toLines(data);

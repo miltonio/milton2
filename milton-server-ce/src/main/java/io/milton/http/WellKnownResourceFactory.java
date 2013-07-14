@@ -48,14 +48,27 @@ public class WellKnownResourceFactory implements ResourceFactory {
 	
 	private final ResourceFactory wrapped;
 	
+	private List<WellKnownHandler> wellKnownHandlers;
+	
 	private Map<String,WellKnownHandler> mapOfWellKnownHandlers = new HashMap<String, WellKnownHandler>();
 
-	public WellKnownResourceFactory(ResourceFactory wrapped, List<WellKnownHandler> wellKnownHandlers) {
+	public WellKnownResourceFactory(ResourceFactory wrapped) {
 		this.wrapped = wrapped;
+	}
+	
+	public void setWellKnownHandlers(List<WellKnownHandler> wellKnownHandlers) {
+		this.wellKnownHandlers = wellKnownHandlers;
+		mapOfWellKnownHandlers.clear();
 		for( WellKnownHandler h : wellKnownHandlers ) {
 			addHandler(h);
-		}
+		}		
 	}
+
+	public List<WellKnownHandler> getWellKnownHandlers() {
+		return wellKnownHandlers;
+	}
+	
+	
 //		
 //	public WellKnownResourceFactory(ResourceFactory wrapped) {
 //		this.wrapped = wrapped;

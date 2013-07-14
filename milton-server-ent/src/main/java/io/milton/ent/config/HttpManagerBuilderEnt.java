@@ -23,6 +23,7 @@ import io.milton.http.carddav.CardDavProtocol;
 import io.milton.http.fck.FckResourceFactory;
 import io.milton.http.fs.SimpleLockManager;
 import io.milton.http.http11.*;
+import io.milton.http.webdav.DefaultPropFindPropertyBuilder;
 import io.milton.http.webdav.PropertySourcePatchSetter;
 import io.milton.http.webdav.ResourceTypeHelper;
 import io.milton.http.webdav.WebDavResourceTypeHelper;
@@ -77,6 +78,7 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
     private LockManager lockManager = new SimpleLockManager();
     private ICalFormatter iCalFormatter = new ICalFormatter();
     private CalendarSearchService calendarSearchService;
+    private WellKnownResourceFactory wellKnownResourceFactory;
 
     @Override
     protected void afterInit() {
@@ -91,6 +93,7 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
 
     @Override
     protected void buildOuterResourceFactory() {
+        log.info("buildOuterResourceFactory");
         // wrap the real (ie main) resource factory to provide well-known support and ajax gateway
         if (outerResourceFactory == null) {
             outerResourceFactory = mainResourceFactory; // in case nothing else enabled
@@ -98,21 +101,19 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
                 outerResourceFactory = buildJsonResourceFactory();
                 log.info("Enabled json/ajax gatewayw with: " + outerResourceFactory.getClass());
             }
-            
+
             if (enableWellKnown) {
-                if (wellKnownHandlers == null) {
-                    wellKnownHandlers = new ArrayList<WellKnownResourceFactory.WellKnownHandler>();
-                    for (HttpExtension p : protocols) {
-                        if (p instanceof WellKnownResourceFactory.WellKnownHandler) {
-                            WellKnownResourceFactory.WellKnownHandler wellKnownHandler = (WellKnownResourceFactory.WellKnownHandler) p;
-                            wellKnownHandlers.add(wellKnownHandler);
-                        }
-                    }
-                }
-                outerResourceFactory = new WellKnownResourceFactory(outerResourceFactory, wellKnownHandlers);
+                wellKnownResourceFactory = new WellKnownResourceFactory(outerResourceFactory);
+                outerResourceFactory = wellKnownResourceFactory;
+                // will set well known handlers after protocol init
                 log.info("Enabled well-known protocol support with: " + outerResourceFactory.getClass());
             }
-            if( calendarSearchService.isSchedulingEnabled() ) {
+            if (calendarSearchService == null) {
+                DefaultCalendarSearchService c = new DefaultCalendarSearchService(iCalFormatter, mainResourceFactory);
+                c.setSchedulingEnabled(enableScheduling);
+                calendarSearchService = c;
+            }            
+            if (calendarSearchService.isSchedulingEnabled()) {
                 outerResourceFactory = new SchedulingResourceFactory(outerResourceFactory, calendarSearchService);
             }
             if (enabledCkBrowser) {
@@ -145,10 +146,9 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
 
             Http11Protocol http11Protocol = new Http11Protocol(webdavResponseHandler, handlerHelper, resourceHandlerHelper, enableOptionsAuth, matchHelper, partialGetHelper);
             protocols.add(http11Protocol);
-            if (propertySources == null) {
-                propertySources = initDefaultPropertySources(resourceTypeHelper);
-                showLog("propertySources", propertySources);
-            }
+
+                
+            initDefaultPropertySources(resourceTypeHelper);
             if (extraPropertySources != null) {
                 for (PropertySource ps : extraPropertySources) {
                     log.info("Add extra property source: " + ps.getClass());
@@ -178,14 +178,9 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
                 }
             }
 
-            if( calendarSearchService == null ) {
-                DefaultCalendarSearchService c = new DefaultCalendarSearchService(iCalFormatter, mainResourceFactory);
-                c.setSchedulingEnabled(enableScheduling);
-                calendarSearchService = c;
-            }
-            
             if (calDavProtocol == null && caldavEnabled) {
-                calDavProtocol = new CalDavProtocol(mainResourceFactory, webdavResponseHandler, handlerHelper, webDavProtocol, propFindXmlGenerator, propFindPropertyBuilder(), calendarSearchService);
+                System.out.println("configure caldavprotocol with outer resource factory: " + outerResourceFactory);
+                calDavProtocol = new CalDavProtocol(outerResourceFactory, webdavResponseHandler, handlerHelper, webDavProtocol, propFindXmlGenerator, propFindPropertyBuilder(), calendarSearchService);
             }
             if (calDavProtocol != null) {
                 protocols.add(calDavProtocol);
@@ -210,6 +205,19 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
 
         if (protocolHandlers == null) {
             protocolHandlers = new ProtocolHandlers(protocols);
+        }
+
+        if (wellKnownResourceFactory != null) {
+            if (wellKnownHandlers == null) {
+                wellKnownHandlers = new ArrayList<WellKnownResourceFactory.WellKnownHandler>();
+                for (HttpExtension p : protocols) {
+                    if (p instanceof WellKnownResourceFactory.WellKnownHandler) {
+                        WellKnownResourceFactory.WellKnownHandler wellKnownHandler = (WellKnownResourceFactory.WellKnownHandler) p;
+                        wellKnownHandlers.add(wellKnownHandler);
+                    }
+                }
+            }
+            wellKnownResourceFactory.setWellKnownHandlers(wellKnownHandlers);
         }
     }
 
