@@ -59,17 +59,17 @@ public abstract class BaseSchedulingResource implements CollectionResource, Repo
 
     @Override
     public boolean authorise(Request request, Request.Method method, Auth auth) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return principal.authorise(request, method, auth);
     }
 
     @Override
     public String getRealm() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return principal.getRealm();
     }
 
     @Override
     public Date getModifiedDate() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return null;
     }
 
     @Override

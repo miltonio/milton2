@@ -57,39 +57,54 @@ public class AnnoCollectionResource extends AnnoResource implements CollectionRe
 
 	@Override
 	public Resource child(String childName) throws NotAuthorizedException, BadRequestException {
-		if (children == null) {
-			// attempt to locate singly, ie without loading entire list of children
-			// first check if it has already been loaded singly
-			if (singlyLoadedChildItems != null && singlyLoadedChildItems.hasChild(childName)) {
-				return singlyLoadedChildItems.get(childName);
-			}
-			// try to load singly using ChildOf annotation, if present
-			// childTriValue can be null, the child source object, or a special value indicating no search
-			Object childTriValue = annoFactory.childOfAnnotationHandler.execute(this, childName);
-			if (childTriValue == null) {
-				//return null; // definitely not found
-				
-				// well, actually. ChildOf can just apply to a certain sort of child, so if its not found
-				// that doesnt mean that there might not be some othe child
-				// so we can't assume in any circumstance that a null means not found. Must always fall through to ChildrenOf
-			} else if (childTriValue.equals(ChildOfAnnotationHandler.NOT_ATTEMPTED)) {
-				// there is no ChildOf method, so fall through to iterating over all children
-			} else {
-				// got one!
-				AnnoResource r = (AnnoResource) childTriValue;
-				if( singlyLoadedChildItems == null ) {
-					singlyLoadedChildItems = new ResourceList();
+
+		// attempt to locate singly, ie without loading entire list of children
+		// first check if it has already been loaded singly
+		if (singlyLoadedChildItems != null && singlyLoadedChildItems.hasChild(childName)) {
+			return singlyLoadedChildItems.get(childName);
+		}
+
+		// if children list has already been loaded then look for child in there
+		if (children != null) {
+			for (Resource r : children) {
+				if (r.getName().equals(childName)) {
+					return r;
 				}
-				singlyLoadedChildItems.add(r);				
-				return r;
 			}
 		}
 
-		for (Resource r : findChildren(true)) {
-			if (r.getName().equals(childName)) {
-				return r;
+		// try to load singly using ChildOf annotation, if present
+		// childTriValue can be null, the child source object, or a special value indicating no search
+		Object childTriValue = annoFactory.childOfAnnotationHandler.execute(this, childName);
+		if (childTriValue == null) {
+			//return null; // definitely not found
+			// well, actually. ChildOf can just apply to a certain sort of child, so if its not found
+			// that doesnt mean that there might not be some othe child
+			// so we can't assume in any circumstance that a null means not found. Must always fall through to ChildrenOf
+		} else if (childTriValue.equals(ChildOfAnnotationHandler.NOT_ATTEMPTED)) {
+			// there is no ChildOf method, so fall through to iterating over all children
+		} else {
+			// got one!
+			AnnoResource r = (AnnoResource) childTriValue;
+			if (singlyLoadedChildItems == null) {
+				singlyLoadedChildItems = new ResourceList();
+			}
+			singlyLoadedChildItems.add(r);
+			return r;
+		}
+
+		// Previously we checked in children list if it was loaded to avoid double-instantiating
+		// childOf objects. Since we've got here without finding a child, we can load the
+		// list of children and iterate over it. We only do this is children == null, to avoid
+		// repeating previous search
+		if (children == null) {
+			for (Resource r : findChildren(true)) {
+				if (r.getName().equals(childName)) {
+					return r;
+				}
 			}
 		}
+
 		return null;
 	}
 
@@ -97,6 +112,7 @@ public class AnnoCollectionResource extends AnnoResource implements CollectionRe
 	public ResourceList getChildren() throws NotAuthorizedException, BadRequestException {
 		return findChildren(false);
 	}
+
 	private ResourceList findChildren(boolean isChildLookup) throws NotAuthorizedException, BadRequestException {
 		if (children == null) {
 			children = new ResourceList();
@@ -104,18 +120,18 @@ public class AnnoCollectionResource extends AnnoResource implements CollectionRe
 			for (AnnoResource r : set) {
 				children.add(r);
 			}
-			
+
 			// Now add any temp lock resources
-			for( LockHolder holder : annoFactory.getTempResourcesForParent(this)) {
+			for (LockHolder holder : annoFactory.getTempResourcesForParent(this)) {
 				CommonResource cr = annoFactory.instantiate(holder, this);
 				children.add(cr);
 			}
-			
+
 			// if there are singly loaded items we must replace their dopple-ganger in children
 			// because there might already be references to those resource objects elsewhere in code
 			// and having two objects representing the same resource causes unpredictable chaos!!!
-			if( singlyLoadedChildItems != null ) {
-				for( CommonResource r : singlyLoadedChildItems ) {
+			if (singlyLoadedChildItems != null) {
+				for (CommonResource r : singlyLoadedChildItems) {
 					children.remove(r.getName());
 					children.add(r);
 				}
@@ -124,13 +140,14 @@ public class AnnoCollectionResource extends AnnoResource implements CollectionRe
 		return children;
 	}
 
-	public Map<String,CommonResource> getChildrenMap() throws NotAuthorizedException, BadRequestException{
+	public Map<String, CommonResource> getChildrenMap() throws NotAuthorizedException, BadRequestException {
 		return getChildren().getMap();
 	}
 
-	public Map<String,ResourceList> getChildrenOfType() throws NotAuthorizedException, BadRequestException {
+	public Map<String, ResourceList> getChildrenOfType() throws NotAuthorizedException, BadRequestException {
 		return getChildren().getOfType();
 	}
+
 	@Override
 	public CollectionResource createCollection(String newName) throws NotAuthorizedException, ConflictException, BadRequestException {
 		Object newlyCreatedSource = annoFactory.makCollectionAnnotationHandler.execute(this, newName);
@@ -140,7 +157,6 @@ public class AnnoCollectionResource extends AnnoResource implements CollectionRe
 		}
 		return r;
 	}
-
 
 	@Override
 	public CollectionResource createCalendar(String newName, Map<QName, String> fieldsToSet) throws NotAuthorizedException, ConflictException, BadRequestException {
@@ -152,8 +168,6 @@ public class AnnoCollectionResource extends AnnoResource implements CollectionRe
 		return r;
 	}
 
-	
-	
 	@Override
 	public Resource createNew(String newName, InputStream inputStream, Long length, String contentType) throws IOException, ConflictException, NotAuthorizedException, BadRequestException {
 		Object newChildSource = annoFactory.putChildAnnotationHandler.execute(this, newName, inputStream, length, contentType);
@@ -167,10 +181,10 @@ public class AnnoCollectionResource extends AnnoResource implements CollectionRe
 		}
 		return newRes;
 	}
-	
+
 	@Override
 	public AnnoCollectionResource getRoot() {
-		if( parent == null ) {
+		if (parent == null) {
 			return this;
 		} else {
 			return parent.getRoot();
@@ -180,7 +194,7 @@ public class AnnoCollectionResource extends AnnoResource implements CollectionRe
 	@Override
 	public LockToken createAndLock(String name, LockTimeout timeout, LockInfo lockInfo) throws NotAuthorizedException {
 		LockHolder r = annoFactory.createLockHolder(this, name, timeout, lockInfo);
-		if( children != null ) {
+		if (children != null) {
 			CommonResource cr = annoFactory.instantiate(r, parent);
 			children.add(cr);
 		}
@@ -188,12 +202,12 @@ public class AnnoCollectionResource extends AnnoResource implements CollectionRe
 	}
 
 	void removeLockHolder(String name) {
-		if( children != null ) {
+		if (children != null) {
 			Iterator<CommonResource> it = children.iterator();
-			while( it.hasNext()) {
+			while (it.hasNext()) {
 				Resource r = it.next();
-				if( r instanceof LockNullResource && r.getName().equals(name)) {
-					it.remove();					
+				if (r instanceof LockNullResource && r.getName().equals(name)) {
+					it.remove();
 				}
 			}
 		}
@@ -203,5 +217,4 @@ public class AnnoCollectionResource extends AnnoResource implements CollectionRe
 	public boolean isLockedOutRecursive(Request request) {
 		return false; // TODO
 	}
-	
 }

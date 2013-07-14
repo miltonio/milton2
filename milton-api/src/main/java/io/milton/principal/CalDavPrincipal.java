@@ -20,14 +20,13 @@ package io.milton.principal;
 
 import io.milton.http.values.HrefList;
 import io.milton.http.values.SupportedCalendarComponentListsSet;
-import io.milton.resource.ICalResource;
-import java.util.List;
+import io.milton.resource.PropFindableResource;
 
 /**
  *
  * @author brad
  */
-public interface CalDavPrincipal extends DiscretePrincipal {
+public interface CalDavPrincipal extends DiscretePrincipal, PropFindableResource {
 
     /**
      * This is usually a single href which identifies the collection which

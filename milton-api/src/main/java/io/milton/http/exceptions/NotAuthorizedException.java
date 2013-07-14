@@ -32,10 +32,17 @@ import io.milton.resource.Resource;
 public class NotAuthorizedException extends MiltonException{
     private static final long serialVersionUID = 1L;
 
+    public NotAuthorizedException() {
+    }    
+    
     public NotAuthorizedException(Resource r) {
         super(r);
     }
 
+    public NotAuthorizedException(Resource r, Throwable cause) {
+        super(r, cause);
+    }    
+    
 	public NotAuthorizedException(String message, Resource r) {
 		super(message, r);
 	}

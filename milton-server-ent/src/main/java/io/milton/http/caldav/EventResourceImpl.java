@@ -17,6 +17,7 @@ public class EventResourceImpl implements EventResource {
     private Date end;
     private String summary;
 
+    @Override
     public String getUniqueId() {
         return uniqueId;
     }
@@ -27,26 +28,32 @@ public class EventResourceImpl implements EventResource {
 
     
     
+    @Override
     public Date getStart() {
         return start;
     }
 
+    @Override
     public void setStart(Date d) {
         this.start = d;
     }
 
+    @Override
     public Date getEnd() {
         return end;
     }
 
+    @Override
     public void setEnd(Date d) {
         this.end = d;
     }
 
+    @Override
     public String getSummary() {
         return summary;
     }
 
+    @Override
     public void setSummary(String s) {
         this.summary = s;
     }

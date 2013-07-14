@@ -114,16 +114,28 @@ public class LoginResponseHandler extends AbstractWrappingResponseHandler {
 					request.getAttributes().put("authReason", "required");
 				}
 
-
+				response.setStatus(Response.Status.SC_BAD_REQUEST); // error code to avoid caching
 				GetableResource gr = (GetableResource) rLogin;
-				wrapped.respondContent(gr, response, request, null);
+				gr.sendContent(response.getOutputStream(), null, null, gr.getContentType(null));
+				response.getOutputStream().flush();
+				//wrapped.respondContent(gr, response, request, null);
 
 			} catch (NotAuthorizedException ex) {
-				throw new RuntimeException(ex);
+				response.setStatus(Response.Status.SC_INTERNAL_SERVER_ERROR);
+				response.close();
+				log.error("Exception generating login page", ex);
 			} catch (BadRequestException ex) {
-				throw new RuntimeException(ex);
+				response.setStatus(Response.Status.SC_INTERNAL_SERVER_ERROR);
+				response.close();
+				log.error("Exception generating login page", ex);
 			} catch (NotFoundException ex) {
-				throw new RuntimeException(ex);
+				response.setStatus(Response.Status.SC_INTERNAL_SERVER_ERROR);
+				response.close();
+				log.error("Exception generating login page", ex);
+			} catch(IOException ex) {
+				response.setStatus(Response.Status.SC_INTERNAL_SERVER_ERROR);
+				response.close();
+				log.error("Exception generating login page", ex);
 			}
 		}
 	}

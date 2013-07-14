@@ -46,6 +46,7 @@ import io.milton.annotations.UniqueId;
 import io.milton.annotations.Users;
 import io.milton.common.Path;
 import io.milton.http.Auth;
+import io.milton.http.AuthenticationService;
 import io.milton.http.HttpManager;
 import io.milton.http.LockInfo;
 import io.milton.http.LockManager;
@@ -58,7 +59,6 @@ import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.template.ViewResolver;
 import io.milton.http.webdav.DisplayNameFormatter;
-import io.milton.principal.Principal;
 import io.milton.resource.CollectionResource;
 import io.milton.resource.PropFindableResource;
 import io.milton.resource.Resource;
@@ -90,6 +90,8 @@ import org.slf4j.LoggerFactory;
 public final class AnnotationResourceFactory implements ResourceFactory {
 
 	private static final Logger log = LoggerFactory.getLogger(AnnotationResourceFactory.class);
+	private AuthenticationService authenticationService;
+	private boolean doEarlyAuth = true;
 	private io.milton.http.SecurityManager securityManager;
 	private LockManager lockManager;
 	private String contextPath;
@@ -185,6 +187,31 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 			return null;
 		}
 
+		if (doEarlyAuth) {
+			if (authenticationService != null) {
+				Request request = HttpManager.request();
+				if (request.getAuthorization() == null) {
+					// Note that authentication will usually result in a call to getResource to find the principal..
+					// so we must ensure we dont go into a recursive loop				
+					if (!request.getAttributes().containsKey("in.early.auth")) {
+						request.getAttributes().put("in.early.auth", Boolean.TRUE);
+						AuthenticationService.AuthStatus authStatus = authenticationService.authenticate(hostRoot, request);
+						if (authStatus == null) {
+							// Not attempted, so anonymous request.
+							return null;
+						} else {
+							if (authStatus.loginFailed) {
+								log.warn("Early authentication failed");
+								throw new NotAuthorizedException(hostRoot);
+							} else {
+								log.info("Early authentication succeeded");
+							}
+						}
+					}
+				}
+			}
+		}
+
 		Resource r;
 		url = stripContext(url);
 		if (url.equals("/") || url.equals("")) {
@@ -243,6 +270,28 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 
 	public String getRealm(String host) {
 		return securityManager.getRealm(host);
+	}
+
+	public void setAuthenticationService(AuthenticationService authenticationService) {
+		this.authenticationService = authenticationService;
+	}
+
+	public AuthenticationService getAuthenticationService() {
+		return authenticationService;
+	}
+
+	/**
+	 * If true authentication will be attempted as soon as the root resource is
+	 * located
+	 *
+	 * @return
+	 */
+	public boolean isDoEarlyAuth() {
+		return doEarlyAuth;
+	}
+
+	public void setDoEarlyAuth(boolean doEarlyAuth) {
+		this.doEarlyAuth = doEarlyAuth;
 	}
 
 	public void setSecurityManager(io.milton.http.SecurityManager securityManager) {
@@ -422,6 +471,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 				principal = (AnnoPrincipalResource) auth.getTag();
 			}
 		}
+
 		Object[] args = new Object[m.getParameterTypes().length];
 		List list = new ArrayList();
 
@@ -453,6 +503,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 					if (principal != null) {
 						args[i] = principal.source;
 					} else {
+						log.warn("Null principal provided for method: " + m);
 						args[i] = null;
 					}
 				} else {

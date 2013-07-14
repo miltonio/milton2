@@ -35,7 +35,7 @@ public class ICalDataAnnotationHandler extends AbstractAnnotationHandler {
 
 	public String execute(AnnoEventResource eventRes) {
 		Object source = eventRes.getSource();
-		try {
+		try {			
 			Object value = null;
 			ControllerMethod cm = getBestMethod(source.getClass());
 			if (cm == null) {
@@ -53,7 +53,15 @@ public class ICalDataAnnotationHandler extends AbstractAnnotationHandler {
 					}
 				}
 			} else {
-				value = invoke(cm, eventRes);
+				ByteArrayOutputStream bout = new ByteArrayOutputStream();
+				value = invoke(cm, eventRes, bout);
+				// These methods will often write to output stream, so must provide one as alternative to returning a value
+				if( value == null ) { // probably means void return type, so use outputstream
+					byte[] arr = bout.toByteArray();
+					if( arr.length > 0 ) {
+						value = arr;
+					}
+				}
 			}
 			if (value != null) {
 				if( value instanceof String ) {
@@ -76,4 +84,6 @@ public class ICalDataAnnotationHandler extends AbstractAnnotationHandler {
 			throw new RuntimeException("Exception executing " + getClass() + " - " + source.getClass(), e);
 		}
 	}
+	
+
 }

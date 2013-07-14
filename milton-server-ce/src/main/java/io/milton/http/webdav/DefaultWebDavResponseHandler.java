@@ -193,6 +193,11 @@ public class DefaultWebDavResponseHandler implements WebDavResponseHandler, Buff
 		try {
 			ByteArrayOutputStream bout = new ByteArrayOutputStream();
 			propFindXmlGenerator.generate(propFindResponses, bout);
+			if( log.isTraceEnabled()) {
+				log.trace("Propfind response ----");
+				log.trace(bout.toString());
+				log.trace("----");
+			}
 			byte[] arr = bout.toByteArray();
 			response.setContentLengthHeader((long) arr.length);
 			OutputStream outputStream = response.getOutputStream();

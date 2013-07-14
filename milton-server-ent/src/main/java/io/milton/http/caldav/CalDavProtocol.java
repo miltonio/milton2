@@ -68,7 +68,6 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
     private final PropertyMap propertyMapCalDav;
     private final PropertyMap propertyMapCalServer;
     private final PropertyMap propertyMapAppleCal;
-    private final SchedulingCustomPostHandler schedulingCustomPostHandler;
     private final CalendarSearchService calendarSearchService;
     private final List<CustomPostHandler> customPostHandlers;
 
@@ -111,14 +110,9 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
         //webDavProtocol.addReport(new ExpandPropertyReport());
         webDavProtocol.addReport(new CalendarQueryReport(propertyBuilder, gen, calendarSearchService));
 
-        schedulingCustomPostHandler = new SchedulingCustomPostHandler();
-        if (calendarSearchService.isSchedulingEnabled()) {
-            List<CustomPostHandler> l = new ArrayList<CustomPostHandler>();
-            l.add(schedulingCustomPostHandler);
-            customPostHandlers = Collections.unmodifiableList(l);
-        } else {
-            customPostHandlers = Collections.EMPTY_LIST;
-        }
+
+        customPostHandlers = Collections.EMPTY_LIST;
+
     }
 
     @Override

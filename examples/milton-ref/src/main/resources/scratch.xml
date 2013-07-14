@@ -1,59 +1,22 @@
+CalDAV: recv: <?xml version="1.0" encoding="utf-8" ?>
 <d:multistatus xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:" xmlns:cal="urn:ietf:params:xml:ns:caldav" xmlns:card="urn:ietf:params:xml:ns:carddav">
     <d:response>
-        <d:href>/musicians/m1/abooks/default/</d:href>
+        <d:href>/users/usera/</d:href>
         <d:propstat>
             <d:prop>
-                <d:supported-report-set>
-                    <d:supported-report>
-                        <d:report>
-                            <d:principal-search-property-set/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:addressbook-query/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:calendar-multiget/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:expand-property/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:calendar-query/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:principal-property-search/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:acl-principal-prop-set/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:addressbook-multiget/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:principal-match/>
-                        </d:report>
-                    </d:supported-report>
-                </d:supported-report-set>
-                <cs:getctag/>
-                <d:resourcetype>
-                    <d:collection/>
-                </d:resourcetype>
+                <cal:schedule-outbox-URL>
+                    <d:href>/users/usera/scheduling/outbox/</d:href>
+                </cal:schedule-outbox-URL>
+                <cal:calendar-user-address-set>
+                    <d:href>mailto:usera@localhost:8080</d:href>
+                </cal:calendar-user-address-set>
+                <cal:calendar-home-set>
+                    <d:href>/users/usera/cals/</d:href>
+                    <d:href>/users/usera/cals/</d:href>
+                </cal:calendar-home-set>
+                <cal:schedule-inbox-URL>
+                    <d:href>/users/usera/scheduling/inbox/</d:href>
+                </cal:schedule-inbox-URL>
             </d:prop>
             <d:status>HTTP/1.1 200 OK</d:status>
         </d:propstat>

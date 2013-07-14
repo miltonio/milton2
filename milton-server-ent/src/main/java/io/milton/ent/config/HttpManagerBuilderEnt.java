@@ -179,7 +179,7 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
             }
 
             if( calendarSearchService == null ) {
-                DefaultCalendarSearchService c = new DefaultCalendarSearchService(iCalFormatter);
+                DefaultCalendarSearchService c = new DefaultCalendarSearchService(iCalFormatter, mainResourceFactory);
                 c.setSchedulingEnabled(enableScheduling);
                 calendarSearchService = c;
             }

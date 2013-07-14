@@ -89,7 +89,8 @@ public class SchedulingXmlHelper {
         ByteArrayOutputStream generatedXml = new ByteArrayOutputStream();
         XmlWriter writer = new XmlWriter(generatedXml);
         writer.writeXMLHeader();
-        writer.open(WebDavProtocol.NS_DAV.getPrefix(), "schedule-response " + helper.generateNamespaceDeclarations());
+
+        writer.open("C", "schedule-response " + helper.generateNamespaceDeclarations());
         writer.newLine();
         for (SchedulingResponseItem resp : respItems) {
             Element elResp = writer.begin("C", "response");
@@ -104,7 +105,7 @@ public class SchedulingXmlHelper {
             elResp.close();
         }
 
-        writer.close(WebDavProtocol.NS_DAV.getPrefix(), "multistatus");
+        writer.close("C", "schedule-response");
         writer.flush();
 //        log.debug( generatedXml.toString() );
         return generatedXml.toString("UTF-8");

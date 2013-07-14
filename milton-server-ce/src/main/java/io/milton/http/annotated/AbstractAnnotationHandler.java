@@ -19,6 +19,9 @@ import io.milton.annotations.Post;
 import io.milton.http.HttpManager;
 import io.milton.http.Request;
 import io.milton.http.Request.Method;
+import io.milton.http.exceptions.BadRequestException;
+import io.milton.http.exceptions.NotAuthorizedException;
+import io.milton.http.exceptions.NotFoundException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -249,7 +252,7 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 		}
 	}
 
-	protected Object invoke(ControllerMethod cm, AnnoResource sourceRes, Object... values) throws Exception {
+	protected Object invoke(ControllerMethod cm, AnnoResource sourceRes, Object... values) throws NotAuthorizedException, BadRequestException, NotFoundException, Exception {
 		try {
 			Object[] args;
 			if (values == null || values.length == 0) {
@@ -258,6 +261,21 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 				args = annoResourceFactory.buildInvokeArgs(sourceRes, cm.method, values);
 			}
 			return cm.method.invoke(cm.controller, args);
+
+		} catch(java.lang.reflect.InvocationTargetException e) {
+			Throwable cause = e.getCause();
+			if( cause instanceof NotAuthorizedException ) {
+				NotAuthorizedException nae = (NotAuthorizedException)cause;
+				if( nae.getResource() == null ) {
+					throw new NotAuthorizedException(sourceRes, nae); // need exception with resource so we can generate challenge
+				}
+				throw nae;
+			} else if( cause instanceof BadRequestException) {
+				throw (BadRequestException)cause;
+			} else if( cause instanceof NotFoundException) {
+				throw (NotFoundException)cause;
+			}
+			throw e;			
 		} catch (Exception e) {
 			throw new Exception("Method: " + cm, e);
 		}

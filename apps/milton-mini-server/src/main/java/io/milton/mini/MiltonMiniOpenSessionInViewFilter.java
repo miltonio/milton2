@@ -54,7 +54,9 @@ public class MiltonMiniOpenSessionInViewFilter implements Filter {
                 }
             }
         } catch(Throwable e) {
+            log.error("Exception caught in filter", e);
             if( tx != null ) {
+                log.warn("Rollback..");
                 tx.rollback();
             }
             throw new RuntimeException(e);

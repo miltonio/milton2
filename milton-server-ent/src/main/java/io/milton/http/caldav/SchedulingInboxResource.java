@@ -23,10 +23,10 @@ import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.principal.CalDavPrincipal;
 import io.milton.resource.CalendarCollection;
+import io.milton.resource.PropFindableResource;
 import io.milton.resource.Resource;
+import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * 4.2. Scheduling Inbox Collection
@@ -129,7 +129,7 @@ Internet-Draft        CalDAV Scheduling Extensions          October 2010
  *
  * @author brad
  */
-public class SchedulingInboxResource extends BaseSchedulingXBoxResource implements CalendarCollection {
+public class SchedulingInboxResource extends BaseSchedulingXBoxResource implements CalendarCollection, PropFindableResource {
 
     public SchedulingInboxResource(CalDavPrincipal principal, SchedulingResourceFactory schedulingResourceFactory) {
         super(principal, schedulingResourceFactory);
@@ -165,6 +165,11 @@ public class SchedulingInboxResource extends BaseSchedulingXBoxResource implemen
         } catch (BadRequestException ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    @Override
+    public Date getCreateDate() {
+        return principal.getCreateDate();
     }
 
 

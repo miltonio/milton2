@@ -142,6 +142,7 @@ public class HttpManagerBuilder {
 	protected boolean enableFormAuth = true;
 	protected boolean enableCookieAuth = true;
 	protected boolean enabledCkBrowser = false;
+	protected boolean enableEarlyAuth = true;
 	protected String loginPage = "/login.html";
 	protected List<String> loginPageExcludePaths;
 	protected File rootDir = null;
@@ -387,7 +388,7 @@ public class HttpManagerBuilder {
 		if (entityTransport == null) {
 			entityTransport = new DefaultEntityTransport(userAgentHelper());
 		}
-		HttpManager httpManager = new HttpManager(outerResourceFactory, webdavResponseHandler, protocolHandlers, entityTransport, filters, eventManager, shutdownHandlers);
+		HttpManager httpManager = new HttpManager(outerResourceFactory, outerWebdavResponseHandler, protocolHandlers, entityTransport, filters, eventManager, shutdownHandlers);
 		if (listeners != null) {
 			for (InitListener l : listeners) {
 				l.afterBuild(this, httpManager);
@@ -1280,6 +1281,19 @@ public class HttpManagerBuilder {
 		try {
 			if (getMainResourceFactory() instanceof AnnotationResourceFactory) {
 				AnnotationResourceFactory arf = (AnnotationResourceFactory) getMainResourceFactory();
+				arf.setDoEarlyAuth(enableEarlyAuth);
+				log.info("enableEarlyAuth=" + enableEarlyAuth);
+				if (enableEarlyAuth) {
+					if (arf.getAuthenticationService() == null) {
+						if( authenticationService == null ) {
+							// Just defensive check
+							throw new RuntimeException("enableEarlyAuth is true, but not authenticationService is available");
+						} else {
+							log.info("Enabled early authentication for annotations resources");
+						}
+						arf.setAuthenticationService(authenticationService);
+					}
+				}
 				if (arf.getControllers() == null) {
 					if (controllers == null) {
 						controllers = new ArrayList();
@@ -1423,7 +1437,7 @@ public class HttpManagerBuilder {
 				boolean acc = field.isAccessible();
 				try {
 					field.setAccessible(true);
-					field.set(created, findOrCreateObject(field.getType()));					
+					field.set(created, findOrCreateObject(field.getType()));
 				} catch (IllegalArgumentException ex) {
 					throw new CreationException(field, c, ex);
 				} catch (IllegalAccessException ex) {
@@ -1456,8 +1470,8 @@ public class HttpManagerBuilder {
 				}
 			}
 		}
-		if( created instanceof InitListener) {
-			if( listeners == null ) {
+		if (created instanceof InitListener) {
+			if (listeners == null) {
 				listeners = new ArrayList<InitListener>();
 			}
 			InitListener l = (InitListener) created;

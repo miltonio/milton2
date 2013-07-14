@@ -19,6 +19,7 @@
 
 package io.milton.common;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -29,6 +30,8 @@ import java.util.List;
  */
 public abstract class StringUtils {
 
+    public static final Charset UTF8 = Charset.forName("UTF-8");
+    
     public static String[] delimitedListToStringArray( String str, String delimiter ) {
         if( str == null ) {
             return new String[0];

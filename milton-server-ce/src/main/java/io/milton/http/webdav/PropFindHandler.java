@@ -127,7 +127,7 @@ public class PropFindHandler implements ExistingEntityHandler, PropertyHandler {
         }
         String url = request.getAbsoluteUrl();
 
-        // Check that the current user has permission to write requested fields
+        // Check that the current user has permission to read requested fields
         Set<QName> allFields = getAllFields( parseResult, pfr );
         Set<PropertyAuthoriser.CheckResult> errorFields = permissionService.checkPermissions( request, request.getMethod(), PropertyAuthoriser.PropertyPermission.READ, allFields, resource );
         if( errorFields != null && errorFields.size() > 0 ) {
@@ -136,9 +136,15 @@ public class PropFindHandler implements ExistingEntityHandler, PropertyHandler {
             }
             responseHandler.respondUnauthorised( resource, response, request );
         } else {
+			if(log.isTraceEnabled()) {
+				log.trace("Listing requested propfind properties ---");
+				for( PropertiesRequest.Property p : parseResult.getProperties()) {
+					log.trace(p.getName().toString());
+				}
+				log.trace("---");
+			}
             List<PropFindResponse> propFindResponses;
 			try {
-				System.out.println("build props");
 				propFindResponses = propertyBuilder.buildProperties( pfr, depth, parseResult, url );
 			} catch (URISyntaxException ex) {
 				log.error("Exception parsing url. request class: " + request.getClass() + ". Please check the client application is usign percentage encoding (see http://en.wikipedia.org/wiki/Percent-encoding)");

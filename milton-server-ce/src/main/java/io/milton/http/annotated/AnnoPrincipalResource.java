@@ -19,6 +19,7 @@
 package io.milton.http.annotated;
 
 import io.milton.annotations.Calendars;
+import io.milton.http.HttpManager;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.values.HrefList;
@@ -51,6 +52,7 @@ public class AnnoPrincipalResource extends AnnoCollectionResource implements Dis
 		try {
 			HrefList list = new HrefList();
 			if (annoFactory.calendarsAnnotationHandler.hasCalendars(this.getSource())) {
+				log.info("principal is a direct container of calendars, add: " + getHref());
 				list.add(this.getHref());
 			}
 
@@ -58,11 +60,13 @@ public class AnnoPrincipalResource extends AnnoCollectionResource implements Dis
 				if (r instanceof AnnoCollectionResource) {
 					AnnoCollectionResource col = (AnnoCollectionResource) r;
 					if (annoFactory.calendarsAnnotationHandler.hasCalendars(col.getSource())) {
+						log.info("Found child of principal with calendars: " + col.getHref());
 						list.add(col.getHref());
 					}
 				}
 			}
 			if (list.isEmpty()) {
+				// Just going to help dudes out by explaining whats going on...
 				ResourceList topDirs = getChildren().getDirs();
 				log.warn("Could not find any calendar home directories for user type: " + getSource().getClass() + " You should have a @" + Calendars.class + " annotation for the user object itself, or for a directory within the user home");
 				for (Resource r : topDirs) {
@@ -126,7 +130,9 @@ public class AnnoPrincipalResource extends AnnoCollectionResource implements Dis
 
 	@Override
 	public HrefList getCalendarUserAddressSet() {
-		return HrefList.asList(getHref());
+		// TODO: not sure, maybe this needs to be real email address??
+		String mailto = "mailto:" + getName() + "@" + HttpManager.request().getHostHeader(); 
+		return HrefList.asList(mailto);
 	}
 
 	@Override

@@ -15,6 +15,9 @@
 package io.milton.http.annotated;
 
 import io.milton.annotations.ChildOf;
+import io.milton.http.exceptions.BadRequestException;
+import io.milton.http.exceptions.NotAuthorizedException;
+import io.milton.http.exceptions.NotFoundException;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +45,7 @@ public class ChildOfAnnotationHandler extends AbstractAnnotationHandler {
 	 * @return - a tri-value indicating the object which was found, no object
 	 * was found, or search was not attempted
 	 */
-	public Object execute(AnnoCollectionResource parent, String childName) {
+	public Object execute(AnnoCollectionResource parent, String childName) throws NotAuthorizedException, BadRequestException, NotFoundException {
 		Object source = parent.getSource();
 		try {
 			List<ControllerMethod> availMethods = getMethods(source.getClass());
@@ -62,10 +65,16 @@ public class ChildOfAnnotationHandler extends AbstractAnnotationHandler {
 					}
 				}
 			}
-
-		} catch (Exception e) {
+		
+		} catch (NotAuthorizedException e) {
+			throw e;
+		} catch(BadRequestException e) {
+			throw e;
+		} catch(NotFoundException e) {
+			throw e;
+		} catch(Exception e ) {
 			throw new RuntimeException(e);
-		}
+		} 
 		return null;
 	}
 
