@@ -21,6 +21,7 @@ import io.milton.http.Request;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
+import io.milton.http.exceptions.NotFoundException;
 import io.milton.resource.CollectionResource;
 import io.milton.resource.DeletableCollectionResource;
 import io.milton.resource.ExtMakeCalendarResource;
@@ -33,7 +34,10 @@ import java.io.InputStream;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.namespace.QName;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -41,6 +45,8 @@ import javax.xml.namespace.QName;
  */
 public class AnnoCollectionResource extends AnnoResource implements CollectionResource, PutableResource, MakeCollectionableResource, LockingCollectionResource, DeletableCollectionResource, ExtMakeCalendarResource {
 
+	private static final org.slf4j.Logger log = LoggerFactory.getLogger(AnnoCollectionResource.class);
+	
 	/**
 	 * lazy loaded list of all children of this collection
 	 */
@@ -75,7 +81,12 @@ public class AnnoCollectionResource extends AnnoResource implements CollectionRe
 
 		// try to load singly using ChildOf annotation, if present
 		// childTriValue can be null, the child source object, or a special value indicating no search
-		Object childTriValue = annoFactory.childOfAnnotationHandler.execute(this, childName);
+		Object childTriValue = null;
+		try {
+			childTriValue = annoFactory.childOfAnnotationHandler.execute(this, childName);
+		} catch (NotFoundException ex) {
+			log.warn("Failed to lookup child", ex);
+		}
 		if (childTriValue == null) {
 			//return null; // definitely not found
 			// well, actually. ChildOf can just apply to a certain sort of child, so if its not found
