@@ -43,6 +43,8 @@ public class AnnoPrincipalResource extends AnnoCollectionResource implements Dis
 
 	private static final Logger log = LoggerFactory.getLogger(AnnoPrincipalResource.class);
 
+	private String email;
+	
 	public AnnoPrincipalResource(AnnotationResourceFactory outer, Object source, AnnoCollectionResource parent) {
 		super(outer, source, parent);
 	}
@@ -130,8 +132,7 @@ public class AnnoPrincipalResource extends AnnoCollectionResource implements Dis
 
 	@Override
 	public HrefList getCalendarUserAddressSet() {
-		// TODO: not sure, maybe this needs to be real email address??
-		String mailto = "mailto:" + getName() + "@" + HttpManager.request().getHostHeader(); 
+		String mailto = "mailto:" + getEmail(); 
 		return HrefList.asList(mailto);
 	}
 
@@ -149,4 +150,12 @@ public class AnnoPrincipalResource extends AnnoCollectionResource implements Dis
 	public String getAddress() {
 		return getHref();
 	}
+	
+	public String getEmail() {
+		if (email == null) {			
+			email = getName() + "@" + getRealm();
+			log.info("Constructed email for source class: " + source.getClass() + " = " + email );
+		}
+		return email;
+	}	
 }

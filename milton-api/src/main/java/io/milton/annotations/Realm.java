@@ -20,16 +20,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks a method as one which returns calendar objects. A calendar is something
- * which contains events.
- * 
- * 
- * 
+ * Methods return the realm to be used for authentication
  *
  * @author brad
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface CalendarInvitations {
-
+public @interface Realm {
+    
 }

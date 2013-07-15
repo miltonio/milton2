@@ -96,7 +96,7 @@ public class CalendarResourceTypeHelper implements ResourceTypeHelper {
         // not sure if should be at this level
         
         // thunderbird doesnt poll inbox if we have calendar-auto-schedule
-        //LockUtils.add(list, "calendar-auto-schedule");
+        LockUtils.add(list, "calendar-auto-schedule");
         
 //        if (r instanceof SchedulingInboxResource) {
             LockUtils.add(list, "schedule-inbox");            

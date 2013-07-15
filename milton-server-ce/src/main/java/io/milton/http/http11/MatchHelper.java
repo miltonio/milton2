@@ -54,18 +54,16 @@ public class MatchHelper {
 			return true; // no if-match header, return true so processing continues
 		}
 		if (r == null) {
-			System.out.println("checkIfMatch: resource is null");
 			return false; // etag given, but no resource. Definitely not a match
 		}
 		String currentEtag = eTagGenerator.generateEtag(r);
 		if (currentEtag == null || currentEtag.length() == 0) {
-			System.out.println("checkIfMatch: no etag");
 			return false; // no etag on the resource, but an etag was given in header, so fail
 		}
 		List<String> etags = splitToList(h);
 		for (String requestedEtag : etags) {
 			requestedEtag = cleanUp(requestedEtag);
-			System.out.println("checkIfMatch: compare: " + requestedEtag + " = " + currentEtag);
+			//System.out.println("checkIfMatch: compare: " + requestedEtag + " = " + currentEtag);
 			if (requestedEtag.equals(currentEtag) || requestedEtag.equals("*")) {
 				return true; // found a matching tag, return true to continue
 			}
@@ -92,9 +90,9 @@ public class MatchHelper {
 		}
 		if (h.equals("*")) {
 			boolean b = (r != null);
-			if (b) {
-				System.out.println("if-none-match header is star, and a resource exists");
-			}
+//			if (b) {
+//				System.out.println("if-none-match header is star, and a resource exists");
+//			}
 			return b;
 		}
 		String currentEtag = eTagGenerator.generateEtag(r);

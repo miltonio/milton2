@@ -23,6 +23,9 @@ import io.milton.annotations.AddressBooks;
 import io.milton.annotations.Authenticate;
 import io.milton.annotations.CTag;
 import io.milton.annotations.CalendarColor;
+import io.milton.annotations.CalendarDateRangeQuery;
+import io.milton.annotations.CalendarInvitations;
+import io.milton.annotations.CalendarInvitationsCTag;
 import io.milton.annotations.Calendars;
 import io.milton.annotations.ChildOf;
 import io.milton.annotations.ChildrenOf;
@@ -32,6 +35,7 @@ import io.milton.annotations.ContentType;
 import io.milton.annotations.Copy;
 import io.milton.annotations.CreatedDate;
 import io.milton.annotations.Delete;
+import io.milton.annotations.FreeBusyQuery;
 import io.milton.annotations.Get;
 import io.milton.annotations.ICalData;
 import io.milton.annotations.MakeCollection;
@@ -41,6 +45,7 @@ import io.milton.annotations.Move;
 import io.milton.annotations.Name;
 import io.milton.annotations.Post;
 import io.milton.annotations.PutChild;
+import io.milton.annotations.Realm;
 import io.milton.annotations.Root;
 import io.milton.annotations.UniqueId;
 import io.milton.annotations.Users;
@@ -70,6 +75,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -102,7 +108,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	 */
 	private Map<String, List<LockHolder>> mapOfTempResources = new ConcurrentHashMap<String, List<LockHolder>>();
 	private Map<Class, AnnotationHandler> mapOfAnnotationHandlers = new HashMap<Class, AnnotationHandler>(); // keyed on annotation class
-	private Map<Method, AnnotationHandler> mapOfAnnotationHandlersByMethod = new HashMap<Method, AnnotationHandler>(); // keyed on http method
+	private Map<Method, AnnotationHandler> mapOfAnnotationHandlersByMethod = new EnumMap<Method, AnnotationHandler>(Method.class); // keyed on http method
 	RootAnnotationHandler rootAnnotationHandler = new RootAnnotationHandler(this);
 	GetAnnotationHandler getAnnotationHandler = new GetAnnotationHandler(this);
 	PostAnnotationHandler postAnnotationHandler = new PostAnnotationHandler(this);
@@ -123,8 +129,9 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	CalendarsAnnotationHandler calendarsAnnotationHandler = new CalendarsAnnotationHandler(this);
 	AddressBooksAnnotationHandler addressBooksAnnotationHandler = new AddressBooksAnnotationHandler(this);
 	ContactDataAnnotationHandler contactDataAnnotationHandler = new ContactDataAnnotationHandler(this);
-	CalendarInvitationsAnnotationHandler calendarInvitationsAnnotationHandler = new CalendarInvitationsAnnotationHandler(this);
+	
 	CommonPropertyAnnotationHandler<String> nameAnnotationHandler = new CommonPropertyAnnotationHandler(Name.class, this, "name", "fileName");
+	CommonPropertyAnnotationHandler<String> realmAnnotationHandler = new CommonPropertyAnnotationHandler(Realm.class, this, "realm");
 	CommonPropertyAnnotationHandler<Date> modifiedDateAnnotationHandler = new CommonPropertyAnnotationHandler<Date>(ModifiedDate.class, this, "modifiedDate");
 	CommonPropertyAnnotationHandler<Date> createdDateAnnotationHandler = new CommonPropertyAnnotationHandler<Date>(CreatedDate.class, this);
 	ContentTypeAnnotationHandler contentTypeAnnotationHandler = new ContentTypeAnnotationHandler(this, "contentType");
@@ -132,6 +139,11 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	CommonPropertyAnnotationHandler<Long> maxAgeAnnotationHandler = new CommonPropertyAnnotationHandler<Long>(MaxAge.class, this, "maxAge");
 	CommonPropertyAnnotationHandler<String> uniqueIdAnnotationHandler = new CommonPropertyAnnotationHandler<String>(UniqueId.class, this, "id");
 	CommonPropertyAnnotationHandler<String> calendarColorAnnotationHandler = new CommonPropertyAnnotationHandler<String>(CalendarColor.class, this, "color");
+	
+	CalendarDateRangeQueryAnnotationHandler calendarDateRangeQueryAnnotationHandler = new CalendarDateRangeQueryAnnotationHandler(this);
+	FreeBusyQueryAnnotationHandler freeBusyQueryAnnotationHandler = new FreeBusyQueryAnnotationHandler(this);
+	CalendarInvitationsAnnotationHandler calendarInvitationsAnnotationHandler = new CalendarInvitationsAnnotationHandler(this);
+	CalendarInvitationsCTagAnnotationHandler calendarInvitationsCTagAnnotationHandler = new CalendarInvitationsCTagAnnotationHandler(this);
 
 	public AnnotationResourceFactory() {
 		mapOfAnnotationHandlers.put(Root.class, rootAnnotationHandler);
@@ -162,6 +174,12 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		mapOfAnnotationHandlers.put(ICalData.class, iCalDataAnnotationHandler);
 		mapOfAnnotationHandlers.put(CalendarColor.class, calendarColorAnnotationHandler);
 		mapOfAnnotationHandlers.put(ContactData.class, contactDataAnnotationHandler);
+		
+		mapOfAnnotationHandlers.put(CalendarDateRangeQuery.class, calendarDateRangeQueryAnnotationHandler);
+		mapOfAnnotationHandlers.put(FreeBusyQuery.class, freeBusyQueryAnnotationHandler);
+		mapOfAnnotationHandlers.put(CalendarInvitations.class, calendarInvitationsAnnotationHandler);
+		mapOfAnnotationHandlers.put(CalendarInvitationsCTag.class, calendarInvitationsCTagAnnotationHandler);		
+		
 
 		for (AnnotationHandler ah : mapOfAnnotationHandlers.values()) {
 			Method[] methods = ah.getSupportedMethods();
@@ -729,6 +747,34 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		return false;
 	}
 
+	/**
+	 * Process the source object (which may be a Collection of source objects),
+	 * and for each one instantiate an AnnoResource and append it to the result set
+	 * 
+	 * 
+	 * @param result - to append to
+	 * @param sources - single source object, or multiple source objects in a Collection
+	 * @param parent - the parent collection of these resource(s)
+	 * @param cm - the controller method they were found by
+	 */
+	public void createAndAppend(Collection<AnnoResource> result, Object sources, AnnoCollectionResource parent, ControllerMethod cm) {
+		if (sources == null) {
+			// ignore
+		} else if (sources instanceof Collection) {
+			Collection l = (Collection) sources;
+			for (Object item : l) {
+				result.add(instantiate(item, parent, cm.method));
+			}
+		} else if (sources.getClass().isArray()) {
+			Object[] arr = (Object[]) sources;
+			for (Object item : arr) {
+				result.add(instantiate(item, parent, cm.method));
+			}
+		} else {
+			result.add(instantiate(sources, parent, cm.method));
+		}
+	}
+
 	public class AnnotationsDisplayNameFormatter implements DisplayNameFormatter {
 
 		private final DisplayNameFormatter wrapped;
@@ -746,4 +792,22 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 			return wrapped.formatDisplayName(res);
 		}
 	}
+
+	public CalendarDateRangeQueryAnnotationHandler getCalendarDateRangeQueryAnnotationHandler() {
+		return calendarDateRangeQueryAnnotationHandler;
+	}
+
+	public CalendarInvitationsAnnotationHandler getCalendarInvitationsAnnotationHandler() {
+		return calendarInvitationsAnnotationHandler;
+	}
+
+	public CalendarInvitationsCTagAnnotationHandler getCalendarInvitationsCTagAnnotationHandler() {
+		return calendarInvitationsCTagAnnotationHandler;
+	}
+
+	public FreeBusyQueryAnnotationHandler getFreeBusyQueryAnnotationHandler() {
+		return freeBusyQueryAnnotationHandler;
+	}
+	
+	
 }

@@ -24,6 +24,7 @@ import io.milton.http.FileItem;
 import io.milton.http.HttpManager;
 import io.milton.http.Range;
 import io.milton.http.Request;
+import io.milton.http.Request.Method;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
@@ -250,5 +251,16 @@ public class SchedulingOutboxResource extends BaseSchedulingXBoxResource impleme
     @Override
     public Long getContentLength() {
         return (long) xmlResponse.length;
+    }
+
+    @Override
+    public boolean authorise(Request request, Request.Method method, Auth auth) {
+        // freebusy query's will be POST'd to the invited user's outbox, so we need
+        // them to be authorised
+        if (method.equals(Method.POST)) {
+            return auth != null && auth.getTag() != null;
+        } else {
+            return principal.authorise(request, method, auth);
+        }
     }
 }

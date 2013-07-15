@@ -18,11 +18,8 @@
  */
 package io.milton.http.annotated;
 
-import io.milton.annotations.CalendarInvitations;
-import io.milton.resource.ICalResource;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import io.milton.annotations.CalendarInvitationsCTag;
+import java.lang.reflect.InvocationTargetException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,40 +34,32 @@ public class CalendarInvitationsCTagAnnotationHandler extends AbstractAnnotation
 	private static final Logger log = LoggerFactory.getLogger(CalendarInvitationsCTagAnnotationHandler.class);
 
 	public CalendarInvitationsCTagAnnotationHandler(final AnnotationResourceFactory outer) {
-		super(outer, CalendarInvitations.class);
+		super(outer, CalendarInvitationsCTag.class);
 	}
 
-	public List<ICalResource> getCalendarInvitations(AnnoPrincipalResource parent) {
-		List<ICalResource> invitations = new ArrayList<ICalResource>();
+	public String getCalendarInvitationsCtag(AnnoPrincipalResource parent) {
 		Object source = parent.getSource();
-		for (ControllerMethod cm : getMethods(source.getClass())) {
+		ControllerMethod cm = getBestMethod(source.getClass());
+		String ctag = null;
+		if( cm != null ) {
+			Object rawId;
 			try {
-				Object o = invoke(cm, parent);
-				if (o == null) {
-					// ignore
-				} else if (o instanceof Collection) {
-					Collection l = (Collection) o;
-					for (Object childSource : l) {
-						createAndAdd(invitations, childSource, parent);
-					}
-				} else if (o.getClass().isArray()) {
-					Object[] arr = (Object[]) o;
-					for (Object childSource : arr) {
-						createAndAdd(invitations, childSource, parent);
-					}
-				} else {
-					createAndAdd(invitations, o, parent);
+				rawId = cm.method.invoke(cm.controller, source);
+			} catch (IllegalAccessException ex) {
+				throw new RuntimeException(ex);
+			} catch (IllegalArgumentException ex) {
+				throw new RuntimeException(ex);
+			} catch (InvocationTargetException ex) {
+				throw new RuntimeException(ex);
+			}			
+			if( rawId != null ) {
+				ctag = rawId.toString();
+				if( ctag.length() == 0 ) {
+					ctag = null;
 				}
-			} catch (Exception e) {
-				throw new RuntimeException(e);
 			}
-
 		}
-		return invitations;
+		return ctag;
 	}
-	
-	private void createAndAdd(List<ICalResource> invitations, Object childSource,AnnoPrincipalResource parent ) {
-		AnnoEventResource e = new AnnoEventResource(annoResourceFactory, childSource, parent);
-		invitations.add(e);
-	}
+
 }

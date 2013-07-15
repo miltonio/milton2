@@ -19,6 +19,7 @@
 
 package io.milton.http.caldav;
 
+import io.milton.http.annotated.CTagAnnotationHandler;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.principal.CalDavPrincipal;
@@ -159,7 +160,11 @@ public class SchedulingInboxResource extends BaseSchedulingXBoxResource implemen
     @Override
     public String getCTag(){
         try {
-            return calendarSearchService.findAttendeeResourcesCTag(principal);
+            String ctag = calendarSearchService.findAttendeeResourcesCTag(principal);
+            if( ctag == null ) {
+                ctag = CTagAnnotationHandler.deriveCtag(this);
+            }
+            return ctag;
         } catch (NotAuthorizedException ex) {
             throw new RuntimeException(ex);
         } catch (BadRequestException ex) {

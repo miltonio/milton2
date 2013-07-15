@@ -78,6 +78,7 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 	protected JsonResult jsonResult;
 	protected String nameOverride;
 	protected Set<AccessControlledResource.Priviledge> acl;
+	protected String realm;
 
 	public AnnoResource(final AnnotationResourceFactory outer, Object source, AnnoCollectionResource parent) {
 		if (source == null) {
@@ -230,7 +231,7 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 			AccessControlledResource.Priviledge requiredPriv = annoFactory.accessControlListAnnotationHandler.requiredPriv(this, method, request);
 			boolean allows;
 			if (requiredPriv == null) {
-				if( log.isDebugEnabled()) {
+				if (log.isDebugEnabled()) {
 					// This should never happen, but generally we accept that a null-priv means no restriction
 					log.debug("authorise: request permitted because required priviledge is null");
 				}
@@ -248,7 +249,7 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 			}
 			return allows;
 		}
-		if( log.isDebugEnabled()) {
+		if (log.isDebugEnabled()) {
 			log.debug("authorise: ACL cannot be calculated so use security manager: " + annoFactory.getSecurityManager());
 		}
 		// if we get here it means ACL was not applied, so we check default SM
@@ -257,7 +258,18 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 
 	@Override
 	public String getRealm() {
-		return annoFactory.getSecurityManager().getRealm(HttpManager.request().getHostHeader());
+		if (realm == null) {
+			realm = annoFactory.realmAnnotationHandler.get(this);
+			if (realm == null) {
+				if (parent != null) {
+					realm = parent.getRealm();
+				} else {
+					realm = annoFactory.getSecurityManager().getRealm(HttpManager.request().getHostHeader());
+				}
+			}
+
+		}
+		return realm;
 	}
 
 	@Override

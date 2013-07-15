@@ -38,6 +38,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import io.milton.vfs.db.Calendar;
 import io.milton.vfs.db.utils.SessionManager;
+import java.util.Iterator;
+import net.fortuna.ical4j.model.parameter.Rsvp;
+import net.fortuna.ical4j.model.property.Attendee;
 
 /**
  *
@@ -54,7 +57,7 @@ public class CalendarService {
             _update(event, data);
         } catch (IOException ex) {
             throw new RuntimeException(ex);
-        } catch( ParserException ex) {
+        } catch (ParserException ex) {
             throw new RuntimeException(ex);
         }
         session.save(event);
@@ -68,7 +71,7 @@ public class CalendarService {
         c.setColor(defaultColor);
         c.setCreatedDate(new Date());
         c.setName(newName);
-        c.setBaseEntity(owner); 
+        c.setBaseEntity(owner);
 
         session.save(c);
 
@@ -147,13 +150,53 @@ public class CalendarService {
             cal4jCalendar = builder.build(fin);
         } catch (IOException ex) {
             throw new RuntimeException(ex);
-        } catch( ParserException ex ) {
+        } catch (ParserException ex) {
             throw new RuntimeException(ex);
         }
         _setCalendar(cal4jCalendar, e);
         session.save(e);
 
         return e;
+    }
+
+    /**
+     * Add RSVP=True to attendees and return new ical data
+     *
+     * @param icalData
+     * @return
+     */
+    public String setRsvps(String icalData) throws UnsupportedEncodingException {
+        ByteArrayInputStream fin = new ByteArrayInputStream(icalData.getBytes("UTF-8"));
+        CalendarBuilder builder = new CalendarBuilder();
+        net.fortuna.ical4j.model.Calendar cal4jCalendar;
+        try {
+            cal4jCalendar = builder.build(fin);
+            VEvent event = event(cal4jCalendar);
+            for (Object o : event.getProperties()) {
+                if (o instanceof Attendee) {
+                    Attendee attendee = (Attendee) o;
+                    Iterator it = attendee.getParameters().iterator();
+                    boolean found = false;
+                    while (it.hasNext()) {
+                        Parameter p = (Parameter) it.next();
+                        if (p.getName().equals(Rsvp.RSVP)) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        attendee.getParameters().add(Rsvp.TRUE);
+                    }
+                }
+            }
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        } catch (ParserException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        return formatIcal(cal4jCalendar);
+
     }
 
     public String getCalendar(CalEvent calEvent) {
@@ -186,21 +229,10 @@ public class CalendarService {
 
         calendar.getComponents().add(vevent);
 
+        return formatIcal(calendar);
 
-        CalendarOutputter outputter = new CalendarOutputter();
-        ByteArrayOutputStream bout = new ByteArrayOutputStream();
-        try {
-            outputter.output(calendar, bout);
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        } catch( ValidationException ex) {
-            throw new RuntimeException(ex);
-        }
-        return bout.toString();
 
     }
-
-
 
     private void _setCalendar(net.fortuna.ical4j.model.Calendar calendar, CalEvent calEvent) {
         VEvent ev = event(calendar);
@@ -221,7 +253,6 @@ public class CalendarService {
         return (VEvent) cal.getComponent("VEVENT");
     }
 
-
     public String getDefaultColor() {
         return defaultColor;
     }
@@ -234,5 +265,18 @@ public class CalendarService {
         CalendarBuilder builder = new CalendarBuilder();
         net.fortuna.ical4j.model.Calendar calendar = builder.build(new ByteArrayInputStream(data.getBytes("UTF-8")));
         _setCalendar(calendar, event);
+    }
+
+    public String formatIcal(net.fortuna.ical4j.model.Calendar calendar) {
+        CalendarOutputter outputter = new CalendarOutputter();
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        try {
+            outputter.output(calendar, bout);
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        } catch (ValidationException ex) {
+            throw new RuntimeException(ex);
+        }
+        return bout.toString();
     }
 }

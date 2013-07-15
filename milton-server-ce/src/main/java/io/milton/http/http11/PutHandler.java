@@ -49,6 +49,7 @@ import io.milton.event.NewFolderEvent;
 import io.milton.event.PutEvent;
 import io.milton.http.Request;
 import io.milton.http.Response;
+import io.milton.resource.CalendarResource;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -130,9 +131,18 @@ public class PutHandler implements Handler {
 				log.warn("parent exists but is not a collection resource: " + path.getParent());
 			}
 		} else {
-			if (!matchHelper.checkIfMatch(null, request)) {
-				log.info("if-match comparison failed on null resource, aborting PUT request");
-				responseHandler.respondPreconditionFailed(request, response, existingResource);
+			if (!matchHelper.checkIfMatch(null, request)) {				
+				// Special case: we will get a PUT on a calendar to create a resource with an etag check match
+				// when no resource exists, when a user accepts a calendar invitation from lightning
+				// So have a special case here that says to allow if the parent is a calendar
+				Resource parent = manager.getResourceFactory().getResource(host, path.getParent().toString());
+				if( parent instanceof CalendarResource) {
+					//  https://bugzilla.mozilla.org/show_bug.cgi?id=540398
+					log.info("if-match comparison failed on null resource, but parent is a calendar, so allow to proceed");
+				} else {
+					log.info("if-match comparison failed on null resource, aborting PUT request");
+					responseHandler.respondPreconditionFailed(request, response, existingResource);
+				}
 				return;
 			}
 			if (matchHelper.checkIfNoneMatch(null, request)) {

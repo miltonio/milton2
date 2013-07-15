@@ -159,6 +159,7 @@ public class CalendarController {
         ds.save(principal);
 
         String icalData = bout.toString(StringUtils.UTF8.name());
+        icalData = calendarService.setRsvps(icalData);
 //        System.out.println("new ical --- " + newName);
 //        System.out.println(icalData);
 //        System.out.println("---");

@@ -15,6 +15,10 @@
 package io.milton.http.annotated;
 
 import io.milton.annotations.CTag;
+import io.milton.http.exceptions.BadRequestException;
+import io.milton.http.exceptions.NotAuthorizedException;
+import io.milton.resource.CollectionResource;
+import io.milton.resource.Resource;
 import java.util.Date;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.slf4j.Logger;
@@ -27,6 +31,24 @@ import org.slf4j.LoggerFactory;
 public class CTagAnnotationHandler extends AbstractAnnotationHandler {
 
 	private static final Logger log = LoggerFactory.getLogger(CTagAnnotationHandler.class);
+
+	public static String deriveCtag(CollectionResource col) throws NotAuthorizedException, BadRequestException {
+		Date latest = col.getModifiedDate();
+		for (Resource r : col.getChildren()) {
+			Date d = r.getModifiedDate();
+			if (d != null) {
+				if (latest == null || d.after(latest)) {
+					latest = d;
+				}
+			}
+		}
+
+		String ctag = null;
+		if (latest != null) {
+			ctag = "T" + latest.getTime();
+		}
+		return ctag;
+	}
 	private final String[] CTAG_PROP_NAMES = {"ctag"};
 
 	public CTagAnnotationHandler(final AnnotationResourceFactory outer) {
@@ -61,17 +83,7 @@ public class CTagAnnotationHandler extends AbstractAnnotationHandler {
 					}
 					if (rawId == null) {
 						// last ditch effort, use latest mod date on the collection or any member
-						Date latest = col.getModifiedDate();
-						for (CommonResource r : col.getChildren()) {
-							Date d = r.getModifiedDate();
-							if (latest == null || d.after(latest)) {
-								latest = d;
-							}
-						}
-
-						if (latest != null) {
-							rawId = "T" + latest.getTime();
-						}
+						rawId = deriveCtag(col);
 						if (log.isInfoEnabled()) {
 							log.debug("Derived ctag from directory members. This is not recommended, you should implement an @CTag method. Ctag=" + rawId);
 						}
@@ -86,8 +98,8 @@ public class CTagAnnotationHandler extends AbstractAnnotationHandler {
 			}
 			if (rawId != null) {
 				String s = rawId.toString();
-				if (s == null || s.length() == 0) {
-					log.warn("CTAG value is null or blank");
+				if (s.length() == 0) {
+					log.warn("CTAG value is blank");
 				}
 				return s;
 			} else {

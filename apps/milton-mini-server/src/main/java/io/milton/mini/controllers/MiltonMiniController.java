@@ -18,6 +18,7 @@
  */
 package io.milton.mini.controllers;
 
+import io.milton.annotations.AccessControlList;
 import io.milton.annotations.Authenticate;
 import io.milton.annotations.ChildOf;
 import io.milton.annotations.ChildrenOf;
@@ -27,6 +28,7 @@ import io.milton.annotations.ModifiedDate;
 import io.milton.annotations.Name;
 import io.milton.annotations.Post;
 import io.milton.annotations.Principal;
+import io.milton.annotations.Realm;
 import io.milton.annotations.ResourceController;
 import io.milton.annotations.Root;
 import io.milton.annotations.UniqueId;
@@ -39,6 +41,7 @@ import io.milton.config.InitListener;
 import io.milton.http.HttpManager;
 import io.milton.http.http11.auth.DigestResponse;
 import io.milton.mini.PasswordManager;
+import io.milton.resource.AccessControlledResource;
 import io.milton.vfs.data.DataSession;
 import io.milton.vfs.db.CalEvent;
 import io.milton.vfs.db.Organisation;
@@ -80,6 +83,7 @@ public class MiltonMiniController implements InitListener {
     public MiltonMiniController getRoot() {
         return this;
     }
+   
     
     @Post
     public JsonResult doHomePagePost(MiltonMiniController root) {
@@ -135,6 +139,19 @@ public class MiltonMiniController implements InitListener {
     public ModelAndView showUserPage(Profile profile) throws UnsupportedEncodingException {
         return new ModelAndView("profile", profile, "profilePage"); 
     }         
+    
+    @AccessControlList
+    public List<AccessControlledResource.Priviledge> getUserPriviledges(Profile target, @Principal Profile currentUser) {
+        if( currentUser == null ) {
+            return AccessControlledResource.NONE;
+        } else {
+            if( currentUser.getId() == target.getId() ) {
+                return AccessControlledResource.READ_WRITE;
+            } else {
+                return AccessControlledResource.NONE;
+            }
+        }
+    }
     
     @Post(bindData=true)
     public Profile saveProfile(Profile profile) {

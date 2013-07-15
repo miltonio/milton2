@@ -172,13 +172,10 @@ public class DefaultCalendarSearchService implements CalendarSearchService {
                         Resource rCalHome = resourceFactory.getResource(host, href);
                         if( rCalHome instanceof CollectionResource ) {
                             CollectionResource calHome = (CollectionResource) rCalHome;
-                            System.out.println("List calendar home: " + calHome.getName());
                             for( Resource rCal : calHome.getChildren()) {
                                 if( rCal instanceof CalendarResource) {
                                     CalendarResource cal = (CalendarResource) rCal;
-                                    System.out.println("List calendar: " + cal.getName());
                                     for( Resource rEvent : cal.getChildren()) {
-                                        System.out.println("Event: " + rEvent.getName());
                                         if( rEvent instanceof ICalResource) {
                                             ICalResource event = (ICalResource) rEvent;
                                             if( isAttendeeOf(user, event) ) {
