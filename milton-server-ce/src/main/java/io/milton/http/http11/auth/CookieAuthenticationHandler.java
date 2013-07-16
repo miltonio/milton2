@@ -270,13 +270,27 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 	public String getUserUrlFromRequest(Request request) {
 		String encodedUserUrl = getCookieOrParam(request, cookieUserUrlValue);
 		if (encodedUserUrl == null) {
+			log.trace("getUserUrlFromRequest: Null encodedUserUrl");
 			return null;
 		}
+		if(log.isDebugEnabled()) {
+			log.debug("getUserUrlFromRequest: Raw:" + encodedUserUrl);
+		}
+		encodedUserUrl = Utils.decodePath(encodedUserUrl);
+		if(log.isDebugEnabled()) {
+			log.debug("getUserUrlFromRequest: Percent decoded:" + encodedUserUrl);
+		}
+		
 		byte[] arr = base64.fromString(encodedUserUrl);
 		if (arr == null) {
+			log.debug("Failed to decode encodedUserUrl, so maybe its not encoded, return as it is");
 			return encodedUserUrl; // its just not encoded
 		}
-		return new String(arr);
+		String s = new String(arr);
+		if(log.isDebugEnabled()) {
+			log.debug("getUserUrlFromRequest: Decoded user url:" + s);
+		}
+		return s;
 	}
 
 	public String getHashFromRequest(Request request) {
@@ -316,6 +330,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 		log.trace("setCookieValues");
 		BeanCookie c = new BeanCookie(cookieUserUrlValue);
 		String encodedUserUrl = base64.toString(userUrl.getBytes(Utils.UTF8));
+		encodedUserUrl = Utils.percentEncode(encodedUserUrl); // base64 uses some chars illegal in cookies, eg equals
 		c.setValue(encodedUserUrl);
 		c.setPath("/");
 		c.setVersion(1);
