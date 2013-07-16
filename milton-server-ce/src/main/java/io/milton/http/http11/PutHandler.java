@@ -142,8 +142,8 @@ public class PutHandler implements Handler {
 				} else {
 					log.info("if-match comparison failed on null resource, aborting PUT request");
 					responseHandler.respondPreconditionFailed(request, response, existingResource);
-				}
-				return;
+					return;
+				}				
 			}
 			if (matchHelper.checkIfNoneMatch(null, request)) {
 				log.info("if-none-match comparison failed on null resource, aborting PUT request");

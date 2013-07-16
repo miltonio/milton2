@@ -58,10 +58,8 @@ import org.hibernate.Transaction;
 public class CalendarController {
 
     private static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(CalendarController.class);
-    
     @Inject
     private DataSessionManager dataSessionManager;
-    
     @Inject
     private CalendarService calendarService;
 
@@ -140,13 +138,17 @@ public class CalendarController {
     public void getEventIcal(CalEvent event, Calendar calendar, Request request, OutputStream out, Range range) throws IOException {
         DataSession ds = dataSessionManager.get(request, calendar);
         DataSession.FileNode fileNode = (DataSession.FileNode) ds.getRootDataNode().get(event.getName());
-        if (range == null) {
-            fileNode.writeContent(out);
+        if (fileNode != null) {
+            if (range == null) {
+                fileNode.writeContent(out);
+            } else {
+                fileNode.writeContent(out, range.getStart(), range.getFinish());
+            }
         } else {
-            fileNode.writeContent(out, range.getStart(), range.getFinish());
+            String s = calendarService.getCalendar(event);
+            out.write(s.getBytes(StringUtils.UTF8));
         }
     }
-    
 
     @Get
     @ICalData
@@ -154,7 +156,7 @@ public class CalendarController {
         CalEvent orgEvent = event.getOrganiserEvent();
         Calendar calendar = orgEvent.getCalendar();
         getEventIcal(orgEvent, calendar, request, out, range);
-    }    
+    }
 
     @PutChild
     public CalEvent createEvent(Calendar calendar, final String newName, InputStream inputStream, Request request, final @Principal Profile principal) throws IOException {

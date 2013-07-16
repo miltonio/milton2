@@ -19,12 +19,9 @@
 package io.milton.mini.controllers;
 
 import io.milton.annotations.CalendarInvitations;
+import io.milton.annotations.Delete;
 import io.milton.annotations.FreeBusyQuery;
-import io.milton.annotations.Get;
-import io.milton.annotations.ICalData;
 import io.milton.annotations.ResourceController;
-import io.milton.http.Range;
-import io.milton.http.Request;
 import io.milton.http.caldav.EventResourceImpl;
 import io.milton.http.caldav.ICalFormatter;
 import io.milton.http.caldav.ITip;
@@ -32,14 +29,11 @@ import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.mail.MailboxAddress;
 import io.milton.resource.SchedulingResponseItem;
-import io.milton.vfs.data.DataSession;
 import io.milton.vfs.db.AttendeeRequest;
 import io.milton.vfs.db.CalEvent;
 import io.milton.vfs.db.Calendar;
 import io.milton.vfs.db.Profile;
 import io.milton.vfs.db.utils.SessionManager;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -86,8 +80,22 @@ public class SchedulingController {
     }
 
     @CalendarInvitations
-    public List<AttendeeRequest> getAttendeeRequests(Profile user) {            
-        return user.getAttendeeRequests();
+    public List<AttendeeRequest> getAttendeeRequests(Profile user) {     
+        List<AttendeeRequest> list = new ArrayList<AttendeeRequest>();
+        if( user.getAttendeeRequests() != null ) {
+            for( AttendeeRequest ar : user.getAttendeeRequests() ) {
+                if( !ar.isAcknowledged() ) {
+                    list.add(ar);
+                }
+            }
+        }
+        return list;
+    }
+    
+    @Delete
+    public void deleteAttendeeRequest(AttendeeRequest ar) {
+        ar.setAcknowledged(true);
+        SessionManager.session().save(ar);
     }
     
 
