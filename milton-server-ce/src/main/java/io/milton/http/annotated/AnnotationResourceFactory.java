@@ -35,6 +35,7 @@ import io.milton.annotations.ContentType;
 import io.milton.annotations.Copy;
 import io.milton.annotations.CreatedDate;
 import io.milton.annotations.Delete;
+import io.milton.annotations.Email;
 import io.milton.annotations.FreeBusyQuery;
 import io.milton.annotations.Get;
 import io.milton.annotations.ICalData;
@@ -131,6 +132,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	ContactDataAnnotationHandler contactDataAnnotationHandler = new ContactDataAnnotationHandler(this);
 	
 	CommonPropertyAnnotationHandler<String> nameAnnotationHandler = new CommonPropertyAnnotationHandler(Name.class, this, "name", "fileName");
+	CommonPropertyAnnotationHandler<String> emailAnnotationHandler = new CommonPropertyAnnotationHandler(Email.class, this, "email");
 	CommonPropertyAnnotationHandler<String> realmAnnotationHandler = new CommonPropertyAnnotationHandler(Realm.class, this, "realm");
 	CommonPropertyAnnotationHandler<Date> modifiedDateAnnotationHandler = new CommonPropertyAnnotationHandler<Date>(ModifiedDate.class, this, "modifiedDate");
 	CommonPropertyAnnotationHandler<Date> createdDateAnnotationHandler = new CommonPropertyAnnotationHandler<Date>(CreatedDate.class, this);

@@ -15,6 +15,7 @@
  */
 package io.milton.http.caldav;
 
+import io.milton.ent.config.HttpManagerBuilderEnt;
 import io.milton.http.annotated.AnnoCalendarResource;
 import io.milton.http.annotated.AnnoPrincipalResource;
 import io.milton.http.annotated.AnnotationResourceFactory;
@@ -24,8 +25,11 @@ import io.milton.principal.CalDavPrincipal;
 import io.milton.resource.CalendarResource;
 import io.milton.resource.ICalResource;
 import io.milton.resource.SchedulingResponseItem;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -33,6 +37,8 @@ import java.util.List;
  */
 public class AnnotationsCalendarSearchService implements CalendarSearchService {
 
+    private static final Logger log = LoggerFactory.getLogger(AnnotationsCalendarSearchService.class);
+    
     private final CalendarSearchService wrapped;
     private AnnotationResourceFactory annotationResourceFactory;
 
@@ -61,7 +67,12 @@ public class AnnotationsCalendarSearchService implements CalendarSearchService {
     public List<SchedulingResponseItem> queryFreeBusy(CalDavPrincipal principal, String iCalText) {
         if (principal instanceof AnnoPrincipalResource) {
             AnnoPrincipalResource p = (AnnoPrincipalResource) principal;
-            return annotationResourceFactory.getFreeBusyQueryAnnotationHandler().execute(p, iCalText);
+            List<SchedulingResponseItem> list = annotationResourceFactory.getFreeBusyQueryAnnotationHandler().execute(p, iCalText);
+            if( list == null ) {
+                log.warn("Got null response from getFreeBusyQueryAnnotationHandler");
+                list = Collections.EMPTY_LIST;                
+            }
+            return list;
         } else {
             return wrapped.queryFreeBusy(principal, iCalText);
         }

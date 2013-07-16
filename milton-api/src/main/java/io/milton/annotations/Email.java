@@ -20,18 +20,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks a method as one which finds calendar event invitations for a user
+ * Marks the method as one which returns the email address for a type of object.
  * 
- * First argument must be the user source object
- * 
- * Returns a list of objects which represent calendar items
- * 
- * 
+ * Usually the type of object will be the same as returned by @Users method,
+ * ie your principal source object
  *
  * @author brad
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface CalendarInvitations {
-
+public @interface Email {
+    
 }

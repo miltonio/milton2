@@ -17,6 +17,7 @@
 package io.milton.mini.services;
 
 import io.milton.mini.utils.CalUtils;
+import io.milton.vfs.db.AttendeeRequest;
 import io.milton.vfs.db.BaseEntity;
 import io.milton.vfs.db.CalEvent;
 import java.io.*;
@@ -37,6 +38,7 @@ import org.hibernate.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import io.milton.vfs.db.Calendar;
+import io.milton.vfs.db.Profile;
 import io.milton.vfs.db.utils.SessionManager;
 import java.util.Iterator;
 import net.fortuna.ical4j.model.parameter.Rsvp;
@@ -51,10 +53,17 @@ public class CalendarService {
     private static final Logger log = LoggerFactory.getLogger(CalendarService.class);
     private String defaultColor = "blue";
 
-    public void update(CalEvent event, String data) {
+    /**
+     * Returns the updated ical text
+     *
+     * @param event
+     * @param data
+     */
+    public String update(CalEvent event, String data) {
+        String ical = null;
         Session session = SessionManager.session();
         try {
-            _update(event, data);
+            ical = _update(event, data, session);
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         } catch (ParserException ex) {
@@ -62,6 +71,7 @@ public class CalendarService {
         }
         session.save(event);
         session.save(event.getCalendar());
+        return ical;
     }
 
     public Calendar createCalendar(BaseEntity owner, String newName) {
@@ -134,7 +144,7 @@ public class CalendarService {
         session.delete(calendar);
     }
 
-    public CalEvent createEvent(Calendar calendar, String newName, String icalData) throws UnsupportedEncodingException {
+    public CalEvent createEvent(Calendar calendar, String newName, String icalData, UpdatedEventCallback callback) throws UnsupportedEncodingException, IOException {
         System.out.println("createEvent: newName=" + newName + " -- " + icalData);
         Session session = SessionManager.session();
         CalEvent e = new CalEvent();
@@ -153,10 +163,20 @@ public class CalendarService {
         } catch (ParserException ex) {
             throw new RuntimeException(ex);
         }
-        _setCalendar(cal4jCalendar, e);
+        _setCalendar(cal4jCalendar, e, session);
+
         session.save(e);
+        if (callback != null) {
+            String newIcal = formatIcal(cal4jCalendar);
+            callback.updated(newIcal);
+        }
 
         return e;
+    }
+
+    public interface UpdatedEventCallback {
+
+        public void updated(String ical) throws IOException;
     }
 
     /**
@@ -165,37 +185,38 @@ public class CalendarService {
      * @param icalData
      * @return
      */
-    public String setRsvps(String icalData) throws UnsupportedEncodingException {
-        ByteArrayInputStream fin = new ByteArrayInputStream(icalData.getBytes("UTF-8"));
-        CalendarBuilder builder = new CalendarBuilder();
-        net.fortuna.ical4j.model.Calendar cal4jCalendar;
-        try {
-            cal4jCalendar = builder.build(fin);
-            VEvent event = event(cal4jCalendar);
-            for (Object o : event.getProperties()) {
-                if (o instanceof Attendee) {
-                    Attendee attendee = (Attendee) o;
-                    Iterator it = attendee.getParameters().iterator();
-                    boolean found = false;
-                    while (it.hasNext()) {
-                        Parameter p = (Parameter) it.next();
-                        if (p.getName().equals(Rsvp.RSVP)) {
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (!found) {
-                        attendee.getParameters().add(Rsvp.TRUE);
+    public void setRsvps(VEvent event, CalEvent e, Session session) {
+
+        for (Object o : event.getProperties()) {
+            if (o instanceof Attendee) {
+                Attendee attendee = (Attendee) o;
+                Iterator it = attendee.getParameters().iterator();
+                boolean rsvpFound = false;
+                while (it.hasNext()) {
+                    Parameter p = (Parameter) it.next();
+                    if (p.getName().equals(Rsvp.RSVP)) {
+                        rsvpFound = true;
+                        break;
                     }
                 }
+                if (!rsvpFound) {
+                    attendee.getParameters().add(Rsvp.TRUE);
+                }
+                String attendeeEmail = attendee.getValue();
+                attendeeEmail = attendeeEmail.replace("mailto:", "");
+                log.info("Check/Create attendance record for: " + attendeeEmail);
+                Profile p = Profile.findByEmail(attendeeEmail, SessionManager.session());
+                if (p != null) {
+                    log.info("Check create attendance for: " + p.getName());
+                    AttendeeRequest.checkCreate(p, e, session);
+                } else {
+                    log.warn("Did not find user: " + attendeeEmail);
+                }
+
             }
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        } catch (ParserException ex) {
-            throw new RuntimeException(ex);
         }
 
-        return formatIcal(cal4jCalendar);
+
 
     }
 
@@ -234,7 +255,7 @@ public class CalendarService {
 
     }
 
-    private void _setCalendar(net.fortuna.ical4j.model.Calendar calendar, CalEvent calEvent) {
+    private void _setCalendar(net.fortuna.ical4j.model.Calendar calendar, CalEvent calEvent, Session session) {
         VEvent ev = event(calendar);
         calEvent.setStartDate(ev.getStartDate().getDate());
         Date endDate = null;
@@ -247,6 +268,8 @@ public class CalendarService {
             summary = ev.getSummary().getValue();
         }
         calEvent.setSummary(summary);
+        session.save(calEvent);
+        setRsvps(ev, calEvent, session);
     }
 
     private VEvent event(net.fortuna.ical4j.model.Calendar cal) {
@@ -261,10 +284,14 @@ public class CalendarService {
         this.defaultColor = defaultColor;
     }
 
-    private void _update(CalEvent event, String data) throws IOException, ParserException {
+    private String _update(CalEvent event, String data, Session session) throws IOException, ParserException {
+        System.out.println("Update Event--");
+        System.out.println(data);
+        System.out.println("----");
         CalendarBuilder builder = new CalendarBuilder();
         net.fortuna.ical4j.model.Calendar calendar = builder.build(new ByteArrayInputStream(data.getBytes("UTF-8")));
-        _setCalendar(calendar, event);
+        _setCalendar(calendar, event, session);
+        return formatIcal(calendar);
     }
 
     public String formatIcal(net.fortuna.ical4j.model.Calendar calendar) {

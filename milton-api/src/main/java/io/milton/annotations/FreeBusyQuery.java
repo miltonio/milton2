@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
  * 
  * Must take the following arguments: 
  * <ul>
- *  <li>Source object, representing a calendar</li>
+ *  <li>Source object, representing a caldav principal/user</li>
  *  <li>The query parameters, as an ical formatted text message</li>
  * </ul>
  * 

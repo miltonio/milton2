@@ -22,13 +22,13 @@ import io.milton.annotations.AccessControlList;
 import io.milton.annotations.Authenticate;
 import io.milton.annotations.ChildOf;
 import io.milton.annotations.ChildrenOf;
+import io.milton.annotations.Email;
 import io.milton.annotations.Get;
 import io.milton.annotations.MakeCollection;
 import io.milton.annotations.ModifiedDate;
 import io.milton.annotations.Name;
 import io.milton.annotations.Post;
 import io.milton.annotations.Principal;
-import io.milton.annotations.Realm;
 import io.milton.annotations.ResourceController;
 import io.milton.annotations.Root;
 import io.milton.annotations.UniqueId;
@@ -212,6 +212,11 @@ public class MiltonMiniController implements InitListener {
     public Boolean checkPasswordDigest(Profile user, DigestResponse digest) {
         return passwordManager.verifyDigest(digest, user);
     }    
+    
+    @Email
+    public String getUserEmail(Profile profile) {
+        return profile.getEmail();
+    }
 
     @UniqueId
     public String getUniqueId(DataSession.DataNode m) {

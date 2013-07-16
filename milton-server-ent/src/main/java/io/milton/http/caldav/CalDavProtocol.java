@@ -70,11 +70,13 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
     private final PropertyMap propertyMapAppleCal;
     private final CalendarSearchService calendarSearchService;
     private final List<CustomPostHandler> customPostHandlers;
+    private ResourceFactory resourceFactory;
 
     public CalDavProtocol(ResourceFactory resourceFactory, WebDavResponseHandler responseHandler, HandlerHelper handlerHelper, WebDavProtocol webDavProtocol, PropFindXmlGenerator gen, PropFindPropertyBuilder propertyBuilder, CalendarSearchService calendarSearchService) {
         if( resourceFactory == null ) {
             throw new NullPointerException("resourceFactory is null");
         }
+        this.resourceFactory = resourceFactory;
         this.calendarSearchService = calendarSearchService;
         propertyMapCalDav = new PropertyMap(CALDAV_NS);
         propertyMapCalDav.add(new CalenderDescriptionProperty());
@@ -600,6 +602,12 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
         log.trace("found a caldav well-known resource");
         return new CaldavWellKnownResource(host);
     }
+
+    public ResourceFactory getResourceFactory() {
+        return resourceFactory;
+    }
+    
+    
 
     public class CaldavWellKnownResource implements DigestResource, GetableResource, PropFindableResource {
 

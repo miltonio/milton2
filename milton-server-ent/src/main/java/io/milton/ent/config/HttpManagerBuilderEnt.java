@@ -10,6 +10,7 @@ import io.milton.http.*;
 import io.milton.http.acl.ACLProtocol;
 import io.milton.http.acl.AccessControlledResourceTypeHelper;
 import io.milton.http.annotated.AnnotationResourceFactory;
+import io.milton.http.caldav.AnnotationsCalendarSearchService;
 import io.milton.http.caldav.CalDavProtocol;
 import io.milton.http.caldav.CalendarResourceTypeHelper;
 import io.milton.http.caldav.CalendarSearchService;
@@ -23,7 +24,6 @@ import io.milton.http.carddav.CardDavProtocol;
 import io.milton.http.fck.FckResourceFactory;
 import io.milton.http.fs.SimpleLockManager;
 import io.milton.http.http11.*;
-import io.milton.http.webdav.DefaultPropFindPropertyBuilder;
 import io.milton.http.webdav.PropertySourcePatchSetter;
 import io.milton.http.webdav.ResourceTypeHelper;
 import io.milton.http.webdav.WebDavResourceTypeHelper;
@@ -78,6 +78,7 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
     private LockManager lockManager = new SimpleLockManager();
     private ICalFormatter iCalFormatter = new ICalFormatter();
     private CalendarSearchService calendarSearchService;
+    private AnnotationsCalendarSearchService annotationsCalendarSearchService;
     private WellKnownResourceFactory wellKnownResourceFactory;
 
     @Override
@@ -87,6 +88,9 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
             AnnotationResourceFactory arf = (AnnotationResourceFactory) getMainResourceFactory();
             if (arf.getLockManager() == null) {
                 arf.setLockManager(lockManager);
+            }
+            if( annotationsCalendarSearchService != null ) {
+                annotationsCalendarSearchService.setAnnotationResourceFactory(arf);
             }
         }
     }
@@ -111,10 +115,16 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
             if (calendarSearchService == null) {
                 DefaultCalendarSearchService c = new DefaultCalendarSearchService(iCalFormatter, mainResourceFactory);
                 c.setSchedulingEnabled(enableScheduling);
-                calendarSearchService = c;
+                // Wrap the default in an annotations handler. It will forward requests to the wrapped
+                // instance for non-annotation resources
+                annotationsCalendarSearchService = new AnnotationsCalendarSearchService(c);
+                calendarSearchService = annotationsCalendarSearchService;
             }            
             if (calendarSearchService.isSchedulingEnabled()) {
                 outerResourceFactory = new SchedulingResourceFactory(outerResourceFactory, calendarSearchService);
+                log.info("Caldav Scheduling is enabled: " + outerResourceFactory.getClass());
+            } else {
+                log.info("Caldav scheduling is disabled");
             }
             if (enabledCkBrowser) {
                 outerResourceFactory = new FckResourceFactory(outerResourceFactory);
@@ -145,6 +155,7 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
             }
 
             Http11Protocol http11Protocol = new Http11Protocol(webdavResponseHandler, handlerHelper, resourceHandlerHelper, enableOptionsAuth, matchHelper, partialGetHelper);
+            log.info("Enabled HTTP11 protocol");
             protocols.add(http11Protocol);
 
                 
@@ -162,6 +173,7 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
 
             initWebdavProtocol();
             if (webDavProtocol != null) {
+                log.info("Enabled DAV level 1 protocol");
                 protocols.add(webDavProtocol);
             }
 
@@ -169,6 +181,7 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
                 webDavLevel2Protocol = new WebDavLevel2Protocol(handlerHelper, webdavResponseHandler, resourceHandlerHelper, userAgentHelper());
             }
             if (webDavLevel2Protocol != null) {
+                log.info("Enabled DAV level 2 protocol");
                 valueWriters.getValueWriters().add(0, new SupportedLockValueWriter());
                 valueWriters.getValueWriters().add(0, new LockTokenValueWriter());
 
@@ -178,18 +191,19 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
                 }
             }
 
-            if (calDavProtocol == null && caldavEnabled) {
-                System.out.println("configure caldavprotocol with outer resource factory: " + outerResourceFactory);
+            if (calDavProtocol == null && caldavEnabled) {                
                 calDavProtocol = new CalDavProtocol(outerResourceFactory, webdavResponseHandler, handlerHelper, webDavProtocol, propFindXmlGenerator, propFindPropertyBuilder(), calendarSearchService);
             }
             if (calDavProtocol != null) {
+                log.info("Add Caldav protocol: " + calDavProtocol.getClass() + " with resource factory: " + calDavProtocol.getResourceFactory());
                 protocols.add(calDavProtocol);
             }
 
-            if (aclProtocol == null && aclEnabled) {
+            if (aclProtocol == null && aclEnabled) {                
                 aclProtocol = new ACLProtocol(webDavProtocol);
             }
             if (aclProtocol != null) {
+                log.info("Enaled ACL Protocol");
                 protocols.add(aclProtocol);
             }
 
@@ -200,6 +214,7 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
                 valueWriters.getValueWriters().add(0, new SupportedCalendarComponentListValueWriter());
                 valueWriters.getValueWriters().add(0, new SupportedCalendarComponentListsSetValueWriter());
                 protocols.add(cardDavProtocol);
+                log.info("Enabled CardDav protocol");
             }
         }
 
@@ -208,6 +223,7 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
         }
 
         if (wellKnownResourceFactory != null) {
+            log.info("Enabled well-known protocol");
             if (wellKnownHandlers == null) {
                 wellKnownHandlers = new ArrayList<WellKnownResourceFactory.WellKnownHandler>();
                 for (HttpExtension p : protocols) {

@@ -37,6 +37,7 @@ import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.mini.DataSessionManager;
 import io.milton.mini.services.CalendarService;
 import io.milton.vfs.data.DataSession;
+import io.milton.vfs.db.AttendeeRequest;
 import io.milton.vfs.db.CalEvent;
 import io.milton.vfs.db.Calendar;
 import io.milton.vfs.db.Profile;
@@ -57,8 +58,10 @@ import org.hibernate.Transaction;
 public class CalendarController {
 
     private static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(CalendarController.class);
+    
     @Inject
     private DataSessionManager dataSessionManager;
+    
     @Inject
     private CalendarService calendarService;
 
@@ -95,7 +98,7 @@ public class CalendarController {
 
     @ChildOf(pathSuffix = "new")
     public Calendar createNewCalendar(CalendarsHome calendarsHome, String name, @Principal Profile currentUser) throws NotAuthorizedException {
-        if( currentUser == null ) {
+        if (currentUser == null) {
             throw new NotAuthorizedException(null);
         }
         Calendar newCal = calendarsHome.user.newCalendar(name, currentUser);
@@ -143,33 +146,45 @@ public class CalendarController {
             fileNode.writeContent(out, range.getStart(), range.getFinish());
         }
     }
+    
+
+    @Get
+    @ICalData
+    public void getAttendeeRequestIcal(AttendeeRequest event, Request request, OutputStream out, Range range) throws IOException {
+        CalEvent orgEvent = event.getOrganiserEvent();
+        Calendar calendar = orgEvent.getCalendar();
+        getEventIcal(orgEvent, calendar, request, out, range);
+    }    
 
     @PutChild
-    public CalEvent createEvent(Calendar calendar, String newName, InputStream inputStream, Request request, @Principal Profile principal) throws IOException {
+    public CalEvent createEvent(Calendar calendar, final String newName, InputStream inputStream, Request request, final @Principal Profile principal) throws IOException {
         log.trace("createNew: set content");
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         IOUtils.copy(inputStream, bout);
 
-        DataSession ds = dataSessionManager.get(request, calendar, true, principal);
-        DataSession.FileNode newFileNode = (DataSession.FileNode) ds.getRootDataNode().get(newName);
-        if (newFileNode == null) { // usually should be null
-            newFileNode = ds.getRootDataNode().addFile(newName);
-        }
-        newFileNode.setContent(new ByteArrayInputStream(bout.toByteArray()));
-        ds.save(principal);
+        final DataSession ds = dataSessionManager.get(request, calendar, true, principal);
+
 
         String icalData = bout.toString(StringUtils.UTF8.name());
-        icalData = calendarService.setRsvps(icalData);
 //        System.out.println("new ical --- " + newName);
 //        System.out.println(icalData);
 //        System.out.println("---");
-        CalEvent newEvent = calendarService.createEvent(calendar, newName, icalData);
+        CalEvent newEvent = calendarService.createEvent(calendar, newName, icalData, new CalendarService.UpdatedEventCallback() {
+            public void updated(String updatedIcal) throws IOException {
+                DataSession.FileNode newFileNode = (DataSession.FileNode) ds.getRootDataNode().get(newName);
+                if (newFileNode == null) { // usually should be null
+                    newFileNode = ds.getRootDataNode().addFile(newName);
+                }
+                newFileNode.setContent(new ByteArrayInputStream(updatedIcal.getBytes(StringUtils.UTF8)));
+                ds.save(principal);
+            }
+        });
 
         return newEvent;
     }
 
     @PutChild
-    public CalEvent createEvent(CalEvent event, InputStream inputStream, Request request, Calendar calendar, @Principal Profile principal) throws IOException {
+    public CalEvent updateEvent(CalEvent event, InputStream inputStream, Request request, Calendar calendar, @Principal Profile principal) throws IOException {
         log.trace("createNew: set content");
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         IOUtils.copy(inputStream, bout);

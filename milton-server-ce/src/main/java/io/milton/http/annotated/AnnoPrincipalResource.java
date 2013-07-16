@@ -19,7 +19,6 @@
 package io.milton.http.annotated;
 
 import io.milton.annotations.Calendars;
-import io.milton.http.HttpManager;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.values.HrefList;
@@ -28,9 +27,7 @@ import io.milton.principal.CalDavPrincipal;
 import io.milton.principal.CardDavPrincipal;
 import io.milton.principal.DiscretePrincipal;
 import io.milton.principal.HrefPrincipleId;
-import io.milton.resource.ICalResource;
 import io.milton.resource.Resource;
-import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,9 +39,8 @@ import org.slf4j.LoggerFactory;
 public class AnnoPrincipalResource extends AnnoCollectionResource implements DiscretePrincipal, CalDavPrincipal, CardDavPrincipal {
 
 	private static final Logger log = LoggerFactory.getLogger(AnnoPrincipalResource.class);
-
 	private String email;
-	
+
 	public AnnoPrincipalResource(AnnotationResourceFactory outer, Object source, AnnoCollectionResource parent) {
 		super(outer, source, parent);
 	}
@@ -132,7 +128,7 @@ public class AnnoPrincipalResource extends AnnoCollectionResource implements Dis
 
 	@Override
 	public HrefList getCalendarUserAddressSet() {
-		String mailto = "mailto:" + getEmail(); 
+		String mailto = "mailto:" + getEmail();
 		return HrefList.asList(mailto);
 	}
 
@@ -150,12 +146,14 @@ public class AnnoPrincipalResource extends AnnoCollectionResource implements Dis
 	public String getAddress() {
 		return getHref();
 	}
-	
+
 	public String getEmail() {
-		if (email == null) {			
-			email = getName() + "@" + getRealm();
-			log.info("Constructed email for source class: " + source.getClass() + " = " + email );
+		if (email == null) {
+			email = annoFactory.emailAnnotationHandler.get(this);
+			if (email == null) {
+				log.info("Constructed email for source class: " + source.getClass() + " = " + email);
+			}
 		}
 		return email;
-	}	
+	}
 }

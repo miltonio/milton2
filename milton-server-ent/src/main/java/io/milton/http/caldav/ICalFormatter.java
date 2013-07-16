@@ -4,6 +4,8 @@
  */
 package io.milton.http.caldav;
 
+import io.milton.http.exceptions.BadRequestException;
+import io.milton.http.exceptions.NotAuthorizedException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.text.ParseException;
@@ -20,8 +22,8 @@ import net.fortuna.ical4j.model.component.VEvent;
 
 /**
  * A helper class to parse and format the iCalendar specification. A very simple
- * implement to support DefaultCalendarSearchService. You will probably want
- * to replace both in a production implementation
+ * implement to support DefaultCalendarSearchService. You will probably want to
+ * replace both in a production implementation
  *
  * To use this, first implement the appropriate interface (E.g. EventResource
  * for VEVENT) and then use this class to implement getICalData
@@ -61,8 +63,9 @@ public class ICalFormatter {
 
     /**
      * Return the attendee mailtos for some sort of ical request
+     *
      * @param data
-     * @return 
+     * @return
      */
     public List<String> parseAttendees(String data) {
         String[] lines = toLines(data);
@@ -80,7 +83,7 @@ public class ICalFormatter {
         }
         return attendees;
     }
-    
+
     public FreeBusyRequest parseFreeBusyRequest(String data) {
         FreeBusyRequest r = new FreeBusyRequest();
         String[] lines = toLines(data);
@@ -200,6 +203,39 @@ public class ICalFormatter {
 
     private VEvent event(net.fortuna.ical4j.model.Calendar cal) {
         return (VEvent) cal.getComponent("VEVENT");
+    }
+
+    public String buildFreeBusyAttendeeResponse(List<? extends EventResource> events, ICalFormatter.FreeBusyRequest request, String domain, String attendeeMailto) throws NotAuthorizedException, BadRequestException {
+        Map<String, String> source = request.getLines();
+        StringBuilder sb = new StringBuilder();
+        sb.append("BEGIN:VCALENDAR\n");
+        sb.append("VERSION:2.0 PRODID:-//milton.io//CalDAV Server//EN\n");
+        sb.append("METHOD:REPLY\n");
+        sb.append("BEGIN:VFREEBUSY\n");
+        // Copy these lines back verbatim
+        sb.append(source.get("UID")).append("\n");
+        sb.append(source.get("DTSTAMP")).append("\n");
+        sb.append(source.get("DTSTART")).append("\n");
+        sb.append(source.get("DTEND")).append("\n");
+        sb.append(source.get("ORGANIZER")).append("\n");
+        // Output the original attendee line
+        sb.append(request.getAttendeeLines().get(attendeeMailto)).append("\n");
+
+
+        for (EventResource er : events) {
+            // write the freebusy statement, Eg:
+            // FREEBUSY;FBTYPE=BUSY:20090602T110000Z/20090602T120000Z
+            sb.append("FREEBUSY;FBTYPE=BUSY:");
+            sb.append(formatDate(er.getStart()));
+            sb.append("/");
+            sb.append(formatDate(er.getEnd()));
+            sb.append("\n");
+        }
+
+
+        sb.append("END:VFREEBUSY\n");
+        sb.append("END:VCALENDAR\n");
+        return sb.toString();
     }
 
     public class FreeBusyRequest {
