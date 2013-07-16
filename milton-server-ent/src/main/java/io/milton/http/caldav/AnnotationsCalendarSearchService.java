@@ -110,7 +110,7 @@ public class AnnotationsCalendarSearchService implements CalendarSearchService {
 
     @Override
     public String getSchedulingOutboxColName() {
-        return wrapped.getSchedulingColName();
+        return wrapped.getSchedulingOutboxColName();
     }
 
     @Override

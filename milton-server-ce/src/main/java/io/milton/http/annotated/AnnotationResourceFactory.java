@@ -217,8 +217,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 						request.getAttributes().put("in.early.auth", Boolean.TRUE);
 						AuthenticationService.AuthStatus authStatus = authenticationService.authenticate(hostRoot, request);
 						if (authStatus == null) {
-							// Not attempted, so anonymous request.
-							return null;
+							log.trace("Authentication not attempted");
 						} else {
 							if (authStatus.loginFailed) {
 								log.warn("Early authentication failed");

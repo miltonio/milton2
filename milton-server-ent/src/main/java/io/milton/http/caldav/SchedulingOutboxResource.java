@@ -235,7 +235,9 @@ public class SchedulingOutboxResource extends BaseSchedulingXBoxResource impleme
 
     @Override
     public void sendContent(OutputStream out, Range range, Map<String, String> params, String contentType) throws IOException, NotAuthorizedException, BadRequestException, NotFoundException {
-        out.write(xmlResponse);
+        if (xmlResponse != null) {
+            out.write(xmlResponse);
+        }
     }
 
     @Override
@@ -250,7 +252,11 @@ public class SchedulingOutboxResource extends BaseSchedulingXBoxResource impleme
 
     @Override
     public Long getContentLength() {
-        return (long) xmlResponse.length;
+        if (xmlResponse != null) {
+            return (long) xmlResponse.length;
+        } else {
+            return null;
+        }
     }
 
     @Override
