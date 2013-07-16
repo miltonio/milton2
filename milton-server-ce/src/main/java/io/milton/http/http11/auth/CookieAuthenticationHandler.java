@@ -302,10 +302,12 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 		}
 		String salt = arr[0];
 		String hash = arr[1];
-		String expectedHash = DigestUtils.md5Hex(userUrl + ":" + salt);
+		String hashSource = userUrl + ":" + salt;
+		String expectedHash = DigestUtils.md5Hex(hashSource);
 		boolean ok = expectedHash.equals(hash);
 		if (!ok) {
-			log.warn("Cookie sig does not match expected. Given=" + hash + " Expected=" + expectedHash + "  salt=" + salt);
+			log.warn("Cookie sig does not match expected. Given=" + hash + " Expected=" + expectedHash);
+			log.warn( "  hashSource=" + hashSource);			
 		}
 		return ok;
 	}
