@@ -276,6 +276,12 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 				throw (NotFoundException)cause;
 			}
 			throw e;			
+		} catch(NotAuthorizedException e) {
+			throw e;
+		} catch(BadRequestException e) {
+			throw e;
+		} catch(NotFoundException e) {
+			throw e;			
 		} catch (Exception e) {
 			throw new Exception("Method: " + cm, e);
 		}

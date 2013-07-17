@@ -63,13 +63,13 @@ public class SchedulingController {
                 Profile attendee = findUserFromMailto(add);
                 if (attendee == null) {
                     log.warn("Attendee not found: " + attendeeMailto);
-                    SchedulingResponseItem item = new SchedulingResponseItem(attendeeMailto, ITip.StatusResponse.RS_INVALID_37, null);
+                    SchedulingResponseItem item = new SchedulingResponseItem("mailto:" + attendeeMailto, ITip.StatusResponse.RS_INVALID_37, null);
                     list.add(item);
                 } else {
                     log.info("Found attendee: " + attendee.getName());
                     // Now locate events and build an ical response
                     String ical = buildFreeBusyAttendeeResponse(attendee, r, add.domain, attendeeMailto);
-                    SchedulingResponseItem item = new SchedulingResponseItem(attendeeMailto, ITip.StatusResponse.RS_SUCCESS_20, ical);
+                    SchedulingResponseItem item = new SchedulingResponseItem("mailto:" + attendeeMailto, ITip.StatusResponse.RS_SUCCESS_20, ical);
                     list.add(item);
                 }
             }

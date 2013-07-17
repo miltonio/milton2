@@ -27,7 +27,7 @@ public class ITip {
 
     public enum StatusResponse {
 
-        RS_SUCCESS_20("2.0", "Success.", "None."),
+        RS_SUCCESS_20("2.0", "Success", "None."),
         RS_SUCCESS_21("2.1", "Success but fallback taken on one or more property values.", "Property name and value MAY be specified."),
         RS_SUCCESS_22("2.2", "Success, invalid property ignored.", "Property name MAY be specified."),
         RS_SUCCESS_23("2.3", "Success, invalid property parameter ignored.", "Property parameter name and value MAY be specified."),
@@ -47,8 +47,8 @@ public class ITip {
         RS_INVALID_33("3.3", "Invalid property parameter value.", "Property parameter name and value MAY be specified."),
         RS_INVALID_34("3.4", "Invalid calendar componentsequence.", "Calendar component sentinel MAY be specified (e.g., BEGIN:VTIMEZONE)."),
         RS_INVALID_35("3.5", "Invalid date or time.", "Date/time value(s) MAY be specified."),
-        RS_INVALID_36("3.6", "Invalid rule.", "Rule value MAY be specified."),
-        RS_INVALID_37("3.7", "Invalid Calendar User.", "Attendee property value MAY be specified."),
+        RS_INVALID_36("3.6", "Invalid rule", "Rule value MAY be specified."),
+        RS_INVALID_37("3.7", "Invalid Calendar User", "Attendee property value MAY be specified."),
         RS_INVALID_38("3.8", "No authority.", "METHOD and Attendee property values MAY be specified."),
         RS_INVALID_39("3.9", "Unsupported version.", "VERSION property name and value MAY be specified."),
         RS_INVALID_310("3.10", "Request entity too large.", "None."),
@@ -64,7 +64,7 @@ public class ITip {
         RS_ERROR_50("5.0", "Request MAY supported. (WTF?!)", "Method property value MAY be specified."),
         RS_ERROR_51("5.1", "Service unavailable.", "ATTENDEE property value MAY be specified."),
         RS_ERROR_52("5.2", "Invalid calendar service.", "ATTENDEE property value MAY be specified."),
-        RS_ERROR_53("5.3", "No scheduling support for user.", "ATTENDEE property value MAY be specified.         ");
+        RS_ERROR_53("5.3", "No scheduling support for user.", "ATTENDEE property value MAY be specified");
         public String code;
         public String description;
         public String longerDesc;

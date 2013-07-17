@@ -43,7 +43,7 @@ public class CalendarQueryReport implements Report {
     private final PropFindXmlGenerator xmlGenerator;
     private final CalendarSearchService calendarSearchService;
     private final Namespace NS_DAV = Namespace.getNamespace(WebDavProtocol.NS_DAV.getPrefix(), WebDavProtocol.NS_DAV.getName());
-    private final Namespace NS_CAL = Namespace.getNamespace("C", CalDavProtocol.CALDAV_NS);    
+    private final Namespace NS_CAL = Namespace.getNamespace("C", CalDavProtocol.CALDAV_NS);
 
     public CalendarQueryReport(PropFindPropertyBuilder propertyBuilder, PropFindXmlGenerator xmlGenerator, CalendarSearchService calendarSearchService) {
         this.propertyBuilder = propertyBuilder;
@@ -70,7 +70,11 @@ public class CalendarQueryReport implements Report {
         if (resource instanceof CalendarResource) {
             CalendarResource calendar = (CalendarResource) resource;
             List<ICalResource> foundResources = findCalendarResources(calendar, doc);
-            log.trace("foundResources: " + foundResources.size());
+            if (foundResources != null) {
+                log.trace("foundResources: " + foundResources.size());
+            } else {
+                log.trace("foundResources: null");
+            }
             String parentHref = HttpManager.request().getAbsolutePath();
             parentHref = Utils.suffixSlash(parentHref);
             for (ICalResource cr : foundResources) {
@@ -157,5 +161,4 @@ public class CalendarQueryReport implements Report {
         return calendarSearchService.findCalendarResources(calendar, start, end);
 
     }
-
 }

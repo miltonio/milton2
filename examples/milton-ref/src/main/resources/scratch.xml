@@ -1,24 +1,69 @@
-CalDAV: recv: <?xml version="1.0" encoding="utf-8" ?>
-<d:multistatus xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:" xmlns:cal="urn:ietf:params:xml:ns:caldav" xmlns:card="urn:ietf:params:xml:ns:carddav">
-    <d:response>
-        <d:href>/users/usera/</d:href>
-        <d:propstat>
-            <d:prop>
-                <cal:schedule-outbox-URL>
-                    <d:href>/users/usera/scheduling/outbox/</d:href>
-                </cal:schedule-outbox-URL>
-                <cal:calendar-user-address-set>
-                    <d:href>mailto:usera@localhost:8080</d:href>
-                </cal:calendar-user-address-set>
-                <cal:calendar-home-set>
-                    <d:href>/users/usera/cals/</d:href>
-                    <d:href>/users/usera/cals/</d:href>
-                </cal:calendar-home-set>
-                <cal:schedule-inbox-URL>
-                    <d:href>/users/usera/scheduling/inbox/</d:href>
-                </cal:schedule-inbox-URL>
-            </d:prop>
-            <d:status>HTTP/1.1 200 OK</d:status>
-        </d:propstat>
-    </d:response>
-</d:multistatus>
+<?xml version="1.0" encoding="utf-8" ?>
+<C:schedule-response xmlns:D="DAV:" xmlns:C="urn:ietf:params:xml:ns:caldav">
+    <C:response>
+        <C:recipient>
+            <D:href>mailto:usera@bradmcevoy.com</D:href>
+        </C:recipient>
+        <C:request-status>2.0;Success.</C:request-status>
+        <C:calendar-data>BEGIN:VCALENDAR
+            VERSION:2.0 PRODID:-//milton.io//CalDAV Server//EN
+            METHOD:REPLY
+            BEGIN:VFREEBUSY
+            UID:6FA5C3DE-5BBD-457C-897F-6D5FFF398A9B
+            DTSTAMP:20130717T101311Z
+            DTSTART:20130717T120000Z
+            DTEND:20130718T120000Z
+            ORGANIZER:mailto:usera@bradmcevoy.com
+            ATTENDEE:mailto:usera@bradmcevoy.com
+            FREEBUSY;FBTYPE=BUSY:20130718T040000Z/20130718T050000Z
+            END:VFREEBUSY
+            END:VCALENDAR
+</C:calendar-data>
+    </C:response>
+    <C:response>
+        <C:recipient>
+            <D:href>mailto:userb@bradmcevoy.com</D:href>
+        </C:recipient>
+        <C:request-status>2.0;Success.</C:request-status>
+        <C:calendar-data>BEGIN:VCALENDAR
+            VERSION:2.0 PRODID:-//milton.io//CalDAV Server//EN
+            METHOD:REPLY
+            BEGIN:VFREEBUSY
+            UID:6FA5C3DE-5BBD-457C-897F-6D5FFF398A9B
+            DTSTAMP:20130717T101311Z
+            DTSTART:20130717T120000Z
+            DTEND:20130718T120000Z
+            ORGANIZER:mailto:usera@bradmcevoy.com
+            ATTENDEE:mailto:userb@bradmcevoy.com
+            FREEBUSY;FBTYPE=BUSY:20130718T040000Z/20130718T050000Z
+            FREEBUSY;FBTYPE=BUSY:20130718T040000Z/20130718T050000Z
+            END:VFREEBUSY
+            END:VCALENDAR
+            
+BEGIN:VCALENDAR
+   VERSION:2.0
+   PRODID:-//Example Corp.//CalDAV Server//EN
+   METHOD:REPLY
+   BEGIN:VFREEBUSY
+   UID:4FD3AD926350
+   DTSTAMP:20090602T200733Z
+   DTSTART:20090602T000000Z
+   DTEND:20090604T000000Z
+   ORGANIZER;CN="Cyrus Daboo":mailto:cyrus@example.com
+
+
+
+Daboo & Desruisseaux     Expires October 4, 2012               [Page 77]
+
+ 
+Internet-Draft        CalDAV Scheduling Extensions            April 2012
+
+
+   ATTENDEE;CN="Wilfredo Sanchez Vega":mailto:wilfredo@example.com
+   FREEBUSY;FBTYPE=BUSY:20090602T110000Z/20090602T120000Z
+   FREEBUSY;FBTYPE=BUSY:20090603T170000Z/20090603T180000Z
+   END:VFREEBUSY
+   END:VCALENDAR            
+</C:calendar-data>
+    </C:response>
+</C:schedule-response>

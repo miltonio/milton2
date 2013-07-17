@@ -81,7 +81,11 @@ public class CalendarController {
 
     @ChildrenOf
     @Calendars
-    public List<Calendar> getCalendars(CalendarsHome cals) {
+    public List<Calendar> getCalendars(CalendarsHome cals, @Principal Profile profile) throws NotAuthorizedException {
+        if( profile == null ) {
+            log.warn("getCalendarrs with no user");
+            throw new NotAuthorizedException();
+        }
         return cals.user.getCalendars();
     }
 

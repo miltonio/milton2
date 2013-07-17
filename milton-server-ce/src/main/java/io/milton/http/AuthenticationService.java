@@ -32,6 +32,8 @@ import org.slf4j.LoggerFactory;
 public class AuthenticationService {
 
 	private static final Logger log = LoggerFactory.getLogger(AuthenticationService.class);
+	public static final String ATT_AUTH_STATUS = "auth.service.status";
+	public static final String ATT_AUTH_CALLED = "auth.service.called";
 	private List<AuthenticationHandler> authenticationHandlers;
 	private List<ExternalIdentityProvider> externalIdentityProviders;
 	private boolean disableExternal;
@@ -54,6 +56,9 @@ public class AuthenticationService {
 	 * authenticate method.
 	 *
 	 * Returns null if no handlers support the request
+	 * 
+	 * Caches results so can be called multiple times in one request without
+	 * performacne overhead
 	 *
 	 * @param resource
 	 * @param request
@@ -62,6 +67,24 @@ public class AuthenticationService {
 	 * whether the login succeeded
 	 */
 	public AuthStatus authenticate(Resource resource, Request request) {
+		
+		if( request.getAttributes().containsKey(ATT_AUTH_STATUS) ) {
+			return (AuthStatus) request.getAttributes().get(ATT_AUTH_STATUS);
+		}
+		
+		// This is to prevent recursive calls into authenticate, which can happen
+		// when resource location tries to do authentication
+		if( request.getAttributes().containsKey(ATT_AUTH_CALLED) ) {
+			return null;
+		}
+		request.getAttributes().put(ATT_AUTH_CALLED, Boolean.TRUE);
+		
+		AuthStatus authStatus = _authenticate(resource, request);
+		request.getAttributes().put(ATT_AUTH_STATUS, authStatus); // maybe null
+		return authStatus;
+	}
+	
+	private AuthStatus _authenticate(Resource resource, Request request) {
 		log.trace("authenticate");
 		Auth auth = request.getAuthorization();
 		boolean preAuthenticated = (auth != null && auth.getTag() != null);

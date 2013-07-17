@@ -16,6 +16,9 @@ package io.milton.http.annotated;
 
 import io.milton.annotations.ChildrenOf;
 import io.milton.http.Request.Method;
+import io.milton.http.exceptions.BadRequestException;
+import io.milton.http.exceptions.NotAuthorizedException;
+import io.milton.http.exceptions.NotFoundException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -32,7 +35,7 @@ public class ChildrenOfAnnotationHandler extends AbstractAnnotationHandler {
 		super(outer, ChildrenOf.class, Method.PROPFIND);
 	}
 
-	public Set<AnnoResource> execute(AnnoCollectionResource parent, boolean isChildLookup) {
+	public Set<AnnoResource> execute(AnnoCollectionResource parent, boolean isChildLookup) throws NotAuthorizedException, BadRequestException, NotFoundException, Exception {
 		Set<AnnoResource> result = new HashSet<AnnoResource>();
 		List<ControllerMethod> candidateMethods = getMethods(parent.source.getClass());
 		// Find any override methods
@@ -61,8 +64,14 @@ public class ChildrenOfAnnotationHandler extends AbstractAnnotationHandler {
 			try {
 				if (lookupPermitted(isChildLookup, cm)) {
 					Object o = invoke(cm, parent);
-					annoResourceFactory.createAndAppend(result, o, parent, cm);					
+					annoResourceFactory.createAndAppend(result, o, parent, cm);
 				}
+			} catch (NotAuthorizedException e) {
+				throw e;
+			} catch (BadRequestException e) {
+				throw e;
+			} catch (NotFoundException e) {
+				throw e;
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}

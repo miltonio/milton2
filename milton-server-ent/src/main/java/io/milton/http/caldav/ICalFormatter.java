@@ -219,8 +219,10 @@ public class ICalFormatter {
         sb.append(source.get("DTEND")).append("\n");
         sb.append(source.get("ORGANIZER")).append("\n");
         // Output the original attendee line
+        if( attendeeMailto == null ) {
+            throw new RuntimeException("attendeeMailto is null");
+        }
         sb.append(request.getAttendeeLines().get(attendeeMailto)).append("\n");
-
 
         for (EventResource er : events) {
             // write the freebusy statement, Eg:

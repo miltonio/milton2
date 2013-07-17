@@ -141,7 +141,7 @@ public class MiltonMiniController implements InitListener {
     }         
     
     @AccessControlList
-    public List<AccessControlledResource.Priviledge> getUserPriviledges(Profile target, @Principal Profile currentUser) {
+    public List<AccessControlledResource.Priviledge> getUserPriviledges(Profile target, Profile currentUser) {
         if( currentUser == null ) {
             return AccessControlledResource.NONE;
         } else {

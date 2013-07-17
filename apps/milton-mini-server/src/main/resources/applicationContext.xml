@@ -50,6 +50,7 @@
             </list>
         </property>   
         <property name="enableDigestAuth" value="false"/>
+        <property name="enableEarlyAuth" value="true"/>
         <property name="fsRealm" value="localhost"/>
     </bean>
     

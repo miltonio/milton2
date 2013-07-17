@@ -78,15 +78,8 @@ public class AccessControlListAnnotationHandler extends AbstractAnnotationHandle
 		Object source = res.getSource();
 		List<ControllerMethod> availMethods = getMethods(source.getClass());
 		if (availMethods.isEmpty()) {
-			java.lang.reflect.Method m = annoResourceFactory.findMethodForAnno(source.getClass(), annoClass);
-			if (m == null) {
-				return null;
-			}
-			try {
-				addPrivsFromMethod(m, source, acl, curUser, res, auth);
-			} catch (Exception ex) {
-				throw new RuntimeException(ex);
-			}
+			log.warn("No ACL methods were found");
+			return null;
 		} else {
 			try {
 				for (ControllerMethod cm : availMethods) {

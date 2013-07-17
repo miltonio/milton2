@@ -142,7 +142,7 @@ public class HttpManagerBuilder {
 	protected boolean enableFormAuth = true;
 	protected boolean enableCookieAuth = true;
 	protected boolean enabledCkBrowser = false;
-	protected boolean enableEarlyAuth = true;
+	protected boolean enableEarlyAuth = false;
 	protected String loginPage = "/login.html";
 	protected List<String> loginPageExcludePaths;
 	protected File rootDir = null;
@@ -1390,6 +1390,16 @@ public class HttpManagerBuilder {
 		this.dependencies = dependencies;
 	}
 
+	public boolean isEnableEarlyAuth() {
+		return enableEarlyAuth;
+	}
+
+	public void setEnableEarlyAuth(boolean enableEarlyAuth) {
+		this.enableEarlyAuth = enableEarlyAuth;
+	}
+
+	
+	
 	private Object createObject(Class c) throws CreationException {
 		log.info("createObject: " + c.getCanonicalName());
 		// Look for an @Inject or default construcctor

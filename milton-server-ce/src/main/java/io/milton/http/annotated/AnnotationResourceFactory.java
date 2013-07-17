@@ -130,7 +130,6 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	CalendarsAnnotationHandler calendarsAnnotationHandler = new CalendarsAnnotationHandler(this);
 	AddressBooksAnnotationHandler addressBooksAnnotationHandler = new AddressBooksAnnotationHandler(this);
 	ContactDataAnnotationHandler contactDataAnnotationHandler = new ContactDataAnnotationHandler(this);
-	
 	CommonPropertyAnnotationHandler<String> nameAnnotationHandler = new CommonPropertyAnnotationHandler(Name.class, this, "name", "fileName");
 	CommonPropertyAnnotationHandler<String> emailAnnotationHandler = new CommonPropertyAnnotationHandler(Email.class, this, "email");
 	CommonPropertyAnnotationHandler<String> realmAnnotationHandler = new CommonPropertyAnnotationHandler(Realm.class, this, "realm");
@@ -141,7 +140,6 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	CommonPropertyAnnotationHandler<Long> maxAgeAnnotationHandler = new CommonPropertyAnnotationHandler<Long>(MaxAge.class, this, "maxAge");
 	CommonPropertyAnnotationHandler<String> uniqueIdAnnotationHandler = new CommonPropertyAnnotationHandler<String>(UniqueId.class, this, "id");
 	CommonPropertyAnnotationHandler<String> calendarColorAnnotationHandler = new CommonPropertyAnnotationHandler<String>(CalendarColor.class, this, "color");
-	
 	CalendarDateRangeQueryAnnotationHandler calendarDateRangeQueryAnnotationHandler = new CalendarDateRangeQueryAnnotationHandler(this);
 	FreeBusyQueryAnnotationHandler freeBusyQueryAnnotationHandler = new FreeBusyQueryAnnotationHandler(this);
 	CalendarInvitationsAnnotationHandler calendarInvitationsAnnotationHandler = new CalendarInvitationsAnnotationHandler(this);
@@ -176,12 +174,12 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		mapOfAnnotationHandlers.put(ICalData.class, iCalDataAnnotationHandler);
 		mapOfAnnotationHandlers.put(CalendarColor.class, calendarColorAnnotationHandler);
 		mapOfAnnotationHandlers.put(ContactData.class, contactDataAnnotationHandler);
-		
+
 		mapOfAnnotationHandlers.put(CalendarDateRangeQuery.class, calendarDateRangeQueryAnnotationHandler);
 		mapOfAnnotationHandlers.put(FreeBusyQuery.class, freeBusyQueryAnnotationHandler);
 		mapOfAnnotationHandlers.put(CalendarInvitations.class, calendarInvitationsAnnotationHandler);
-		mapOfAnnotationHandlers.put(CalendarInvitationsCTag.class, calendarInvitationsCTagAnnotationHandler);		
-		
+		mapOfAnnotationHandlers.put(CalendarInvitationsCTag.class, calendarInvitationsCTagAnnotationHandler);
+
 
 		for (AnnotationHandler ah : mapOfAnnotationHandlers.values()) {
 			Method[] methods = ah.getSupportedMethods();
@@ -205,30 +203,6 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 				log.warn("Could not find a root resource for host: " + host + " Using " + rootAnnotationHandler.getControllerMethods().size() + " root methods");
 			}
 			return null;
-		}
-
-		if (doEarlyAuth) {
-			if (authenticationService != null) {
-				Request request = HttpManager.request();
-				if (request.getAuthorization() == null) {
-					// Note that authentication will usually result in a call to getResource to find the principal..
-					// so we must ensure we dont go into a recursive loop				
-					if (!request.getAttributes().containsKey("in.early.auth")) {
-						request.getAttributes().put("in.early.auth", Boolean.TRUE);
-						AuthenticationService.AuthStatus authStatus = authenticationService.authenticate(hostRoot, request);
-						if (authStatus == null) {
-							log.trace("Authentication not attempted");
-						} else {
-							if (authStatus.loginFailed) {
-								log.warn("Early authentication failed");
-								throw new NotAuthorizedException(hostRoot);
-							} else {
-								log.info("Early authentication succeeded");
-							}
-						}
-					}
-				}
-			}
 		}
 
 		Resource r;
@@ -519,6 +493,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 				args[i] = mandatorySecondArg; // hack for methods which can have a null 2nd arg. Without this any other matching object would be provided
 			} else {
 				if (isPrincipalArg(m, i)) {
+					principal = checkAuthentication(sourceRes, principal);
 					if (principal != null) {
 						args[i] = principal.source;
 					} else {
@@ -750,11 +725,13 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 
 	/**
 	 * Process the source object (which may be a Collection of source objects),
-	 * and for each one instantiate an AnnoResource and append it to the result set
-	 * 
-	 * 
+	 * and for each one instantiate an AnnoResource and append it to the result
+	 * set
+	 *
+	 *
 	 * @param result - to append to
-	 * @param sources - single source object, or multiple source objects in a Collection
+	 * @param sources - single source object, or multiple source objects in a
+	 * Collection
 	 * @param parent - the parent collection of these resource(s)
 	 * @param cm - the controller method they were found by
 	 */
@@ -774,6 +751,40 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		} else {
 			result.add(instantiate(sources, parent, cm.method));
 		}
+	}
+
+	private AnnoPrincipalResource checkAuthentication(AnnoResource res, AnnoPrincipalResource principal) throws NotAuthorizedException {
+		if (principal != null) {
+			return principal;
+		}
+		if (doEarlyAuth) {
+			if (authenticationService != null) {
+				Request request = HttpManager.request();
+
+				// Note that authentication will usually result in a call to getResource to find the principal..
+
+				AuthenticationService.AuthStatus authStatus = authenticationService.authenticate(res, request);
+				if (authStatus == null) {
+					log.trace("Authentication not attempted");
+					throw new NotAuthorizedException(res);
+				} else {
+					if (authStatus.loginFailed) {
+						log.warn("Early authentication failed");
+						throw new NotAuthorizedException(res);
+					} else {
+						log.info("Early authentication succeeded");
+						Auth auth = authStatus.auth;
+						if (auth != null) {
+							if (auth.getTag() instanceof AnnoPrincipalResource) {
+								principal = (AnnoPrincipalResource) auth.getTag();
+							}
+						}
+						return principal;
+					}
+				}
+			}
+		}
+		return null;
 	}
 
 	public class AnnotationsDisplayNameFormatter implements DisplayNameFormatter {
@@ -809,6 +820,4 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	public FreeBusyQueryAnnotationHandler getFreeBusyQueryAnnotationHandler() {
 		return freeBusyQueryAnnotationHandler;
 	}
-	
-	
 }

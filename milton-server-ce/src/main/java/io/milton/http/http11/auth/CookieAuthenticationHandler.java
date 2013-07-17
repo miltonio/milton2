@@ -248,7 +248,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 	 * @param request
 	 * @return
 	 */
-	private String getUserUrl(Request request) {
+	public String getUserUrl(Request request) {
 		if (request == null) {
 			return null;
 		}
@@ -275,6 +275,13 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 		}
 		if(log.isDebugEnabled()) {
 			log.debug("getUserUrlFromRequest: Raw:" + encodedUserUrl);
+		}
+		if( !encodedUserUrl.startsWith("b64")) {
+			log.trace("Looks like a plain path, return as is");
+			return encodedUserUrl;
+		} else {
+			log.trace("Looks like a base64 encoded string");
+			encodedUserUrl = encodedUserUrl.substring(3);
 		}
 		encodedUserUrl = Utils.decodePath(encodedUserUrl);
 		if(log.isDebugEnabled()) {
@@ -329,8 +336,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 	private void setCookieValues(Response response, String userUrl, String hash) {
 		log.trace("setCookieValues");
 		BeanCookie c = new BeanCookie(cookieUserUrlValue);
-		String encodedUserUrl = base64.toString(userUrl.getBytes(Utils.UTF8));
-		encodedUserUrl = Utils.percentEncode(encodedUserUrl); // base64 uses some chars illegal in cookies, eg equals
+		String encodedUserUrl = encodeUserUrl(userUrl);
 		c.setValue(encodedUserUrl);
 		c.setPath("/");
 		c.setVersion(1);
@@ -348,6 +354,13 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 			c.setExpiry(SECONDS_PER_YEAR);
 		}
 		response.setCookie(c);
+	}
+	
+	public String encodeUserUrl(String userUrl) {
+		String encodedUserUrl = base64.toString(userUrl.getBytes(Utils.UTF8));
+		encodedUserUrl = Utils.percentEncode(encodedUserUrl); // base64 uses some chars illegal in cookies, eg equals
+		encodedUserUrl = "b64" + encodedUserUrl; // need to distinguish if base64 encoded or not
+		return (encodedUserUrl);
 	}
 
 	private void clearCookieValue(Response response) {

@@ -56,12 +56,19 @@ public class AnnotationsCalendarSearchService implements CalendarSearchService {
 
     @Override
     public List<ICalResource> findCalendarResources(CalendarResource calendar, Date start, Date finish) throws NotAuthorizedException, BadRequestException {
+        List<ICalResource> results = null;
         if (calendar instanceof AnnoCalendarResource) {
-            return annotationResourceFactory.getCalendarDateRangeQueryAnnotationHandler().execute((AnnoCalendarResource) calendar, start, finish);
-        } else {
-            return wrapped.findCalendarResources(calendar, start, finish);
+            results = annotationResourceFactory.getCalendarDateRangeQueryAnnotationHandler().execute((AnnoCalendarResource) calendar, start, finish);            
+            if( results == null ) {
+                log.trace("Got null results from annotations calendar date range query, so will fallback to iterative query: " + wrapped.getClass());
+            }
         }
+        if( results == null ) {
+            results = wrapped.findCalendarResources(calendar, start, finish);
+        }
+        return results;
     }
+    
 
     @Override
     public List<SchedulingResponseItem> queryFreeBusy(CalDavPrincipal principal, String iCalText) {
