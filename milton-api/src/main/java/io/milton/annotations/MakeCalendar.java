@@ -21,8 +21,18 @@ import java.lang.annotation.Target;
 
 /**
  * Marks a method as one which creates calendars. A calendar is just a collection
- * which contains events
+ * which contains events.
  * 
+ * Your method should have the following arguments:
+ * <ul>
+ * <li>The target object which must be the source for the calendars home</li>
+ * <li>The name of the new calendar</li>
+ * <li>The initial fields to set: Map<QName, String> fieldsToSet</li>
+ * </ul>
+ * 
+ * The make calendar method should apply the given fields to the calendar and persist
+ * 
+ * Return the source object for the new calendar
  *
  * @author brad
  */

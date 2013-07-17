@@ -24,6 +24,7 @@ import io.milton.annotations.ChildrenOf;
 import io.milton.annotations.Delete;
 import io.milton.annotations.Get;
 import io.milton.annotations.ICalData;
+import io.milton.annotations.MakeCalendar;
 import io.milton.annotations.ModifiedDate;
 import io.milton.annotations.Post;
 import io.milton.annotations.Principal;
@@ -50,7 +51,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import javax.inject.Inject;
+import javax.xml.namespace.QName;
 import org.apache.commons.io.IOUtils;
 import org.hibernate.Transaction;
 
@@ -112,6 +115,17 @@ public class CalendarController {
         tx.commit();
         log.info("saved cal");
         return calendar;
+    }
+    
+    @MakeCalendar
+    public Calendar createNewCalendar(CalendarsHome calendarsHome, String newName, Map<QName, String> fieldsToSet, @Principal Profile currentUser) {
+        Calendar newCal = calendarsHome.user.newCalendar(newName, currentUser);
+        log.info("Create new calendar: " + newName);
+        for( QName qname : fieldsToSet.keySet()) {
+            log.info(" field: " + qname + " = " + fieldsToSet.get(qname));
+        }
+        SessionManager.session().save(newCal);
+        return newCal;
     }
 
     /**

@@ -21,7 +21,9 @@ package io.milton.mini.controllers;
 import io.milton.annotations.CalendarInvitations;
 import io.milton.annotations.Delete;
 import io.milton.annotations.FreeBusyQuery;
+import io.milton.annotations.ModifiedDate;
 import io.milton.annotations.ResourceController;
+import io.milton.annotations.UniqueId;
 import io.milton.http.caldav.EventResourceImpl;
 import io.milton.http.caldav.ICalFormatter;
 import io.milton.http.caldav.ITip;
@@ -99,6 +101,15 @@ public class SchedulingController {
     }
     
 
+    @ModifiedDate
+    public Date getAttendeeRequestModDate(AttendeeRequest ar) {
+        return ar.getOrganiserEvent().getModifiedDate();
+    }
+    
+    @UniqueId
+    public String getAttendeeRequestUniqueId(AttendeeRequest ar) {
+        return ar.getId().toString();
+    }
     
     /**
      *
