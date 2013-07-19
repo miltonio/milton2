@@ -53,6 +53,7 @@ public class DigestAuthenticationHandler implements AuthenticationHandler {
     public boolean supports( Resource r, Request request ) {
         Auth auth = request.getAuthorization();
         if( auth == null ) {
+			log.trace("supports: No credentials in request");
             return false;
         }
         boolean b;
@@ -60,12 +61,17 @@ public class DigestAuthenticationHandler implements AuthenticationHandler {
             DigestResource dr = (DigestResource) r;
             if( dr.isDigestAllowed()) {
                 b = Auth.Scheme.DIGEST.equals( auth.getScheme() );
+				if( !b ) {
+					log.trace("supports: Authentication scheme is not DIGEST");
+				} else {
+					log.trace("supports: DIGEST scheme credentials provided, supports = true");
+				}
             } else {
-                log.trace("digest auth is not allowed");
+                log.trace("supports: digest auth is not allowed by the resource");
                 b = false;
             }
         } else {
-            log.trace( "resource is not an instanceof DigestResource" );
+            log.trace( "supports: resource is not an instanceof DigestResource" );
             b = false;
         }
         return b;

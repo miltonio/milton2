@@ -113,6 +113,7 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
                 log.info("Enabled well-known protocol support with: " + outerResourceFactory.getClass());
             }
             if (calendarSearchService == null) {
+                log.warn("Using the default calendar search service. Calendar search functions may exhibit poor performance. If thats a problem implement your own: " + CalendarSearchService.class);
                 DefaultCalendarSearchService c = new DefaultCalendarSearchService(iCalFormatter, mainResourceFactory);
                 c.setSchedulingEnabled(enableScheduling);
                 // Wrap the default in an annotations handler. It will forward requests to the wrapped

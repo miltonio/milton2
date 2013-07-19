@@ -46,6 +46,7 @@ public class LoginResponseHandler extends AbstractWrappingResponseHandler {
 	 * @param r
 	 */
 	public static void setDisableHtmlResponse(Request r) {
+		log.trace("html login response disabled for this request");
 		r.getAttributes().put(ATT_DISABLE, Boolean.TRUE);
 	}
 	private String loginPage = "/login.html";
@@ -85,12 +86,15 @@ public class LoginResponseHandler extends AbstractWrappingResponseHandler {
 					return;
 				}
 			}
+		} else {
+			log.trace("html login form has been disabled for this request");
 		}
 		log.trace("respond with normal 401");
 		wrapped.respondUnauthorised(resource, response, request);
 	}
 
 	private void attemptRespondLoginPage(Request request, Resource resource, Response response) throws RuntimeException {
+		log.trace("attemptRespondLoginPage");
 		Resource rLogin;
 		try {
 			rLogin = resourceFactory.getResource(request.getHostHeader(), loginPage);

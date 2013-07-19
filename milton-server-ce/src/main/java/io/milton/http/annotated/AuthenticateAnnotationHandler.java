@@ -96,7 +96,26 @@ public class AuthenticateAnnotationHandler extends AbstractAnnotationHandler {
 		}
 		try {
 			for (ControllerMethod cm : availMethods) {
-				if (hasParamType(cm.method, DigestResponse.class)) {
+				if (cm.method.getReturnType().equals(String.class)) {
+					try {
+						String actualPassword = (String) invoke(cm, userRes, cm.method, userRes);
+						if (actualPassword == null) {
+							log.warn("Null password from: " + cm + " for user: " + userRes.getHref());
+							return false;
+						} else {
+							DigestGenerator gen = new DigestGenerator();
+							String expectedResp = gen.generateDigest(digestRequest, actualPassword);
+							if (expectedResp.equals(digestRequest.getResponseDigest())) {
+								return true;
+							} else {
+								log.info("Digest authentication failed, given digest response is not equal to expected");
+								return false;
+							}
+						}
+					} catch (Exception ex) {
+						throw new RuntimeException("Exception invoking @Authenticate method: " + cm.method, ex);
+					}
+				} else if (hasParamType(cm.method, DigestResponse.class)) {
 					// if it returns String then it returns a password. Otherwise is authenticate method
 					if (cm.method.getReturnType().equals(String.class)) {
 						Object[] args = annoResourceFactory.buildInvokeArgs(userRes, cm.method, userRes);
@@ -125,6 +144,7 @@ public class AuthenticateAnnotationHandler extends AbstractAnnotationHandler {
 					}
 				}
 			}
+			log.warn("Could not find any @Authentication methods compatible with Digest authentication");
 			return null;
 		} catch (Exception e) {
 			throw new RuntimeException(e);

@@ -151,15 +151,15 @@ public class ServletRequest extends AbstractRequest {
     @Override
     public Auth getAuthorization() {
         if (auth != null) {
-            log.trace("using cached auth object");
             return auth;
         }
         String enc = getRequestHeader(Request.Header.AUTHORIZATION);
         if (enc == null) {
+			log.trace("getAuthorization: No http credentials in request headers");
             return null;
         }
         if (enc.length() == 0) {
-            log.trace("authorization header is not-null, but is empty");
+            log.trace("getAuthorization: No http credentials in request headers; authorization header is not-null, but is empty");
             return null;
         }
         auth = new Auth(enc);

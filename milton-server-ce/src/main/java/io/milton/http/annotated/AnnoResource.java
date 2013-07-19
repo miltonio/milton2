@@ -156,8 +156,8 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 				}
 			}
 		} else {
-			if (log.isTraceEnabled()) {
-				log.trace("user was not found from annotated methods");
+			if (log.isInfoEnabled()) {
+				log.info("user " + user + " was not found from annotated methods");
 			}
 
 		}

@@ -121,14 +121,28 @@ public class MiltonMiniController implements InitListener {
         return new UsersHome();
     }
     
+    @ChildrenOf
+    public RepoHome findRepoHome(MiltonMiniController root) {
+        Organisation org = Organisation.getRootOrg(SessionManager.session());
+        return new RepoHome("files", org);
+    }    
+    
+    @ChildrenOf
+    public List<Repository> findRepositories(RepoHome repoHome) {       
+        return repoHome.org.getRepositories();
+    }      
     
     @ChildOf(pathSuffix="new")
     public Profile createNewProfile(UsersHome usersHome) {
+        return createNewProfile();
+    }       
+    
+    public Profile createNewProfile() {
         Profile m = new Profile();
         m.setCreatedDate(new Date());
         m.setModifiedDate(new Date());
         return m;
-    }       
+    }      
     
     @Get(params={"editMode"})
     public ModelAndView showUserEditPage(Profile profile) throws UnsupportedEncodingException {
@@ -155,11 +169,9 @@ public class MiltonMiniController implements InitListener {
     
     @Post(bindData=true)
     public Profile saveProfile(Profile profile) {
-        log.info("saveProfile: " + profile.getName());
         profile.setModifiedDate(new Date());
         SessionManager.session().save(profile);
         SessionManager.session().flush();
-        log.info("saved musician");
         return profile;
     }    
     
@@ -254,18 +266,34 @@ public class MiltonMiniController implements InitListener {
      */
     public void afterBuild(HttpManagerBuilder b, HttpManager m) {
         Session session = sessionManager.open();
+        Transaction tx = session.beginTransaction();
         Organisation rootOrg = Organisation.getRootOrg(session);
         if( rootOrg == null ) {
             log.info("Creating root organisation");
-            Transaction tx = session.beginTransaction();
             rootOrg = new Organisation();
             Date now = currentDateService.getNow();
             rootOrg.setCreatedDate(now);
             rootOrg.setModifiedDate(now);
             rootOrg.setOrgId("root");
-            session.save(rootOrg);
-            tx.commit();
+            session.save(rootOrg);            
         }
+        Profile admin = Profile.find("admin", session);
+        if( admin == null ) {
+            admin = createNewProfile();
+            admin.setName("admin");
+            admin.setNickName("admin");
+            session.save(admin);
+            
+            passwordManager.setPassword(admin, "password8");
+        }
+        Repository files = rootOrg.repository("files");
+        if( files == null ) {
+            System.out.println("create directory");
+            files = rootOrg.createRepository("files", admin, session);
+            session.save(files);
+        }
+        System.out.println("files repo: " +files);
+        tx.commit();
     }
 
     public class UsersHome {
@@ -297,5 +325,22 @@ public class MiltonMiniController implements InitListener {
         public String getName() {
             return "login.html";
         }
+    }
+    
+    public class RepoHome {
+        private final String name;
+        private final Organisation org;
+
+        public RepoHome(String name, Organisation org) {
+            this.name = name;
+            this.org = org;
+        }
+
+
+
+        public String getName() {
+            return name;
+        }
+        
     }
 }

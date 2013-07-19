@@ -6,6 +6,7 @@ import io.milton.annotations.MakeCollection;
 import io.milton.annotations.Principal;
 import io.milton.annotations.PutChild;
 import io.milton.annotations.ResourceController;
+import io.milton.common.ModelAndView;
 import io.milton.http.Range;
 import io.milton.http.Request;
 import io.milton.mini.DataSessionManager;
@@ -15,7 +16,9 @@ import io.milton.vfs.db.Repository;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.inject.Inject;
 
 /**
@@ -30,6 +33,21 @@ public class RepositoryController {
     @Inject
     private DataSessionManager dataSessionManager;
 
+    @Get
+    public ModelAndView showRepositoryHome(MiltonMiniController.RepoHome repoHome, Request request) {
+        ModelAndView mav = new ModelAndView("repositoriesHome",repoHome, "repoHome");
+        return mav;
+    }    
+    
+    @Get
+    public ModelAndView showRepository(Repository repo, Request request) {
+        DataSession dataSession = dataSessionManager.get(request, repo);
+        DataSession.DirectoryNode rootNode = dataSession.getRootDataNode();
+        ModelAndView mav = new ModelAndView("repo",repo, "repoHome");
+        mav.getModel().put("rootDir", rootNode);
+        return mav;
+    }
+    
     @ChildrenOf
     public List<DataSession.DataNode> getBranchMembers(Repository repo, Request request) {
         DataSession dataSession = dataSessionManager.get(request, repo);

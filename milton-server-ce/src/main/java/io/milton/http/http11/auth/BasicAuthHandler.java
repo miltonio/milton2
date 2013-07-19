@@ -47,10 +47,17 @@ public class BasicAuthHandler implements AuthenticationHandler {
     public boolean supports( Resource r, Request request ) {
         Auth auth = request.getAuthorization();
         if( auth == null ) {
+			log.trace("supports: no credentials provided");
             return false;
         }
         log.trace( "supports: {}", auth.getScheme() );
-        return auth.getScheme().equals( Scheme.BASIC );
+        boolean b	= auth.getScheme().equals( Scheme.BASIC );
+		if( b ) {
+			log.trace("supports: is BASIC auth scheme, supports = true");
+		} else {
+			log.trace("supports: is BASIC auth scheme, supports = false");
+		}
+		return b;
     }
 
 	@Override

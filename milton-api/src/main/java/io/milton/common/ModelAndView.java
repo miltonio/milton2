@@ -31,6 +31,11 @@ public class ModelAndView {
         this.view = view;
     }
 
+    public ModelAndView(String template) {
+        view = new View(template);
+        this.model = new HashMap<String, Object>();
+    }    
+    
     public ModelAndView(Map<String, Object> model, String template) {
         view = new View(template);
         this.model = model;

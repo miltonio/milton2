@@ -13,7 +13,7 @@
                 <ul class="nav">
                     <li class="active"><a href="#">Home</a></li>
                     <li><a href="/users">Users</a></li>                    
-                    
+                    <li><a href="/files">Files</a></li>                    
                     <li><a href="${model.principal.href}cals/">Calendars</a></li>
                     <li><a href="#contact">Contacts</a></li>
                     
