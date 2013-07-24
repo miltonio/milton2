@@ -55,6 +55,9 @@ public class JsonPropPatchHandler {
     private final EventManager eventManager;
 
     public JsonPropPatchHandler(PropPatchSetter patchSetter, PropertyAuthoriser permissionService, EventManager eventManager) {
+		if( patchSetter == null ) {
+			throw new NullPointerException("patchSetter is null");
+		}
         this.patchSetter = patchSetter;
         this.permissionService = permissionService;
         this.eventManager = eventManager;

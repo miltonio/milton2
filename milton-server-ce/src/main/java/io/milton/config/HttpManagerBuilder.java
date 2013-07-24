@@ -530,9 +530,18 @@ public class HttpManagerBuilder {
 
 	protected JsonResourceFactory buildJsonResourceFactory() {
 		JsonPropFindHandler jsonPropFindHandler = new JsonPropFindHandler(propFindPropertyBuilder());
-		JsonPropPatchHandler jsonPropPatchHandler = new JsonPropPatchHandler(propPatchSetter, initPropertyAuthoriser(), eventManager);
+		JsonPropPatchHandler jsonPropPatchHandler = new JsonPropPatchHandler(buildPatchSetter(), initPropertyAuthoriser(), eventManager);
 		return new JsonResourceFactory(outerResourceFactory, eventManager, jsonPropFindHandler, jsonPropPatchHandler);
-
+	}
+	
+	protected PropPatchSetter buildPatchSetter() {
+		if( propPatchSetter == null ) {
+			if( propertySources == null ) {
+				throw new RuntimeException("Property sources have not been initialised yet");
+			}
+			propPatchSetter = new PropertySourcePatchSetter(propertySources);
+		}
+		return propPatchSetter;
 	}
 
 	public BUFFERING getBuffering() {
