@@ -19,3 +19,14 @@
           <script src="/js/html5shiv.js"></script>
         <![endif]-->
 
+<script src="/templates/js/jquery.js"></script>
+<script src="/templates/js/jquery.cookie.js"></script>
+<script src="/templates/js/jqBootstrapValidation/jqBootstrapValidation.js"></script>
+<script src="/templates/js/common.js"></script>
+<script src="/templates/js/jquery.forms.js"></script>
+<script src="/templates/js/jquery.user.js"></script>
+<script src="/templates/themes/bootstrap/js/bootstrap.min.js"></script>        
+<script src="/static/alertify/src/alertify.js"></script>
+
+<link href="/static/alertify/themes/alertify.core.css" rel="stylesheet">
+<link href="/static/alertify/themes/alertify.bootstrap.css" rel="stylesheet">

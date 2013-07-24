@@ -41,7 +41,7 @@ public class ResourceList extends ArrayList<CommonResource> {
 	}
 
 	public ResourceList getDirs() {
-		ResourceList list = new ResourceList(this);
+		ResourceList list = new ResourceList();
 		for( CommonResource cr : this ) {
 			if( cr instanceof CollectionResource) {
 				list.add(cr);
@@ -49,6 +49,16 @@ public class ResourceList extends ArrayList<CommonResource> {
 		}
 		return list;		
 	}
+	
+	public ResourceList getFiles() {
+		ResourceList list = new ResourceList();
+		for( CommonResource cr : this ) {
+			if( !(cr instanceof CollectionResource)) {
+				list.add(cr);
+			}
+		}
+		return list;		
+	}	
 	
 	@Override
 	public boolean add(CommonResource e) {

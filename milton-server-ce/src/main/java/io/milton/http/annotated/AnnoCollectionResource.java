@@ -34,8 +34,6 @@ import java.io.InputStream;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.namespace.QName;
 import org.slf4j.LoggerFactory;
 
@@ -124,10 +122,25 @@ public class AnnoCollectionResource extends AnnoResource implements CollectionRe
 		return findChildren(false);
 	}
 
+	public ResourceList getSubFolders() throws NotAuthorizedException, BadRequestException{
+		return getChildren().getDirs();
+	}
+	
+	public ResourceList getFiles() throws NotAuthorizedException, BadRequestException{
+		return getChildren().getFiles();
+	}	
+	
 	private ResourceList findChildren(boolean isChildLookup) throws NotAuthorizedException, BadRequestException {
 		if (children == null) {
 			children = new ResourceList();
-			Set<AnnoResource> set = annoFactory.childrenOfAnnotationHandler.execute(this, isChildLookup);
+			Set<AnnoResource> set;
+			try {
+				set = annoFactory.childrenOfAnnotationHandler.execute(this, isChildLookup);
+			} catch (NotFoundException ex) {
+				throw new RuntimeException(ex);
+			} catch (Exception ex) {
+				throw new RuntimeException(ex);
+			}
 			for (AnnoResource r : set) {
 				children.add(r);
 			}
