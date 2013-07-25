@@ -37,14 +37,6 @@ public abstract class Config {
 	
 	protected abstract Enumeration initParamNames();
 
-	public String getContextPath() {
-		ServletContext c = getServletContext();
-		if( c == null || c.getServletContextName() == null || c.getServletContextName().equals("")  || c.getServletContextName().equals("/")) {
-			return "/";
-		}
-		return "/" + c.getServletContextName() + "/";
-	}
-	
     public File getConfigFile(String path) {
         File f = new File( getWebInfDir(), path);
         return f;
