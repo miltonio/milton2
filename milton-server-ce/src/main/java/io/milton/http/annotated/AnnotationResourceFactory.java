@@ -179,7 +179,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		mapOfAnnotationHandlers.put(FreeBusyQuery.class, freeBusyQueryAnnotationHandler);
 		mapOfAnnotationHandlers.put(CalendarInvitations.class, calendarInvitationsAnnotationHandler);
 		mapOfAnnotationHandlers.put(CalendarInvitationsCTag.class, calendarInvitationsCTagAnnotationHandler);
-
+		mapOfAnnotationHandlers.put(Email.class, emailAnnotationHandler);
 
 		for (AnnotationHandler ah : mapOfAnnotationHandlers.values()) {
 			Method[] methods = ah.getSupportedMethods();
