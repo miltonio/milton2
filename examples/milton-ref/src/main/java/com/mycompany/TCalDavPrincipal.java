@@ -34,7 +34,7 @@ import io.milton.principal.CalDavPrincipal;
 import io.milton.principal.CardDavPrincipal;
 import io.milton.principal.HrefPrincipleId;
 import io.milton.principal.Principal.PrincipleId;
-import io.milton.property.BeanPropertyResource;
+import io.milton.annotations.BeanPropertyResource;
 import io.milton.resource.CalendarResource;
 import io.milton.resource.CollectionResource;
 import io.milton.resource.LdapContact;

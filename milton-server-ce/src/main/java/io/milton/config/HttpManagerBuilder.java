@@ -473,7 +473,7 @@ public class HttpManagerBuilder {
 
 			Http11Protocol http11Protocol = new Http11Protocol(webdavResponseHandler, handlerHelper, resourceHandlerHelper, enableOptionsAuth, matchHelper, partialGetHelper);
 			protocols.add(http11Protocol);
-			propertySources = initDefaultPropertySources(resourceTypeHelper);
+			initDefaultPropertySources(resourceTypeHelper);
 			if (extraPropertySources != null) {
 				for (PropertySource ps : extraPropertySources) {
 					log.info("Add extra property source: " + ps.getClass());

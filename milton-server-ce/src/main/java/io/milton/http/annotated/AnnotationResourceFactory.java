@@ -164,6 +164,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		mapOfAnnotationHandlers.put(AccessControlList.class, accessControlListAnnotationHandler);
 		mapOfAnnotationHandlers.put(AddressBooks.class, addressBooksAnnotationHandler);
 		mapOfAnnotationHandlers.put(Calendars.class, calendarsAnnotationHandler);
+		mapOfAnnotationHandlers.put(MakeCalendarAnnotationHandler.class, makeCalendarAnnotationHandler);		
 
 		mapOfAnnotationHandlers.put(ModifiedDate.class, modifiedDateAnnotationHandler);
 		mapOfAnnotationHandlers.put(CreatedDate.class, createdDateAnnotationHandler);

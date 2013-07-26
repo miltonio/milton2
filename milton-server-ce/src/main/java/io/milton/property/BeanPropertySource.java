@@ -18,12 +18,11 @@
  */
 package io.milton.property;
 
+import io.milton.annotations.BeanPropertyResource;
+import io.milton.annotations.BeanProperty;
 import io.milton.resource.Resource;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.common.LogUtils;
-import io.milton.property.PropertyAuthoriser.PropertyPermission;
-import io.milton.resource.AccessControlledResource;
-import io.milton.resource.AccessControlledResource.Priviledge;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -116,7 +115,7 @@ public class BeanPropertySource implements PropertySource {
 			LogUtils.debug(log, "getPropertyMetaData: no read method:", name.getLocalPart(), r.getClass());
 			return PropertyMetaData.UNKNOWN;
 		} else {
-			BeanPropertyAccess propAnno = pd.getReadMethod().getAnnotation(BeanPropertyAccess.class);
+			BeanProperty propAnno = pd.getReadMethod().getAnnotation(BeanProperty.class);
 			if (propAnno != null) {
 				if (!propAnno.value()) {
 					log.trace("getPropertyMetaData: property is annotated and value is false, so do not allow access");

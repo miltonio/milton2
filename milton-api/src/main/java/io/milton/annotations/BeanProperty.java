@@ -1,4 +1,4 @@
-package io.milton.property;
+package io.milton.annotations;
 
 import io.milton.resource.AccessControlledResource.Priviledge;
 import java.lang.annotation.ElementType;
@@ -35,4 +35,14 @@ public @interface BeanProperty {
      * @return
      */
     Priviledge writeRole() default Priviledge.WRITE;
+	
+    /**
+     * True indicates that the method should be enabled (ie DAV accessible)
+     * regardless of the class default
+     *
+     * False indicats that the property is accessible if the class default is to allow access
+     *
+     * @return
+     */	
+	boolean value() default true;
 }

@@ -158,7 +158,6 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
             Http11Protocol http11Protocol = new Http11Protocol(webdavResponseHandler, handlerHelper, resourceHandlerHelper, enableOptionsAuth, matchHelper, partialGetHelper);
             log.info("Enabled HTTP11 protocol");
             protocols.add(http11Protocol);
-
                 
             initDefaultPropertySources(resourceTypeHelper);
             if (extraPropertySources != null) {

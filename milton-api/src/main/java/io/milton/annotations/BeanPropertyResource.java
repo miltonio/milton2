@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package io.milton.property;
+package io.milton.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

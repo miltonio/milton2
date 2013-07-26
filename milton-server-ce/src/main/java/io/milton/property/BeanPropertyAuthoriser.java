@@ -18,6 +18,8 @@
  */
 package io.milton.property;
 
+import io.milton.annotations.BeanPropertyResource;
+import io.milton.annotations.BeanProperty;
 import io.milton.http.AclUtils;
 import io.milton.http.Request;
 import io.milton.http.Response;
