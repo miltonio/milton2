@@ -9,7 +9,7 @@ import io.milton.http.XmlWriter;
 import io.milton.http.XmlWriter.Element;
 import io.milton.http.values.ValueWriter;
 import io.milton.http.webdav.WebDavProtocol;
-import io.milton.http.webdav.WebDavProtocol.SupportedLocks;
+import io.milton.http.webdav.SupportedLocks;
 import java.util.Map;
 
 public class SupportedLockValueWriter implements ValueWriter {

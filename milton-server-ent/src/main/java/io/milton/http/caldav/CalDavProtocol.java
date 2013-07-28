@@ -66,8 +66,9 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
     public static final String APPLE_ICAL_NS = "http://apple.com/ns/ical/";
     private final Set<Handler> handlers;
     private final PropertyMap propertyMapCalDav;
-    private final PropertyMap propertyMapCalServer;
+    //private final PropertyMap propertyMapCalServer;
     private final PropertyMap propertyMapAppleCal;
+    private final PropertyMap propertyMapDav;
     private final CalendarSearchService calendarSearchService;
     private final List<CustomPostHandler> customPostHandlers;
     private ResourceFactory resourceFactory;
@@ -90,8 +91,9 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
             propertyMapCalDav.add(new ScheduleOutboxProperty());
         }
 
-        propertyMapCalServer = new PropertyMap(CALSERVER_NS);
-        propertyMapCalServer.add(new CTagProperty());
+        //propertyMapCalServer = new PropertyMap(CALSERVER_NS);
+        propertyMapDav = new PropertyMap(WebDavProtocol.NS_DAV.getName());
+        propertyMapDav.add(new CTagProperty());
 //        propertyMapCalServer.add(new XMPPProperty());
         //propertyMapCalServer.add(new DropBoxProperty());
         //propertyMapCalServer.add(new NotificationProperty());
@@ -135,7 +137,7 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
         } else if (propertyMapAppleCal.hasProperty(name)) {
             o = propertyMapAppleCal.getProperty(name, r);
         } else {
-            o = propertyMapCalServer.getProperty(name, r);
+            o = propertyMapDav.getProperty(name, r);
         }
         if (log.isTraceEnabled()) {
             log.trace("getProperty result : " + o + " for property: " + name.getLocalPart());
@@ -151,7 +153,7 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
         } else if (propertyMapAppleCal.hasProperty(name)) {
             propertyMapAppleCal.setProperty(name, r, value);
         } else {
-            propertyMapCalServer.setProperty(name, r, value);
+            propertyMapDav.setProperty(name, r, value);
         }
     }
 
@@ -163,7 +165,7 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
         } else if (propertyMapAppleCal.hasProperty(name)) {
             return propertyMapAppleCal.getPropertyMetaData(name, r);
         } else {
-            return propertyMapCalServer.getPropertyMetaData(name, r);
+            return propertyMapDav.getPropertyMetaData(name, r);
         }
     }
 
@@ -177,7 +179,9 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
         log.trace("getAllPropertyNames");
         List<QName> list = new ArrayList<QName>();
         list.addAll(propertyMapCalDav.getAllPropertyNames(r));
-        list.addAll(propertyMapCalServer.getAllPropertyNames(r));
+        list.addAll(propertyMapDav.getAllPropertyNames(r));
+        list.addAll(propertyMapAppleCal.getAllPropertyNames(r));
+        
         return list;
     }
 

@@ -36,10 +36,12 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 	private final ResourceFactory principalResourceFactory;
 	private String userUrlAttName = "userUrl";
 	private boolean useLongLivedCookies = true;
+	private final List<String> keys;
 
-	public CookieAuthenticationHandler(List<AuthenticationHandler> handlers, ResourceFactory principalResourceFactory) {
+	public CookieAuthenticationHandler(List<AuthenticationHandler> handlers, ResourceFactory principalResourceFactory, List<String> keys) {
 		this.handlers = handlers;
 		this.principalResourceFactory = principalResourceFactory;
+		this.keys = keys;
 	}
 
 	@Override
@@ -199,15 +201,10 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 		}
 
 		Response response = HttpManager.response();
-		String signing = getUrlSigningHash(userUrl);
+		String salt = getRandomSalt();
+		String signing = getUrlSigningHash(userUrl, salt);
 		setCookieValues(response, userUrl, signing);
 		request.getAttributes().put(userUrlAttName, userUrl);
-	}
-
-	public String getUrlSigningHash(String userUrl) {
-		String salt = Math.random() + "";
-		String signing = salt + ":" + DigestUtils.md5Hex(userUrl + ":" + salt);
-		return signing;
 	}
 
 	@Override
@@ -320,14 +317,44 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 		}
 		String salt = arr[0];
 		String hash = arr[1];
-		String hashSource = userUrl + ":" + salt;
+
+		for (String key : keys) {
+			if (verifyHash(userUrl, salt, key, hash)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean verifyHash(String userUrl, String salt, String key, String hash) {
+		String hashSource = getHashSource(userUrl, salt, key);
 		String expectedHash = DigestUtils.md5Hex(hashSource);
 		boolean ok = expectedHash.equals(hash);
 		if (!ok) {
-			log.warn("Cookie sig does not match expected. Given=" + hash + " Expected=" + expectedHash);
-			log.warn("  hashSource=" + hashSource);
+			if (log.isDebugEnabled()) {
+				log.debug("Cookie sig does not match expected. Given=" + hash + " Expected=" + expectedHash);
+				log.debug("  hashSource=" + hashSource);
+			}
 		}
 		return ok;
+	}
+
+	public String getRandomSalt() {
+		int randomNum = (int)(Math.random() * 1000000000);
+		String salt = randomNum + "";
+		return salt;
+	}
+	
+	public String getUrlSigningHash(String userUrl, String salt) {
+		String key = keys.get(keys.size() - 1); // Use the last key for new cookies		
+		String hashSource = getHashSource(userUrl, salt, key);
+		String hash = DigestUtils.md5Hex(hashSource);
+		String signing = salt + ":" + hash;
+		return signing;
+	}
+	
+	private String getHashSource(String userUrl, String salt, String key) {
+		return userUrl + ":" + salt + ":" + key;
 	}
 
 	private void setCookieValues(Response response, String userUrl, String hash) {

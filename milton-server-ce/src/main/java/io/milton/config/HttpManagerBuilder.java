@@ -19,6 +19,7 @@
 package io.milton.config;
 
 import io.milton.annotations.ResourceController;
+import io.milton.common.FileUtils;
 import io.milton.property.PropertySource;
 import io.milton.common.Stoppable;
 import io.milton.context.RootContext;
@@ -59,7 +60,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.logging.Level;
 import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -173,6 +173,8 @@ public class HttpManagerBuilder {
 	private PropFindPropertyBuilder propFindPropertyBuilder;
 	private RootContext rootContext = new RootContext();
 	private List dependencies;
+	private List<String> cookieSigningKeys;
+	private String cookieSigningKeysFile;
 
 	protected io.milton.http.SecurityManager securityManager() {
 		if (securityManager == null) {
@@ -273,8 +275,6 @@ public class HttpManagerBuilder {
 				if (cookieAuthenticationHandler == null) {
 					if (enableCookieAuth) {
 						if (cookieDelegateHandlers == null) {
-							// Don't add digest!
-							// why not???
 							cookieDelegateHandlers = new ArrayList<AuthenticationHandler>();
 							if (basicHandler != null) {
 								cookieDelegateHandlers.add(basicHandler);
@@ -289,7 +289,8 @@ public class HttpManagerBuilder {
 								authenticationHandlers.remove(formAuthenticationHandler);
 							}
 						}
-						cookieAuthenticationHandler = new CookieAuthenticationHandler(cookieDelegateHandlers, mainResourceFactory);
+						initCookieSigningKeys();
+						cookieAuthenticationHandler = new CookieAuthenticationHandler(cookieDelegateHandlers, mainResourceFactory, cookieSigningKeys);
 						authenticationHandlers.add(cookieAuthenticationHandler);
 					}
 				}
@@ -303,6 +304,31 @@ public class HttpManagerBuilder {
 		}
 
 		init(authenticationService);
+	}
+
+	protected void initCookieSigningKeys() {
+		if (cookieSigningKeys == null) {
+			cookieSigningKeys = new ArrayList<String>();
+		}
+		if (cookieSigningKeys.isEmpty()) {
+			File fKeys;
+			if (cookieSigningKeysFile == null) {
+				File tmpDir = new File(System.getProperty("java.io.tmpdir"));
+				// Look for an existing keys file
+				fKeys = new File(tmpDir, "keys.txt");
+			} else {
+				fKeys = new File(cookieSigningKeysFile);
+			}
+			if (fKeys.exists()) {
+				FileUtils.readLines(fKeys, cookieSigningKeys);
+			} else {
+				log.warn("Cookie signing keys file does not exist: " + fKeys.getAbsolutePath() + " Will attempt to create it with a random key");
+				log.warn("*** If using a server cluster you MUST ensure a common key file is used ***");
+				UUID newKey = UUID.randomUUID();
+				cookieSigningKeys.add(newKey.toString());
+				FileUtils.writeLines(fKeys, cookieSigningKeys);
+			}
+		}
 	}
 
 	private void init(AuthenticationService authenticationService) {
@@ -368,7 +394,7 @@ public class HttpManagerBuilder {
 		}
 		// Build stack of resource factories before protocols, because protocols use (so depend on)
 		// resource factories
-		buildOuterResourceFactory();		
+		buildOuterResourceFactory();
 		buildProtocolHandlers(webdavResponseHandler, resourceTypeHelper);
 		if (filters != null) {
 			filters = new ArrayList<Filter>(filters);
@@ -424,7 +450,7 @@ public class HttpManagerBuilder {
 	}
 
 	protected List<PropertySource> initDefaultPropertySources(ResourceTypeHelper resourceTypeHelper) {
-		if( propertySources == null ) {
+		if (propertySources == null) {
 			throw new RuntimeException("I actually expected propertySources to be created by now and set into the PropfindPropertyBuilder ");
 		}
 		List<PropertySource> list = propertySources;
@@ -533,10 +559,10 @@ public class HttpManagerBuilder {
 		JsonPropPatchHandler jsonPropPatchHandler = new JsonPropPatchHandler(buildPatchSetter(), initPropertyAuthoriser(), eventManager);
 		return new JsonResourceFactory(outerResourceFactory, eventManager, jsonPropFindHandler, jsonPropPatchHandler);
 	}
-	
+
 	protected PropPatchSetter buildPatchSetter() {
-		if( propPatchSetter == null ) {
-			if( propertySources == null ) {
+		if (propPatchSetter == null) {
+			if (propertySources == null) {
 				throw new RuntimeException("Property sources have not been initialised yet");
 			}
 			propPatchSetter = new PropertySourcePatchSetter(propertySources);
@@ -1271,6 +1297,37 @@ public class HttpManagerBuilder {
 		this.fsHomeDir = fsHomeDir;
 	}
 
+	/**
+	 * If set will be used as the list of keys to validate cookie signatures,
+	 * and the last will be used to sign new cookies
+	 *
+	 * @return
+	 */
+	public List<String> getCookieSigningKeys() {
+		return cookieSigningKeys;
+	}
+
+	public void setCookieSigningKeys(List<String> cookieSigningKeys) {
+		this.cookieSigningKeys = cookieSigningKeys;
+	}
+
+	/**
+	 * If present is assumed to be a text file containing lines, where each line
+	 * is a cookie signing key. The last will be used to sign cookies, previous
+	 * will be available to validate
+	 *
+	 * Only used if cookieSigningKeys is null
+	 *
+	 * @return
+	 */
+	public String getCookieSigningKeysFile() {
+		return cookieSigningKeysFile;
+	}
+
+	public void setCookieSigningKeysFile(String cookieSigningKeysFile) {
+		this.cookieSigningKeysFile = cookieSigningKeysFile;
+	}
+
 	public PropFindPropertyBuilder getPropFindPropertyBuilder() {
 		return propFindPropertyBuilder;
 	}
@@ -1296,7 +1353,7 @@ public class HttpManagerBuilder {
 				log.info("enableEarlyAuth=" + enableEarlyAuth);
 				if (enableEarlyAuth) {
 					if (arf.getAuthenticationService() == null) {
-						if( authenticationService == null ) {
+						if (authenticationService == null) {
 							// Just defensive check
 							throw new RuntimeException("enableEarlyAuth is true, but not authenticationService is available");
 						} else {
@@ -1407,8 +1464,6 @@ public class HttpManagerBuilder {
 		this.enableEarlyAuth = enableEarlyAuth;
 	}
 
-	
-	
 	private Object createObject(Class c) throws CreationException {
 		log.info("createObject: " + c.getCanonicalName());
 		// Look for an @Inject or default construcctor

@@ -9,7 +9,7 @@ import io.milton.http.LockTimeout;
 import io.milton.http.LockToken;
 import io.milton.resource.PropFindableResource;
 import io.milton.http.XmlWriter;
-import io.milton.http.webdav.WebDavProtocol.SupportedLocks;
+import io.milton.http.webdav.SupportedLocks;
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Map;

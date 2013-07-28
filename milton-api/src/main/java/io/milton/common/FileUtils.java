@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.milton.common;
 
 import java.io.BufferedInputStream;
@@ -34,17 +33,20 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
+import org.apache.commons.io.IOUtils;
 
 public class FileUtils {
-    public void copy( File source, File dest ) {
+
+    public void copy(File source, File dest) {
         FileInputStream is = null;
         FileOutputStream os = null;
         try {
             is = new FileInputStream(source);
             os = new FileOutputStream(dest);
             int i = is.read();
-            while( i >= 0 ) {
-                os.write( i );
+            while (i >= 0) {
+                os.write(i);
                 i = is.read();
             }
         } catch (FileNotFoundException ex) {
@@ -56,18 +58,18 @@ public class FileUtils {
             close(os);
         }
     }
-    
+
     public static ByteArrayOutputStream readIn(InputStream is) throws IOException {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        StreamUtils.readTo(is, os, true,true);
+        StreamUtils.readTo(is, os, true, true);
         return os;
     }
 
     @SuppressWarnings("unchecked")
     public static String readResource(Class cl, String res) throws IOException {
         InputStream in = cl.getResourceAsStream(res);
-        if( in == null ) {
-            throw new IOException( "Failed to read resource: " + res + " relative to class: " + cl.getCanonicalName());
+        if (in == null) {
+            throw new IOException("Failed to read resource: " + res + " relative to class: " + cl.getCanonicalName());
         }
         ByteArrayOutputStream out = readIn(in);
         return out.toString();
@@ -75,22 +77,28 @@ public class FileUtils {
 
     public static void close(InputStream in) {
         try {
-            if( in == null ) return;
+            if (in == null) {
+                return;
+            }
             in.close();
-        } catch( IOException ex ) {
+        } catch (IOException ex) {
         }
     }
 
     public static void close(Closeable in) {
         try {
-            if( in == null ) return;
+            if (in == null) {
+                return;
+            }
             in.close();
-        } catch( IOException ex ) {
+        } catch (IOException ex) {
         }
     }
 
     public static void close(Object o) {
-        if( o == null ) return ;
+        if (o == null) {
+            return;
+        }
 //        debug("Closing: " + o);
         try {
             Method m = o.getClass().getMethod("close");
@@ -107,7 +115,7 @@ public class FileUtils {
             throw new RuntimeException(ex);
         }
     }
-    
+
     public InputStream openFile(File file) throws FileNotFoundException {
         FileInputStream fin = null;
         BufferedInputStream br = null;
@@ -115,15 +123,14 @@ public class FileUtils {
         br = new BufferedInputStream(fin);
         return br;
     }
-    
+
     public OutputStream openFileForWrite(File file) throws FileNotFoundException {
         FileOutputStream fout = new FileOutputStream(file);
         BufferedOutputStream bout = new BufferedOutputStream(fout);
         return bout;
     }
-    
-    
-    public String readFile(File file)  throws FileNotFoundException {
+
+    public String readFile(File file) throws FileNotFoundException {
         FileReader fr = null;
         BufferedReader br = null;
         try {
@@ -136,49 +143,48 @@ public class FileUtils {
                 sb.append("\n");
             }
             return sb.toString();
-        } catch(FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             throw e;
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         } finally {
             close(br);
-            close( fr );
+            close(fr);
         }
     }
-    
+
     public String read(InputStream in) {
         try {
             BufferedInputStream bin = new BufferedInputStream(in);
             int s;
             byte[] buf = new byte[1024];
             StringBuilder sb = new StringBuilder();
-            while( (s = bin.read(buf)) > -1 ) {
-                sb.append(new String(buf,0,s));
+            while ((s = bin.read(buf)) > -1) {
+                sb.append(new String(buf, 0, s));
             }
             return sb.toString();
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
     }
-    
-    
+
     public File resolveRelativePath(File start, String path) {
         String[] arr = path.split("/");
         File f = start;
-        for( String s : arr ) {
-            if( s.equals("..") ) {
+        for (String s : arr) {
+            if (s.equals("..")) {
                 f = f.getParentFile();
             } else {
-                f = new File(f,s);
+                f = new File(f, s);
             }
         }
         return f;
     }
-    
+
     public static String getExtension(File file) {
         return getExtension(file.getName());
     }
-    
+
     public static String getExtension(String nm) {
         try {
             int pos = nm.lastIndexOf(".");
@@ -192,14 +198,16 @@ public class FileUtils {
             throw new RuntimeException(nm, e);
         }
     }
-    
+
     public static String stripExtension(String nm) {
-        if( nm.indexOf(".") >= 0 ) {
+        if (nm.indexOf(".") >= 0) {
             String[] arr = nm.split("[.]");
             StringBuilder sb = new StringBuilder();
-            for( int i=0; i<arr.length-1; i++ ) {
-                if(arr[i] != null ) {
-                    if( i!=0 ) sb.append(".");
+            for (int i = 0; i < arr.length - 1; i++) {
+                if (arr[i] != null) {
+                    if (i != 0) {
+                        sb.append(".");
+                    }
                     sb.append(arr[i]);
                 }
             }
@@ -208,47 +216,72 @@ public class FileUtils {
             return nm;
         }
     }
-    
+
     public static String preprendExtension(String filename, String newExt) {
         String ext = getExtension(filename);
         filename = stripExtension(filename);
         filename = filename + "." + newExt + "." + ext;
         return filename;
     }
-    
+
     public static String incrementFileName(String name, boolean isFirst) {
         String mainName = stripExtension(name);
         String ext = getExtension(name);
         int count;
-        if( isFirst ) {
+        if (isFirst) {
             count = 1;
         } else {
             int pos = mainName.lastIndexOf("(");
-            if( pos > 0 ) {
-                String sNum = mainName.substring(pos+1, mainName.length()-1);
-                count = Integer.parseInt(sNum)+1;
-                mainName = mainName.substring(0,pos);
+            if (pos > 0) {
+                String sNum = mainName.substring(pos + 1, mainName.length() - 1);
+                count = Integer.parseInt(sNum) + 1;
+                mainName = mainName.substring(0, pos);
             } else {
                 count = 1;
             }
         }
         String s = mainName + "(" + count + ")";
-        if( ext != null) s = s + "." + ext;
+        if (ext != null) {
+            s = s + "." + ext;
+        }
         return s;
 
     }
 
-
-    
     /**
      * replace spaces with underscores
-     * 
+     *
      * @param s
      * @return
      */
     public static String sanitiseName(String s) {
-        s = s.replaceAll("[ ]","_");
+        s = s.replaceAll("[ ]", "_");
         return s;
     }
-    
+
+    public static void readLines(File f, List<String> lines) {
+        InputStream in = null;
+        try {
+            in = new FileInputStream(f);
+            for (Object oLine : IOUtils.readLines(in)) {
+                lines.add(oLine.toString());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(f.getAbsolutePath(), e);
+        } finally {
+            IOUtils.closeQuietly(in);
+        }
+    }
+
+    public static void writeLines(File f, List<String> lines) {
+        FileOutputStream fout = null;
+        try {
+            fout = new FileOutputStream(f);
+            IOUtils.writeLines(lines, null, fout);
+        } catch (Exception e) {
+            throw new RuntimeException(f.getAbsolutePath(), e);
+        } finally {
+            IOUtils.closeQuietly(fout);
+        }
+    }
 }

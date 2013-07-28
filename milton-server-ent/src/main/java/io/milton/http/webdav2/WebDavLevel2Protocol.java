@@ -6,13 +6,13 @@ package io.milton.http.webdav2;
 import io.milton.common.NameSpace;
 import io.milton.http.*;
 import io.milton.http.http11.CustomPostHandler;
-import io.milton.http.values.ValueWriters;
 import io.milton.property.PropertySource;
 import io.milton.resource.LockableResource;
 import io.milton.resource.PropFindableResource;
 import io.milton.resource.Resource;
 import io.milton.http.webdav.PropertyMap;
 import io.milton.http.webdav.PropertyMap.StandardProperty;
+import io.milton.http.webdav.SupportedLocks;
 import io.milton.http.webdav.UserAgentHelper;
 import io.milton.http.webdav.WebDavProtocol;
 import io.milton.http.webdav.WebDavResponseHandler;
@@ -77,25 +77,6 @@ public class WebDavLevel2Protocol implements HttpExtension, PropertySource {
         throw new UnsupportedOperationException("Not supported. Standard webdav properties are not writable");
     }    
     
-    /**
-     * Used as a marker to generate supported locks element in propfind
-     * responses
-     *
-     * See SupportedLockValueWriter
-     */
-    public static class SupportedLocks {
-
-        private final PropFindableResource res;
-
-        public SupportedLocks(PropFindableResource res) {
-            this.res = res;
-        }
-
-        public PropFindableResource getResource() {
-            return res;
-        }
-    }
-
 
     @Override
     public PropertyMetaData getPropertyMetaData(QName name, Resource r) {

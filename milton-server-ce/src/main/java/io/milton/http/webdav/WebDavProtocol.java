@@ -180,25 +180,6 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 		return Collections.unmodifiableSet(handlers);
 	}
 
-	/**
-	 * Used as a marker to generate supported locks element in propfind
-	 * responses
-	 *
-	 * See SupportedLockValueWriter
-	 */
-	public static class SupportedLocks {
-
-		private final PropFindableResource res;
-
-		public SupportedLocks(PropFindableResource res) {
-			this.res = res;
-		}
-
-		public PropFindableResource getResource() {
-			return res;
-		}
-	}
-
 	@Override
 	public Object getProperty(QName name, Resource r) {
 		Object o = propertyMap.getProperty(name, r);

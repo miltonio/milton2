@@ -1,69 +1,109 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<C:schedule-response xmlns:D="DAV:" xmlns:C="urn:ietf:params:xml:ns:caldav">
-    <C:response>
-        <C:recipient>
-            <D:href>mailto:usera@bradmcevoy.com</D:href>
-        </C:recipient>
-        <C:request-status>2.0;Success.</C:request-status>
-        <C:calendar-data>BEGIN:VCALENDAR
-            VERSION:2.0 PRODID:-//milton.io//CalDAV Server//EN
-            METHOD:REPLY
-            BEGIN:VFREEBUSY
-            UID:6FA5C3DE-5BBD-457C-897F-6D5FFF398A9B
-            DTSTAMP:20130717T101311Z
-            DTSTART:20130717T120000Z
-            DTEND:20130718T120000Z
-            ORGANIZER:mailto:usera@bradmcevoy.com
-            ATTENDEE:mailto:usera@bradmcevoy.com
-            FREEBUSY;FBTYPE=BUSY:20130718T040000Z/20130718T050000Z
-            END:VFREEBUSY
-            END:VCALENDAR
-</C:calendar-data>
-    </C:response>
-    <C:response>
-        <C:recipient>
-            <D:href>mailto:userb@bradmcevoy.com</D:href>
-        </C:recipient>
-        <C:request-status>2.0;Success.</C:request-status>
-        <C:calendar-data>BEGIN:VCALENDAR
-            VERSION:2.0 PRODID:-//milton.io//CalDAV Server//EN
-            METHOD:REPLY
-            BEGIN:VFREEBUSY
-            UID:6FA5C3DE-5BBD-457C-897F-6D5FFF398A9B
-            DTSTAMP:20130717T101311Z
-            DTSTART:20130717T120000Z
-            DTEND:20130718T120000Z
-            ORGANIZER:mailto:usera@bradmcevoy.com
-            ATTENDEE:mailto:userb@bradmcevoy.com
-            FREEBUSY;FBTYPE=BUSY:20130718T040000Z/20130718T050000Z
-            FREEBUSY;FBTYPE=BUSY:20130718T040000Z/20130718T050000Z
-            END:VFREEBUSY
-            END:VCALENDAR
-            
-BEGIN:VCALENDAR
-   VERSION:2.0
-   PRODID:-//Example Corp.//CalDAV Server//EN
-   METHOD:REPLY
-   BEGIN:VFREEBUSY
-   UID:4FD3AD926350
-   DTSTAMP:20090602T200733Z
-   DTSTART:20090602T000000Z
-   DTEND:20090604T000000Z
-   ORGANIZER;CN="Cyrus Daboo":mailto:cyrus@example.com
-
-
-
-Daboo & Desruisseaux     Expires October 4, 2012               [Page 77]
-
- 
-Internet-Draft        CalDAV Scheduling Extensions            April 2012
-
-
-   ATTENDEE;CN="Wilfredo Sanchez Vega":mailto:wilfredo@example.com
-   FREEBUSY;FBTYPE=BUSY:20090602T110000Z/20090602T120000Z
-   FREEBUSY;FBTYPE=BUSY:20090603T170000Z/20090603T180000Z
-   END:VFREEBUSY
-   END:VCALENDAR            
-</C:calendar-data>
-    </C:response>
-</C:schedule-response>
+<d:multistatus xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:" xmlns:cal="urn:ietf:params:xml:ns:caldav" xmlns:card="urn:ietf:params:xml:ns:carddav">
+    <d:response>
+        <d:href>/</d:href>
+        <d:propstat>
+            <d:prop>
+                <d:supported-report-set>
+                    <d:supported-report>
+                        <d:report>
+                            <d:principal-search-property-set/>
+                        </d:report>
+                    </d:supported-report>
+                    <d:supported-report>
+                        <d:report>
+                            <d:addressbook-query/>
+                        </d:report>
+                    </d:supported-report>
+                    <d:supported-report>
+                        <d:report>
+                            <d:calendar-multiget/>
+                        </d:report>
+                    </d:supported-report>
+                    <d:supported-report>
+                        <d:report>
+                            <d:expand-property/>
+                        </d:report>
+                    </d:supported-report>
+                    <d:supported-report>
+                        <d:report>
+                            <d:calendar-query/>
+                        </d:report>
+                    </d:supported-report>
+                    <d:supported-report>
+                        <d:report>
+                            <d:principal-property-search/>
+                        </d:report>
+                    </d:supported-report>
+                    <d:supported-report>
+                        <d:report>
+                            <d:acl-principal-prop-set/>
+                        </d:report>
+                    </d:supported-report>
+                    <d:supported-report>
+                        <d:report>
+                            <d:addressbook-multiget/>
+                        </d:report>
+                    </d:supported-report>
+                    <d:supported-report>
+                        <d:report>
+                            <d:principal-match/>
+                        </d:report>
+                    </d:supported-report>
+                </d:supported-report-set>
+                <d:textcontent/>
+                <d:iscollection>TRUE</d:iscollection>
+                <d:resourcetype>
+                    <d:collection/>
+                </d:resourcetype>
+                <d:creationdate/>
+                <d:quota-used-bytes/>
+                <d:isreadonly>FALSE</d:isreadonly>
+                <d:quota-available-bytes/>
+                <d:getcontenttype/>
+                <d:name></d:name>
+                <d:getcontentlength/>
+                <d:getlastmodified></d:getlastmodified>
+                <d:getcreated/>
+                <d:getetag/>
+                <d:displayname></d:displayname>
+                <d:lockdiscovery></d:lockdiscovery>
+                <d:supportedlock>
+                    <d:lockentry>
+                        <d:lockscope>
+                            <d:exclusive/>
+                        </d:lockscope>
+                        <d:locktype>
+                            <d:write/>
+                        </d:locktype>
+                    </d:lockentry>
+                </d:supportedlock>
+                <d:getctag/>
+                <d:current-user-privilege-set></d:current-user-privilege-set>
+                <d:principal-collection-set>
+                    <d:href>/musicians/</d:href>
+                </d:principal-collection-set>
+            </d:prop>
+            <d:status>HTTP/1.1 200 OK</d:status>
+        </d:propstat>
+        <d:propstat>
+            <d:prop>
+                <d:calendar-home-set/>
+                <d:supported-calendar-component-sets/>
+                <d:supported-calendar-component-set/>
+                <d:calendar-user-address-set/>
+                <d:calendar-description/>
+                <d:schedule-outbox-URL/>
+                <d:calendar-data/>
+                <d:schedule-inbox-URL/>
+                <d:calendar-color/>
+                <d:addressbook-description/>
+                <d:addressbook-home-set/>
+                <d:principal-address/>
+                <d:supported-address-data/>
+                <d:address-data/>
+            </d:prop>
+            <d:status>HTTP/1.1 404 Not Found</d:status>
+        </d:propstat>
+    </d:response>
+</d:multistatus>
