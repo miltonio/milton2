@@ -320,6 +320,7 @@ public class HttpManagerBuilder {
 				fKeys = new File(cookieSigningKeysFile);
 			}
 			if (fKeys.exists()) {
+				log.info("Reading cookie signing keys from: " + fKeys.getAbsolutePath());
 				FileUtils.readLines(fKeys, cookieSigningKeys);
 			} else {
 				log.warn("Cookie signing keys file does not exist: " + fKeys.getAbsolutePath() + " Will attempt to create it with a random key");
