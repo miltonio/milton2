@@ -49,7 +49,6 @@ public class AstronomyResourceFactory implements ResourceFactory {
     private static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(AstronomyResourceFactory.class);
     private final UniverseDao universeDao = new UniverseDao();
 
-    @Override
     public Resource getResource(String host, String url) throws NotAuthorizedException, BadRequestException {
         log.debug("getResource: url: " + url);
         Path path = Path.path(url);

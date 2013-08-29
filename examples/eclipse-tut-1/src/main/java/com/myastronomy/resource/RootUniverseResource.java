@@ -41,7 +41,6 @@ public class RootUniverseResource extends AbstractResource implements MakeCollec
         this.universeDao = universeDao;
     }
 
-    @Override
     public CollectionResource createCollection(String newName) throws NotAuthorizedException, ConflictException, BadRequestException {
         UniverseDao.Galaxy s = universeDao.addGalaxy(newName);        
         GalaxyResource r = new GalaxyResource(this, s);
@@ -50,7 +49,6 @@ public class RootUniverseResource extends AbstractResource implements MakeCollec
         return r;
     }    
     
-    @Override
     public List<? extends Resource> getChildren() {
         if( children == null ) {
             children = new ArrayList<Resource>();
@@ -62,13 +60,10 @@ public class RootUniverseResource extends AbstractResource implements MakeCollec
     }
 
 
-
-    @Override
     public Resource child(String childName) {
         return ChildUtils.child(childName, getChildren());
     }
 
-    @Override
     public String getName() {
         return "";
     }
