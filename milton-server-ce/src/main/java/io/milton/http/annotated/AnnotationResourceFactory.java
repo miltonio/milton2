@@ -48,6 +48,7 @@ import io.milton.annotations.Post;
 import io.milton.annotations.PutChild;
 import io.milton.annotations.Realm;
 import io.milton.annotations.Root;
+import io.milton.annotations.SupportedComponentSets;
 import io.milton.annotations.UniqueId;
 import io.milton.annotations.Users;
 import io.milton.common.Path;
@@ -64,6 +65,7 @@ import io.milton.http.Response;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.template.ViewResolver;
+import io.milton.http.values.SupportedCalendarComponentListsSet;
 import io.milton.http.webdav.DisplayNameFormatter;
 import io.milton.resource.CollectionResource;
 import io.milton.resource.PropFindableResource;
@@ -132,6 +134,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	ContactDataAnnotationHandler contactDataAnnotationHandler = new ContactDataAnnotationHandler(this);
 	CommonPropertyAnnotationHandler<String> nameAnnotationHandler = new CommonPropertyAnnotationHandler(Name.class, this, "name", "fileName");
 	CommonPropertyAnnotationHandler<String> emailAnnotationHandler = new CommonPropertyAnnotationHandler(Email.class, this, "email");
+	CommonPropertyAnnotationHandler<SupportedCalendarComponentListsSet> supportedComponentSets = new CommonPropertyAnnotationHandler(SupportedComponentSets.class, this, "supportedComponentSets");
 	CommonPropertyAnnotationHandler<String> realmAnnotationHandler = new CommonPropertyAnnotationHandler(Realm.class, this, "realm");
 	CommonPropertyAnnotationHandler<Date> modifiedDateAnnotationHandler = new CommonPropertyAnnotationHandler<Date>(ModifiedDate.class, this, "modifiedDate");
 	CommonPropertyAnnotationHandler<Date> createdDateAnnotationHandler = new CommonPropertyAnnotationHandler<Date>(CreatedDate.class, this);
@@ -146,6 +149,9 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	CalendarInvitationsCTagAnnotationHandler calendarInvitationsCTagAnnotationHandler = new CalendarInvitationsCTagAnnotationHandler(this);
 
 	public AnnotationResourceFactory() {
+		
+		supportedComponentSets.setDefaultValue(SupportedCalendarComponentListsSet.EVENTS_ONLY);
+		
 		mapOfAnnotationHandlers.put(Root.class, rootAnnotationHandler);
 		mapOfAnnotationHandlers.put(Get.class, getAnnotationHandler);
 		mapOfAnnotationHandlers.put(Post.class, postAnnotationHandler);

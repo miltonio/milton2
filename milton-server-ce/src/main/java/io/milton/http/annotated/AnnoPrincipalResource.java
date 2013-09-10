@@ -139,7 +139,7 @@ public class AnnoPrincipalResource extends AnnoCollectionResource implements Dis
 
 	@Override
 	public SupportedCalendarComponentListsSet getSupportedComponentSets() {
-		return SupportedCalendarComponentListsSet.EVENTS_ONLY;
+		return annoFactory.supportedComponentSets.get(this);
 	}
 
 	@Override
