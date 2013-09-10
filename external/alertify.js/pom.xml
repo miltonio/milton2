@@ -10,5 +10,17 @@
     
     <packaging>war</packaging>
  
+	<distributionManagement>
+		<repository>
+			<id>ettrema-repo</id>
+			<url>http://milton.io/maven/</url>
+		</repository>
+		<snapshotRepository>
+			<uniqueVersion>false</uniqueVersion>
+			<id>ettrema-repo</id>
+			<url>http://milton.io/maven/</url>
+		</snapshotRepository>
+	</distributionManagement>
+ 
 </project>
 

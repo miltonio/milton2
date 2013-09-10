@@ -244,16 +244,17 @@ public class HttpManagerBuilder {
 				if (basicHandler != null) {
 					authenticationHandlers.add(basicHandler);
 				}
+				if (nonceProvider == null) {
+					if (expiredNonceRemover == null) {
+						expiredNonceRemover = new ExpiredNonceRemover(nonces, nonceValiditySeconds);
+						showLog("expiredNonceRemover", expiredNonceRemover);
+					}
+					nonceProvider = new SimpleMemoryNonceProvider(nonceValiditySeconds, expiredNonceRemover, nonces);
+					showLog("nonceProvider", nonceProvider);
+				}
 				if (digestHandler == null) {
 					if (enableDigestAuth) {
-						if (nonceProvider == null) {
-							if (expiredNonceRemover == null) {
-								expiredNonceRemover = new ExpiredNonceRemover(nonces, nonceValiditySeconds);
-								showLog("expiredNonceRemover", expiredNonceRemover);
-							}
-							nonceProvider = new SimpleMemoryNonceProvider(nonceValiditySeconds, expiredNonceRemover, nonces);
-							showLog("nonceProvider", nonceProvider);
-						}
+
 						digestHandler = new DigestAuthenticationHandler(nonceProvider);
 					}
 				}
@@ -290,7 +291,7 @@ public class HttpManagerBuilder {
 							}
 						}
 						initCookieSigningKeys();
-						cookieAuthenticationHandler = new CookieAuthenticationHandler(cookieDelegateHandlers, mainResourceFactory, cookieSigningKeys);
+						cookieAuthenticationHandler = new CookieAuthenticationHandler(nonceProvider, cookieDelegateHandlers, mainResourceFactory, cookieSigningKeys);
 						authenticationHandlers.add(cookieAuthenticationHandler);
 					}
 				}

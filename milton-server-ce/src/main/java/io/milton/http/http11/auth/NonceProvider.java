@@ -68,5 +68,5 @@ public interface NonceProvider {
      * @param request - the current request
      * @return - some string to be used as a nonce value.
      */
-    String createNonce( Resource resource, Request request );
+    String createNonce( Request request );
 }

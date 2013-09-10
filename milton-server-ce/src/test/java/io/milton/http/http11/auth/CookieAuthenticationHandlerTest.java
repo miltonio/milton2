@@ -25,9 +25,11 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import junit.framework.TestCase;
@@ -53,22 +55,30 @@ public class CookieAuthenticationHandlerTest extends TestCase {
 //	}
 	
 	private List<String> keys = Arrays.asList("abc");
-			
-	private String salt = "323890546";	
+	
+	private SimpleMemoryNonceProvider nonceProvider = new SimpleMemoryNonceProvider(100);
+	
+	private static final String nonce = "cbc86104-aaf4-455d-8937-b095a21481cf";
+
+	public CookieAuthenticationHandlerTest() {
+		UUID id = UUID.fromString(nonce);
+		nonceProvider.getNonces().put(id, new Nonce(id, new Date()) );
+	}
+	
+	
 	
 	public void test_GenerateHash() {
-		CookieAuthenticationHandler c = new CookieAuthenticationHandler(Collections.EMPTY_LIST, null, keys);
+		CookieAuthenticationHandler c = new CookieAuthenticationHandler(nonceProvider, Collections.EMPTY_LIST, null, keys);
 		String s = "/users/Reviewer/";
-		System.out.println("salt=" + salt);
-		String hash = c.getUrlSigningHash(s, salt);
+		MockRequest request = new MockRequest();
+		String hash = c.getUrlSigningHash(s, request);
 		System.out.println("hash=" + hash);
-		assertEquals(salt + ":4114ce15b1843401065f9ce06ee2a635", hash);
 	}
 	
 	public void test_ValidatePlain() {
-		CookieAuthenticationHandler c = new CookieAuthenticationHandler(Collections.EMPTY_LIST, null, keys);
+		CookieAuthenticationHandler c = new CookieAuthenticationHandler(nonceProvider, Collections.EMPTY_LIST, null, keys);
 		String s = "/users/Reviewer/";
-		String hash = salt + ":4114ce15b1843401065f9ce06ee2a635";
+		String hash = nonce + ":aDIEijllPTjBcj7R4wskncoaZ3s";
 		MockRequest request = new MockRequest();
 		request.params.put(c.getCookieNameUserUrl(), s);
 		request.params.put(c.getCookieNameUserUrlHash(), hash);
@@ -78,11 +88,11 @@ public class CookieAuthenticationHandlerTest extends TestCase {
 	}	
 	
 	public void xtest_ValidateBase64() {
-		CookieAuthenticationHandler c = new CookieAuthenticationHandler(Collections.EMPTY_LIST, null, keys);
+		CookieAuthenticationHandler c = new CookieAuthenticationHandler(nonceProvider, Collections.EMPTY_LIST, null, keys);
 		String s = "/users/Reviewer/";
 		String encodedUserUrl = c.encodeUserUrl(s);
 		assertTrue(encodedUserUrl.startsWith("b64"));
-		String hash = salt + ":4114ce15b1843401065f9ce06ee2a635";
+		String hash = "4114ce15b1843401065f9ce06ee2a635";
 		MockRequest request = new MockRequest();
 		request.params.put(c.getCookieNameUserUrl(), encodedUserUrl);
 		request.params.put(c.getCookieNameUserUrlHash(), hash);

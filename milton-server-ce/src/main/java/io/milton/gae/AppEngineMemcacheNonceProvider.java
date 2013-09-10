@@ -59,7 +59,7 @@ public class AppEngineMemcacheNonceProvider implements NonceProvider {
     }
 
     @Override
-    public String createNonce( Resource resource, Request request ) {
+    public String createNonce( Request request ) {
         UUID id = UUID.randomUUID();
         Date now = new Date();
         Nonce n = new Nonce( id, now );

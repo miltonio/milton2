@@ -88,7 +88,7 @@ public class SecurityManagerDigestAuthenticationHandler implements Authenticatio
 
 	@Override
     public void appendChallenges( Resource resource, Request request, List<String> challenges ) {
-        String nonceValue = nonceProvider.createNonce( resource, request );
+        String nonceValue = nonceProvider.createNonce( request );
         challenges.add( digestHelper.getChallenge(nonceValue, request.getAuthorization(), securityManager.getRealm(request.getHostHeader())) );
     }
 

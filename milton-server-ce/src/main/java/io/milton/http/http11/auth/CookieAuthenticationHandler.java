@@ -7,9 +7,7 @@ import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.principal.DiscretePrincipal;
 import io.milton.resource.Resource;
-import java.nio.charset.Charset;
 import java.util.List;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,11 +32,13 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 	private String cookieUserUrlHash = "miltonUserUrlHash";
 	private final List<AuthenticationHandler> handlers;
 	private final ResourceFactory principalResourceFactory;
+	private NonceProvider nonceProvider;
 	private String userUrlAttName = "userUrl";
 	private boolean useLongLivedCookies = true;
 	private final List<String> keys;
 
-	public CookieAuthenticationHandler(List<AuthenticationHandler> handlers, ResourceFactory principalResourceFactory, List<String> keys) {
+	public CookieAuthenticationHandler(NonceProvider nonceProvider, List<AuthenticationHandler> handlers, ResourceFactory principalResourceFactory, List<String> keys) {
+		this.nonceProvider = nonceProvider;
 		this.handlers = handlers;
 		this.principalResourceFactory = principalResourceFactory;
 		this.keys = keys;
@@ -127,7 +127,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 			} else {
 				String userUrl = getUserUrl(request);
 				if (userUrl == null) {
-					log.trace("authenticate: no userUrl in request or cookie, nothing to di");
+					log.trace("authenticate: no userUrl in request or cookie, nothing to do");
 					// no token in request, so is anonymous
 					return null;
 				} else {
@@ -201,8 +201,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 		}
 
 		Response response = HttpManager.response();
-		String salt = getRandomSalt();
-		String signing = getUrlSigningHash(userUrl, salt);
+		String signing = getUrlSigningHash(userUrl, request);
 		setCookieValues(response, userUrl, signing);
 		request.getAttributes().put(userUrlAttName, userUrl);
 	}
@@ -310,52 +309,74 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 			log.warn("cookie signature is not present in cookie: " + cookieUserUrlHash);
 			return false;
 		}
-		String[] arr = signing.split(":");
-		if (arr.length != 2) {
-			log.warn("cookie signature is not in a valid form. Should consist of 2 parts seperated by a colon. eg 123:abc. Given value=" + signing);
-			return false;
-		}
-		String salt = arr[0];
-		String hash = arr[1];
 
 		for (String key : keys) {
-			if (verifyHash(userUrl, salt, key, hash)) {
+			if (verifyHash(userUrl, key, signing, request)) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	private boolean verifyHash(String userUrl, String salt, String key, String hash) {
-		String hashSource = getHashSource(userUrl, salt, key);
-		String expectedHash = DigestUtils.md5Hex(hashSource);
-		boolean ok = expectedHash.equals(hash);
+	private boolean verifyHash(String userUrl, String key, String signing, Request request) {
+		// split the signing into nonce and hmac
+		int pos = signing.indexOf(":");
+		if( pos < 1 ) {
+			log.warn("Invalid cookie signing format, no semi-colon: " + signing + " Should be in form - nonce:hmac");
+			return false;
+		}
+		String nonce = signing.substring(0, pos);
+		String hmac = signing.substring(pos+1);
+		String message = nonce + ":" + userUrl;
+		
+		// Check that the hmac is a valid signature
+		String expectedHmac = HmacUtils.calcShaHash(message, key);
+		boolean ok = expectedHmac.equals(hmac);
 		if (!ok) {
 			if (log.isDebugEnabled()) {
-				log.debug("Cookie sig does not match expected. Given=" + hash + " Expected=" + expectedHash);
-				log.debug("  hashSource=" + hashSource);
+				log.debug("Cookie sig does not match expected. Given=" + hmac + " Expected=" + expectedHmac);
+			}
+			return false;
+		} else {
+			// signed ok, check to see if nonce is still valid
+			NonceProvider.NonceValidity val = nonceProvider.getNonceValidity(nonce, null);
+			if( val == NonceProvider.NonceValidity.OK) {
+				return true;
+			} else if( val == NonceProvider.NonceValidity.EXPIRED) {
+				// Hopefully the nonce provider will have a time limit and only return expired
+				// for recently expired nonces. So we will accept these but replace with a refreshed nonce
+				log.warn("Nonce is valid, but expired. We will accept it but reset it");
+				setLoginCookies(userUrl, request);
+				return true;
+			} else if ( val == NonceProvider.NonceValidity.INVALID) {
+				log.warn("Received an invalid nonce: " + nonce);
+				return false;
+			} else {
+				throw new RuntimeException("Unhandled nonce validity value");
 			}
 		}
-		return ok;
 	}
 
-	public String getRandomSalt() {
-		int randomNum = (int)(Math.random() * 1000000000);
-		String salt = randomNum + "";
-		return salt;
-	}
-	
-	public String getUrlSigningHash(String userUrl, String salt) {
+	/**
+	 * The hmac signs a message in the form nonce || userUrl, where the nonce
+	 * is requested from the nonceProvider
+	 * 
+	 * This method returns a signing token in the form nonce || hmac
+	 * 
+	 * @param userUrl
+	 * @param request
+	 * @return 
+	 */
+	public String getUrlSigningHash(String userUrl, Request request) {
+		String nonce = nonceProvider.createNonce(request);
+		String message = nonce + ":" + userUrl;
 		String key = keys.get(keys.size() - 1); // Use the last key for new cookies		
-		String hashSource = getHashSource(userUrl, salt, key);
-		String hash = DigestUtils.md5Hex(hashSource);
-		String signing = salt + ":" + hash;
+		String signing = nonce + ":" + HmacUtils.calcShaHash(message, key);
 		return signing;
 	}
 	
-	private String getHashSource(String userUrl, String salt, String key) {
-		return userUrl + ":" + salt + ":" + key;
-	}
+	
+
 
 	private void setCookieValues(Response response, String userUrl, String hash) {
 		log.trace("setCookieValues");

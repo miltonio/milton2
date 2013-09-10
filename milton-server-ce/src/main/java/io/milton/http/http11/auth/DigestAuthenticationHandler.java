@@ -100,8 +100,7 @@ public class DigestAuthenticationHandler implements AuthenticationHandler {
 
 	@Override
     public void appendChallenges( Resource resource, Request request, List<String> challenges ) {
-
-        String nonceValue = nonceProvider.createNonce( resource, request );
+        String nonceValue = nonceProvider.createNonce( request );
         challenges.add( digestHelper.getChallenge(nonceValue, request.getAuthorization(), resource.getRealm()) );
     }
 
