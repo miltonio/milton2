@@ -143,6 +143,7 @@ public class HttpManagerBuilder {
 	protected boolean enableCookieAuth = true;
 	protected boolean enabledCkBrowser = false;
 	protected boolean enableEarlyAuth = false;
+	protected boolean enableTextContentProperty = false;
 	protected String loginPage = "/login.html";
 	protected List<String> loginPageExcludePaths;
 	protected File rootDir = null;
@@ -529,7 +530,7 @@ public class HttpManagerBuilder {
 			this.propFindRequestFieldParser = new MsPropFindRequestFieldParser(defaultFieldParse); // use MS decorator for windows support				
 		}
 		if (webDavProtocol == null && webdavEnabled) {
-			webDavProtocol = new WebDavProtocol(handlerHelper, resourceTypeHelper, webdavResponseHandler, propertySources, quotaDataAccessor, propPatchSetter, initPropertyAuthoriser(), eTagGenerator, urlAdapter, resourceHandlerHelper, userAgentHelper(), propFindRequestFieldParser(), propFindPropertyBuilder(), displayNameFormatter);
+			webDavProtocol = new WebDavProtocol(handlerHelper, resourceTypeHelper, webdavResponseHandler, propertySources, quotaDataAccessor, propPatchSetter, initPropertyAuthoriser(), eTagGenerator, urlAdapter, resourceHandlerHelper, userAgentHelper(), propFindRequestFieldParser(), propFindPropertyBuilder(), displayNameFormatter, enableTextContentProperty);
 		}
 	}
 

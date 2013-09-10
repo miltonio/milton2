@@ -84,7 +84,7 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 	private final PropPatchHandler propPatchHandler;
 	private List<CustomPostHandler> customPostHandlers;
 
-	public WebDavProtocol(HandlerHelper handlerHelper, ResourceTypeHelper resourceTypeHelper, WebDavResponseHandler responseHandler, List<PropertySource> propertySources, QuotaDataAccessor quotaDataAccessor, PropPatchSetter patchSetter, PropertyAuthoriser propertyAuthoriser, ETagGenerator eTagGenerator, UrlAdapter urlAdapter, ResourceHandlerHelper resourceHandlerHelper, UserAgentHelper userAgentHelper, PropFindRequestFieldParser requestFieldParser, PropFindPropertyBuilder propertyBuilder, DisplayNameFormatter displayNameFormatter) {
+	public WebDavProtocol(HandlerHelper handlerHelper, ResourceTypeHelper resourceTypeHelper, WebDavResponseHandler responseHandler, List<PropertySource> propertySources, QuotaDataAccessor quotaDataAccessor, PropPatchSetter patchSetter, PropertyAuthoriser propertyAuthoriser, ETagGenerator eTagGenerator, UrlAdapter urlAdapter, ResourceHandlerHelper resourceHandlerHelper, UserAgentHelper userAgentHelper, PropFindRequestFieldParser requestFieldParser, PropFindPropertyBuilder propertyBuilder, DisplayNameFormatter displayNameFormatter, boolean enableTextContentProperty) {
 		this.displayNameFormatter = displayNameFormatter;
 		this.userAgentHelper = userAgentHelper;
 		this.handlerHelper = handlerHelper;
@@ -117,7 +117,9 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 		propertyMap.add(new QuotaUsedBytesPropertyWriter());
 
 		propertyMap.add(new SupportedReportSetProperty());
-		propertyMap.add(new MiltonExtTextContentProperty());
+		if( enableTextContentProperty ) {
+			propertyMap.add(new MiltonExtTextContentProperty());
+		}
 				
 
 
