@@ -149,9 +149,9 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	CalendarInvitationsCTagAnnotationHandler calendarInvitationsCTagAnnotationHandler = new CalendarInvitationsCTagAnnotationHandler(this);
 
 	public AnnotationResourceFactory() {
-		
+
 		supportedComponentSets.setDefaultValue(SupportedCalendarComponentListsSet.EVENTS_ONLY);
-		
+
 		mapOfAnnotationHandlers.put(Root.class, rootAnnotationHandler);
 		mapOfAnnotationHandlers.put(Get.class, getAnnotationHandler);
 		mapOfAnnotationHandlers.put(Post.class, postAnnotationHandler);
@@ -170,7 +170,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		mapOfAnnotationHandlers.put(AccessControlList.class, accessControlListAnnotationHandler);
 		mapOfAnnotationHandlers.put(AddressBooks.class, addressBooksAnnotationHandler);
 		mapOfAnnotationHandlers.put(Calendars.class, calendarsAnnotationHandler);
-		mapOfAnnotationHandlers.put(MakeCalendarAnnotationHandler.class, makeCalendarAnnotationHandler);		
+		mapOfAnnotationHandlers.put(MakeCalendarAnnotationHandler.class, makeCalendarAnnotationHandler);
 
 		mapOfAnnotationHandlers.put(ModifiedDate.class, modifiedDateAnnotationHandler);
 		mapOfAnnotationHandlers.put(CreatedDate.class, createdDateAnnotationHandler);
@@ -187,6 +187,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		mapOfAnnotationHandlers.put(CalendarInvitations.class, calendarInvitationsAnnotationHandler);
 		mapOfAnnotationHandlers.put(CalendarInvitationsCTag.class, calendarInvitationsCTagAnnotationHandler);
 		mapOfAnnotationHandlers.put(Email.class, emailAnnotationHandler);
+		mapOfAnnotationHandlers.put(SupportedComponentSets.class, supportedComponentSets);
 
 		for (AnnotationHandler ah : mapOfAnnotationHandlers.values()) {
 			Method[] methods = ah.getSupportedMethods();
