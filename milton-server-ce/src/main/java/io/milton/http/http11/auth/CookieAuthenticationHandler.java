@@ -311,8 +311,10 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 		}
 
 		for (String key : keys) {
-			if (verifyHash(userUrl, key, signing, request)) {
-				return true;
+			if (key != null && key.length() > 0) {
+				if (verifyHash(userUrl, key, signing, request)) {
+					return true;
+				}
 			}
 		}
 		return false;
@@ -321,14 +323,14 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 	private boolean verifyHash(String userUrl, String key, String signing, Request request) {
 		// split the signing into nonce and hmac
 		int pos = signing.indexOf(":");
-		if( pos < 1 ) {
+		if (pos < 1) {
 			log.warn("Invalid cookie signing format, no semi-colon: " + signing + " Should be in form - nonce:hmac");
 			return false;
 		}
 		String nonce = signing.substring(0, pos);
-		String hmac = signing.substring(pos+1);
+		String hmac = signing.substring(pos + 1);
 		String message = nonce + ":" + userUrl;
-		
+
 		// Check that the hmac is a valid signature
 		String expectedHmac = HmacUtils.calcShaHash(message, key);
 		boolean ok = expectedHmac.equals(hmac);
@@ -340,15 +342,15 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 		} else {
 			// signed ok, check to see if nonce is still valid
 			NonceProvider.NonceValidity val = nonceProvider.getNonceValidity(nonce, null);
-			if( val == NonceProvider.NonceValidity.OK) {
+			if (val == NonceProvider.NonceValidity.OK) {
 				return true;
-			} else if( val == NonceProvider.NonceValidity.EXPIRED) {
+			} else if (val == NonceProvider.NonceValidity.EXPIRED) {
 				// Hopefully the nonce provider will have a time limit and only return expired
 				// for recently expired nonces. So we will accept these but replace with a refreshed nonce
 				log.warn("Nonce is valid, but expired. We will accept it but reset it");
 				setLoginCookies(userUrl, request);
 				return true;
-			} else if ( val == NonceProvider.NonceValidity.INVALID) {
+			} else if (val == NonceProvider.NonceValidity.INVALID) {
 				log.warn("Received an invalid nonce: " + nonce);
 				return false;
 			} else {
@@ -358,14 +360,14 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 	}
 
 	/**
-	 * The hmac signs a message in the form nonce || userUrl, where the nonce
-	 * is requested from the nonceProvider
-	 * 
+	 * The hmac signs a message in the form nonce || userUrl, where the nonce is
+	 * requested from the nonceProvider
+	 *
 	 * This method returns a signing token in the form nonce || hmac
-	 * 
+	 *
 	 * @param userUrl
 	 * @param request
-	 * @return 
+	 * @return
 	 */
 	public String getUrlSigningHash(String userUrl, Request request) {
 		String nonce = nonceProvider.createNonce(request);
@@ -374,9 +376,6 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 		String signing = nonce + ":" + HmacUtils.calcShaHash(message, key);
 		return signing;
 	}
-	
-	
-
 
 	private void setCookieValues(Response response, String userUrl, String hash) {
 		log.trace("setCookieValues");
