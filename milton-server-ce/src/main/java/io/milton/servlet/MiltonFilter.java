@@ -20,11 +20,7 @@ package io.milton.servlet;
 
 import io.milton.http.HttpManager;
 import io.milton.http.Request;
-import io.milton.http.ResourceFactory;
 import io.milton.http.Response;
-import io.milton.http.annotated.AnnotationResourceFactory;
-import io.milton.http.template.JspViewResolver;
-import io.milton.http.template.ViewResolver;
 import java.io.IOException;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;

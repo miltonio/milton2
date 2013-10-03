@@ -149,7 +149,7 @@ public class HttpManagerBuilder {
 	protected List<String> loginPageExcludePaths;
 	protected File rootDir = null;
 	protected io.milton.http.SecurityManager securityManager;
-	protected String fsContextPath;
+	protected String contextPath;
 	protected String fsRealm = "milton";
 	protected Map<String, String> mapOfNameAndPasswords;
 	protected String defaultUser = "user";
@@ -229,11 +229,18 @@ public class HttpManagerBuilder {
 			if (!rootDir.exists() || !rootDir.isDirectory()) {
 				throw new RuntimeException("Root directory is not valid: " + rootDir.getAbsolutePath());
 			}
-			FileSystemResourceFactory fsResourceFactory = new FileSystemResourceFactory(rootDir, securityManager(), fsContextPath);
+			log.info("Using FileSystemResourceFactory with context path: " + contextPath);
+			FileSystemResourceFactory fsResourceFactory = new FileSystemResourceFactory(rootDir, securityManager(), contextPath);
 			fsResourceFactory.setContentService(fileContentService);
 			mainResourceFactory = fsResourceFactory;
 			log.info("Using file system with root directory: " + rootDir.getAbsolutePath());
 		}
+		if( mainResourceFactory instanceof AnnotationResourceFactory ) {
+			AnnotationResourceFactory arf = (AnnotationResourceFactory) mainResourceFactory;
+			log.info("Set AnnotationResourceFactory context path to: " + contextPath);
+			arf.setContextPath(contextPath);
+		}
+
 		log.info("Using mainResourceFactory: " + mainResourceFactory.getClass());
 		if (authenticationService == null) {
 			if (authenticationHandlers == null) {
@@ -1038,13 +1045,30 @@ public class HttpManagerBuilder {
 	 * @return
 	 */
 	public String getFsContextPath() {
-		return fsContextPath;
+		return contextPath;
 	}
 
 	public void setFsContextPath(String fsContextPath) {
-		this.fsContextPath = fsContextPath;
+		this.contextPath = fsContextPath;
 	}
 
+	/**
+	 * Used to set context path on certain implementations of ResourceFactory
+	 * 
+	 * Alias for fsContentPath
+	 * 
+	 * @return 
+	 */
+	public String getContextPath() {
+		return contextPath;
+	}
+
+	public void setContextPath(String contextPath) {
+		this.contextPath = contextPath;
+	}
+
+	
+	
 	public UserAgentHelper getUserAgentHelper() {
 		return userAgentHelper;
 	}
