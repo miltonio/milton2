@@ -16,6 +16,12 @@
             <param-name>controllerPackagesToScan</param-name>
             <param-value>com.helloworld</param-value>
         </init-param>		
+        <!--
+        <init-param>
+            <param-name>contextPath</param-name>
+            <param-value>/webdav</param-value>
+        </init-param>		
+        -->
     </filter>
 
     <filter-mapping>

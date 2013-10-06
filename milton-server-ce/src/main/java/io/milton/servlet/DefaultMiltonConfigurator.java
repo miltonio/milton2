@@ -146,14 +146,14 @@ public class DefaultMiltonConfigurator implements MiltonConfigurator {
 		}
 
 		ResourceFactory rf = builder.getMainResourceFactory();
-		if (rf instanceof AnnotationResourceFactory) {
-			AnnotationResourceFactory arf = (AnnotationResourceFactory) rf;
-			arf.setContextPath("/");
-			if (arf.getViewResolver() == null) {
-				ViewResolver viewResolver = new JspViewResolver(config.getServletContext());
-				arf.setViewResolver(viewResolver);
-			}
-		}
+//		if (rf instanceof AnnotationResourceFactory) {
+//			AnnotationResourceFactory arf = (AnnotationResourceFactory) rf;
+//			arf.setContextPath("/");
+//			if (arf.getViewResolver() == null) {
+//				ViewResolver viewResolver = new JspViewResolver(config.getServletContext());
+//				arf.setViewResolver(viewResolver);
+//			}
+//		}
 
 
 		build();
