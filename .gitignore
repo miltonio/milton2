@@ -44,3 +44,6 @@
 /examples/milton-spring-fs/target/
 /apps/milton-mini-server/target/
 /external/alertify.js/target/
+
+.idea/
+*.iml
