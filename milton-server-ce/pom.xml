@@ -8,7 +8,7 @@
 	</parent>
 	<groupId>io.milton</groupId>
 	<artifactId>milton-server-ce</artifactId>
-	<packaging>jar</packaging>
+	<packaging>bundle</packaging>
 	<name>milton-server-ce</name>	
 	<description>Milton Community Edition: Supports DAV level 1 and is available on Apache2 license</description>
 	<licenses>

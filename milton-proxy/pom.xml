@@ -8,7 +8,7 @@
     </parent>
     <groupId>io.milton</groupId>
     <artifactId>milton-proxy</artifactId>
-    <packaging>jar</packaging>
+    <packaging>bundle</packaging>
     <name>milton-proxy</name>
     <licenses>
         <license>

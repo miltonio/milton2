@@ -7,7 +7,7 @@
         <version>2.5.2.1</version>
     </parent>
     <artifactId>milton-mail-server</artifactId>
-    <packaging>jar</packaging>
+    <packaging>bundle</packaging>
     <licenses>
         <license>
             <name>Apache2</name>

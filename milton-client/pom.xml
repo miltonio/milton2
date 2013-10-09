@@ -8,7 +8,7 @@
     </parent>
     <groupId>io.milton</groupId>
     <artifactId>milton-client</artifactId>
-    <packaging>jar</packaging>
+    <packaging>bundle</packaging>
     <name>milton-client</name>
     <licenses>
         <license>
