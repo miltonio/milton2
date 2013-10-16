@@ -445,4 +445,14 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 	public void setUserUrlAttName(String userUrlAttName) {
 		this.userUrlAttName = userUrlAttName;
 	}
+
+	public void setUseLongLivedCookies(boolean useLongLivedCookies) {
+		this.useLongLivedCookies = useLongLivedCookies;
+	}
+
+	public boolean isUseLongLivedCookies() {
+		return useLongLivedCookies;
+	}
+	
+	
 }

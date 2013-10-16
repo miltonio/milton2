@@ -62,6 +62,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import javax.inject.Inject;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -177,6 +178,7 @@ public class HttpManagerBuilder {
 	private List dependencies;
 	private List<String> cookieSigningKeys;
 	private String cookieSigningKeysFile;
+	private boolean useLongLivedCookies = true;
 
 	protected io.milton.http.SecurityManager securityManager() {
 		if (securityManager == null) {
@@ -301,6 +303,7 @@ public class HttpManagerBuilder {
 						}
 						initCookieSigningKeys();
 						cookieAuthenticationHandler = new CookieAuthenticationHandler(nonceProvider, cookieDelegateHandlers, mainResourceFactory, cookieSigningKeys);
+						cookieAuthenticationHandler.setUseLongLivedCookies(useLongLivedCookies);
 						authenticationHandlers.add(cookieAuthenticationHandler);
 					}
 				}
@@ -343,7 +346,7 @@ public class HttpManagerBuilder {
 				Iterator<String> it = cookieSigningKeys.iterator();
 				while( it.hasNext() ) {
 					String s = it.next();
-					if( s == null || s.length() == 0 ) {
+					if( StringUtils.isBlank(s) ) {
 						it.remove();
 					}
 				}
@@ -1353,6 +1356,19 @@ public class HttpManagerBuilder {
 	public void setCookieSigningKeys(List<String> cookieSigningKeys) {
 		this.cookieSigningKeys = cookieSigningKeys;
 	}
+	
+	public void setUseLongLivedCookies(boolean useLongLivedCookies) {
+		this.useLongLivedCookies = useLongLivedCookies;
+	}
+
+	/**
+	 * If true signed cookies for authentication will be long-lived, as defined
+	 * in CookieAuthenticationHandler.SECONDS_PER_YEAR
+	 * @return 
+	 */
+	public boolean isUseLongLivedCookies() {
+		return useLongLivedCookies;
+	}	
 
 	/**
 	 * If present is assumed to be a text file containing lines, where each line
