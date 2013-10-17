@@ -95,7 +95,7 @@ public class ServletRequest extends AbstractRequest {
         return tlServletContext.get();
     }
 
-    static void clearThreadLocals() {
+    public static void clearThreadLocals() {
         tlRequest.remove();
         tlServletContext.remove();
     }
