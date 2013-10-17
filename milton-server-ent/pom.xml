@@ -9,7 +9,7 @@
     </parent>
     <groupId>io.milton</groupId>
     <artifactId>milton-server-ent</artifactId>
-    <packaging>jar</packaging>
+    <packaging>bundle</packaging>
     <name>milton-server-ent</name>
     <description>Milton Enterprise: Supports DAV level 2 and above, including Caldav and Carddav. Available on AGPL or commercial licenses</description>
     <licenses>
