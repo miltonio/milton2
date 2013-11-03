@@ -83,6 +83,11 @@ public interface Resource {
      *  <P/>
      *  The auth given as a parameter will be null if authentication failed. The
      *  auth associated with the request will still exist
+     * 
+     * @param request
+     * @param method
+     * @param auth
+     * @return - true to permit the request
      */
     boolean authorise(Request request, Request.Method method, Auth auth);
 
@@ -90,6 +95,8 @@ public interface Resource {
      * <P/>
      * This will be used to construct authorization challenges and will be used
      * on Digest authentication to construct the expected response.
+     * 
+     * @return - the security realm, for HTTP authentication
      */
     String getRealm();
 
@@ -107,6 +114,7 @@ public interface Resource {
      * might require modified dates for file browsing. For example, the command line
      * client on Vista doesn't work properly if this is null.
      *
+     * @return - null if not known, else the last date the resource was modified
      */
     Date getModifiedDate();
 
@@ -119,6 +127,11 @@ public interface Resource {
      *  Called after authorization check but before any method specific processing
      *<P/>
      *  Return null for no redirect
+     * 
+     * @param request
+     * @return - null for no redirect, else the path to redirect to
+     * @throws io.milton.http.exceptions.NotAuthorizedException
+     * @throws io.milton.http.exceptions.BadRequestException
      */
     String checkRedirect(Request request) throws NotAuthorizedException, BadRequestException;
 

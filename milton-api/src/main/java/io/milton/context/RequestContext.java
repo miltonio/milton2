@@ -13,14 +13,30 @@ public class RequestContext extends Context implements RemovalCallback {
      * This method assumes that the requested class is required and will throw
      * an exception if it is not found
      *
+     * @param <T> - the type expected to be returned
+     * @param c - the class to 
      * @return - an object of the given type
      */
-    public static <T> T _(Class<T> c) throws ClassNotInContextException {
+    public static <T> T C(Class<T> c) throws ClassNotInContextException {
         T t = getCurrent().get(c);
         if (t == null) {
             throw new ClassNotInContextException(c);
         }
         return t;
+    }
+    
+    /**
+     * Will be removed for Java8. Use the C method instead
+     * 
+     * @param <T>
+     * @param c
+     * @return
+     * @throws ClassNotInContextException
+     * @deprecated
+     */
+    @Deprecated
+    public static <T> T _(Class<T> c) throws ClassNotInContextException {
+        return C(c);
     }
 
     /**
@@ -29,16 +45,33 @@ public class RequestContext extends Context implements RemovalCallback {
      * Returns the object in context of the given type or null if not found and
      * required is false.
      *
+     * @param <T>
+     * @param c
      * @param required - if true will throw an exception if the requested class
      * is not found. Otherwise will return null.
      * @return - an object of the given type
      */
-    public static <T> T _(Class<T> c, boolean required) throws ClassNotInContextException {
+    public static <T> T C(Class<T> c, boolean required) throws ClassNotInContextException {
         T t = getCurrent().get(c);
         if (t == null && required) {
             throw new ClassNotInContextException(c);
         }
         return t;
+    }
+    
+    /**
+     * Will be removed for Java8. Use the C method instead
+     * 
+     * @param <T>
+     * @param c
+     * @param required
+     * @return
+     * @throws ClassNotInContextException
+     * @deprecated
+     */
+    @Deprecated
+    public static <T> T _(Class<T> c, boolean required) throws ClassNotInContextException {
+        return C(c, required);
     }
 
     public static RequestContext getCurrent() {

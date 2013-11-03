@@ -31,8 +31,6 @@ import io.milton.http.quota.StorageChecker.StorageErrorReason;
 import io.milton.common.LogUtils;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
-import io.milton.resource.AccessControlledResource;
-import io.milton.resource.AccessControlledResource.Priviledge;
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
@@ -202,14 +200,23 @@ public class HandlerHelper {
 						log.trace("lock owned by: " + lockedByUser + " not by " + auth.getUser());
 					}
 				}
-				String value = inRequest.getIfHeader();
-				if (value != null) {
-					if (value.contains("opaquelocktoken:" + token.tokenId + ">")) {
-						log.trace("Request contains valid token so operation is permitted");
-						return false;
+				String ifHeader = inRequest.getIfHeader();
+				if (ifHeader != null) {
+					if (ifHeader.contains( token.tokenId )) { // only need to apply 'contains' check, to allow for different syntax of requested tokens
+						log.trace("Request contains valid If lock-token so operation is permitted");
+						return false; // not locked out
 					}
 				}
-				log.warn("Locked out. Request token: " + value + " actual token: " + token.tokenId + " LockedByUser=" + lockedByUser + " RequestUser=" + sUser);
+				// Look for a lock-token header, we'll treat it the same as if-header
+				String lockToken = inRequest.getLockTokenHeader();
+				if (lockToken != null) {
+					if (lockToken.contains( token.tokenId )) { // only need to apply 'contains' check, to allow for different syntax of requested tokens
+						log.trace("Request contains valid lock-token so operation is permitted");
+						return false; // not locked out
+					}
+				}
+								
+				log.warn("Locked out. ifHeader=" + ifHeader + " lock-token header=" + lockToken + ", but actual token: " + token.tokenId + " LockedByUser=" + lockedByUser + " RequestUser=" + sUser);
 				return true;
 			}
 		}
