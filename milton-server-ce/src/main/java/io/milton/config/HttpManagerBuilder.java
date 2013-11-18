@@ -479,6 +479,7 @@ public class HttpManagerBuilder {
 	}
 
 	protected List<PropertySource> initDefaultPropertySources(ResourceTypeHelper resourceTypeHelper) {
+		propFindPropertyBuilder(); // ensure propertySources is created and injected properly
 		if (propertySources == null) {
 			throw new RuntimeException("I actually expected propertySources to be created by now and set into the PropfindPropertyBuilder ");
 		}

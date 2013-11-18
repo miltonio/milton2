@@ -110,8 +110,8 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	 * Replace with a suitable cluster enabled Map for cluster support
 	 */
 	private Map<String, List<LockHolder>> mapOfTempResources = new ConcurrentHashMap<String, List<LockHolder>>();
-	private Map<Class, AnnotationHandler> mapOfAnnotationHandlers = new HashMap<Class, AnnotationHandler>(); // keyed on annotation class
-	private Map<Method, AnnotationHandler> mapOfAnnotationHandlersByMethod = new EnumMap<Method, AnnotationHandler>(Method.class); // keyed on http method
+	private final Map<Class, AnnotationHandler> mapOfAnnotationHandlers = new HashMap<Class, AnnotationHandler>(); // keyed on annotation class
+	private final Map<Method, AnnotationHandler> mapOfAnnotationHandlersByMethod = new EnumMap<Method, AnnotationHandler>(Method.class); // keyed on http method
 	RootAnnotationHandler rootAnnotationHandler = new RootAnnotationHandler(this);
 	GetAnnotationHandler getAnnotationHandler = new GetAnnotationHandler(this);
 	PostAnnotationHandler postAnnotationHandler = new PostAnnotationHandler(this);
@@ -437,7 +437,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 
 	/**
 	 *
-	 * @param source
+	 * @param sourceRes
 	 * @param m
 	 * @param otherValues - any other values to be provided which can be mapped
 	 * onto method arguments
@@ -454,6 +454,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	 * @param mandatorySecondArg - if present will be used as second arg. Used
 	 * by AccessControlListAnnotationHandler to always provide user to second
 	 * arg, even when null
+	 * @param forceUseSecondArg
 	 * @param m
 	 * @param otherValues
 	 * @return
@@ -584,8 +585,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	 *
 	 * @param childSource
 	 * @param parent
-	 * @param method - the method which located the source object. Will be
-	 * inspected for annotations
+	 * @param m
 	 * @return
 	 */
 	public AnnoResource instantiate(Object childSource, AnnoCollectionResource parent, java.lang.reflect.Method m) {
@@ -636,6 +636,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	 * @param name
 	 * @param timeout - optional. The resource will be removed after this
 	 * timeout expires
+	 * @param lockInfo
 	 * @return - a temporary (not persistent) resource of an indeterminate type
 	 */
 	public LockHolder createLockHolder(AnnoCollectionResource parentCollection, String name, LockTimeout timeout, LockInfo lockInfo) {
@@ -695,11 +696,15 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	public void removeLockHolder(AnnoCollectionResource parent, String name) {
 		List<LockHolder> list = getTempResourcesForParent(parent);
 		Iterator<LockHolder> it = list.iterator();
+		List<LockHolder> toRemove = new ArrayList<LockHolder>();
 		while (it.hasNext()) {
-			if (it.next().getName().equals(name)) {
-				it.remove();
+			LockHolder o = it.next();
+			if (o.getName().equals(name)) {
+				toRemove.add(o);
+				//it.remove();
 			}
 		}
+		list.removeAll(toRemove);
 		parent.removeLockHolder(name);
 	}
 
