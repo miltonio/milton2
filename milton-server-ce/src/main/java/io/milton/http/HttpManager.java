@@ -31,6 +31,7 @@ import io.milton.common.Stoppable;
 import io.milton.event.EventManager;
 import io.milton.event.RequestEvent;
 import io.milton.event.ResponseEvent;
+import io.milton.http.Request.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
@@ -47,11 +48,17 @@ public class HttpManager {
 
 	private static final Logger log = LoggerFactory.getLogger(HttpManager.class);
 
+	private static final ThreadLocal<Request> tlRequest = new ThreadLocal<Request>();
+	private static final ThreadLocal<Response> tlResponse = new ThreadLocal<Response>();
+	private static final Map<Thread,RequestInfo> mapOfRequestsByThread = new ConcurrentHashMap<Thread, RequestInfo>();
+
+	public static RequestInfo getRequestDataForThread(Thread th) {
+		return mapOfRequestsByThread.get(th);
+	}
+	
 	public static String decodeUrl(String s) {
 		return Utils.decodePath(s);
 	}
-	private static final ThreadLocal<Request> tlRequest = new ThreadLocal<Request>();
-	private static final ThreadLocal<Response> tlResponse = new ThreadLocal<Response>();
 
 	public static Request request() {
 		return tlRequest.get();
@@ -126,12 +133,11 @@ public class HttpManager {
 			throw new RuntimeException("request is null");					
 		}
 		if (log.isInfoEnabled()) {
-			log.info(request.getMethod() + " :: " + request.getAbsoluteUrl() + " - " + request.getAbsoluteUrl());
+			log.info(request.getMethod() + " :: " + request.getAbsoluteUrl() + " start");
 		}
 
 		try {
-			tlRequest.set(request);
-			tlResponse.set(response);
+			setThreadAffinityData(request, response);
 			try {
 				fireRequestEvent(request);
 			} catch (ConflictException ex) {
@@ -147,7 +153,8 @@ public class HttpManager {
 			chain.process(request, response);
 			try {
 				tm = System.currentTimeMillis() - tm;
-				fireResponseEvent(request, response, tm);
+				log.info(request.getMethod() + " :: " + request.getAbsoluteUrl() + " finished " + tm + "ms");
+				fireResponseEvent(request, response, tm);				
 			} catch (ConflictException ex) {
 				log.warn("exception thrown from event handler after response is complete", ex);
 			} catch (BadRequestException ex) {
@@ -156,8 +163,28 @@ public class HttpManager {
 				log.warn("exception thrown from event handler after response is complete", ex);
 			}
 		} finally {
-			tlRequest.remove();
-			tlResponse.remove();
+			clearThreadAffinity();
+		}
+	}
+
+	private void clearThreadAffinity() {
+		tlRequest.remove();
+		tlResponse.remove();
+		try {
+			mapOfRequestsByThread.remove(Thread.currentThread());
+		} catch (Throwable e) {
+			log.info("Couldnt clear thread affinity request data");
+		}
+	}
+
+	private void setThreadAffinityData(Request request, Response response) {
+		tlRequest.set(request);
+		tlResponse.set(response);
+		try {
+			RequestInfo info = new RequestInfo(request.getMethod(), request.getAbsoluteUrl(), new Date());
+			mapOfRequestsByThread.put(Thread.currentThread(), info);
+		} catch (Throwable e) {
+			log.info("Couldnt set thread affinity request data");
 		}
 	}
 
@@ -261,5 +288,33 @@ public class HttpManager {
 
 	public EntityTransport getEntityTransport() {
 		return entityTransport;
+	}
+	
+	public class RequestInfo {
+		private final Method method;
+		private final String url;
+		private final Date started;
+
+		public RequestInfo(Method method, String url, Date started) {
+			this.method = method;
+			this.url = url;
+			this.started = started;
+		}
+
+		public Method getMethod() {
+			return method;
+		}
+
+		public Date getStarted() {
+			return started;
+		}
+
+		public String getUrl() {
+			return url;
+		}
+		
+		public long getDurationMillis() {
+			return System.currentTimeMillis() - started.getTime();
+		}
 	}
 }
