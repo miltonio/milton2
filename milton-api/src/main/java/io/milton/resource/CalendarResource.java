@@ -20,7 +20,6 @@
 package io.milton.resource;
 
 import io.milton.http.values.SupportedCalendarComponentList;
-import java.util.List;
 
 /**
  *

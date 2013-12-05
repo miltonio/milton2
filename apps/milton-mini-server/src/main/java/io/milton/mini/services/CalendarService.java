@@ -58,6 +58,7 @@ public class CalendarService {
      *
      * @param event
      * @param data
+     * @return - updated ical text
      */
     public String update(CalEvent event, String data) {
         String ical = null;
@@ -182,8 +183,9 @@ public class CalendarService {
     /**
      * Add RSVP=True to attendees and return new ical data
      *
-     * @param icalData
-     * @return
+     * @param event
+     * @param e
+     * @param session
      */
     public void setRsvps(VEvent event, CalEvent e, Session session) {
 
