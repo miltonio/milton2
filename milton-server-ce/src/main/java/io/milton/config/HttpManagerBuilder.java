@@ -42,6 +42,7 @@ import io.milton.http.http11.auth.LoginResponseHandler.LoginPageTypeHandler;
 import io.milton.http.json.JsonPropFindHandler;
 import io.milton.http.json.JsonPropPatchHandler;
 import io.milton.http.json.JsonResourceFactory;
+import io.milton.http.quota.DefaultQuotaDataAccessor;
 import io.milton.http.quota.QuotaDataAccessor;
 import io.milton.http.values.ValueWriters;
 import io.milton.http.webdav.*;
@@ -179,6 +180,7 @@ public class HttpManagerBuilder {
 	private List<String> cookieSigningKeys;
 	private String cookieSigningKeysFile;
 	private boolean useLongLivedCookies = true;
+	private boolean enableQuota = false;
 
 	protected io.milton.http.SecurityManager securityManager() {
 		if (securityManager == null) {
@@ -555,6 +557,11 @@ public class HttpManagerBuilder {
 		if (propFindRequestFieldParser == null) {
 			DefaultPropFindRequestFieldParser defaultFieldParse = new DefaultPropFindRequestFieldParser();
 			this.propFindRequestFieldParser = new MsPropFindRequestFieldParser(defaultFieldParse); // use MS decorator for windows support				
+		}
+		if( quotaDataAccessor == null ) {
+			if( enableQuota ) {
+				quotaDataAccessor = new DefaultQuotaDataAccessor();
+			}
 		}
 		if (webDavProtocol == null && webdavEnabled) {
 			webDavProtocol = new WebDavProtocol(handlerHelper, resourceTypeHelper, webdavResponseHandler, propertySources, quotaDataAccessor, propPatchSetter, initPropertyAuthoriser(), eTagGenerator, urlAdapter, resourceHandlerHelper, userAgentHelper(), propFindRequestFieldParser(), propFindPropertyBuilder(), displayNameFormatter, enableTextContentProperty);
@@ -1306,6 +1313,22 @@ public class HttpManagerBuilder {
 		}
 		this.controllers = controllers;
 	}
+
+	/**
+	 * If quota is enabled, then extension properties to report quota
+	 * information are available.
+	 * 
+	 * @return 
+	 */
+	public boolean isEnableQuota() {
+		return enableQuota;
+	}
+
+	public void setEnableQuota(boolean enableQuota) {
+		this.enableQuota = enableQuota;
+	}
+	
+	
 
 	/**
 	 * Default max-age to use for certain resource types which can use a default

@@ -20,10 +20,6 @@
 package io.milton.http.fs;
 
 
-import io.milton.http.fs.FsMemoryLockManager;
-import io.milton.http.fs.FsFileResource;
-import io.milton.http.fs.FsResource;
-import io.milton.http.fs.SimpleFileContentService;
 import io.milton.http.LockInfo;
 import io.milton.http.LockResult;
 import io.milton.http.LockTimeout;
