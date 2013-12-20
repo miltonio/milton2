@@ -39,6 +39,11 @@ import java.util.List;
  *  - the first argument must be the hierachial parent of these objects
  *  - the second argument must be the name of the resource
  * 
+ * Eg
+ * @ChildOf
+ * public User findUser(UsersHome homeFolder, String userId) {
+ *  return UserDao.findUser(userId);
+ * }
  *
  * @author brad
  */
