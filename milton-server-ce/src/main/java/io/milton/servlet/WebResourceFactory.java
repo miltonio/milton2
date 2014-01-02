@@ -32,11 +32,11 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Provides access to resources exposed by the servlet context.
- * 
+ *
  * Attempts to locate a physical file, via getRealPath. This will usually work,
  * but may not in cases where the webapp is running from a war file, or if
  * overlays are used.
- * 
+ *
  * If not found it attempts to locate a URL with servletContext.getResource
  *
  * @author brad
@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 public class WebResourceFactory implements ResourceFactory, Initable {
 
 	private static final Logger log = LoggerFactory.getLogger(WebResourceFactory.class);
-	
+
 	private Config config;
 	private String basePath = "WEB-INF/static";
 	private Date modDate = new Date();
@@ -95,7 +95,11 @@ public class WebResourceFactory implements ResourceFactory, Initable {
 			}
 			return null;
 		} else {
-			return new StaticResource(file);
+			if (file.isFile()) {
+				return new StaticResource(file);
+			} else {
+				return null;
+			}
 		}
 	}
 
@@ -110,14 +114,14 @@ public class WebResourceFactory implements ResourceFactory, Initable {
 	public void setBasePath(String basePath) {
 		this.basePath = basePath;
 	}
-	
+
 	private String stripContext(String url) {
 		String contextName = config.getServletContext().getServletContextName();
-		if( contextName == null || contextName.equals("") || config.getServletContext().getServletContextName().equals("/")) {
+		if (contextName == null || contextName.equals("") || config.getServletContext().getServletContextName().equals("/")) {
 			return url;
 		}
 		String contextPath = "/" + contextName;
 		url = url.replaceFirst('/' + contextPath, "");
 		return url;
-	}	
+	}
 }
