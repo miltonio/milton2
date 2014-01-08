@@ -20,7 +20,7 @@
         <dependency>
             <groupId>javax.mail</groupId>
             <artifactId>mail</artifactId>
-            <version>1.4.2</version>
+            <version>1.4.7</version>
         </dependency>
 
 
@@ -35,6 +35,18 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>1.5.8</version>
-        </dependency>              
+        </dependency>
+        <dependency>
+            <artifactId>activation</artifactId>
+            <groupId>javax.activation</groupId>
+            <type>jar</type>
+            <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <artifactId>commons-io</artifactId>
+            <groupId>commons-io</groupId>
+            <type>jar</type>
+            <version>2.4</version>
+        </dependency>
     </dependencies>
 </project>
