@@ -21,37 +21,50 @@ import java.lang.annotation.Target;
 
 /**
  * Marks a method as one which creates a child resource containing the given content,
- * or replaces an existing child's content with new data
+ * or replaces an existing child's content with new data<br/><br/>
  * 
  * Return type - Must return the created pojo object, or the updated child
  * 
  * Parameters:
- *  - first arg must be the parent of the item to create
- *  - items following that may include (in preferential order)
- *      - newName
- *      - inputStream or byte[]
- *      - contentType
- *      - content length as Long
+ * <ol>
+ *  <li>first arg must be the object to update OR..</li>
+ *  <li>the parent object, followed by the name of the child resource</li> 
+ *  <li>items following that may include (in preferential order)
+ *      <ol>
+ *      <li>inputStream or byte[]</li>
+ *      <li>contentType</li>
+ *      <li>content length as Long</li>
+ *     </ol>
+ * </li>
+ * </ol>
  * 
+ * <p>
  * Example: Creating a new child resource
- *     @PutChild
-    public MyDatabase.FileContentItem createFile(MyDatabase.FolderContentItem parent, String name, byte[] bytes) {
-        FileContentItem file = parent.addFile(name);
-        file.setBytes(bytes);
-        return file;
-    }
-    
- *
- * Example: updating an existing resource
+ * </p>
  * 
- *     @PutChild
-    public Image uploadImage(Image image, byte[] bytes) throws IOException {
-        File fRoot = getContentRoot();
-        File content = new File(fRoot, image.getFileName());
-        FileUtils.writeByteArrayToFile(content, bytes);
-        return image;
-    }    
-
+ * <pre>
+ *    @PutChild
+ *    public MyDatabase.FileContentItem createFile(MyDatabase.FolderContentItem parent, String name, byte[] bytes) {
+ *        FileContentItem file = parent.addFile(name);
+ *        file.setBytes(bytes);
+ *        return file;
+ *    }
+ * </pre>
+ *
+ *
+ * <p>
+ * Example: updating an existing resource
+ * <br/>
+ * 
+ *     @PutChild<br/>
+ *    public Image uploadImage(Image image, byte[] bytes) throws IOException {<br/>
+ *        File fRoot = getContentRoot();<br/>
+ *        File content = new File(fRoot, image.getFileName());<br/>
+ *        FileUtils.writeByteArrayToFile(content, bytes);<br/>
+ *        return image;<br/>
+ *    }    <br/>
+ * </p>>
+ *
  * @author brad
  */
 @Target(ElementType.METHOD)
