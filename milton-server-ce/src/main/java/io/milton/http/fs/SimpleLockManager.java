@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,8 +48,8 @@ public class SimpleLockManager implements LockManager {
     Map<String, CurrentLock> locksByToken;
 
     public SimpleLockManager() {
-        locksByUniqueId = new HashMap<String, CurrentLock>();
-        locksByToken = new HashMap<String, CurrentLock>();
+        locksByUniqueId = new ConcurrentHashMap<String, CurrentLock>();
+        locksByToken = new ConcurrentHashMap<String, CurrentLock>();
     }
 
 	@Override
@@ -123,6 +124,7 @@ public class SimpleLockManager implements LockManager {
         }
     }
 
+	@Override
     public LockToken getCurrentToken( LockableResource r ) {
         CurrentLock lock = locksByUniqueId.get( r.getUniqueId() );
         if( lock == null ) return null;
@@ -134,7 +136,7 @@ public class SimpleLockManager implements LockManager {
         return token;
     }
 
-    class CurrentLock {
+    public static class CurrentLock {
 
         final String id;
         final LockToken token;

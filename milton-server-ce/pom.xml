@@ -173,12 +173,18 @@
 			<version>1.6.1</version>
 			<scope>test</scope>
 		</dependency>
-	 <dependency>
-	  <groupId>javax.inject</groupId>
-	  <artifactId>javax.inject</artifactId>
-	  <version>1</version>
-	  <type>jar</type>
-	 </dependency>
+		<dependency>
+			<groupId>javax.inject</groupId>
+			<artifactId>javax.inject</artifactId>
+			<version>1</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<artifactId>commons-lang</artifactId>
+			<groupId>commons-lang</groupId>
+			<type>jar</type>
+			<version>2.5</version>
+		</dependency>
 	</dependencies>
 	<repositories>
 		<repository>  
