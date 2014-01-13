@@ -176,11 +176,13 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		mapOfAnnotationHandlers.put(CreatedDate.class, createdDateAnnotationHandler);
 		mapOfAnnotationHandlers.put(ContentType.class, contentTypeAnnotationHandler);
 		mapOfAnnotationHandlers.put(MaxAge.class, maxAgeAnnotationHandler);
+		mapOfAnnotationHandlers.put(ContentLength.class, contentLengthAnnotationHandler);
 		mapOfAnnotationHandlers.put(UniqueId.class, uniqueIdAnnotationHandler);
 		mapOfAnnotationHandlers.put(CTag.class, cTagAnnotationHandler);
 		mapOfAnnotationHandlers.put(ICalData.class, iCalDataAnnotationHandler);
 		mapOfAnnotationHandlers.put(CalendarColor.class, calendarColorAnnotationHandler);
-		mapOfAnnotationHandlers.put(ContactData.class, contactDataAnnotationHandler);
+		mapOfAnnotationHandlers.put(ContactData.class, contactDataAnnotationHandler);		
+		
 
 		mapOfAnnotationHandlers.put(CalendarDateRangeQuery.class, calendarDateRangeQueryAnnotationHandler);
 		mapOfAnnotationHandlers.put(FreeBusyQuery.class, freeBusyQueryAnnotationHandler);
@@ -376,6 +378,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		for (Object controller : controllers) {
 			log.info("Parse controller: " + controller.getClass());
 			for (AnnotationHandler ah : mapOfAnnotationHandlers.values()) {
+				log.info(" - controller: " + controller.getClass() + " handler: " + ah.getAnnoClass());
 				ah.parseController(controller);
 			}
 		}
