@@ -63,7 +63,19 @@ import java.lang.annotation.Target;
  *        FileUtils.writeByteArrayToFile(content, bytes);<br/>
  *        return image;<br/>
  *    }    <br/>
- * </p>>
+ * </p>
+ * 
+ * <p>
+ * Example: Creating a new child resource from an inputstream. This uses the contentLength and contentType
+ * headers, but please note these are not always sent by client apps.
+ * </p>
+ * 
+ * <pre>
+ *    @PutChild
+ *    public MyDatabase.FileContentItem createFile(MyDatabase.FolderContentItem parent, String name, InputStream in, Long contentLength, String contentType) {
+ *      ...
+ *    }
+ * </pre>*
  *
  * @author brad
  */

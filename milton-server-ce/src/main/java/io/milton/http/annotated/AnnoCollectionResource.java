@@ -14,6 +14,7 @@
  */
 package io.milton.http.annotated;
 
+import io.milton.common.Path;
 import io.milton.http.LockInfo;
 import io.milton.http.LockTimeout;
 import io.milton.http.LockToken;
@@ -38,13 +39,22 @@ import javax.xml.namespace.QName;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Placeholder object to represent a node in an annotations hierachy acting
+ * as a collection
+ * 
+ * A source object (ie your pojo) is considered a collection if it can have children
+ * , ie if there exists at least one @ChildOf or @ChildrenOf method which has
+ * that object as its source type. Note this is keyed on the class.
+ * 
+ * This class includes methods suitable for use in page templating logic for
+ * navigating through the hierarchy.
  *
  * @author brad
  */
 public class AnnoCollectionResource extends AnnoResource implements CollectionResource, PutableResource, MakeCollectionableResource, LockingCollectionResource, DeletableCollectionResource, ExtMakeCalendarResource {
 
 	private static final org.slf4j.Logger log = LoggerFactory.getLogger(AnnoCollectionResource.class);
-	
+
 	/**
 	 * lazy loaded list of all children of this collection
 	 */
@@ -122,14 +132,14 @@ public class AnnoCollectionResource extends AnnoResource implements CollectionRe
 		return findChildren(false);
 	}
 
-	public ResourceList getSubFolders() throws NotAuthorizedException, BadRequestException{
+	public ResourceList getSubFolders() throws NotAuthorizedException, BadRequestException {
 		return getChildren().getDirs();
 	}
-	
-	public ResourceList getFiles() throws NotAuthorizedException, BadRequestException{
+
+	public ResourceList getFiles() throws NotAuthorizedException, BadRequestException {
 		return getChildren().getFiles();
-	}	
-	
+	}
+
 	private ResourceList findChildren(boolean isChildLookup) throws NotAuthorizedException, BadRequestException {
 		if (children == null) {
 			children = new ResourceList();
@@ -240,5 +250,46 @@ public class AnnoCollectionResource extends AnnoResource implements CollectionRe
 	@Override
 	public boolean isLockedOutRecursive(Request request) {
 		return false; // TODO
+	}
+
+	public Resource find(String s) throws NotAuthorizedException, BadRequestException {
+		Path p = Path.path(s);
+		return findPath(p);
+	}
+
+	/**
+	 * Locate a resource from the given path evaluated relative to this resource.
+	 * 
+	 * Supports ".." and "." segments, any other strings are considered file names
+	 * 
+	 * @param p
+	 * @return
+	 * @throws NotAuthorizedException
+	 * @throws BadRequestException 
+	 */
+	public Resource findPath(Path p) throws NotAuthorizedException, BadRequestException {
+		Resource r = this;
+		for (String segment : p.getParts()) {
+			if (segment.equals("..")) {
+				if( r instanceof AnnoResource) {
+					AnnoResource ar = (AnnoResource) r;
+					r = ar.getParent();
+				} else {
+					log.warn("Couldnt get parent of resource type: " + r.getClass());
+					return null;
+				}
+			} else if (segment.equals(".")) {
+				// do nothing
+			} else {
+				if (r instanceof CollectionResource) {
+					CollectionResource col = (CollectionResource) r;
+					r = col.child(segment);
+				} else {
+					log.warn("Couldnt find child: " + segment + " of parent: " + r.getName() + " because the parent is not actually a collection");
+					return null;
+				}
+			}
+		}
+		return r;
 	}
 }

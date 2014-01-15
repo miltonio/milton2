@@ -51,7 +51,7 @@ public class HelloWorldController  {
     public List<ProductFile> getProductFiles(Product product) {
         return product.getProductFiles();
     }
-    
+
     @PutChild
     public ProductFile upload(Product product, String newName, byte[] bytes) {
         ProductFile pf = new ProductFile(newName, bytes);
