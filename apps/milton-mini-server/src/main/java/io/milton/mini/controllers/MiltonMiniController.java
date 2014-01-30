@@ -63,19 +63,18 @@ public class MiltonMiniController implements InitListener {
 
     private static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(MiltonMiniController.class);
 
-    
     @Inject
-	private BlobStore blobStore;
-    
+    private BlobStore blobStore;
+
     @Inject
-	private HashStore hashStore;
-    
+    private HashStore hashStore;
+
     @Inject
-	private CurrentDateService currentDateService;
-    
+    private CurrentDateService currentDateService;
+
     @Inject
-	private PasswordManager passwordManager;
-	
+    private PasswordManager passwordManager;
+
     @Inject
     private SessionManager sessionManager;
 
@@ -83,100 +82,97 @@ public class MiltonMiniController implements InitListener {
     public MiltonMiniController getRoot() {
         return this;
     }
-   
-    
+
     @Post
     public JsonResult doHomePagePost(MiltonMiniController root) {
         return new JsonResult(true);
     }
-        
-    
+
     @Name
     public String getRootName(MiltonMiniController root) {
         return "";
     }
-    
+
     @Get
     public String showHomePage(MiltonMiniController root) {
         return "homePage";
     }
-    
+
     @ChildOf
     public LoginPage getLoginPage(MiltonMiniController root, String name) {
-        if( name.equals("login.html")) {
-            return  new LoginPage();
+        if (name.equals("login.html")) {
+            return new LoginPage();
         }
         return null;
     }
-    
+
     @Get
     public String showLoginPage(LoginPage p) {
         System.out.println("show login page");
         return "login";
     }
-    
 
     @ChildrenOf
     public UsersHome getUsersHome(MiltonMiniController root) {
         return new UsersHome();
     }
-    
+
     @ChildrenOf
     public RepoHome findRepoHome(MiltonMiniController root) {
         Organisation org = Organisation.getRootOrg(SessionManager.session());
         return new RepoHome("files", org);
-    }    
-    
+    }
+
     @ChildrenOf
-    public List<Repository> findRepositories(RepoHome repoHome) {       
+    public List<Repository> findRepositories(RepoHome repoHome) {
         return repoHome.org.getRepositories();
-    }      
-    
-    @ChildOf(pathSuffix="new")
+    }
+
+    @ChildOf(pathSuffix = "new")
     public Profile createNewProfile(UsersHome usersHome) {
         return createNewProfile();
-    }       
-    
+    }
+
     public Profile createNewProfile() {
         Profile m = new Profile();
         m.setCreatedDate(new Date());
         m.setModifiedDate(new Date());
         return m;
-    }      
-    
-    @Get(params={"editMode"})
+    }
+
+    @Get(params = {"editMode"})
     public ModelAndView showUserEditPage(Profile profile) throws UnsupportedEncodingException {
-        return new ModelAndView("profile", profile, "profileEditPage"); 
-    }       
-    
+        return new ModelAndView("profile", profile, "profileEditPage");
+    }
+
     @Get
     public ModelAndView showUserPage(Profile profile) throws UnsupportedEncodingException {
-        return new ModelAndView("profile", profile, "profilePage"); 
-    }         
-    
+        return new ModelAndView("profile", profile, "profilePage");
+    }
+
     @AccessControlList
     public List<AccessControlledResource.Priviledge> getUserPriviledges(Profile target, Profile currentUser) {
-        if( currentUser == null ) {
+        if (currentUser == null) {
             return AccessControlledResource.NONE;
         } else {
-            if( currentUser.getId() == target.getId() ) {
+            if (currentUser.getId() == target.getId()) {
                 return AccessControlledResource.READ_WRITE;
             } else {
                 return AccessControlledResource.NONE;
             }
         }
     }
-    
-    @Post(bindData=true)
+
+    @Post(bindData = true)
     public Profile saveProfile(Profile profile) {
         profile.setModifiedDate(new Date());
         SessionManager.session().save(profile);
         SessionManager.session().flush();
         return profile;
-    }    
-    
-    @Post(params={"password"})
-    public Profile changePassword(Profile profile, Map<String,String> params) {
+    }
+
+    @Post(params = {"password"})
+    public Profile changePassword(Profile profile, Map<String, String> params) {
         log.info("changePassword: " + profile.getName());
         profile.setModifiedDate(new Date());
         String pwd = params.get("password");
@@ -185,11 +181,11 @@ public class MiltonMiniController implements InitListener {
         SessionManager.session().flush();
         log.info("changed Password");
         return profile;
-    }      
-    
+    }
+
     @ChildrenOf
     public SharedHome getSharedFoldersHome(MiltonMiniController root) {
-		Organisation org = Organisation.getRootOrg(SessionManager.session());
+        Organisation org = Organisation.getRootOrg(SessionManager.session());
         return new SharedHome(org);
     }
 
@@ -197,18 +193,18 @@ public class MiltonMiniController implements InitListener {
     public String showUsersHome(UsersHome usersHome) {
         return "usersHome";
     }
-    
+
     @ChildrenOf
     public List<Repository> getSharedFolders(SharedHome sharedHome) {
         return sharedHome.org.getRepositories();
     }
-	
+
     @MakeCollection
     public Repository createSharedFolder(SharedHome sharedHome, String newName, @Principal Profile user) {
         Repository repo = sharedHome.org.createRepository(newName, user, SessionManager.session());
         return repo;
     }
-	
+
     @ChildrenOf
     @Users
     public List<Profile> getUsers(UsersHome usersHome) {
@@ -219,12 +215,12 @@ public class MiltonMiniController implements InitListener {
     public Boolean checkPasswordBasic(Profile user, String password) {
         return passwordManager.verifyPassword(user, password);
     }
-    
+
     @Authenticate
     public Boolean checkPasswordDigest(Profile user, DigestResponse digest) {
         return passwordManager.verifyDigest(digest, user);
-    }    
-    
+    }
+
     @Email
     public String getUserEmail(Profile profile) {
         return profile.getEmail();
@@ -233,8 +229,8 @@ public class MiltonMiniController implements InitListener {
     @UniqueId
     public String getUniqueId(DataSession.DataNode m) {
         // We'll just lock on the path
-		String id = buildUniqueId(m);
-		return id;
+        String id = buildUniqueId(m);
+        return id;
     }
 
     @ModifiedDate
@@ -242,92 +238,93 @@ public class MiltonMiniController implements InitListener {
         return m.getModifiedDate();
     }
 
-	private String buildUniqueId(DataSession.DataNode m) {
-		if( m.getParent() != null ) {
-			return buildUniqueId(m.getParent()) + "/" + m.getName();
-		} else {
-			return m.getBranch().getId() + "";
-		}
-	}
+    private String buildUniqueId(DataSession.DataNode m) {
+        if (m.getParent() != null) {
+            return buildUniqueId(m.getParent()) + "/" + m.getName();
+        } else {
+            return m.getBranch().getId() + "";
+        }
+    }
 
     public void beforeInit(HttpManagerBuilder b) {
-        
+
     }
 
     public void afterInit(HttpManagerBuilder b) {
-        
+
     }
 
     /**
      * Check the root organisation exists
-     * 
+     *
      * @param b
-     * @param m 
+     * @param m
      */
     public void afterBuild(HttpManagerBuilder b, HttpManager m) {
         Session session = sessionManager.open();
         Transaction tx = session.beginTransaction();
         Organisation rootOrg = Organisation.getRootOrg(session);
-        if( rootOrg == null ) {
+        if (rootOrg == null) {
             log.info("Creating root organisation");
             rootOrg = new Organisation();
             Date now = currentDateService.getNow();
             rootOrg.setCreatedDate(now);
             rootOrg.setModifiedDate(now);
             rootOrg.setOrgId("root");
-            session.save(rootOrg);            
+            session.save(rootOrg);
         }
         Profile admin = Profile.find("admin", session);
-        if( admin == null ) {
+        if (admin == null) {
             admin = createNewProfile();
             admin.setName("admin");
             admin.setNickName("admin");
             session.save(admin);
-            
+
             passwordManager.setPassword(admin, "password8");
         }
         Repository files = rootOrg.repository("files");
-        if( files == null ) {
+        if (files == null) {
             System.out.println("create directory");
             files = rootOrg.createRepository("files", admin, session);
             session.save(files);
         }
-        System.out.println("files repo: " +files);
+        System.out.println("files repo: " + files);
         tx.commit();
     }
 
     public class UsersHome {
+
         public String getName() {
             return "users";
         }
     }
 
-	
-	public class SharedHome {
-		private final Organisation org;
+    public class SharedHome {
 
-		public SharedHome(Organisation org) {
-			this.org = org;
-		}
-		
-		
-		
-		public String getName() {
-			return "shared";
-		}
+        private final Organisation org;
 
-		public Organisation getOrg() {
-			return org;
-		}				
-	}
-    
+        public SharedHome(Organisation org) {
+            this.org = org;
+        }
+
+        public String getName() {
+            return "shared";
+        }
+
+        public Organisation getOrg() {
+            return org;
+        }
+    }
+
     public class LoginPage {
+
         public String getName() {
             return "login.html";
         }
     }
-    
+
     public class RepoHome {
+
         private final String name;
         private final Organisation org;
 
@@ -336,11 +333,9 @@ public class MiltonMiniController implements InitListener {
             this.org = org;
         }
 
-
-
         public String getName() {
             return name;
         }
-        
+
     }
 }

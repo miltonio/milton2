@@ -42,7 +42,6 @@ import io.milton.vfs.db.AttendeeRequest;
 import io.milton.vfs.db.CalEvent;
 import io.milton.vfs.db.Calendar;
 import io.milton.vfs.db.Profile;
-import io.milton.vfs.db.Repository;
 import io.milton.vfs.db.utils.SessionManager;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -106,24 +105,22 @@ public class CalendarController {
         if (currentUser == null) {
             throw new NotAuthorizedException(null);
         }
-        Calendar newCal = calendarsHome.user.newCalendar(name, currentUser);
+        Calendar newCal = calendarsHome.user.newCalendar(name, currentUser, SessionManager.session());
         return newCal;
     }
 
     @Post(bindData = true)
     public Calendar saveCalendar(Calendar calendar) {
         log.info("saveCalendar: " + calendar.getName());
-        Transaction tx = SessionManager.session().beginTransaction();
         SessionManager.session().save(calendar);
         SessionManager.session().flush();
-        tx.commit();
         log.info("saved cal");
         return calendar;
     }
     
     @MakeCalendar
     public Calendar createNewCalendar(CalendarsHome calendarsHome, String newName, Map<QName, String> fieldsToSet, @Principal Profile currentUser) {
-        Calendar newCal = calendarsHome.user.newCalendar(newName, currentUser);
+        Calendar newCal = calendarsHome.user.newCalendar(newName, currentUser, SessionManager.session());
         log.info("Create new calendar: " + newName);
         for( QName qname : fieldsToSet.keySet()) {
             log.info(" field: " + qname + " = " + fieldsToSet.get(qname));

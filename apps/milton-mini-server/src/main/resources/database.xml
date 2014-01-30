@@ -40,19 +40,25 @@
 
 
 
-    <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
         <property name="dataSource" ref="dataSource" />
         <property name="packagesToScan" value="io.milton.vfs.db,io.milton.cloud.server.db,com.fuselms.db" />
         <property name="hibernateProperties">
-            <props>
+            <props>                
+                <prop key="hibernate.session_factory_name">jndi/fuse</prop>
                 <prop key="hibernate.dialect">${hibernate.dialect}</prop>
                 <prop key="hibernate.show_sql">${hibernate.show_sql}</prop>
                 <prop key="hibernate.jdbc.batch_size">0</prop>
                 <prop key="hibernate.query.substitutions">true 'Y', false 'N'</prop>
-                <prop key="hibernate.hbm2ddl.auto">update</prop>
+                <prop key="hibernate.hbm2ddl.auto">${hibernate.hbm2ddl}</prop>
                 <prop key="hibernate.cache.use_second_level_cache">true</prop>
-                <prop key="hibernate.cache.use_query_cache">true</prop>
-                <prop key="hibernate.cache.region.factory_class">net.sf.ehcache.hibernate.EhCacheRegionFactory</prop>
+                <prop key="hibernate.cache.use_query_cache">true</prop>                
+                <prop key="hibernate.cache.use_minimal_puts">true</prop>
+                <prop key="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory</prop>
+                <!--
+                <prop key=" hibernate.cache.hazelcast.lock_timeout_in_seconds">3</prop> 
+                -->
+                <!-- 3 secs, see http://www.hazelcast.com/docs/2.0/manual/multi_html/ch14.html -->
             </props>
         </property>
         <property name="namingStrategy" ref="namingStrategy" />
@@ -65,16 +71,11 @@
     <bean id="namingStrategy" class="org.hibernate.cfg.ImprovedNamingStrategy"/>
 
 
-    <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+    <bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+        <property name="dataSource" ref="dataSource" />
         <property name="sessionFactory" ref="sessionFactory" />
-    </bean>
-
-    <!--    
-        <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-            <property name="dataSource" ref="dataSource"/>
-        </bean>
-    -->
-
+    </bean>    
+    
     <bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor"/>
 
 
