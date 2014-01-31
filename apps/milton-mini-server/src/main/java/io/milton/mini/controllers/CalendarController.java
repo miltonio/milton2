@@ -48,24 +48,43 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.inject.Inject;
 import javax.xml.namespace.QName;
+import net.fortuna.ical4j.model.TimeZone;
 import org.apache.commons.io.IOUtils;
-import org.hibernate.Transaction;
 
 @ResourceController
 public class CalendarController {
 
-    private static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(CalendarController.class);
+    private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(CalendarController.class);
     @Inject
     private DataSessionManager dataSessionManager;
     @Inject
     private CalendarService calendarService;
 
+    private final List<String> simplifiedTimezoneList = new ArrayList<>();
+
     public CalendarController() {
+        String[] temp = TimeZone.getAvailableIDs();
+        List<String> timezoneList = new ArrayList<>();
+        timezoneList.addAll(Arrays.asList(temp));
+        Collections.sort(timezoneList);
+        String filterList = "Canada|Mexico|Chile|Cuba|Brazil|Japan|Turkey|Mideast|Africa|America|Asia|Atlantic|Australia|Europe|Indian|Pacific";
+        Pattern p = Pattern.compile("^(" + filterList + ").*");
+        for (String tz : timezoneList) {
+            Matcher m = p.matcher(tz);
+            if (m.find()) {
+                simplifiedTimezoneList.add(tz);
+            }
+        }        
     }
 
     @Get
@@ -81,7 +100,7 @@ public class CalendarController {
     @ChildrenOf
     @Calendars
     public List<Calendar> getCalendars(CalendarsHome cals, @Principal Profile profile) throws NotAuthorizedException {
-        if( profile == null ) {
+        if (profile == null) {
             log.warn("getCalendarrs with no user");
             throw new NotAuthorizedException();
         }
@@ -117,12 +136,12 @@ public class CalendarController {
         log.info("saved cal");
         return calendar;
     }
-    
+
     @MakeCalendar
     public Calendar createNewCalendar(CalendarsHome calendarsHome, String newName, Map<QName, String> fieldsToSet, @Principal Profile currentUser) {
         Calendar newCal = calendarsHome.user.newCalendar(newName, currentUser, SessionManager.session());
         log.info("Create new calendar: " + newName);
-        for( QName qname : fieldsToSet.keySet()) {
+        for (QName qname : fieldsToSet.keySet()) {
             log.info(" field: " + qname + " = " + fieldsToSet.get(qname));
         }
         SessionManager.session().save(newCal);
@@ -148,6 +167,23 @@ public class CalendarController {
         return events;
     }
 
+    @Get(params = {"editMode"})
+    public ModelAndView getEventEditPage(CalEvent event) {
+        ModelAndView mav = new ModelAndView("event", event, "eventEditPage");
+
+        mav.getModel().put("timezoneIdList", simplifiedTimezoneList);
+        return mav;
+    }
+
+    @Post(bindData = true)
+    public CalEvent saveEvent(CalEvent event) {
+        log.info("saveEvent: " + event.getName());
+        SessionManager.session().save(event);
+        SessionManager.session().flush();
+        log.info("saved cal");
+        return event;
+    }    
+    
     @Get
     @ICalData
     public void getEventIcal(CalEvent event, Calendar calendar, Request request, OutputStream out, Range range) throws IOException {
@@ -173,6 +209,15 @@ public class CalendarController {
         getEventIcal(orgEvent, calendar, request, out, range);
     }
 
+    @ChildOf(pathSuffix = "new")
+    public CalEvent createNewEvent(Calendar calendar, final String newName, @Principal Profile currentUser) throws NotAuthorizedException, IOException {
+        if (currentUser == null) {
+            throw new NotAuthorizedException(null);
+        }
+        CalEvent newEvent = calendarService.createEvent(calendar, newName, null, null);
+        return newEvent;
+    }
+
     @PutChild
     public CalEvent createEvent(Calendar calendar, final String newName, InputStream inputStream, Request request, final @Principal Profile principal) throws IOException {
         log.trace("createNew: set content");
@@ -181,12 +226,12 @@ public class CalendarController {
 
         final DataSession ds = dataSessionManager.get(request, calendar, true, principal);
 
-
         String icalData = bout.toString(StringUtils.UTF8.name());
 //        System.out.println("new ical --- " + newName);
 //        System.out.println(icalData);
 //        System.out.println("---");
         CalEvent newEvent = calendarService.createEvent(calendar, newName, icalData, new CalendarService.UpdatedEventCallback() {
+            @Override
             public void updated(String updatedIcal) throws IOException {
                 DataSession.FileNode newFileNode = (DataSession.FileNode) ds.getRootDataNode().get(newName);
                 if (newFileNode == null) { // usually should be null
@@ -230,6 +275,8 @@ public class CalendarController {
     public Date getEventModifiedDate(CalEvent event) {
         return event.getModifiedDate();
     }
+    
+    
 
     public class CalendarsHome {
 

@@ -153,7 +153,7 @@ public class HttpManager {
 			chain.process(request, response);
 			try {
 				tm = System.currentTimeMillis() - tm;
-				log.info(request.getMethod() + " :: " + request.getAbsoluteUrl() + " finished " + tm + "ms");
+				log.info(request.getMethod() + " :: " + request.getAbsoluteUrl() + " finished " + tm + "ms, Status:" + response.getStatus() + ", Length:" + response.getContentLength() );
 				fireResponseEvent(request, response, tm);				
 			} catch (ConflictException ex) {
 				log.warn("exception thrown from event handler after response is complete", ex);

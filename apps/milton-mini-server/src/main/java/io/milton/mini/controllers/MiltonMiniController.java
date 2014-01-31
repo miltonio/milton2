@@ -44,14 +44,21 @@ import io.milton.mini.PasswordManager;
 import io.milton.resource.AccessControlledResource;
 import io.milton.vfs.data.DataSession;
 import io.milton.vfs.db.CalEvent;
+import io.milton.vfs.db.Group;
+import io.milton.vfs.db.GroupMembership;
+import io.milton.vfs.db.GroupRole;
 import io.milton.vfs.db.Organisation;
 import io.milton.vfs.db.Profile;
 import io.milton.vfs.db.Repository;
 import io.milton.vfs.db.utils.SessionManager;
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.inject.Inject;
 import org.hashsplit4j.api.BlobStore;
 import org.hashsplit4j.api.HashStore;
@@ -62,6 +69,20 @@ import org.hibernate.Transaction;
 public class MiltonMiniController implements InitListener {
 
     private static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(MiltonMiniController.class);
+
+    public enum Role {
+
+        Admin(AccessControlledResource.Priviledge.ALL),
+        Author(AccessControlledResource.Priviledge.READ, AccessControlledResource.Priviledge.WRITE, AccessControlledResource.Priviledge.UNLOCK),
+        Viewer(AccessControlledResource.Priviledge.READ),
+        UserAdmin(AccessControlledResource.Priviledge.READ_ACL, AccessControlledResource.Priviledge.WRITE_ACL);
+
+        AccessControlledResource.Priviledge[] privs;
+
+        Role(AccessControlledResource.Priviledge... privs) {
+            this.privs = privs;
+        }
+    }
 
     @Inject
     private BlobStore blobStore;
@@ -151,14 +172,19 @@ public class MiltonMiniController implements InitListener {
     }
 
     @AccessControlList
-    public List<AccessControlledResource.Priviledge> getUserPriviledges(Profile target, Profile currentUser) {
+    public Collection<AccessControlledResource.Priviledge> getUserPriviledges(MiltonMiniController target, Profile currentUser) {
+        return getPriviledges(currentUser);
+    }
+
+    @AccessControlList
+    public Collection<AccessControlledResource.Priviledge> getUserPriviledges(Profile target, Profile currentUser) {
         if (currentUser == null) {
             return AccessControlledResource.NONE;
         } else {
             if (currentUser.getId() == target.getId()) {
                 return AccessControlledResource.READ_WRITE;
             } else {
-                return AccessControlledResource.NONE;
+                return getPriviledges(currentUser);
             }
         }
     }
@@ -246,10 +272,12 @@ public class MiltonMiniController implements InitListener {
         }
     }
 
+    @Override
     public void beforeInit(HttpManagerBuilder b) {
 
     }
 
+    @Override
     public void afterInit(HttpManagerBuilder b) {
 
     }
@@ -260,6 +288,7 @@ public class MiltonMiniController implements InitListener {
      * @param b
      * @param m
      */
+    @Override
     public void afterBuild(HttpManagerBuilder b, HttpManager m) {
         Session session = sessionManager.open();
         Transaction tx = session.beginTransaction();
@@ -273,13 +302,24 @@ public class MiltonMiniController implements InitListener {
             rootOrg.setOrgId("root");
             session.save(rootOrg);
         }
+        
+        Group adminGroup = rootOrg.group("admin", session);
+        if( adminGroup == null ) {
+            adminGroup = rootOrg.createGroup("admin");
+            adminGroup.setRegistrationMode(Group.REGO_MODE_CLOSED);
+            session.save(adminGroup);
+            adminGroup.grantRole(Role.Admin.name(), session);
+        }
+        
         Profile admin = Profile.find("admin", session);
         if (admin == null) {
             admin = createNewProfile();
             admin.setName("admin");
             admin.setNickName("admin");
             session.save(admin);
-
+            
+            admin.createGroupMembership(adminGroup, rootOrg, session);
+            
             passwordManager.setPassword(admin, "password8");
         }
         Repository files = rootOrg.repository("files");
@@ -336,6 +376,38 @@ public class MiltonMiniController implements InitListener {
         public String getName() {
             return name;
         }
+    }
 
+    public Set<AccessControlledResource.Priviledge> getPriviledges(Profile curUser) {
+        Set<AccessControlledResource.Priviledge> privs = new HashSet<>();
+        if (curUser != null) {
+            if (curUser.getMemberships() != null && !curUser.getMemberships().isEmpty()) {
+                for (GroupMembership m : curUser.getMemberships()) {
+                    if (log.isTraceEnabled()) {
+                        log.trace("getPriviledges: append privs for group membership: " + m.getGroupEntity().getName());
+                    }
+                    appendPriviledges(m.getGroupEntity(), privs);
+                }
+            } else {
+                log.trace("getPriviledges: user has no group memberships");
+            }
+        } else {
+            log.trace("anonymous request");
+        }
+        return privs;
+    }
+
+    private void appendPriviledges(Group g, Set<AccessControlledResource.Priviledge> privs) {
+        if (g.getGroupRoles() != null) {
+            for (GroupRole gr : g.getGroupRoles()) {
+                String roleName = gr.getRoleName();
+                Role role = Role.valueOf(roleName);
+                if (role != null) {
+                    privs.addAll(Arrays.asList(role.privs));
+                } else {
+                    log.warn("Role not found: " + roleName);
+                }
+            }
+        }
     }
 }

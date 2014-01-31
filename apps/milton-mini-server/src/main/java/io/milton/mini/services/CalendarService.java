@@ -145,7 +145,7 @@ public class CalendarService {
         session.delete(calendar);
     }
 
-    public CalEvent createEvent(Calendar calendar, String newName, String icalData, UpdatedEventCallback callback) throws UnsupportedEncodingException, IOException {
+    public CalEvent createEvent(Calendar calendar, String newName, String icalData, UpdatedEventCallback callback) throws IOException {
         System.out.println("createEvent: newName=" + newName + " -- " + icalData);
         Session session = SessionManager.session();
         CalEvent e = new CalEvent();
@@ -154,22 +154,23 @@ public class CalendarService {
         e.setCreatedDate(new Date());
         e.setModifiedDate(new Date());
 
-        ByteArrayInputStream fin = new ByteArrayInputStream(icalData.getBytes("UTF-8"));
-        CalendarBuilder builder = new CalendarBuilder();
-        net.fortuna.ical4j.model.Calendar cal4jCalendar;
-        try {
-            cal4jCalendar = builder.build(fin);
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        } catch (ParserException ex) {
-            throw new RuntimeException(ex);
-        }
-        _setCalendar(cal4jCalendar, e, session);
-
-        session.save(e);
-        if (callback != null) {
-            String newIcal = formatIcal(cal4jCalendar);
-            callback.updated(newIcal);
+        if (icalData != null) {
+            ByteArrayInputStream fin = new ByteArrayInputStream(icalData.getBytes("UTF-8"));
+            CalendarBuilder builder = new CalendarBuilder();
+            net.fortuna.ical4j.model.Calendar cal4jCalendar;
+            try {
+                cal4jCalendar = builder.build(fin);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            } catch (ParserException ex) {
+                throw new RuntimeException(ex);
+            }
+            _setCalendar(cal4jCalendar, e, session);
+            session.save(e);
+            if (callback != null) {
+                String newIcal = formatIcal(cal4jCalendar);
+                callback.updated(newIcal);
+            }
         }
 
         return e;
@@ -218,8 +219,6 @@ public class CalendarService {
             }
         }
 
-
-
     }
 
     public String getCalendar(CalEvent calEvent) {
@@ -253,7 +252,6 @@ public class CalendarService {
         calendar.getComponents().add(vevent);
 
         return formatIcal(calendar);
-
 
     }
 
