@@ -18,6 +18,7 @@
  */
 package io.milton.mini.controllers;
 
+import io.milton.annotations.CTag;
 import io.milton.annotations.Calendars;
 import io.milton.annotations.ChildOf;
 import io.milton.annotations.ChildrenOf;
@@ -30,6 +31,7 @@ import io.milton.annotations.Post;
 import io.milton.annotations.Principal;
 import io.milton.annotations.PutChild;
 import io.milton.annotations.ResourceController;
+import io.milton.annotations.UniqueId;
 import io.milton.common.ModelAndView;
 import io.milton.common.StringUtils;
 import io.milton.http.Range;
@@ -39,6 +41,7 @@ import io.milton.mini.DataSessionManager;
 import io.milton.mini.services.CalendarService;
 import io.milton.vfs.data.DataSession;
 import io.milton.vfs.db.AttendeeRequest;
+import io.milton.vfs.db.Branch;
 import io.milton.vfs.db.CalEvent;
 import io.milton.vfs.db.Calendar;
 import io.milton.vfs.db.Profile;
@@ -54,6 +57,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.inject.Inject;
@@ -84,7 +88,7 @@ public class CalendarController {
             if (m.find()) {
                 simplifiedTimezoneList.add(tz);
             }
-        }        
+        }
     }
 
     @Get
@@ -167,6 +171,16 @@ public class CalendarController {
         return events;
     }
 
+    @ChildOf(pathSuffix = "new")
+    public CalEvent createNewEvent(Calendar calendar, String newName, @Principal Profile currentUser) throws NotAuthorizedException, IOException {
+        if (currentUser == null) {
+            throw new NotAuthorizedException(null);
+        }
+        newName = UUID.randomUUID().toString();
+        CalEvent newEvent = calendarService.createEvent(calendar, newName, null, null);
+        return newEvent;
+    }
+
     @Get(params = {"editMode"})
     public ModelAndView getEventEditPage(CalEvent event) {
         ModelAndView mav = new ModelAndView("event", event, "eventEditPage");
@@ -175,15 +189,15 @@ public class CalendarController {
         return mav;
     }
 
-    @Post(bindData = true)
+    @Post(bindData = true, timeZoneParam = "timezone")
     public CalEvent saveEvent(CalEvent event) {
         log.info("saveEvent: " + event.getName());
         SessionManager.session().save(event);
         SessionManager.session().flush();
-        log.info("saved cal");
+        log.info("saved event: " + event.getId());
         return event;
-    }    
-    
+    }
+
     @Get
     @ICalData
     public void getEventIcal(CalEvent event, Calendar calendar, Request request, OutputStream out, Range range) throws IOException {
@@ -207,15 +221,6 @@ public class CalendarController {
         CalEvent orgEvent = event.getOrganiserEvent();
         Calendar calendar = orgEvent.getCalendar();
         getEventIcal(orgEvent, calendar, request, out, range);
-    }
-
-    @ChildOf(pathSuffix = "new")
-    public CalEvent createNewEvent(Calendar calendar, final String newName, @Principal Profile currentUser) throws NotAuthorizedException, IOException {
-        if (currentUser == null) {
-            throw new NotAuthorizedException(null);
-        }
-        CalEvent newEvent = calendarService.createEvent(calendar, newName, null, null);
-        return newEvent;
     }
 
     @PutChild
@@ -253,6 +258,9 @@ public class CalendarController {
 
         DataSession ds = dataSessionManager.get(request, calendar, true, principal);
         DataSession.FileNode fileNode = (DataSession.FileNode) ds.getRootDataNode().get(event.getName());
+        if (fileNode == null) {
+            fileNode = ds.getRootDataNode().addFile(event.getName());
+        }
         fileNode.setContent(new ByteArrayInputStream(bout.toByteArray()));
         ds.save(principal);
 
@@ -275,8 +283,40 @@ public class CalendarController {
     public Date getEventModifiedDate(CalEvent event) {
         return event.getModifiedDate();
     }
+
+    @UniqueId
+    public String getEventId(CalEvent event) {
+        if (event.getId() != null) {
+            return event.getId().toString();
+        } else {
+            return null;
+        }
+    }
+
+    @UniqueId
+    public String getCalendarUniqueId(Calendar cal) {
+        return cal.getId() + "";
+    }
     
-    
+    @ModifiedDate
+    public Date getCalendarModDate(Calendar cal) {
+        // return the mod date of the branch
+        Branch b = cal.liveBranch();
+        if (b != null) {
+            return b.getHead().getCreatedDate();
+        }
+        return null;
+    }
+
+    @CTag
+    public String getCalendarCTag(Calendar cal) {
+        // return the hash of the branch
+        Branch b = cal.liveBranch();
+        if (b != null) {
+            return b.getHead().getItemHash();
+        }
+        return null;
+    }
 
     public class CalendarsHome {
 

@@ -33,12 +33,9 @@
                                 <div class="controls">
                                     <select name="timezone" class="required">
                                         <option value="">[Please select]</option>
-                                        <c:forEach items="${model.timezoneIdList}" var="calendar">
-                                            <option></option>
+                                        <c:forEach items="${model.timezoneIdList}" var="tz">
+                                            <option value="${tz}">${tz}</option>
                                         </c:forEach>
-                                        #foreach($tzId in $page.timezoneIdList)
-                                        $formatter.option( $tzId, $tzId, $page.timezone )
-                                        #end
                                     </select>
                                 </div>
                             </div>

@@ -268,6 +268,7 @@ public class CalendarService {
             summary = ev.getSummary().getValue();
         }
         calEvent.setSummary(summary);
+        calEvent.setModifiedDate(new Date());
         session.save(calEvent);
         setRsvps(ev, calEvent, session);
     }

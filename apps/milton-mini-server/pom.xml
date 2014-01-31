@@ -29,7 +29,7 @@
                     <source>1.7</source>
                     <target>1.7</target>
                 </configuration>
-            </plugin>
+            </plugin>                     
         </plugins>
     </build>
 
@@ -167,19 +167,15 @@
             <build>              
                 <plugins>                                      
                     <plugin>
-                        <groupId>org.apache.tomcat.maven</groupId>
-                        <artifactId>tomcat7-maven-plugin</artifactId>
-                        <version>2.2</version>
-                        <configuration>
-                            <port>8080</port>
-                            <path>/</path>
-                        </configuration>
+                        <groupId>org.mortbay.jetty</groupId>
+                        <artifactId>jetty-maven-plugin</artifactId>
+                        <version>8.1.8.v20121106</version>
                         <executions>
                             <execution>
                                 <id>shutdown</id>
                                 <phase>compile</phase>
                                 <goals>
-                                    <goal>shutdown</goal>
+                                    <goal>stop</goal>
                                 </goals>
                             </execution>
                             
@@ -190,35 +186,23 @@
                                     <goal>run</goal>
                                 </goals>
                             </execution>
-                        </executions>                        
-                        
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-resources-plugin</artifactId>
-                        <version>2.6</version>
-                        <executions>
-                            <execution>
-                                <id>copy-env-resources</id>
-                                <phase>process-resources</phase>
-                                <goals>
-                                    <goal>copy-resources</goal>
-                                </goals>
-                                <configuration>
-                                    <overwrite>true</overwrite>
-                                    <resources>
-                                        <resource>
-                                            <directory>${basedir}/src/main/resources</directory>                                 
-                                        </resource>
-                                        <resource>
-                                            <directory>${basedir}/src/test/resources</directory>                                 
-                                        </resource>
-                                    </resources>
-                                    <outputDirectory>${basedir}/target/classes</outputDirectory>
-                                </configuration>
-                            </execution>                                                    
-                        </executions>
-                    </plugin> 
+                        </executions>                           
+                        <configuration>
+                            <webAppConfig>
+                                <contextPath>/</contextPath>
+                            </webAppConfig>
+                    
+                            <connectors>
+                                <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
+                                    <!--<port>8085</port>-->
+                                    <port>8080</port>
+                                    <maxIdleTime>60000</maxIdleTime>
+                                </connector>
+                            </connectors>
+                            <stopKey>stop</stopKey>
+                            <stopPort>8089</stopPort>
+                        </configuration>
+                    </plugin>  
                 </plugins>
             </build>         
         </profile>                                                      
