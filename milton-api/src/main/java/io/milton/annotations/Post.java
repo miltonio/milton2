@@ -67,6 +67,18 @@ public @interface Post {
      *  field validation failures
      * 
      *  For this reason you should ONLY use data binding with AJAX posts
+     * @return 
      */
     boolean bindData() default false;
+    
+    /**
+     * If present, and not empty, identifies a request parameter which 
+     * contains the timezone ID in the form post to use for parsing
+     * date/time values
+     * 
+     * If empty the platform default will be used
+     * 
+     * @return 
+     */
+    String timeZoneParam() default "";
 }

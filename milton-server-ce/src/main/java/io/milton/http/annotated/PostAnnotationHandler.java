@@ -19,8 +19,8 @@ import io.milton.common.JsonResult;
 import io.milton.http.Request;
 import io.milton.http.Request.Method;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,10 +42,8 @@ public class PostAnnotationHandler extends AbstractAnnotationHandler {
 	 * returned the sendContent phase will use normal GET processing
 	 *
 	 * @param resource
-	 * @param out
-	 * @param range
+	 * @param request
 	 * @param params
-	 * @param contentType
 	 * @return
 	 */
 	public Object execute(AnnoResource resource, Request request, Map<String, String> params) {
@@ -58,12 +56,15 @@ public class PostAnnotationHandler extends AbstractAnnotationHandler {
 		Post a = cm.method.getAnnotation(Post.class);
 		try {
 			if (a.bindData()) {
-				Locale locale = request.getLocale();
-				if (locale == null) {
-					locale = Locale.getDefault();
+				TimeZone tz = null;
+				if (a.timeZoneParam().length() > 0) {
+					String sTimezone = DataBinder.getRawParam(params, a.timeZoneParam());					
+					if (sTimezone != null) {
+						tz = TimeZone.getTimeZone(sTimezone);
+					}
 				}
-				DataBinder dataBinder = new DataBinder(locale);
-				dataBinder.populate(source, params);
+				DataBinder dataBinder = new DataBinder();
+				dataBinder.populate(source, params, tz);
 				resource.setNameOverride(null); // clear the name set by new object handling so created name will be returned
 			}
 		} catch (IllegalAccessException e) {

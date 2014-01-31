@@ -22,12 +22,12 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.beanutils.ConvertUtilsBean2;
 import org.apache.commons.beanutils.converters.BigDecimalConverter;
+import org.apache.commons.lang.StringUtils;
 
 /**
  *
@@ -35,6 +35,18 @@ import org.apache.commons.beanutils.converters.BigDecimalConverter;
  */
 public class DataBinder {
 
+	/**
+	 * Trims to null, so will never return a value padded with white space, or only whitespace
+	 * 
+	 * @param props
+	 * @param name
+	 * @return 
+	 */
+	public static String getRawParam(Map<String,String> props, String name) {
+		String s = props.get(name);
+		return StringUtils.trimToNull(s);
+	}
+		
     private final BeanUtilsBean bub;
     //private String[] dateFormats = {"dd/MM/yy", "dd/MM/yyyy", "dd/MM/yyyy HH:mm", "dd/MM/yy HH:mm"};
     //private String[] dateFormats = {"dd/MM/yyyy"};
@@ -51,7 +63,7 @@ public class DataBinder {
         return tlTimezone.get();
     }	
 	
-    public DataBinder(Locale locale) {
+    public DataBinder() {
         ConvertUtilsBean2 convertUtilsBean = new ConvertUtilsBean2();
         NullSafeDateTimeConverter dtConverter = new NullSafeDateTimeConverter();
 		dtConverter.setPatterns(dateFormats);
@@ -83,6 +95,8 @@ public class DataBinder {
 	 * @throws InvocationTargetException 
 	 */
     public void populate(Object bean, Map properties,TimeZone timeZone) throws IllegalAccessException, InvocationTargetException {
+		tlTimezone.set(timeZone);
+		
         // need to cater for check boxes which send no value if not set
         // we use a convention that every check has a hidden input with name=name_checkbox
         // see Formatter.checkbox for details

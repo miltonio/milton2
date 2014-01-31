@@ -39,13 +39,13 @@ import javax.xml.namespace.QName;
 import org.slf4j.LoggerFactory;
 
 /**
- * Placeholder object to represent a node in an annotations hierachy acting
- * as a collection
- * 
- * A source object (ie your pojo) is considered a collection if it can have children
- * , ie if there exists at least one @ChildOf or @ChildrenOf method which has
- * that object as its source type. Note this is keyed on the class.
- * 
+ * Placeholder object to represent a node in an annotations hierachy acting as a
+ * collection
+ *
+ * A source object (ie your pojo) is considered a collection if it can have
+ * children , ie if there exists at least one @ChildOf or @ChildrenOf method
+ * which has that object as its source type. Note this is keyed on the class.
+ *
  * This class includes methods suitable for use in page templating logic for
  * navigating through the hierarchy.
  *
@@ -146,6 +146,8 @@ public class AnnoCollectionResource extends AnnoResource implements CollectionRe
 			Set<AnnoResource> set;
 			try {
 				set = annoFactory.childrenOfAnnotationHandler.execute(this, isChildLookup);
+			} catch (NotAuthorizedException e) {
+				throw e;
 			} catch (NotFoundException ex) {
 				throw new RuntimeException(ex);
 			} catch (Exception ex) {
@@ -258,20 +260,22 @@ public class AnnoCollectionResource extends AnnoResource implements CollectionRe
 	}
 
 	/**
-	 * Locate a resource from the given path evaluated relative to this resource.
-	 * 
-	 * Supports ".." and "." segments, any other strings are considered file names
-	 * 
+	 * Locate a resource from the given path evaluated relative to this
+	 * resource.
+	 *
+	 * Supports ".." and "." segments, any other strings are considered file
+	 * names
+	 *
 	 * @param p
 	 * @return
 	 * @throws NotAuthorizedException
-	 * @throws BadRequestException 
+	 * @throws BadRequestException
 	 */
 	public Resource findPath(Path p) throws NotAuthorizedException, BadRequestException {
 		Resource r = this;
 		for (String segment : p.getParts()) {
 			if (segment.equals("..")) {
-				if( r instanceof AnnoResource) {
+				if (r instanceof AnnoResource) {
 					AnnoResource ar = (AnnoResource) r;
 					r = ar.getParent();
 				} else {
