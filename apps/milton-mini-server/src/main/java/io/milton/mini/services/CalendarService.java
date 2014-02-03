@@ -18,6 +18,7 @@ package io.milton.mini.services;
 
 import io.milton.mini.utils.CalUtils;
 import io.milton.vfs.db.AttendeeRequest;
+import static io.milton.vfs.db.AttendeeRequest.PARTSTAT_ACCEPTED;
 import io.milton.vfs.db.BaseEntity;
 import io.milton.vfs.db.CalEvent;
 import java.io.*;
@@ -34,15 +35,20 @@ import net.fortuna.ical4j.model.property.ProdId;
 import net.fortuna.ical4j.model.property.Uid;
 import net.fortuna.ical4j.model.property.Version;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import io.milton.vfs.db.Calendar;
 import io.milton.vfs.db.Profile;
 import io.milton.vfs.db.utils.SessionManager;
+import java.nio.charset.Charset;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
+import java.util.List;
 import net.fortuna.ical4j.model.parameter.Rsvp;
 import net.fortuna.ical4j.model.property.Attendee;
+import net.fortuna.ical4j.model.property.Description;
+import org.apache.commons.codec.digest.DigestUtils;
 
 /**
  *
@@ -53,21 +59,29 @@ public class CalendarService {
     private static final Logger log = LoggerFactory.getLogger(CalendarService.class);
     private String defaultColor = "blue";
 
+    public net.fortuna.ical4j.model.Calendar parse(InputStream icalContent) throws IOException, ParserException {
+        CalendarBuilder builder = new CalendarBuilder();
+        net.fortuna.ical4j.model.Calendar cal = builder.build(icalContent);
+        return cal;
+    }
+
     /**
      * Returns the updated ical text
      *
      * @param event
      * @param data
+     * @param callback - called for any updated events, included attendee events
+     * which have been generated on acceptance of invitations
      * @return - updated ical text
      */
-    public String update(CalEvent event, String data) {
+    public String update(CalEvent event, String data, UpdatedAttendeeCallback callback) {
+        log.info("update: " + event.getName());
+        System.out.println(data);
         String ical = null;
         Session session = SessionManager.session();
         try {
-            ical = _update(event, data, session);
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        } catch (ParserException ex) {
+            ical = _update(event, data, callback, session);
+        } catch (IOException | ParserException ex) {
             throw new RuntimeException(ex);
         }
         session.save(event);
@@ -91,11 +105,27 @@ public class CalendarService {
 
     public void delete(CalEvent event) {
         Session session = SessionManager.session();
-        Transaction tx = session.beginTransaction();
+        if (event.getAttendeeRequest() != null) {
+            event.getAttendeeRequest().setAttendeeEvent(null);
+            session.save(event.getAttendeeRequest());
+        }
+        session.flush();
 
+        List<AttendeeRequest> attendeeRequests = AttendeeRequest.findByOrganisorEvent(event, session);
+        for (AttendeeRequest ar : attendeeRequests) {
+            log.info("Delete AttendeeRequest: " + ar.getName());
+            session.delete(ar);
+            session.flush();
+            CalEvent attendeeRequesst = ar.getAttendeeEvent();
+            if (attendeeRequesst != null) {
+                delete(attendeeRequesst);
+            }
+        }
+        session.flush();
+
+        log.info("delete event id: " + event.getId());
         session.delete(event);
-
-        tx.commit();
+        session.flush();
     }
 
     public void move(CalEvent event, Calendar destCalendar, String name) {
@@ -146,13 +176,16 @@ public class CalendarService {
     }
 
     public CalEvent createEvent(Calendar calendar, String newName, String icalData, UpdatedEventCallback callback) throws IOException {
-        System.out.println("createEvent: newName=" + newName + " -- " + icalData);
+        log.info("createEvent: newName=" + newName + " -- " + icalData);
         Session session = SessionManager.session();
+
         CalEvent e = new CalEvent();
         e.setName(newName);
         e.setCalendar(calendar);
         e.setCreatedDate(new Date());
         e.setModifiedDate(new Date());
+
+        AttendeeRequest ar = AttendeeRequest.findByName(newName, session);
 
         if (icalData != null) {
             ByteArrayInputStream fin = new ByteArrayInputStream(icalData.getBytes("UTF-8"));
@@ -160,25 +193,53 @@ public class CalendarService {
             net.fortuna.ical4j.model.Calendar cal4jCalendar;
             try {
                 cal4jCalendar = builder.build(fin);
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            } catch (ParserException ex) {
+            } catch (IOException | ParserException ex) {
                 throw new RuntimeException(ex);
             }
-            _setCalendar(cal4jCalendar, e, session);
+            boolean isAccept = ar != null;
+            _setCalendar(cal4jCalendar, e, isAccept, session);
             session.save(e);
             if (callback != null) {
                 String newIcal = formatIcal(cal4jCalendar);
-                callback.updated(newIcal);
+                callback.updated(newIcal, e);
             }
+        }
+        // Check to see if we are accepting an attendeerequest, ie where name is the same
+        if (ar != null) {
+            log.info("found attendee request, so link");
+            e.setAttendeeRequest(ar);
+            ar.setAttendeeEvent(e);
+            ar.setAcknowledged(true);
+            ar.setParticipationStatus(PARTSTAT_ACCEPTED);
+            session.save(ar);
         }
 
         return e;
     }
 
-    public interface UpdatedEventCallback {
-
-        public void updated(String ical) throws IOException;
+    /**
+     * When an organisor event has changed, update appropriate fields only on
+     * attendee events
+     *
+     * @param attendeeEvent
+     * @param event
+     * @param calendar
+     * @param session
+     */
+    private void updateAttendeeEvent(CalEvent attendeeEvent, CalEvent event, net.fortuna.ical4j.model.Calendar calendar, UpdatedAttendeeCallback callback, Session session) throws IOException {
+        log.info("updateAttendeeEvent: " + event.getSummary());
+        if( event.getSummary() == null ) {
+            throw new RuntimeException("null summary");
+        }
+        attendeeEvent.setStartDate(event.getStartDate());
+        attendeeEvent.setEndDate(event.getEndDate());
+        attendeeEvent.setLocation(event.getLocation());
+        attendeeEvent.setDescription(event.getDescription());
+        attendeeEvent.setEndDate(event.getEndDate());
+        attendeeEvent.setModifiedDate(new Date());
+        attendeeEvent.setSummary(event.getSummary());
+        attendeeEvent.setTimezone(event.getTimezone());
+        callback.updated(attendeeEvent);
     }
 
     /**
@@ -189,7 +250,7 @@ public class CalendarService {
      * @param session
      */
     public void setRsvps(VEvent event, CalEvent e, Session session) {
-
+        log.info("setRsvps: " + event.getName());
         for (Object o : event.getProperties()) {
             if (o instanceof Attendee) {
                 Attendee attendee = (Attendee) o;
@@ -211,7 +272,8 @@ public class CalendarService {
                 Profile p = Profile.findByEmail(attendeeEmail, SessionManager.session());
                 if (p != null) {
                     log.info("Check create attendance for: " + p.getName());
-                    AttendeeRequest.checkCreate(p, e, session);
+                    Date now = new Date();
+                    AttendeeRequest.checkCreate(p, e, now, session);
                 } else {
                     log.warn("Did not find user: " + attendeeEmail);
                 }
@@ -255,7 +317,80 @@ public class CalendarService {
 
     }
 
-    private void _setCalendar(net.fortuna.ical4j.model.Calendar calendar, CalEvent calEvent, Session session) {
+    /**
+     * Given a CalEvent which contains updated information, apply that to the
+     * parsed ical text in the calendar object
+     *
+     * @param calEvent
+     * @param calendar
+     * @return
+     */
+    public String updateIcalText(CalEvent calEvent, net.fortuna.ical4j.model.Calendar calendar) {
+        TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
+        VEvent vevent = event(calendar);
+
+        String sTimezone = calEvent.getTimezone();
+        log.info("source timezone id: " + sTimezone);
+        TimeZone timezone = null;
+        if (sTimezone != null && sTimezone.length() > 0) {
+            timezone = registry.getTimeZone(sTimezone); // Eg Pacific/Auckland
+        }
+//        //VTimeZone tz = timezone.getVTimeZone();
+//        Iterator it = calendar.getComponents().iterator();
+//        while (it.hasNext()) {
+//            Object c = it.next();
+//            if (c instanceof VTimeZone) {
+//                it.remove();
+//            }
+//        }
+//        it = vevent.getProperties().iterator();
+//        while (it.hasNext()) {
+//            Object c = it.next();
+//            if (c instanceof TzId) {
+//                it.remove();
+//            }
+//        }
+//        if (timezone != null) {
+//            VTimeZone tz = timezone.getVTimeZone();
+//            calendar.getComponents().add(tz);
+//            vevent.getProperties().add(tz.getTimeZoneId());
+//        } else {
+//            log.warn("No timezone!");
+//        }
+
+        net.fortuna.ical4j.model.DateTime start = CalUtils.toCalDateTime(calEvent.getStartDate(), timezone);
+        net.fortuna.ical4j.model.DateTime finish = CalUtils.toCalDateTime(calEvent.getEndDate(), timezone);
+
+        vevent.getStartDate().setDate(start);
+        vevent.getStartDate().setTimeZone(timezone);
+
+        vevent.getEndDate().setDate(finish);
+        vevent.getEndDate().setTimeZone(timezone);
+
+        String summary = calEvent.getSummary();
+        if( summary == null || summary.length() == 0 ) {
+            throw new RuntimeException("no summary");
+        }
+ 
+        vevent.getSummary().setValue(summary);
+        if( vevent.getDescription() != null ) {
+        vevent.getDescription().setValue(calEvent.getDescription());
+        } else {
+            Description d = new Description(calEvent.getDescription());
+            vevent.getProperties().add(d);
+        }
+
+        return formatIcal(calendar);
+    }
+
+    /**
+     * Given an updated calendar object, apply updates to CalEvent
+     *
+     * @param calendar
+     * @param calEvent
+     * @param session
+     */
+    private void _setCalendar(net.fortuna.ical4j.model.Calendar calendar, CalEvent calEvent, boolean isAccept, Session session) {
         VEvent ev = event(calendar);
         calEvent.setStartDate(ev.getStartDate().getDate());
         Date endDate = null;
@@ -268,13 +403,33 @@ public class CalendarService {
             summary = ev.getSummary().getValue();
         }
         calEvent.setSummary(summary);
+        String tzId = getTimeZoneId(calendar);
+        calEvent.setTimezone(tzId);
         calEvent.setModifiedDate(new Date());
         session.save(calEvent);
-        setRsvps(ev, calEvent, session);
+        if (!isAccept) {
+            log.info("not an invitation, so check/create invites");
+            setRsvps(ev, calEvent, session);
+        }
     }
 
     private VEvent event(net.fortuna.ical4j.model.Calendar cal) {
         return (VEvent) cal.getComponent("VEVENT");
+    }
+
+    public String getTimeZoneId(net.fortuna.ical4j.model.Calendar calendar) {
+        Iterator it = calendar.getComponents().iterator();
+        while (it.hasNext()) {
+            Object c = it.next();
+            if (c instanceof VTimeZone) {
+                VTimeZone tz = (VTimeZone) c;
+                net.fortuna.ical4j.model.property.TzId tzId = tz.getTimeZoneId();
+                if (tzId != null) {
+                    return tzId.getValue();
+                }
+            }
+        }
+        return null;
     }
 
     public String getDefaultColor() {
@@ -285,13 +440,39 @@ public class CalendarService {
         this.defaultColor = defaultColor;
     }
 
-    private String _update(CalEvent event, String data, Session session) throws IOException, ParserException {
+    /**
+     * Updates teh CalEvent from the ical data. Also updates any child attendee
+     * requests
+     *
+     * @param event
+     * @param data
+     * @param callback
+     * @param session
+     * @return
+     * @throws IOException
+     * @throws ParserException
+     */
+    private String _update(CalEvent event, String data, UpdatedAttendeeCallback callback, Session session) throws IOException, ParserException {
         System.out.println("Update Event--");
         System.out.println(data);
         System.out.println("----");
         CalendarBuilder builder = new CalendarBuilder();
         net.fortuna.ical4j.model.Calendar calendar = builder.build(new ByteArrayInputStream(data.getBytes("UTF-8")));
-        _setCalendar(calendar, event, session);
+        AttendeeRequest invite = AttendeeRequest.findByName(event.getName(), session);
+        boolean isAccept = invite != null;
+        _setCalendar(calendar, event, isAccept, session);
+
+        List<AttendeeRequest> attendeeRequests = AttendeeRequest.findByOrganisorEvent(event, session);
+        if (!attendeeRequests.isEmpty()) {
+            log.info("update attendee requests");
+            for (AttendeeRequest ar : attendeeRequests) {
+                CalEvent attendeeEvent = ar.getAttendeeEvent();
+                if (attendeeEvent != null) {
+                    updateAttendeeEvent(attendeeEvent, event, calendar, callback, session);
+                }
+            }
+        }
+
         return formatIcal(calendar);
     }
 
@@ -300,11 +481,55 @@ public class CalendarService {
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         try {
             outputter.output(calendar, bout);
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        } catch (ValidationException ex) {
+        } catch (IOException | ValidationException ex) {
             throw new RuntimeException(ex);
         }
         return bout.toString();
+    }
+    
+    public String getCalendarInvitationsCTag(Profile user) {
+        try {
+            // combine and hash names and mod dates for AR's
+            List<AttendeeRequest> list = getAttendeeRequests(user, true);
+            MessageDigest cout = MessageDigest.getInstance("SHA");
+            Charset charset = Charset.forName("UTF-8");
+            for( AttendeeRequest ar : list ) {
+                String s = ar.getName() + "-" + ar.getOrganiserEvent().getModifiedDate() + "-" + ar.getParticipationStatus();
+                cout.update(s.getBytes(charset));
+            }
+            byte[] arr = cout.digest();
+            String hash = DigestUtils.shaHex(arr);
+            return hash;
+        } catch (NoSuchAlgorithmException ex) {
+            throw new RuntimeException(ex);
+        }
+    }        
+    
+    public List<AttendeeRequest> getAttendeeRequests(Profile user) {  
+        return getAttendeeRequests(user, false);
+    }
+    
+    public List<AttendeeRequest> getAttendeeRequests(Profile user, boolean includeAckd) {  
+        log.info("getAttendeeRequests: " + user.getName());
+        List<AttendeeRequest> list = new ArrayList<>();
+        if( user.getAttendeeRequests() != null ) {
+            for( AttendeeRequest ar : user.getAttendeeRequests() ) {
+                if(includeAckd || !ar.isAcknowledged() ) {
+                    list.add(ar);
+                }
+            }
+        }
+        log.info("getAttendeeRequests: found requests: " + list.size());
+        return list;
+    }    
+
+    public interface UpdatedEventCallback {
+
+        public void updated(String ical, CalEvent updated) throws IOException;
+    }
+
+    public interface UpdatedAttendeeCallback {
+
+        public void updated(CalEvent updated) throws IOException;
     }
 }

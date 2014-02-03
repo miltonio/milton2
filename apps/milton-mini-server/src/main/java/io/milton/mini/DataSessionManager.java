@@ -29,6 +29,16 @@ public class DataSessionManager {
         return get(request, repo, false, null);
     }
     
+    /**
+     * Get an existing data session in this request, or start a new one, for
+     * the live branch of the given repository
+     * 
+     * @param request
+     * @param repo
+     * @param autoCreateBranch
+     * @param currentUser
+     * @return 
+     */
     public DataSession get(Request request, Repository repo, boolean autoCreateBranch, Profile currentUser) {
         String sessKey = "dataSession-" + repo.getId();
         DataSession dataSession = (DataSession) request.getAttributes().get(sessKey);

@@ -192,8 +192,18 @@ public class MiltonMiniController implements InitListener {
     @Post(bindData = true)
     public Profile saveProfile(Profile profile) {
         profile.setModifiedDate(new Date());
-        SessionManager.session().save(profile);
-        SessionManager.session().flush();
+        // HACK, add user to admin group until we build groups page
+        Organisation org = Organisation.getRootOrg(SessionManager.session());
+        Session session = SessionManager.session();
+        
+        session.save(profile);
+        Group g = org.group("admin", session);
+        if( !g.containsUser(org, org, session)) {
+            log.info("Add to admin group, hack!");
+            GroupMembership gm = profile.createGroupMembership(g, org, session);
+        }
+        
+        session.flush();
         return profile;
     }
 

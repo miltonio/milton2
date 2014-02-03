@@ -1,109 +1,28 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <d:multistatus xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:" xmlns:cal="urn:ietf:params:xml:ns:caldav" xmlns:card="urn:ietf:params:xml:ns:carddav">
     <d:response>
-        <d:href>/</d:href>
+        <d:href>/users/bob/scheduling/inbox/</d:href>
         <d:propstat>
             <d:prop>
-                <d:supported-report-set>
-                    <d:supported-report>
-                        <d:report>
-                            <d:principal-search-property-set/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:addressbook-query/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:calendar-multiget/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:expand-property/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:calendar-query/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:principal-property-search/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:acl-principal-prop-set/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:addressbook-multiget/>
-                        </d:report>
-                    </d:supported-report>
-                    <d:supported-report>
-                        <d:report>
-                            <d:principal-match/>
-                        </d:report>
-                    </d:supported-report>
-                </d:supported-report-set>
-                <d:textcontent/>
-                <d:iscollection>TRUE</d:iscollection>
+                <d:getcontenttype></d:getcontenttype>
                 <d:resourcetype>
                     <d:collection/>
+                    <cal:schedule-inbox/>
                 </d:resourcetype>
-                <d:creationdate/>
-                <d:quota-used-bytes/>
-                <d:isreadonly>FALSE</d:isreadonly>
-                <d:quota-available-bytes/>
-                <d:getcontenttype/>
-                <d:name></d:name>
-                <d:getcontentlength/>
-                <d:getlastmodified></d:getlastmodified>
-                <d:getcreated/>
                 <d:getetag/>
-                <d:displayname></d:displayname>
-                <d:lockdiscovery></d:lockdiscovery>
-                <d:supportedlock>
-                    <d:lockentry>
-                        <d:lockscope>
-                            <d:exclusive/>
-                        </d:lockscope>
-                        <d:locktype>
-                            <d:write/>
-                        </d:locktype>
-                    </d:lockentry>
-                </d:supportedlock>
-                <d:getctag/>
-                <d:current-user-privilege-set></d:current-user-privilege-set>
-                <d:principal-collection-set>
-                    <d:href>/musicians/</d:href>
-                </d:principal-collection-set>
             </d:prop>
             <d:status>HTTP/1.1 200 OK</d:status>
         </d:propstat>
+    </d:response>
+    <d:response>
+        <d:href>/users/bob/scheduling/inbox/893244e8-7485-40b0-ae10-d2c7cb4a5385</d:href>
         <d:propstat>
             <d:prop>
-                <d:calendar-home-set/>
-                <d:supported-calendar-component-sets/>
-                <d:supported-calendar-component-set/>
-                <d:calendar-user-address-set/>
-                <d:calendar-description/>
-                <d:schedule-outbox-URL/>
-                <d:calendar-data/>
-                <d:schedule-inbox-URL/>
-                <d:calendar-color/>
-                <d:addressbook-description/>
-                <d:addressbook-home-set/>
-                <d:principal-address/>
-                <d:supported-address-data/>
-                <d:address-data/>
+                <d:getcontenttype>text/calendar</d:getcontenttype>
+                <d:resourcetype/>
+                <d:getetag>"1_-331513177"</d:getetag>
             </d:prop>
-            <d:status>HTTP/1.1 404 Not Found</d:status>
+            <d:status>HTTP/1.1 200 OK</d:status>
         </d:propstat>
     </d:response>
 </d:multistatus>

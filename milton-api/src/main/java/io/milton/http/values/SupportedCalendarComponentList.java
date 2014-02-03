@@ -36,6 +36,8 @@ public class SupportedCalendarComponentList extends ArrayList<CalendarResource.C
 
     public static final SupportedCalendarComponentList VEVENT_ONLY = asList(CalendarResource.ComponentType.VEVENT);
     
+    public static final SupportedCalendarComponentList VEVENT_VFREEBUSY = asList(CalendarResource.ComponentType.VEVENT, CalendarResource.ComponentType.VFREEBUSY);
+    
     public static SupportedCalendarComponentList asList(CalendarResource.ComponentType... items) {
         SupportedCalendarComponentList l = new SupportedCalendarComponentList();
         l.addAll(Arrays.asList(items));

@@ -21,17 +21,41 @@
                         <ul>
                             <c:forEach items="${model.page.children.getSortByName()}" var="calendar">    
                                 <li>${calendar.link}</li>
-                            </c:forEach>
+                                </c:forEach>
                         </ul>                        
 
                     </div>
 
                 </div>
-                
-            </div>            
+
+            </div>  
+            <h1>Invitations</h1>
+            <p>Inbox ctag: ${model.inboxCtag}</p>
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Participation status</th>
+                        <th>Summary</th>
+                        <th>acknowledged?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <c:forEach items="${model.invites}" var="invite">
+                        <tr>
+                            <td>${invite.id}</td>
+                            <td>${invite.name}</td>
+                            <td>${invite.participationStatus}</td>
+                            <td>${invite.organiserEvent.summary}</td>
+                            <td>${invite.ackStatus}</td>
+                        </tr>
+                    </c:forEach>
+                </tbody>
+            </table>
 
         </div> <!-- /container -->
-    
+
         <%@include file="includes/theme-bottom.jsp" %>
 
     </body>

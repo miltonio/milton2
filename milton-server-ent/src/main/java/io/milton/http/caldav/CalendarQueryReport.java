@@ -121,44 +121,70 @@ public class CalendarQueryReport implements Report {
             start = null;
             end = null;
         } else {
-            Element elSecondFilter = elFilterRoot.getChild("comp-filter", NS_CAL);
-            if (elSecondFilter == null) {
+            Element elTimeRange = find(elFilterRoot, "time-range", NS_CAL);
+
+            if (elTimeRange == null) {
                 start = null;
                 end = null;
             } else {
-                Element elTimeRange = elSecondFilter.getChild("time-range", NS_CAL);
-                if (elTimeRange == null) {
-                    start = null;
-                    end = null;
-                } else {
-
-                    String sStart = elTimeRange.getAttributeValue("start");
-                    String sFinish = elTimeRange.getAttributeValue("end");
-                    if (sStart != null && sStart.length() > 0) {
-                        try {
-                            start = DateUtils.parseDate(sStart);
-                        } catch (DateParseException ex) {
-                            log.error("Couldnt parse start date in calendar-query: " + sStart);
-                            start = null;
-                        }
-                    } else {
+                String sStart = elTimeRange.getAttributeValue("start");
+                String sFinish = elTimeRange.getAttributeValue("end");
+                if (sStart != null && sStart.length() > 0) {
+                    try {
+                        start = DateUtils.parseIcalDateTime(sStart);
+                    } catch (DateParseException ex) {
+                        log.error("Couldnt parse start date in calendar-query: " + sStart);
                         start = null;
                     }
+                } else {
+                    start = null;
+                }
 
-                    if (sFinish != null && sFinish.length() > 0) {
-                        try {
-                            end = DateUtils.parseDate(sFinish);
-                        } catch (DateParseException ex) {
-                            log.error("Couldnt parse end date in calendar-query: " + sFinish);
-                            end = null;
-                        }
-                    } else {
+                if (sFinish != null && sFinish.length() > 0) {
+                    try {
+                        end = DateUtils.parseIcalDateTime(sFinish);
+                    } catch (DateParseException ex) {
+                        log.error("Couldnt parse end date in calendar-query: " + sFinish);
                         end = null;
+                    }
+                } else {
+                    end = null;
+                }
+            }
+        }
+        log.info("Search calendar resources. Start=" + start + " End:" + end);
+        return calendarSearchService.findCalendarResources(calendar, start, end);
+
+    }
+
+    /**
+     * find the first element with the given name
+     *
+     * @param root
+     * @param name
+     * @param ns
+     * @return
+     */
+    private Element find(Element root, String name, Namespace ns) {
+        for (Object child : root.getChildren()) {
+            if (child instanceof Element) {
+                Element elChild = (Element) child;
+                if (elChild.getName().equals(name)) {
+                    if (ns == null || ns.getURI().equals(elChild.getNamespaceURI())) {
+                        return elChild;
                     }
                 }
             }
         }
-        return calendarSearchService.findCalendarResources(calendar, start, end);
-
+        for (Object child : root.getChildren()) {
+            if (child instanceof Element) {
+                Element elChild = (Element) child;
+                Element found = find(elChild, name, ns);
+                if (found != null) {
+                    return found;
+                }
+            }
+        }
+        return null;
     }
 }

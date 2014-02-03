@@ -181,8 +181,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		mapOfAnnotationHandlers.put(CTag.class, cTagAnnotationHandler);
 		mapOfAnnotationHandlers.put(ICalData.class, iCalDataAnnotationHandler);
 		mapOfAnnotationHandlers.put(CalendarColor.class, calendarColorAnnotationHandler);
-		mapOfAnnotationHandlers.put(ContactData.class, contactDataAnnotationHandler);		
-		
+		mapOfAnnotationHandlers.put(ContactData.class, contactDataAnnotationHandler);
 
 		mapOfAnnotationHandlers.put(CalendarDateRangeQuery.class, calendarDateRangeQueryAnnotationHandler);
 		mapOfAnnotationHandlers.put(FreeBusyQuery.class, freeBusyQueryAnnotationHandler);
@@ -203,7 +202,9 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 
 	@Override
 	public Resource getResource(String host, String url) throws NotAuthorizedException, BadRequestException {
-		log.info("getResource: host: " + host + " - url:" + url);
+		if (log.isTraceEnabled()) {
+			log.trace("getResource: host: " + host + " - url:" + url);
+		}
 
 		AnnoCollectionResource hostRoot = locateHostRoot(host, HttpManager.request());
 		if (hostRoot == null) {
@@ -222,14 +223,16 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		} else {
 			Path path = Path.path(url);
 			r = findFromRoot(hostRoot, path);
-			if (r == null) {
-				log.info("Resource not found: host=" + host + " path=" + path);
-			} else {
-				if (r instanceof AnnoResource) {
-					AnnoResource ar = (AnnoResource) r;
-					log.info("Found AnnoResource: " + r.getClass() + "  for path=" + path + "  with source: " + ar.getSource());
+			if (log.isTraceEnabled()) {
+				if (r == null) {
+					log.trace("Resource not found: host=" + host + " path=" + path);
 				} else {
-					log.info("Found resource: " + r.getClass() + "  for path=" + path);
+					if (r instanceof AnnoResource) {
+						AnnoResource ar = (AnnoResource) r;
+						log.trace("Found AnnoResource: " + r.getClass() + "  for path=" + path + "  with source: " + ar.getSource());
+					} else {
+						log.trace("Found resource: " + r.getClass() + "  for path=" + path);
+					}
 				}
 			}
 		}
@@ -431,7 +434,9 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		AnnotationHandler ah = mapOfAnnotationHandlersByMethod.get(m);
 		if (ah != null) {
 			boolean b = ah.isCompatible(source);
-			log.info("isCompatible: " + source + " - " + m + " = " + b);
+			if (log.isTraceEnabled()) {
+				log.trace("isCompatible: " + source + " - " + m + " = " + b);
+			}
 			return b;
 		}
 		log.warn("No annotation handler is configured for http method: " + m);
@@ -498,7 +503,6 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 			list.add(r);
 			r = r.getParent();
 		}
-
 
 		for (int i = 0; i < m.getParameterTypes().length; i++) {
 			if (i == 1 && forceUseSecondArg) {
@@ -778,7 +782,6 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 				Request request = HttpManager.request();
 
 				// Note that authentication will usually result in a call to getResource to find the principal..
-
 				AuthenticationService.AuthStatus authStatus = authenticationService.authenticate(res, request);
 				if (authStatus == null) {
 					log.trace("Authentication not attempted");
@@ -788,7 +791,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 						log.warn("Early authentication failed");
 						throw new NotAuthorizedException(res);
 					} else {
-						log.info("Early authentication succeeded");
+						log.trace("Early authentication succeeded");
 						Auth auth = authStatus.auth;
 						if (auth != null) {
 							if (auth.getTag() instanceof AnnoPrincipalResource) {

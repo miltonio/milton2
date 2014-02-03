@@ -19,6 +19,7 @@
 package io.milton.mini.controllers;
 
 import io.milton.annotations.CalendarInvitations;
+import io.milton.annotations.CalendarInvitationsCTag;
 import io.milton.annotations.Delete;
 import io.milton.annotations.FreeBusyQuery;
 import io.milton.annotations.ModifiedDate;
@@ -30,6 +31,7 @@ import io.milton.http.caldav.ITip;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.mail.MailboxAddress;
+import io.milton.mini.services.CalendarService;
 import io.milton.resource.SchedulingResponseItem;
 import io.milton.vfs.db.AttendeeRequest;
 import io.milton.vfs.db.CalEvent;
@@ -44,19 +46,23 @@ import javax.inject.Inject;
 @ResourceController
 public class SchedulingController {
 
-    private static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(SchedulingController.class);
+    private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(SchedulingController.class);
 
     @Inject
     private ICalFormatter formatter;
+    
+    @Inject
+    private CalendarService calendarService;
 
     public SchedulingController() {
     }
 
+    
     @FreeBusyQuery
-    public List<SchedulingResponseItem> freeBusyQuery(Profile profile, String icalQuery) {
+    public List<SchedulingResponseItem> freeBusyQuery(Profile profile, String icalQuery) throws NotAuthorizedException {
         ICalFormatter.FreeBusyRequest r = formatter.parseFreeBusyRequest(icalQuery);
         log.info("queryFreeBusy: attendees=" + r.getAttendeeLines().size() + " - " + r.getAttendeeMailtos().size());
-        List<SchedulingResponseItem> list = new ArrayList<SchedulingResponseItem>();
+        List<SchedulingResponseItem> list = new ArrayList<>();
         try {
             for (String attendeeMailto : r.getAttendeeMailtos()) {
                 MailboxAddress add = MailboxAddress.parse(attendeeMailto);
@@ -74,7 +80,7 @@ public class SchedulingController {
                 }
             }
         } catch (NotAuthorizedException ex) {
-            throw new RuntimeException(ex);
+            throw ex;
         } catch (BadRequestException ex) {
             throw new RuntimeException(ex);
         }
@@ -82,21 +88,20 @@ public class SchedulingController {
     }
 
     @CalendarInvitations
-    public List<AttendeeRequest> getAttendeeRequests(Profile user) {     
-        List<AttendeeRequest> list = new ArrayList<AttendeeRequest>();
-        if( user.getAttendeeRequests() != null ) {
-            for( AttendeeRequest ar : user.getAttendeeRequests() ) {
-                if( !ar.isAcknowledged() ) {
-                    list.add(ar);
-                }
-            }
-        }
-        return list;
+    public List<AttendeeRequest> getAttendeeRequests(Profile user) {  
+        log.info("getAttendeeRequests: " + user.getName());
+        return calendarService.getAttendeeRequests(user);
     }
+    
+    @CalendarInvitationsCTag    
+    public String getCalendarInvitationsCTag(Profile user) {
+        return calendarService.getCalendarInvitationsCTag(user);
+    }    
     
     @Delete
     public void deleteAttendeeRequest(AttendeeRequest ar) {
-        ar.setAcknowledged(true);
+        log.info("deleteAttendeeRequest");
+        ar.setAcknowledged(true); // dont delete, just mark as acknowledged so will be hidden
         SessionManager.session().save(ar);
     }
     
@@ -126,7 +131,7 @@ public class SchedulingController {
     private String buildFreeBusyAttendeeResponse(Profile attendee, ICalFormatter.FreeBusyRequest request, String domain, String attendeeMailto) throws NotAuthorizedException, BadRequestException {
         Date start = request.getStart();
         Date finish = request.getFinish();
-        List<EventResourceImpl> list = new ArrayList<EventResourceImpl>();
+        List<EventResourceImpl> list = new ArrayList<>();
         if (attendee.getCalendars() != null) {
             for (Calendar cal : attendee.getCalendars()) {
                 if( cal.getEvents() != null ) {

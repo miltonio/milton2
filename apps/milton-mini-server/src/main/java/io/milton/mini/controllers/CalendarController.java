@@ -62,8 +62,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.inject.Inject;
 import javax.xml.namespace.QName;
+import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.TimeZone;
 import org.apache.commons.io.IOUtils;
+import org.hibernate.Session;
 
 @ResourceController
 public class CalendarController {
@@ -92,8 +94,20 @@ public class CalendarController {
     }
 
     @Get
-    public String showUserCalendarsHome(CalendarsHome home) {
-        return "calendarsHome";
+    public ModelAndView showUserCalendarsHome(CalendarsHome home, @Principal Profile user) {
+        List<AttendeeRequest> list = new ArrayList<>();
+        if (user.getAttendeeRequests() != null) {
+            for (AttendeeRequest ar : user.getAttendeeRequests()) {
+//                if (!ar.isAcknowledged()) {
+                    list.add(ar);
+//                }
+            }
+        }
+        
+        ModelAndView mav = new ModelAndView("invites", list, "calendarsHome");
+        String inboxCtag = calendarService.getCalendarInvitationsCTag(user);
+        mav.getModel().put("inboxCtag", inboxCtag);
+        return mav;
     }
 
     @ChildrenOf
@@ -225,7 +239,7 @@ public class CalendarController {
 
     @PutChild
     public CalEvent createEvent(Calendar calendar, final String newName, InputStream inputStream, Request request, final @Principal Profile principal) throws IOException {
-        log.trace("createNew: set content");
+        log.info("createNew: set content");
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         IOUtils.copy(inputStream, bout);
 
@@ -237,7 +251,7 @@ public class CalendarController {
 //        System.out.println("---");
         CalEvent newEvent = calendarService.createEvent(calendar, newName, icalData, new CalendarService.UpdatedEventCallback() {
             @Override
-            public void updated(String updatedIcal) throws IOException {
+            public void updated(String updatedIcal, CalEvent e) throws IOException {
                 DataSession.FileNode newFileNode = (DataSession.FileNode) ds.getRootDataNode().get(newName);
                 if (newFileNode == null) { // usually should be null
                     newFileNode = ds.getRootDataNode().addFile(newName);
@@ -251,8 +265,8 @@ public class CalendarController {
     }
 
     @PutChild
-    public CalEvent updateEvent(CalEvent event, InputStream inputStream, Request request, Calendar calendar, @Principal Profile principal) throws IOException {
-        log.trace("createNew: set content");
+    public CalEvent updateEvent(CalEvent event, InputStream inputStream, final Request request, Calendar calendar, final @Principal Profile principal) throws IOException {
+        log.info("updateEvent: set content");
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         IOUtils.copy(inputStream, bout);
 
@@ -265,18 +279,51 @@ public class CalendarController {
         ds.save(principal);
 
         String icalData = bout.toString(StringUtils.UTF8.name());
-        calendarService.update(event, icalData);
+        calendarService.update(event, icalData, new CalendarService.UpdatedAttendeeCallback() {
+
+            @Override
+            public void updated(CalEvent updated) throws IOException {
+                log.info("updated: " + updated.getName() + " - " + updated.getSummary());
+                Calendar calAttendee = updated.getCalendar();
+                DataSession ds = dataSessionManager.get(request, calAttendee, true, principal);
+                DataSession.FileNode newFileNode = (DataSession.FileNode) ds.getRootDataNode().get(updated.getName());
+                if (newFileNode != null) { // usually should be null
+                    ByteArrayOutputStream oldContent = new ByteArrayOutputStream();
+                    newFileNode.writeContent(oldContent);
+
+                    net.fortuna.ical4j.model.Calendar oldCal;
+                    try {
+                        oldCal = calendarService.parse(new ByteArrayInputStream(oldContent.toByteArray()));
+                    } catch (ParserException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    String oldCalText = calendarService.formatIcal(oldCal);
+                    System.out.println("OLD CAL-----------");
+                    System.out.println(oldCalText);                    
+                    String newIcal = calendarService.updateIcalText(updated, oldCal);
+                    System.out.println("NEW CAL --------");
+                    System.out.println(newIcal);
+                    newFileNode.setContent(new ByteArrayInputStream(newIcal.getBytes(StringUtils.UTF8)));
+                    ds.save(principal);
+                }
+
+            }
+        });
 
         return event;
     }
 
     @Delete
     public void deleteEvent(CalEvent event, Request request, Calendar calendar, @Principal Profile principal) throws IOException {
+        log.info("deleteEvent: " + event.getName());
+        Session session = SessionManager.session();
+
         calendarService.delete(event);
         DataSession ds = dataSessionManager.get(request, calendar, true, principal);
         DataSession.FileNode fileNode = (DataSession.FileNode) ds.getRootDataNode().get(event.getName());
         fileNode.delete();
         ds.save(principal);
+        session.flush();
     }
 
     @ModifiedDate
@@ -297,7 +344,7 @@ public class CalendarController {
     public String getCalendarUniqueId(Calendar cal) {
         return cal.getId() + "";
     }
-    
+
     @ModifiedDate
     public Date getCalendarModDate(Calendar cal) {
         // return the mod date of the branch

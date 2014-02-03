@@ -84,8 +84,11 @@ public class ReportHandler implements ExistingEntityHandler {
 				log.error("report not known: " + reportName);
 				throw new BadRequestException(resource);
 			} else {
-				log.trace("process report: " + reportName + " with : " + r.getClass());
+				log.info("process report: " + reportName + " with : " + r.getClass());
 				String xml = r.process(request.getHostHeader(), request.getAbsolutePath(), resource, doc);
+				if(log.isTraceEnabled()) {
+					log.trace("Report XML:\n" + xml);
+				}
 				response.setStatus(Response.Status.SC_MULTI_STATUS);
 				response.setContentTypeHeader("text/xml");
 				response.setEntity(new ByteArrayEntity(xml.getBytes("UTF-8")));

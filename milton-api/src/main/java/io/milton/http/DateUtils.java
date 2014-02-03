@@ -28,6 +28,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,13 +56,13 @@ public class DateUtils {
      * Date format pattern used to parse HTTP date headers in RFC 1123 format.
      */
     public static final String PATTERN_RFC1123 = "EEE, dd MMM yyyy HH:mm:ss zzz";
-    
+
     /**
      * Like PATTERN_RFC1123 but with hyphens between the date components
-     * 
+     *
      */
     public static final String PATTERN_RFC1123_HYPHENS = "EEE, dd-MMM-yyyy HH:mm:ss zzz";
-    
+
     /**
      * Date format pattern used to parse HTTP date headers in RFC 1123 format.
      */
@@ -90,6 +92,10 @@ public class DateUtils {
     }
     public static final TimeZone GMT = TimeZone.getTimeZone("GMT");
 
+    private static final Pattern DATE_VALUE = Pattern.compile(
+            "(\\d{4,})(\\d\\d)(\\d\\d)"
+            + "(?:T([0-1]\\d|2[0-3])([0-5]\\d)([0-5]\\d)(Z)?)?");
+
     /**
      * Parse date in format: 2010-09-03T09:29:43Z
      *
@@ -104,6 +110,38 @@ public class DateUtils {
             s = s.trim();
         }
         return parseDate(s);
+    }
+
+    /**
+     * 20140104T050000Z 20131222T000000Z
+     *
+     * @param s
+     * @return
+     */
+    public static Date parseIcalDateTime(String s) throws DateParseException {
+        Matcher m = DATE_VALUE.matcher(s);
+        if (!m.matches()) {
+            throw new DateParseException("Does not match regex: " + s);
+        }
+        int year = Integer.parseInt(m.group(1));
+        int month = Integer.parseInt(m.group(2));
+        int day = Integer.parseInt(m.group(3));
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH, month);
+        cal.set(Calendar.DAY_OF_MONTH, day);
+        
+        if (null != m.group(4)) { // hour
+            int hour = Integer.parseInt(m.group(4));
+            int minute = Integer.parseInt(m.group(5));
+            int second = Integer.parseInt(m.group(6));
+            boolean utc = null != m.group(7);
+            cal.set(Calendar.HOUR, hour);
+            cal.set(Calendar.MINUTE, minute);
+            cal.set(Calendar.SECOND, second);
+        }
+        return cal.getTime();
+
     }
 
     /**
@@ -143,12 +181,9 @@ public class DateUtils {
      * @param dateValue the date value to parse
      * @param dateFormats the date formats to use
      * @param startDate During parsing, two digit years will be placed in the
-     * range
-     * <code>startDate</code> to
-     * <code>startDate + 100 years</code>. This value may be
-     * <code>null</code>. When
-     * <code>null</code> is given as a parameter, year
-     * <code>2000</code> will be used.
+     * range <code>startDate</code> to <code>startDate + 100 years</code>. This
+     * value may be <code>null</code>. When <code>null</code> is given as a
+     * parameter, year <code>2000</code> will be used.
      *
      * @return the parsed date
      *
@@ -160,10 +195,10 @@ public class DateUtils {
             Collection<String> dateFormats,
             Date startDate) throws DateParseException {
 
-
         if (dateValue == null) {
             throw new IllegalArgumentException("dateValue is null");
         }
+
         if (dateFormats == null) {
             dateFormats = DEFAULT_PATTERNS;
         }
@@ -210,12 +245,14 @@ public class DateUtils {
 
     /**
      *
+     * @param cal
+     * @return
      * @see #PATTERN_WEBDAV
      */
     public static String formatDate(Calendar cal) {
         // 2005-03-30T05:18:33Z
         StringBuilder sb = new StringBuilder();
-        sb.append(cal.get(Calendar.YEAR) + "");
+        sb.append(cal.get(Calendar.YEAR)).append("");
         sb.append('-');
         sb.append(pad2(cal.get(Calendar.MONTH) + 1));
         sb.append('-');
@@ -289,10 +326,10 @@ public class DateUtils {
     public static String formatForWebDavModifiedDate(Date date) {
         return formatDate(date, PATTERN_RFC1123);
     }
-    
+
     public static String formatForCookieExpiry(Date date) {
         return formatDate(date, PATTERN_RFC1123_HYPHENS);
-    }    
+    }
 
     /**
      * This class should not be instantiated.

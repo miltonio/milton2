@@ -26,7 +26,6 @@ import io.milton.resource.Resource;
 import io.milton.http.Response;
 import io.milton.http.Response.Status;
 import io.milton.common.Utils;
-import io.milton.http.entity.ByteArrayEntity;
 import io.milton.http.entity.MultiStatusEntity;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
@@ -37,7 +36,6 @@ import io.milton.http.http11.Http11ResponseHandler;
 import io.milton.http.quota.StorageChecker.StorageErrorReason;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -199,7 +197,7 @@ public class DefaultWebDavResponseHandler implements WebDavResponseHandler, Buff
 				log.trace("----");
 			}
 			byte[] arr = bout.toByteArray();
-			response.setContentLengthHeader((long) arr.length);
+			//response.setContentLengthHeader((long) arr.length);
 			OutputStream outputStream = response.getOutputStream();
 			outputStream.write(arr);
 			outputStream.flush();

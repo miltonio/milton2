@@ -37,7 +37,18 @@ public class TestDateUtils extends TestCase {
         String s = DateUtils.formatDate(dt);
         System.out.println("formatted to: " + s);
     }
+    
+    public void test_FirefoxOSCaldavDate() throws ParseException, DateParseException {
+        Date date = DateUtils.parseIcalDateTime("20140104T050000Z");
+        System.out.println("formatted to: " + date);
+    }    
 
+    
+    public void test_iOSCaldavDate() throws ParseException, DateParseException {
+        Date date = DateUtils.parseIcalDateTime("20131222T000000Z");
+        System.out.println("formatted to: " + date);
+    }      
+    
     public void testParseNormal() throws DateParseException {
         Date dt = DateUtils.parseDate( "Sun, 28 Mar 2010 01:00:00 GMT");
         System.out.println( dt.getTime() );

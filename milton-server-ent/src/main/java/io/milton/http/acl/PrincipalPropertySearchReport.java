@@ -3,7 +3,7 @@
  *
  */
 
-package io.milton.http.carddav;
+package io.milton.http.acl;
 import io.milton.http.report.Report;
 import io.milton.resource.Resource;
 import org.jdom.Document;
