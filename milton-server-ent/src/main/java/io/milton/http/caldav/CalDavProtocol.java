@@ -74,7 +74,7 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
     private ResourceFactory resourceFactory;
 
     public CalDavProtocol(ResourceFactory resourceFactory, WebDavResponseHandler responseHandler, HandlerHelper handlerHelper, WebDavProtocol webDavProtocol, PropFindXmlGenerator gen, PropFindPropertyBuilder propertyBuilder, CalendarSearchService calendarSearchService) {
-        if( resourceFactory == null ) {
+        if (resourceFactory == null) {
             throw new NullPointerException("resourceFactory is null");
         }
         this.resourceFactory = resourceFactory;
@@ -86,10 +86,8 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
         propertyMapCalDav.add(new CalenderUserAddressSetProperty());
         propertyMapCalDav.add(new SupportedCalendarComponentSetProperty());
         propertyMapCalDav.add(new SupportedCalendarComponentSetsProperty());
-        if (calendarSearchService.isSchedulingEnabled()) {
-            propertyMapCalDav.add(new ScheduleInboxProperty());
-            propertyMapCalDav.add(new ScheduleOutboxProperty());
-        }
+        propertyMapCalDav.add(new ScheduleInboxProperty());
+        propertyMapCalDav.add(new ScheduleOutboxProperty());
 
         //propertyMapCalServer = new PropertyMap(CALSERVER_NS);
         propertyMapDav = new PropertyMap(WebDavProtocol.NS_DAV.getName());
@@ -115,7 +113,6 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
         webDavProtocol.addReport(new PrincipalMatchReport());
         //webDavProtocol.addReport(new ExpandPropertyReport());
         webDavProtocol.addReport(new CalendarQueryReport(propertyBuilder, gen, calendarSearchService));
-
 
         customPostHandlers = Collections.EMPTY_LIST;
 
@@ -180,7 +177,7 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
         list.addAll(propertyMapCalDav.getAllPropertyNames(r));
         list.addAll(propertyMapDav.getAllPropertyNames(r));
         list.addAll(propertyMapAppleCal.getAllPropertyNames(r));
-        
+
         return list;
     }
 
@@ -269,6 +266,7 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
          * <D:href>mailto:bernard@example.com</D:href>
          * <D:href>mailto:bernard.desruisseaux@example.com</D:href>
          * </C:calendar-user-address-set>
+         *
          * @param res
          * @return
          */
@@ -303,7 +301,7 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
         public WrappedHref getValue(PropFindableResource res) {
             if (res instanceof CalDavPrincipal) {
                 CalDavPrincipal p = (CalDavPrincipal) res;
-                String s = ((CalDavPrincipal) res).getPrincipalURL() + calendarSearchService.getSchedulingColName() + "/" + calendarSearchService.getSchedulingInboxColName() + "/";
+                String s = p.getPrincipalURL() + calendarSearchService.getSchedulingColName() + "/" + calendarSearchService.getSchedulingInboxColName() + "/";
                 return new WrappedHref(s);
             } else {
                 return null;
@@ -331,7 +329,8 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
         @Override
         public WrappedHref getValue(PropFindableResource res) {
             if (res instanceof CalDavPrincipal) {
-                String s = ((CalDavPrincipal) res).getPrincipalURL() + calendarSearchService.getSchedulingColName() + "/" + calendarSearchService.getSchedulingOutboxColName() + "/";
+                CalDavPrincipal p = (CalDavPrincipal) res;
+                String s = p.getPrincipalURL() + calendarSearchService.getSchedulingColName() + "/" + calendarSearchService.getSchedulingOutboxColName() + "/";
                 return new WrappedHref(s);
             } else {
                 return null;
@@ -609,8 +608,6 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
     public ResourceFactory getResourceFactory() {
         return resourceFactory;
     }
-    
-    
 
     public class CaldavWellKnownResource implements DigestResource, GetableResource, PropFindableResource {
 

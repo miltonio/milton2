@@ -62,6 +62,7 @@ import io.milton.http.Request;
 import io.milton.http.Request.Method;
 import io.milton.http.ResourceFactory;
 import io.milton.http.Response;
+import io.milton.http.caldav.CalendarSearchService;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.template.ViewResolver;
@@ -100,6 +101,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 
 	private static final Logger log = LoggerFactory.getLogger(AnnotationResourceFactory.class);
 	private AuthenticationService authenticationService;
+	private CalendarSearchService calendarSearchService;
 	private boolean doEarlyAuth = true;
 	private io.milton.http.SecurityManager securityManager;
 	private LockManager lockManager;
@@ -285,6 +287,16 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	public AuthenticationService getAuthenticationService() {
 		return authenticationService;
 	}
+
+	public CalendarSearchService getCalendarSearchService() {
+		return calendarSearchService;
+	}
+
+	public void setCalendarSearchService(CalendarSearchService calendarSearchService) {
+		this.calendarSearchService = calendarSearchService;
+	}
+	
+	
 
 	/**
 	 * If true authentication will be attempted as soon as the root resource is
@@ -598,6 +610,13 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	public AnnoResource instantiate(Object childSource, AnnoCollectionResource parent, java.lang.reflect.Method m) {
 		if (authenticateAnnotationHandler.canAuthenticate(childSource)) {
 			return new AnnoPrincipalResource(this, childSource, parent);
+		}
+		if( parent instanceof AnnoPrincipalResource) {
+			// Check for a Calendars method which takes this source as first arg
+			if( calendarsAnnotationHandler.isCompatible(childSource)) {
+				AnnoPrincipalResource p = (AnnoPrincipalResource) parent;
+				return new AnnoCalendarHomeResource(this, childSource, p, calendarSearchService); 
+			}
 		}
 		if (m.getAnnotation(Calendars.class) != null) {
 			return new AnnoCalendarResource(this, childSource, parent);

@@ -41,9 +41,13 @@ public class ChildOfAnnotationHandler extends AbstractAnnotationHandler {
 	 * resource was found - or, the child object with the given name wrapped in
 	 * an AnnoResource
 	 *
-	 * @param source
+	 * @param parent
+	 * @param childName
 	 * @return - a tri-value indicating the object which was found, no object
 	 * was found, or search was not attempted
+	 * @throws io.milton.http.exceptions.NotAuthorizedException
+	 * @throws io.milton.http.exceptions.BadRequestException
+	 * @throws io.milton.http.exceptions.NotFoundException
 	 */
 	public Object execute(AnnoCollectionResource parent, String childName) throws NotAuthorizedException, BadRequestException, NotFoundException {
 		Object source = parent.getSource();
@@ -55,11 +59,11 @@ public class ChildOfAnnotationHandler extends AbstractAnnotationHandler {
 			
 			for (ControllerMethod cm : availMethods) {
 				if (matchesSuffix(cm, childName)) {
-					Object o = invoke(cm, parent, childName);
-					if (o == null) {
+					Object childObject = invoke(cm, parent, childName);
+					if (childObject == null) {
 						// ignore
 					} else {
-						AnnoResource r = annoResourceFactory.instantiate(o, parent, cm.method);
+						AnnoResource r = annoResourceFactory.instantiate(childObject, parent, cm.method);
 						r.setNameOverride(childName);
 						return r;
 					}

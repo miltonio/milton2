@@ -46,7 +46,7 @@ public class UsersAnnotationHandler extends AbstractAnnotationHandler {
 
 			// iterate over each root collection, looking for objects which have
 			// a @Users annotation on their ChildOf or ChildrenOf methods
-			for (CommonResource col : root.getChildren()) {
+			for (Resource col : root.getChildren()) {
 				if (col instanceof AnnoCollectionResource) {
 					AnnoCollectionResource acr = (AnnoCollectionResource) col;
 					availMethods = getMethods(acr.getSource().getClass());
@@ -72,7 +72,7 @@ public class UsersAnnotationHandler extends AbstractAnnotationHandler {
 			// iterate over each root collection, looking for objects which have
 			// a @Authenticate annotation on their ChildOf or ChildrenOf methods
 			List<AnnoCollectionResource> list = new ArrayList<AnnoCollectionResource>();
-			for (CommonResource col : root.getChildren()) {
+			for (Resource col : root.getChildren()) {
 				if (col instanceof AnnoCollectionResource) {
 					AnnoCollectionResource acr = (AnnoCollectionResource) col;
 					List<ControllerMethod> availMethods = getMethods(acr.getSource().getClass());

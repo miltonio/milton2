@@ -17,10 +17,11 @@
  * under the License.
  */
 
-package io.milton.http.caldav;
+package io.milton.http.annotated.scheduling;
 
 import io.milton.http.Auth;
 import io.milton.http.Request;
+import io.milton.http.caldav.CalendarSearchService;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.http11.auth.DigestResponse;
@@ -37,15 +38,19 @@ import java.util.Date;
  */
 public abstract class BaseSchedulingResource implements CollectionResource, ReportableResource, DigestResource {
     protected final CalDavPrincipal principal;
-    protected final SchedulingResourceFactory schedulingResourceFactory;
     protected final CalendarSearchService calendarSearchService;
+    protected final String name;
 
-    public BaseSchedulingResource(CalDavPrincipal principal, SchedulingResourceFactory schedulingResourceFactory) {
+    public BaseSchedulingResource(CalDavPrincipal principal,CalendarSearchService calendarSearchService, String name) {
         this.principal = principal;
-        this.schedulingResourceFactory = schedulingResourceFactory;
-        this.calendarSearchService = schedulingResourceFactory.getCalendarSearchService();
+        this.calendarSearchService = calendarSearchService;
+        this.name = name;
     }
 
+    @Override
+    public String getName() {
+        return name;
+    }    
 
     @Override
     public String getUniqueId() {

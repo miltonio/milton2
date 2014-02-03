@@ -3,7 +3,7 @@
  *
  */
 
-package io.milton.http.caldav;
+package io.milton.http.annotated.scheduling;
 
 import io.milton.http.XmlWriter;
 import io.milton.http.XmlWriter.Element;

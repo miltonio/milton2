@@ -17,9 +17,10 @@
  * under the License.
  */
 
-package io.milton.http.caldav;
+package io.milton.http.annotated.scheduling;
 
 import io.milton.http.annotated.CTagAnnotationHandler;
+import io.milton.http.caldav.CalendarSearchService;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.principal.CalDavPrincipal;
@@ -130,15 +131,10 @@ Internet-Draft        CalDAV Scheduling Extensions          October 2010
  *
  * @author brad
  */
-public class SchedulingInboxResource extends BaseSchedulingXBoxResource implements CalendarCollection, PropFindableResource {
+public class SchedulingInboxResource extends BaseSchedulingResource implements CalendarCollection, PropFindableResource {
 
-    public SchedulingInboxResource(CalDavPrincipal principal, SchedulingResourceFactory schedulingResourceFactory) {
-        super(principal, schedulingResourceFactory);
-    }
-
-    @Override
-    public String getName() {
-        return schedulingResourceFactory.getInboxName();
+    public SchedulingInboxResource(CalDavPrincipal principal, CalendarSearchService calendarSearchService, String name) {
+        super(principal, calendarSearchService, name);
     }
         
     

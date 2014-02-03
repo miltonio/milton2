@@ -15,7 +15,6 @@
  */
 package io.milton.http.caldav;
 
-import io.milton.ent.config.HttpManagerBuilderEnt;
 import io.milton.http.annotated.AnnoCalendarResource;
 import io.milton.http.annotated.AnnoPrincipalResource;
 import io.milton.http.annotated.AnnotationResourceFactory;
@@ -118,10 +117,5 @@ public class AnnotationsCalendarSearchService implements CalendarSearchService {
     @Override
     public String getSchedulingOutboxColName() {
         return wrapped.getSchedulingOutboxColName();
-    }
-
-    @Override
-    public boolean isSchedulingEnabled() {
-        return wrapped.isSchedulingEnabled();
     }
 }

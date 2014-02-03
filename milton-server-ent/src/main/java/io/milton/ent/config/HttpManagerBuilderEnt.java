@@ -16,7 +16,6 @@ import io.milton.http.caldav.CalendarResourceTypeHelper;
 import io.milton.http.caldav.CalendarSearchService;
 import io.milton.http.caldav.DefaultCalendarSearchService;
 import io.milton.http.caldav.ICalFormatter;
-import io.milton.http.caldav.SchedulingResourceFactory;
 import io.milton.http.caldav.SupportedCalendarComponentListValueWriter;
 import io.milton.http.caldav.SupportedCalendarComponentListsSetValueWriter;
 import io.milton.http.carddav.AddressBookResourceTypeHelper;
@@ -72,11 +71,10 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
     private boolean carddavEnabled = true;
     private boolean aclEnabled = true;
     private boolean enableWellKnown = true;
-    private boolean enableScheduling = true;
     private WebDavLevel2Protocol webDavLevel2Protocol;
     private boolean webdavLevel2Enabled = true;
     private LockManager lockManager = new SimpleLockManager();
-    private ICalFormatter iCalFormatter = new ICalFormatter();
+    private final ICalFormatter iCalFormatter = new ICalFormatter();
     private CalendarSearchService calendarSearchService;
     private AnnotationsCalendarSearchService annotationsCalendarSearchService;
     private WellKnownResourceFactory wellKnownResourceFactory;
@@ -92,6 +90,7 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
             if( annotationsCalendarSearchService != null ) {
                 annotationsCalendarSearchService.setAnnotationResourceFactory(arf);
             }
+            arf.setCalendarSearchService(calendarSearchService);
         }
     }
 
@@ -115,18 +114,11 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
             if (calendarSearchService == null) {
                 log.warn("Using the default calendar search service. Calendar search functions may exhibit poor performance. If thats a problem implement your own: " + CalendarSearchService.class);
                 DefaultCalendarSearchService c = new DefaultCalendarSearchService(iCalFormatter, mainResourceFactory);
-                c.setSchedulingEnabled(enableScheduling);
                 // Wrap the default in an annotations handler. It will forward requests to the wrapped
                 // instance for non-annotation resources
                 annotationsCalendarSearchService = new AnnotationsCalendarSearchService(c);
                 calendarSearchService = annotationsCalendarSearchService;
             }            
-            if (calendarSearchService.isSchedulingEnabled()) {
-                outerResourceFactory = new SchedulingResourceFactory(outerResourceFactory, calendarSearchService);
-                log.info("Caldav Scheduling is enabled: " + outerResourceFactory.getClass());
-            } else {
-                log.info("Caldav scheduling is disabled");
-            }
             if (enabledCkBrowser) {
                 outerResourceFactory = new FckResourceFactory(outerResourceFactory);
                 log.info("Enabled CK Editor support with: " + outerResourceFactory.getClass());

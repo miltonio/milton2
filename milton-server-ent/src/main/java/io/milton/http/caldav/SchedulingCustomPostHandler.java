@@ -5,6 +5,8 @@
 
 package io.milton.http.caldav;
 
+import io.milton.http.annotated.scheduling.SchedulingXmlHelper;
+import io.milton.http.annotated.scheduling.SchedulingOutboxResource;
 import io.milton.http.Request;
 import io.milton.http.Response;
 import io.milton.http.entity.StringEntity;

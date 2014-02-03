@@ -65,7 +65,7 @@ public class AnnoPrincipalResource extends AnnoCollectionResource implements Dis
 			}
 			if (list.isEmpty()) {
 				// Just going to help dudes out by explaining whats going on...
-				ResourceList topDirs = getChildren().getDirs();
+				ResourceList topDirs = getResourceList().getDirs();
 				log.warn("Could not find any calendar home directories for user type: " + getSource().getClass() + " You should have a @" + Calendars.class + " annotation for the user object itself, or for a directory within the user home");
 				for (Resource r : topDirs) {
 					if (r instanceof AnnoCollectionResource) {

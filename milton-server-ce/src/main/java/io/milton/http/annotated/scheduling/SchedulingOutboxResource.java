@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package io.milton.http.caldav;
+package io.milton.http.annotated.scheduling;
 
 import io.milton.common.StringUtils;
 import io.milton.http.Auth;
@@ -25,6 +25,7 @@ import io.milton.http.HttpManager;
 import io.milton.http.Range;
 import io.milton.http.Request;
 import io.milton.http.Request.Method;
+import io.milton.http.caldav.CalendarSearchService;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
@@ -155,14 +156,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author brad
  */
-public class SchedulingOutboxResource extends BaseSchedulingXBoxResource implements PostableResource {
+public class SchedulingOutboxResource extends BaseSchedulingResource implements PostableResource {
 
     private static final Logger log = LoggerFactory.getLogger(SchedulingOutboxResource.class);
     private final SchedulingXmlHelper schedulingHelper = new SchedulingXmlHelper();
     private byte[] xmlResponse;
 
-    public SchedulingOutboxResource(CalDavPrincipal principal, SchedulingResourceFactory schedulingResourceFactory) {
-        super(principal, schedulingResourceFactory);
+    public SchedulingOutboxResource(CalDavPrincipal principal, CalendarSearchService calendarSearchService, String name) {
+        super(principal, calendarSearchService, name);
     }
 
     /**
@@ -201,11 +202,6 @@ public class SchedulingOutboxResource extends BaseSchedulingXBoxResource impleme
     @Override
     public List<? extends Resource> getChildren() throws NotAuthorizedException, BadRequestException {
         return Collections.EMPTY_LIST;
-    }
-
-    @Override
-    public String getName() {
-        return schedulingResourceFactory.getOutboxName();
     }
 
     @Override

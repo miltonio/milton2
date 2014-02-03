@@ -91,10 +91,5 @@ public interface CalendarSearchService {
      */
     String getSchedulingOutboxColName();
     
-    /**
-     * Return true to enable scheduling properties and resources
-     * 
-     * @return 
-     */
-    boolean isSchedulingEnabled();
+
 }

@@ -35,11 +35,13 @@ import io.milton.http.http11.DefaultHttp11ResponseHandler.BUFFERING;
 import io.milton.http.http11.Http11ResponseHandler;
 import io.milton.http.quota.StorageChecker.StorageErrorReason;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -188,6 +190,7 @@ public class DefaultWebDavResponseHandler implements WebDavResponseHandler, Buff
 		response.setDavHeader(s);
 
 		//response.setEntity(new ByteArrayEntity(arr));
+		OutputStream outputStream = response.getOutputStream();
 		try {
 			ByteArrayOutputStream bout = new ByteArrayOutputStream();
 			propFindXmlGenerator.generate(propFindResponses, bout);
@@ -197,12 +200,15 @@ public class DefaultWebDavResponseHandler implements WebDavResponseHandler, Buff
 				log.trace("----");
 			}
 			byte[] arr = bout.toByteArray();
-			//response.setContentLengthHeader((long) arr.length);
-			OutputStream outputStream = response.getOutputStream();
+			//response.setContentLengthHeader((long) arr.length);			
 			outputStream.write(arr);
-			outputStream.flush();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
+		}
+		try {
+			outputStream.flush();
+		} catch (IOException ex) {
+			log.warn("exception flushing response", ex.getMessage());
 		}
 	}
 

@@ -45,10 +45,9 @@ public class DefaultCalendarSearchService implements CalendarSearchService {
     private static final Logger log = LoggerFactory.getLogger(DefaultCalendarSearchService.class);
     private final ICalFormatter formatter;
     private final ResourceFactory resourceFactory;
-    private String schedulingColName = "scheduling";
+    private String schedulingColName = "cals";
     private String inboxName = "inbox";
     private String outBoxName = "outbox";
-    private boolean enabled = true;
     private String usersBasePath = "/users/";
 
     public DefaultCalendarSearchService(ICalFormatter formatter, ResourceFactory resourceFactory) {
@@ -215,25 +214,34 @@ public class DefaultCalendarSearchService implements CalendarSearchService {
         return schedulingColName;
     }
 
+    public void setSchedulingColName(String schedulingColName) {
+        this.schedulingColName = schedulingColName;
+    }
+
+    
+    
     @Override
     public String getSchedulingInboxColName() {
         return inboxName;
     }
+
+    public void setSchedulingInboxColName(String inboxName) {
+        this.inboxName = inboxName;
+    }
+    
+    
 
     @Override
     public String getSchedulingOutboxColName() {
         return outBoxName;
     }
 
-    @Override
-    public boolean isSchedulingEnabled() {
-        return enabled;
+    public void setSchedulingOutboxColName(String outBoxName) {
+        this.outBoxName = outBoxName;
     }
 
-    public void setSchedulingEnabled(boolean b) {
-        enabled = b;
-    }
-
+    
+    
     /**
      * Use the domain portion of the email as the host, and the initial portion
      * as the userid. This wont work in systems which require use userid's with

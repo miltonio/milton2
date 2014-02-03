@@ -33,6 +33,7 @@ import io.milton.resource.Resource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.xml.namespace.QName;
@@ -114,13 +115,12 @@ public class AnnoCollectionResource extends AnnoResource implements CollectionRe
 
 		// Previously we checked in children list if it was loaded to avoid double-instantiating
 		// childOf objects. Since we've got here without finding a child, we can load the
-		// list of children and iterate over it. We only do this is children == null, to avoid
-		// repeating previous search
-		if (children == null) {
-			for (Resource r : findChildren(true)) {
-				if (r.getName().equals(childName)) {
-					return r;
-				}
+		// list of children and iterate over it.
+		// We can end up iterating over the list twice, but thats because there
+		// is no guarantee that getChildren is the same as children
+		for (Resource r : getChildren(true)) {
+			if (r.getName().equals(childName)) {
+				return r;
 			}
 		}
 
@@ -128,60 +128,84 @@ public class AnnoCollectionResource extends AnnoResource implements CollectionRe
 	}
 
 	@Override
-	public ResourceList getChildren() throws NotAuthorizedException, BadRequestException {
+	public List<? extends Resource> getChildren() throws NotAuthorizedException, BadRequestException {
+		return getResourceList();
+	}
+
+	public List<? extends Resource> getChildren(boolean isChildLookup) throws NotAuthorizedException, BadRequestException {
+		return findChildren(isChildLookup);
+	}
+
+	public ResourceList getResourceList() throws NotAuthorizedException, BadRequestException {
 		return findChildren(false);
 	}
 
 	public ResourceList getSubFolders() throws NotAuthorizedException, BadRequestException {
-		return getChildren().getDirs();
+		return getResourceList().getDirs();
 	}
 
 	public ResourceList getFiles() throws NotAuthorizedException, BadRequestException {
-		return getChildren().getFiles();
+		return getResourceList().getFiles();
 	}
 
-	private ResourceList findChildren(boolean isChildLookup) throws NotAuthorizedException, BadRequestException {
+	protected ResourceList findChildren(boolean isChildLookup) throws NotAuthorizedException, BadRequestException {
 		if (children == null) {
-			children = new ResourceList();
-			Set<AnnoResource> set;
-			try {
-				set = annoFactory.childrenOfAnnotationHandler.execute(this, isChildLookup);
-			} catch (NotAuthorizedException e) {
-				throw e;
-			} catch (NotFoundException ex) {
-				throw new RuntimeException(ex);
-			} catch (Exception ex) {
-				throw new RuntimeException(ex);
-			}
-			for (AnnoResource r : set) {
-				children.add(r);
-			}
-
-			// Now add any temp lock resources
-			for (LockHolder holder : annoFactory.getTempResourcesForParent(this)) {
-				CommonResource cr = annoFactory.instantiate(holder, this);
-				children.add(cr);
-			}
-
-			// if there are singly loaded items we must replace their dopple-ganger in children
-			// because there might already be references to those resource objects elsewhere in code
-			// and having two objects representing the same resource causes unpredictable chaos!!!
-			if (singlyLoadedChildItems != null) {
-				for (CommonResource r : singlyLoadedChildItems) {
-					children.remove(r.getName());
-					children.add(r);
-				}
-			}
+			initChildren(isChildLookup);
 		}
 		return children;
 	}
 
+	/**
+	 * Called when the children list is first accessed
+	 *
+	 * This will create the children ResourceList and populate it with known
+	 * child resources
+	 *
+	 * @param isChildLookup - indicates this is being called in the context of a
+	 * call to load a single child by name
+	 *
+	 * @throws NotAuthorizedException
+	 * @throws BadRequestException
+	 */
+	protected void initChildren(boolean isChildLookup) throws NotAuthorizedException, BadRequestException {
+		children = new ResourceList();
+		Set<AnnoResource> set;
+		try {
+			set = annoFactory.childrenOfAnnotationHandler.execute(this, isChildLookup);
+		} catch (NotAuthorizedException e) {
+			throw e;
+		} catch (NotFoundException ex) {
+			throw new RuntimeException(ex);
+		} catch (Exception ex) {
+			throw new RuntimeException(ex);
+		}
+		for (AnnoResource r : set) {
+			children.add(r);
+		}
+
+		// Now add any temp lock resources
+		for (LockHolder holder : annoFactory.getTempResourcesForParent(this)) {
+			CommonResource cr = annoFactory.instantiate(holder, this);
+			children.add(cr);
+		}
+
+		// if there are singly loaded items we must replace their dopple-ganger in children
+		// because there might already be references to those resource objects elsewhere in code
+		// and having two objects representing the same resource causes unpredictable chaos!!!
+		if (singlyLoadedChildItems != null) {
+			for (CommonResource r : singlyLoadedChildItems) {
+				children.remove(r.getName());
+				children.add(r);
+			}
+		}
+	}
+
 	public Map<String, CommonResource> getChildrenMap() throws NotAuthorizedException, BadRequestException {
-		return getChildren().getMap();
+		return getResourceList().getMap();
 	}
 
 	public Map<String, ResourceList> getChildrenOfType() throws NotAuthorizedException, BadRequestException {
-		return getChildren().getOfType();
+		return getResourceList().getOfType();
 	}
 
 	@Override

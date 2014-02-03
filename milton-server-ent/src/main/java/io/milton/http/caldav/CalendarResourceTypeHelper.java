@@ -4,6 +4,8 @@
  */
 package io.milton.http.caldav;
 
+import io.milton.http.annotated.scheduling.SchedulingOutboxResource;
+import io.milton.http.annotated.scheduling.SchedulingInboxResource;
 import io.milton.http.webdav.ResourceTypeHelper;
 import io.milton.resource.CalendarResource;
 import io.milton.resource.ICalResource;
