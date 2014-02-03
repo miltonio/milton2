@@ -18,6 +18,7 @@ import io.milton.http.webdav.WebDavProtocol;
 import io.milton.resource.CalendarResource;
 import io.milton.resource.ICalResource;
 import io.milton.http.report.Report;
+import io.milton.http.report.ReportUtils;
 import io.milton.resource.Resource;
 import java.util.ArrayList;
 import java.util.Date;
@@ -60,7 +61,7 @@ public class CalendarQueryReport implements Report {
     public String process(String host, String path, Resource resource, Document doc) throws BadRequestException, NotAuthorizedException {
         log.debug("process");
         // The requested properties
-        Set<QName> props = getProps(doc);
+        Set<QName> props = ReportUtils.getProps(doc, NS_DAV);
 
         PropertiesRequest parseResult = PropertiesRequest.toProperties(props);
 
@@ -94,23 +95,6 @@ public class CalendarQueryReport implements Report {
         return xml;
     }
 
-    private Set<QName> getProps(Document doc) {
-        Element elProp = doc.getRootElement().getChild("prop", NS_DAV);
-        if (elProp == null) {
-            throw new RuntimeException("No prop element");
-        }
-
-        Set<QName> set = new HashSet<QName>();
-        for (Object o : elProp.getChildren()) {
-            if (o instanceof Element) {
-                Element el = (Element) o;
-                String local = el.getName();
-                String ns = el.getNamespaceURI();
-                set.add(new QName(ns, local, el.getNamespacePrefix()));
-            }
-        }
-        return set;
-    }
 
     private List<ICalResource> findCalendarResources(CalendarResource calendar, Document doc) throws NotAuthorizedException, BadRequestException {
         Date start;
@@ -121,7 +105,7 @@ public class CalendarQueryReport implements Report {
             start = null;
             end = null;
         } else {
-            Element elTimeRange = find(elFilterRoot, "time-range", NS_CAL);
+            Element elTimeRange = ReportUtils.find(elFilterRoot, "time-range", NS_CAL);
 
             if (elTimeRange == null) {
                 start = null;
@@ -157,34 +141,5 @@ public class CalendarQueryReport implements Report {
 
     }
 
-    /**
-     * find the first element with the given name
-     *
-     * @param root
-     * @param name
-     * @param ns
-     * @return
-     */
-    private Element find(Element root, String name, Namespace ns) {
-        for (Object child : root.getChildren()) {
-            if (child instanceof Element) {
-                Element elChild = (Element) child;
-                if (elChild.getName().equals(name)) {
-                    if (ns == null || ns.getURI().equals(elChild.getNamespaceURI())) {
-                        return elChild;
-                    }
-                }
-            }
-        }
-        for (Object child : root.getChildren()) {
-            if (child instanceof Element) {
-                Element elChild = (Element) child;
-                Element found = find(elChild, name, ns);
-                if (found != null) {
-                    return found;
-                }
-            }
-        }
-        return null;
-    }
+
 }

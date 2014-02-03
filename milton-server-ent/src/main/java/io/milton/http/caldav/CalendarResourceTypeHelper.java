@@ -88,24 +88,24 @@ public class CalendarResourceTypeHelper implements ResourceTypeHelper {
 //        if (r instanceof CalendarResource) {
         LockUtils.add(list, "3");
         LockUtils.add(list, "calendar-access");
-        
+
         // if present (but not actually implemented) causes problems with thunderbird
         LockUtils.add(list, "calendar-schedule");
         LockUtils.add(list, "extended-mkcol");
-        list.add("calendar-proxy");
+        LockUtils.add(list, "extended-mkcol");
+        LockUtils.add(list, "calendar-proxy");
 //        }
-        
+
         // not sure if should be at this level
-        
         // thunderbird doesnt poll inbox if we have calendar-auto-schedule
         LockUtils.add(list, "calendar-auto-schedule");
-        
+
 //        if (r instanceof SchedulingInboxResource) {
-            LockUtils.add(list, "schedule-inbox");            
+        LockUtils.add(list, "schedule-inbox");
 //            LockUtils.add(list, "calendar-auto-schedule");
 //        }
 //        if (r instanceof SchedulingOutboxResource) {
-            LockUtils.add(list, "schedule-outbox");
+        LockUtils.add(list, "schedule-outbox");
 //            LockUtils.add(list, "calendar-auto-schedule");
 //        }
         return list;

@@ -35,6 +35,7 @@ import io.milton.resource.CalendarCollection;
 import io.milton.resource.CalendarResource;
 import io.milton.http.acl.ACLHandler;
 import io.milton.http.values.SupportedCalendarComponentListsSet;
+import io.milton.http.webdav.PropertyMap.WritableStandardProperty;
 import io.milton.resource.DigestResource;
 import io.milton.resource.GetableResource;
 import io.milton.resource.PropFindableResource;
@@ -81,6 +82,8 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
         this.calendarSearchService = calendarSearchService;
         propertyMapCalDav = new PropertyMap(CALDAV_NS);
         propertyMapCalDav.add(new CalenderDescriptionProperty());
+        propertyMapCalDav.add(new CalenderUserTypeProperty());
+        propertyMapCalDav.add(new CalendarOrderProperty());
         propertyMapCalDav.add(new CalendarDataProperty());
         propertyMapCalDav.add(new CalenderHomeSetProperty());
         propertyMapCalDav.add(new CalenderUserAddressSetProperty());
@@ -99,6 +102,7 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
 
         propertyMapAppleCal = new PropertyMap(APPLE_ICAL_NS);
         propertyMapAppleCal.add(new ColorProperty());
+        propertyMapAppleCal.add(new CalendarOrderProperty());
 
         handlers = new HashSet<Handler>();
         handlers.add(new ACLHandler(responseHandler, handlerHelper));
@@ -344,98 +348,33 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
         }
     }
 
-    /*
-     <dropbox-home-URL xmlns='http://calendarserver.org/ns/'>
-     <href xmlns='DAV:'>/calendars/__uids__/admin/dropbox/</href>
-     </dropbox-home-URL>
-     */
-    class DropBoxProperty implements StandardProperty<WrappedHref> {
+    class CalenderUserTypeProperty implements StandardProperty {
 
-        @Override
-        public String fieldName() {
-            return "dropbox-home-URL";
+        public CalenderUserTypeProperty() {
         }
 
         @Override
-        public WrappedHref getValue(PropFindableResource res) {
+        public String fieldName() {
+            return "calendar-user-type";
+        }
+
+        @Override
+        public Object getValue(PropFindableResource res) {
             if (res instanceof CalDavPrincipal) {
-                String s = ((CalDavPrincipal) res).getDropBoxUrl();
-                return new WrappedHref(s);
+                CalDavPrincipal p = (CalDavPrincipal) res;
+                return p.getCalendarUserType();
             } else {
                 return null;
             }
         }
 
         @Override
-        public Class<WrappedHref> getValueClass() {
-            return WrappedHref.class;
-        }
-    }
-
-    /*
-     * I think this property probably isnt necessary, but will wait until things
-     * are stable.
-     *
-     <xmpp-uri xmlns='http://calendarserver.org/ns/'/>
-     */
-    class XMPPProperty implements StandardProperty<String> {
-
-        @Override
-        public String fieldName() {
-            return "xmpp-uri";
-        }
-
-        @Override
-        public String getValue(PropFindableResource res) {
-            return "xmpp:romeo@montague.net";
-        }
-
-        @Override
-        public Class<String> getValueClass() {
+        public Class getValueClass() {
             return String.class;
         }
     }
 
-    /*
-     <notification-URL xmlns='http://calendarserver.org/ns/'>
-     <href xmlns='DAV:'>/calendars/__uids__/admin/notification/</href>
-     </notification-URL>
-     */
-    class NotificationsProperty implements StandardProperty<WrappedHref> {
 
-        @Override
-        public String fieldName() {
-            return "notifications-URL";
-        }
-
-        @Override
-        public WrappedHref getValue(PropFindableResource res) {
-            return new WrappedHref("http://localhost:7080/notificationsUrl");
-        }
-
-        @Override
-        public Class<WrappedHref> getValueClass() {
-            return WrappedHref.class;
-        }
-    }
-
-    class NotificationProperty implements StandardProperty<WrappedHref> {
-
-        @Override
-        public String fieldName() {
-            return "notification-URL";
-        }
-
-        @Override
-        public WrappedHref getValue(PropFindableResource res) {
-            return new WrappedHref("http://localhost:7080/notificationUrl");
-        }
-
-        @Override
-        public Class<WrappedHref> getValueClass() {
-            return WrappedHref.class;
-        }
-    }
 
     /**
      * CalendarServer support
@@ -513,6 +452,40 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
             if (res instanceof CalendarResource) {
                 CalendarResource ccol = (CalendarResource) res;
                 ccol.setColor(value);
+            }
+        }
+    }
+
+    class CalendarOrderProperty implements WritableStandardProperty<String> {
+
+        public CalendarOrderProperty() {
+        }
+
+        @Override
+        public String fieldName() {
+            return "calendar-order";
+        }
+
+        @Override
+        public String getValue(PropFindableResource res) {
+            if (res instanceof CalendarResource) {
+                CalendarResource ccol = (CalendarResource) res;
+                return ccol.getCalendarOrder();
+            } else {
+                return null;
+            }
+        }
+
+        @Override
+        public Class getValueClass() {
+            return String.class; // could be an int, i suppose...
+        }
+
+        @Override
+        public void setValue(PropFindableResource res, String value) {
+            if (res instanceof CalendarResource) {
+                CalendarResource ccol = (CalendarResource) res;
+                ccol.setCalendarOrder(value);
             }
         }
     }

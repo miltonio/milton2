@@ -27,6 +27,7 @@ import io.milton.http.values.SupportedCalendarComponentList;
  */
 public interface CalendarResource extends CalendarCollection, PropFindableResource {
 
+
     public enum ComponentType {
         VEVENT,
         VTODO,
@@ -48,5 +49,9 @@ public interface CalendarResource extends CalendarCollection, PropFindableResour
      * @return 
      */
     SupportedCalendarComponentList getSupportedComponentSet();
+    
+    String getCalendarOrder();
+
+    void setCalendarOrder(String value);    
     
 }

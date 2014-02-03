@@ -19,6 +19,9 @@ import io.milton.http.webdav.PropertyMap.StandardProperty;
 import io.milton.http.webdav.WebDavProtocol;
 import io.milton.property.PropertySource;
 import io.milton.http.caldav.PrincipalSearchPropertySetReport;
+import io.milton.http.webdav.PropFindPropertyBuilder;
+import io.milton.http.webdav.PropFindXmlGenerator;
+import io.milton.principal.PrincipalSearchService;
 import io.milton.resource.PropFindableResource;
 import io.milton.resource.Resource;
 import java.util.ArrayList;
@@ -40,7 +43,7 @@ public class ACLProtocol implements HttpExtension, PropertySource {
     private static final Logger log = LoggerFactory.getLogger(ACLProtocol.class);
     private final PropertyMap propertyMap;
 
-    public ACLProtocol(WebDavProtocol webDavProtocol) {
+    public ACLProtocol(WebDavProtocol webDavProtocol, PropFindPropertyBuilder propertyBuilder, PropFindXmlGenerator xmlGenerator, PrincipalSearchService principalSearchService) {
         propertyMap = new PropertyMap(WebDavProtocol.NS_DAV.getName());
         propertyMap.add(new PrincipalUrl());
         propertyMap.add(new PrincipalCollectionSetProperty());
@@ -51,7 +54,7 @@ public class ACLProtocol implements HttpExtension, PropertySource {
         webDavProtocol.addPropertySource(this);
         //Adding supported reports
         webDavProtocol.addReport(new PrincipalSearchPropertySetReport());
-        webDavProtocol.addReport(new PrincipalPropertySearchReport());        
+        webDavProtocol.addReport(new PrincipalPropertySearchReport(propertyBuilder, xmlGenerator, principalSearchService));        
     }
 
     /**

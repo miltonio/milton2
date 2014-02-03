@@ -5,7 +5,6 @@
 
 package io.milton.http.carddav;
 
-import io.milton.http.acl.PrincipalPropertySearchReport;
 import io.milton.principal.CardDavPrincipal;
 import io.milton.http.Auth;
 import io.milton.http.Handler;
@@ -22,7 +21,6 @@ import io.milton.http.exceptions.NotFoundException;
 import io.milton.http.http11.CustomPostHandler;
 import io.milton.http.http11.auth.DigestResponse;
 import io.milton.http.values.HrefList;
-import io.milton.http.values.ValueWriters;
 import io.milton.http.webdav.PropFindXmlGenerator;
 import io.milton.http.webdav.PropertyMap;
 import io.milton.http.webdav.PropertyMap.StandardProperty;
@@ -80,7 +78,6 @@ public class CardDavProtocol implements HttpExtension, PropertySource, WellKnown
         webDavProtocol.addReport(new AddressBookMultiGetReport(resourceFactory, propertyBuilder, gen));
         webDavProtocol.addReport(new AddressBookQueryReport());
         webDavProtocol.addReport(new ExpandPropertyReport(resourceFactory, propertyBuilder, gen));
-        webDavProtocol.addReport(new PrincipalPropertySearchReport());
     }
 
     @Override

@@ -63,4 +63,14 @@ public class AnnoCalendarResource extends AnnoCollectionResource implements Cale
 		return annoFactory.cTagAnnotationHandler.execute(this);
 	}
 
+	@Override
+	public String getCalendarOrder() {
+		return annoFactory.calendarOrderAnnotationHandler.get(this); 
+	}
+
+	@Override
+	public void setCalendarOrder(String value) {
+		annoFactory.calendarOrderAnnotationHandler.set(this, value); 
+	}
+
 }

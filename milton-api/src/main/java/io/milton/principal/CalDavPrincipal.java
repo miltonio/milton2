@@ -76,13 +76,6 @@ public interface CalDavPrincipal extends DiscretePrincipal, PropFindableResource
      */
     HrefList getCalendarUserAddressSet();
 
-    /**
-     * Couldnt find any info about this property. Can only guess what its
-     * supposed to do.
-     *
-     * @return
-     */
-    String getDropBoxUrl();
 
     /**
      * Get the list of supported combinations of component types, or just return
@@ -91,5 +84,20 @@ public interface CalDavPrincipal extends DiscretePrincipal, PropFindableResource
      * @return
      */
     SupportedCalendarComponentListsSet getSupportedComponentSets();
-    
+
+    /**
+     *
+     * See
+     * http://tools.ietf.org/html/draft-desruisseaux-caldav-sched-08#section-13.2.4
+     *
+     * Identifies the calendar user type of the associated principal resource.
+     * Value: Same values allowed for the iCalendar "CUTYPE" property parameter
+     * defined in Section 3.2.3 of [I-D.ietf-calsify-rfc2445bis].
+     * 
+     * Should be one of: INDIVIDUAL, GROUP, RESOURCE, ROOM, UNKNOWN
+     *
+     * @return
+     */
+    String getCalendarUserType();
+
 }

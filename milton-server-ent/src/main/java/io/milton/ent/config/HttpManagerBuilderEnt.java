@@ -9,6 +9,7 @@ import io.milton.config.HttpManagerBuilder;
 import io.milton.http.*;
 import io.milton.http.acl.ACLProtocol;
 import io.milton.http.acl.AccessControlledResourceTypeHelper;
+import io.milton.http.acl.AnnotationsPrincipalSearchService;
 import io.milton.http.annotated.AnnotationResourceFactory;
 import io.milton.http.caldav.AnnotationsCalendarSearchService;
 import io.milton.http.caldav.CalDavProtocol;
@@ -31,6 +32,7 @@ import io.milton.http.webdav2.LockTokenValueWriter;
 import io.milton.http.webdav2.SupportedLockValueWriter;
 import io.milton.http.webdav2.WebDavLevel2Protocol;
 import io.milton.http.webdav2.WebDavLevel2ResourceTypeHelper;
+import io.milton.principal.PrincipalSearchService;
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
@@ -75,8 +77,12 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
     private boolean webdavLevel2Enabled = true;
     private LockManager lockManager = new SimpleLockManager();
     private final ICalFormatter iCalFormatter = new ICalFormatter();
+
     private CalendarSearchService calendarSearchService;
     private AnnotationsCalendarSearchService annotationsCalendarSearchService;
+    
+    private PrincipalSearchService principalSearchService;
+    private AnnotationsPrincipalSearchService annotationsPrincipalSearchService;
     private WellKnownResourceFactory wellKnownResourceFactory;
 
     @Override
@@ -87,10 +93,14 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
             if (arf.getLockManager() == null) {
                 arf.setLockManager(lockManager);
             }
-            if( annotationsCalendarSearchService != null ) {
+            if (annotationsCalendarSearchService != null) {
                 annotationsCalendarSearchService.setAnnotationResourceFactory(arf);
             }
             arf.setCalendarSearchService(calendarSearchService);
+
+            if (annotationsPrincipalSearchService != null) {
+                annotationsPrincipalSearchService.setAnnotationResourceFactory(arf);
+            }
         }
     }
 
@@ -118,7 +128,11 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
                 // instance for non-annotation resources
                 annotationsCalendarSearchService = new AnnotationsCalendarSearchService(c);
                 calendarSearchService = annotationsCalendarSearchService;
-            }            
+            }
+            if( principalSearchService == null ) {
+                annotationsPrincipalSearchService = new AnnotationsPrincipalSearchService();
+                principalSearchService = annotationsPrincipalSearchService;
+            }
             if (enabledCkBrowser) {
                 outerResourceFactory = new FckResourceFactory(outerResourceFactory);
                 log.info("Enabled CK Editor support with: " + outerResourceFactory.getClass());
@@ -150,7 +164,7 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
             Http11Protocol http11Protocol = new Http11Protocol(webdavResponseHandler, handlerHelper, resourceHandlerHelper, enableOptionsAuth, matchHelper, partialGetHelper);
             log.info("Enabled HTTP11 protocol");
             protocols.add(http11Protocol);
-                
+
             initDefaultPropertySources(resourceTypeHelper);
             if (extraPropertySources != null) {
                 for (PropertySource ps : extraPropertySources) {
@@ -161,7 +175,6 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
             if (propPatchSetter == null) {
                 propPatchSetter = new PropertySourcePatchSetter(propertySources);
             }
-
 
             initWebdavProtocol();
             if (webDavProtocol != null) {
@@ -183,7 +196,7 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
                 }
             }
 
-            if (calDavProtocol == null && caldavEnabled) {                
+            if (calDavProtocol == null && caldavEnabled) {
                 calDavProtocol = new CalDavProtocol(outerResourceFactory, webdavResponseHandler, handlerHelper, webDavProtocol, propFindXmlGenerator, propFindPropertyBuilder(), calendarSearchService);
             }
             if (calDavProtocol != null) {
@@ -191,8 +204,8 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
                 protocols.add(calDavProtocol);
             }
 
-            if (aclProtocol == null && aclEnabled) {                
-                aclProtocol = new ACLProtocol(webDavProtocol);
+            if (aclProtocol == null && aclEnabled) {
+                aclProtocol = new ACLProtocol(webDavProtocol, propFindPropertyBuilder(), propFindXmlGenerator, principalSearchService);
             }
             if (aclProtocol != null) {
                 log.info("Enaled ACL Protocol");
@@ -321,4 +334,5 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
     public void setLockManager(LockManager lockManager) {
         this.lockManager = lockManager;
     }
+
 }

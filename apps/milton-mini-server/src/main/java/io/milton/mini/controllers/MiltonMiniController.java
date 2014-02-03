@@ -126,13 +126,26 @@ public class MiltonMiniController implements InitListener {
         }
         return null;
     }
+     
 
     @Get
     public String showLoginPage(LoginPage p) {
-        System.out.println("show login page");
         return "login";
     }
 
+    @ChildOf
+    public ScratchPage getScratchPage(MiltonMiniController root, String name) {
+        if (name.equals("scratch.html")) {
+            return new ScratchPage(name);
+        }
+        return null;
+    }  
+    
+    @Get
+    public String showScratchPage(ScratchPage p) {
+        return "scratch";
+    }    
+    
     @ChildrenOf
     public UsersHome getUsersHome(MiltonMiniController root) {
         return new UsersHome();
@@ -372,6 +385,19 @@ public class MiltonMiniController implements InitListener {
             return "login.html";
         }
     }
+    
+    public class ScratchPage {
+
+        private String name;
+
+        public ScratchPage(String name) {
+            this.name = name;
+        }
+                        
+        public String getName() {
+            return "name";
+        }
+    }    
 
     public class RepoHome {
 

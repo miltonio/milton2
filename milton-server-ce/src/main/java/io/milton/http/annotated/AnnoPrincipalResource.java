@@ -40,6 +40,7 @@ public class AnnoPrincipalResource extends AnnoCollectionResource implements Dis
 
 	private static final Logger log = LoggerFactory.getLogger(AnnoPrincipalResource.class);
 	private String email;
+	private String cuType;
 
 	public AnnoPrincipalResource(AnnotationResourceFactory outer, Object source, AnnoCollectionResource parent) {
 		super(outer, source, parent);
@@ -133,11 +134,6 @@ public class AnnoPrincipalResource extends AnnoCollectionResource implements Dis
 	}
 
 	@Override
-	public String getDropBoxUrl() {
-		return null;
-	}
-
-	@Override
 	public SupportedCalendarComponentListsSet getSupportedComponentSets() {
 		return annoFactory.supportedComponentSets.get(this);
 	}
@@ -155,5 +151,13 @@ public class AnnoPrincipalResource extends AnnoCollectionResource implements Dis
 			}
 		}
 		return email;
+	}
+
+	@Override
+	public String getCalendarUserType() {
+		if (cuType == null) {
+			cuType = annoFactory.calendarUserTypeAnnotationHandler.get(this);
+		}
+		return cuType;
 	}
 }

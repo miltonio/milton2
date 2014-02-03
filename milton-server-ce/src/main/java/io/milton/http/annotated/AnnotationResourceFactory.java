@@ -26,6 +26,8 @@ import io.milton.annotations.CalendarColor;
 import io.milton.annotations.CalendarDateRangeQuery;
 import io.milton.annotations.CalendarInvitations;
 import io.milton.annotations.CalendarInvitationsCTag;
+import io.milton.annotations.CalendarOrder;
+import io.milton.annotations.CalendarUserType;
 import io.milton.annotations.Calendars;
 import io.milton.annotations.ChildOf;
 import io.milton.annotations.ChildrenOf;
@@ -145,6 +147,8 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	CommonPropertyAnnotationHandler<Long> maxAgeAnnotationHandler = new CommonPropertyAnnotationHandler<Long>(MaxAge.class, this, "maxAge");
 	CommonPropertyAnnotationHandler<String> uniqueIdAnnotationHandler = new CommonPropertyAnnotationHandler<String>(UniqueId.class, this, "id");
 	CommonPropertyAnnotationHandler<String> calendarColorAnnotationHandler = new CommonPropertyAnnotationHandler<String>(CalendarColor.class, this, "color");
+	CommonPropertyAnnotationHandler<String> calendarOrderAnnotationHandler = new CommonPropertyAnnotationHandler<String>(CalendarOrder.class, this, "order");
+	CommonPropertyAnnotationHandler<String> calendarUserTypeAnnotationHandler = new CommonPropertyAnnotationHandler<String>(CalendarUserType.class, this, "calendarUserType", "cuType");
 	CalendarDateRangeQueryAnnotationHandler calendarDateRangeQueryAnnotationHandler = new CalendarDateRangeQueryAnnotationHandler(this);
 	FreeBusyQueryAnnotationHandler freeBusyQueryAnnotationHandler = new FreeBusyQueryAnnotationHandler(this);
 	CalendarInvitationsAnnotationHandler calendarInvitationsAnnotationHandler = new CalendarInvitationsAnnotationHandler(this);
@@ -183,6 +187,8 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		mapOfAnnotationHandlers.put(CTag.class, cTagAnnotationHandler);
 		mapOfAnnotationHandlers.put(ICalData.class, iCalDataAnnotationHandler);
 		mapOfAnnotationHandlers.put(CalendarColor.class, calendarColorAnnotationHandler);
+		mapOfAnnotationHandlers.put(CalendarColor.class, calendarOrderAnnotationHandler);
+		mapOfAnnotationHandlers.put(CalendarUserType.class, calendarUserTypeAnnotationHandler);		
 		mapOfAnnotationHandlers.put(ContactData.class, contactDataAnnotationHandler);
 
 		mapOfAnnotationHandlers.put(CalendarDateRangeQuery.class, calendarDateRangeQueryAnnotationHandler);
@@ -295,8 +301,6 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	public void setCalendarSearchService(CalendarSearchService calendarSearchService) {
 		this.calendarSearchService = calendarSearchService;
 	}
-	
-	
 
 	/**
 	 * If true authentication will be attempted as soon as the root resource is
@@ -611,11 +615,11 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		if (authenticateAnnotationHandler.canAuthenticate(childSource)) {
 			return new AnnoPrincipalResource(this, childSource, parent);
 		}
-		if( parent instanceof AnnoPrincipalResource) {
+		if (parent instanceof AnnoPrincipalResource) {
 			// Check for a Calendars method which takes this source as first arg
-			if( calendarsAnnotationHandler.isCompatible(childSource)) {
+			if (calendarsAnnotationHandler.isCompatible(childSource)) {
 				AnnoPrincipalResource p = (AnnoPrincipalResource) parent;
-				return new AnnoCalendarHomeResource(this, childSource, p, calendarSearchService); 
+				return new AnnoCalendarHomeResource(this, childSource, p, calendarSearchService);
 			}
 		}
 		if (m.getAnnotation(Calendars.class) != null) {
@@ -858,4 +862,10 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	public FreeBusyQueryAnnotationHandler getFreeBusyQueryAnnotationHandler() {
 		return freeBusyQueryAnnotationHandler;
 	}
+
+	public UsersAnnotationHandler getUsersAnnotationHandler() {
+		return usersAnnotationHandler;
+	}
+	
+	
 }
