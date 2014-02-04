@@ -28,7 +28,7 @@ public class PrincipalSearchPropertySetReport implements Report {
 	public String process(String host, String path, Resource r, Document doc) {
 		System.out.println("XXXXXXXXXXXXXXX NOT IMPLEMENTED XXXXXXXXXXXXXXXXXXXXXXx");
 		log.debug("process");
-		return "\n<?xml version='1.0' encoding='UTF-8'?>\n"
+		return "<?xml version='1.0' encoding='UTF-8'?>\n"
 				+ "<principal-search-property-set xmlns='DAV:'>\n"
 				+ "<principal-search-property>\n"
 				+ "<prop>\n"

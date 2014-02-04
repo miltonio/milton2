@@ -99,11 +99,11 @@ public class CalendarController {
         if (user.getAttendeeRequests() != null) {
             for (AttendeeRequest ar : user.getAttendeeRequests()) {
 //                if (!ar.isAcknowledged()) {
-                    list.add(ar);
+                list.add(ar);
 //                }
             }
         }
-        
+
         ModelAndView mav = new ModelAndView("invites", list, "calendarsHome");
         String inboxCtag = calendarService.getCalendarInvitationsCTag(user);
         mav.getModel().put("inboxCtag", inboxCtag);
@@ -299,7 +299,7 @@ public class CalendarController {
                     }
                     String oldCalText = calendarService.formatIcal(oldCal);
                     System.out.println("OLD CAL-----------");
-                    System.out.println(oldCalText);                    
+                    System.out.println(oldCalText);
                     String newIcal = calendarService.updateIcalText(updated, oldCal);
                     System.out.println("NEW CAL --------");
                     System.out.println(newIcal);
@@ -321,7 +321,9 @@ public class CalendarController {
         calendarService.delete(event);
         DataSession ds = dataSessionManager.get(request, calendar, true, principal);
         DataSession.FileNode fileNode = (DataSession.FileNode) ds.getRootDataNode().get(event.getName());
-        fileNode.delete();
+        if (fileNode != null) {
+            fileNode.delete();
+        }
         ds.save(principal);
         session.flush();
     }

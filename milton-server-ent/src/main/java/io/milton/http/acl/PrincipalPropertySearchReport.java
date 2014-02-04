@@ -130,7 +130,7 @@ public class PrincipalPropertySearchReport implements Report {
         }
 
         String xml = xmlGenerator.generate(respProps);
-        
+        System.out.println(xml);
         return xml;
     }
 

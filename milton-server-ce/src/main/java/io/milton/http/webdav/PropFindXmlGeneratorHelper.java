@@ -85,19 +85,19 @@ public class PropFindXmlGeneratorHelper {
 		return decs;
 	}
 
-	void appendResponses(XmlWriter writer, List<PropFindResponse> propFindResponses, Map<String, String> mapOfNamespaces) {
+	void appendResponses(XmlWriter writer, List<PropFindResponse> propFindResponses, Map<String, String> mapOfNamespaces,  boolean writeErrorProps) {
 		//            log.debug( "appendResponses: " + propFindResponses.size() );
 		for (PropFindResponse r : propFindResponses) {
-			appendResponse(writer, r, mapOfNamespaces);
+			appendResponse(writer, r, mapOfNamespaces, writeErrorProps);
 		}
 	}
 
-	public void appendResponse(XmlWriter writer, PropFindResponse r, Map<String, String> mapOfNamespaces) {
+	public void appendResponse(XmlWriter writer, PropFindResponse r, Map<String, String> mapOfNamespaces, boolean writeErrorProps) {
 		XmlWriter.Element el = writer.begin(WebDavProtocol.NS_DAV.getPrefix(), "response");
 		el.open();
 		writer.writeProperty(WebDavProtocol.NS_DAV.getPrefix(), "href", r.getHref());
 		sendKnownProperties(writer, mapOfNamespaces, r.getKnownProperties(), r.getHref());
-		if (r.getErrorProperties() != null) {
+		if (r.getErrorProperties() != null && writeErrorProps) {
 			for (Status status : r.getErrorProperties().keySet()) {
 				List<NameAndError> props = r.getErrorProperties().get(status);
 				sendErrorProperties(status, writer, mapOfNamespaces, props);

@@ -33,7 +33,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <c:forEach items="${model.page.children.getSortByName()}" var="event">    
+                                <c:forEach items="${model.page.resourceList.getSortByName()}" var="event">    
                                     <tr>
                                         <td>${event.link}</td>
                                         <td>${event.source.startDate}</td>

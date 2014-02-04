@@ -19,7 +19,7 @@
                         </h1>
                     </div>
                     <ul>
-                        <c:forEach items="${model.page.children.getSortByName()}" var="repo">    
+                        <c:forEach items="${model.page.resourceList.getSortByName()}" var="repo">    
                             <li>${repo.link}</li>
                         </c:forEach>                        
                     </ul>

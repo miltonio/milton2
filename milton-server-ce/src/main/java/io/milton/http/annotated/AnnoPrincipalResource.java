@@ -158,6 +158,9 @@ public class AnnoPrincipalResource extends AnnoCollectionResource implements Dis
 		if (cuType == null) {
 			cuType = annoFactory.calendarUserTypeAnnotationHandler.get(this);
 		}
+		if( cuType == null ) {
+			cuType = "INDIVIDUAL";
+		}
 		return cuType;
 	}
 }

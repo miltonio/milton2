@@ -19,6 +19,8 @@
 
 package io.milton.http.values;
 
+import io.milton.http.HttpManager;
+import io.milton.http.Request;
 import io.milton.http.XmlWriter;
 import io.milton.http.XmlWriter.Element;
 import io.milton.http.webdav.PropFindResponse;
@@ -45,11 +47,17 @@ public class PropFindResponseListWriter  implements ValueWriter {
 
 	@Override
 	public void writeValue(XmlWriter writer, String nsUri, String prefix, String localName, Object val, String href, Map<String, String> nsPrefixes) {
+		boolean writeErrorProps = true;
+		Request req = HttpManager.request();
+		if( req != null ) {
+			writeErrorProps = isBriefHeader(req);
+		}
+		
 		Element outerEl = writer.begin(prefix, localName).open();
 		PropFindResponseList list = (PropFindResponseList) val;
 		if (list != null) {
 			for (PropFindResponse s : list) {
-				propFindXmlGeneratorHelper.appendResponse(writer, s, nsPrefixes);
+				propFindXmlGeneratorHelper.appendResponse(writer, s, nsPrefixes, writeErrorProps);
 			}
 		}
 		outerEl.close();
@@ -59,4 +67,9 @@ public class PropFindResponseListWriter  implements ValueWriter {
 	public Object parse(String namespaceURI, String localPart, String value) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
+		
+	private boolean isBriefHeader(Request request) {
+		String b = request.getHeaders().get("Brief");
+		return "t".equals(b);
+	}		
 }

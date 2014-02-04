@@ -193,7 +193,8 @@ public class DefaultWebDavResponseHandler implements WebDavResponseHandler, Buff
 		OutputStream outputStream = response.getOutputStream();
 		try {
 			ByteArrayOutputStream bout = new ByteArrayOutputStream();
-			propFindXmlGenerator.generate(propFindResponses, bout);
+			boolean sendErrorProps = !isBriefHeader(request);
+			propFindXmlGenerator.generate(propFindResponses, bout, sendErrorProps);
 			if( log.isTraceEnabled()) {
 				log.trace("Propfind response ----");
 				log.trace(bout.toString());
@@ -243,5 +244,10 @@ public class DefaultWebDavResponseHandler implements WebDavResponseHandler, Buff
 		} else {
 			throw new RuntimeException("Wrapped class is not a known type");
 		}
+	}
+
+	private boolean isBriefHeader(Request request) {
+		String b = request.getHeaders().get("Brief");
+		return "t".equals(b);
 	}
 }

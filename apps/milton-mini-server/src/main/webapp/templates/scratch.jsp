@@ -25,12 +25,10 @@
                         <hr/>
                         Example input
                         <br/>
-                        <textarea style="width: 100%" rows="3">
-<?xml version="1.0" encoding="utf-8"?><D:propfind xmlns:D="DAV:"><D:prop><D:current-user-principal/></D:prop></D:propfind>
+                        <textarea style="width: 100%" rows="3"><?xml version="1.0" encoding="utf-8"?><D:propfind xmlns:D="DAV:"><D:prop><D:current-user-principal/></D:prop></D:propfind>
                         </textarea>       
                         
-                        <textarea style="width: 100%" rows="3">
-   <?xml version="1.0" encoding="utf-8" ?>
+                        <textarea style="width: 100%" rows="3"><?xml version="1.0" encoding="utf-8" ?>
    <D:principal-property-search xmlns:D="DAV:">
      <D:property-search>
        <D:prop>
@@ -47,6 +45,10 @@
      </D:prop>
    </D:principal-property-search>                            
                         </textarea>
+<textarea style="width: 100%" rows="3"><?xml version="1.0" encoding="utf-8" ?>
+   <D:principal-property-search-set xmlns:D="DAV:">
+   </D:principal-property-search-set>
+                        </textarea>                        
                     </div>
 
                 </div>

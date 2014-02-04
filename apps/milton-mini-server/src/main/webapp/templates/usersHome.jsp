@@ -20,7 +20,7 @@
                         </h1>
                         <p>Here are all the users in our database</p>
                         <ul>
-                            <c:forEach items="${model.page.children.getSortByName()}" var="user">    
+                            <c:forEach items="${model.page.resourceList.getSortByName()}" var="user">    
                                 <li>${user.link}</li>
                             </c:forEach>
                         </ul>

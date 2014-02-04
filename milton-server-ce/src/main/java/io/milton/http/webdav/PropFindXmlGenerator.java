@@ -20,6 +20,7 @@
 package io.milton.http.webdav;
 
 import io.milton.http.HttpManager;
+import io.milton.http.Request;
 import io.milton.http.XmlWriter;
 import io.milton.http.values.ValueWriters;
 import java.io.OutputStream;
@@ -48,21 +49,28 @@ public class PropFindXmlGenerator {
     }
 
 	
-	public void generate( List<PropFindResponse> propFindResponses, OutputStream responseOutput ) {
+	public void generate( List<PropFindResponse> propFindResponses, OutputStream responseOutput,  boolean writeErrorProps ) {
         Map<String, String> mapOfNamespaces = helper.findNameSpaces( propFindResponses );
         XmlWriter writer = new XmlWriter( responseOutput );
         writer.writeXMLHeader();
         writer.open(WebDavProtocol.NS_DAV.getPrefix() ,"multistatus" + helper.generateNamespaceDeclarations( mapOfNamespaces ) );
         writer.newLine();
-        helper.appendResponses( writer, propFindResponses, mapOfNamespaces );
+        helper.appendResponses( writer, propFindResponses, mapOfNamespaces, writeErrorProps );
         writer.close(WebDavProtocol.NS_DAV.getPrefix(),"multistatus" );
         writer.flush();
 	}
 	
     public String generate( List<PropFindResponse> propFindResponses ) {
+		
+		boolean writeErrorProps = true;
+		Request req = HttpManager.request();
+		if( req != null ) {
+			writeErrorProps = isBriefHeader(req);
+		}
+		
         ByteArrayOutputStream responseOutput = new ByteArrayOutputStream();
 		
-		generate(propFindResponses, responseOutput);
+		generate(propFindResponses, responseOutput, writeErrorProps);
 		
         Map<String, String> mapOfNamespaces = helper.findNameSpaces( propFindResponses );
         ByteArrayOutputStream generatedXml = new ByteArrayOutputStream();
@@ -70,7 +78,7 @@ public class PropFindXmlGenerator {
         writer.writeXMLHeader();
         writer.open(WebDavProtocol.NS_DAV.getPrefix() ,"multistatus" + helper.generateNamespaceDeclarations( mapOfNamespaces ) );
         writer.newLine();
-        helper.appendResponses( writer, propFindResponses, mapOfNamespaces );
+        helper.appendResponses( writer, propFindResponses, mapOfNamespaces, writeErrorProps );
         writer.close(WebDavProtocol.NS_DAV.getPrefix(),"multistatus" );
         writer.flush();
 		if(log.isTraceEnabled()) {
@@ -85,4 +93,9 @@ public class PropFindXmlGenerator {
             throw new RuntimeException( ex );
         }
     }
+	
+	private boolean isBriefHeader(Request request) {
+		String b = request.getHeaders().get("Brief");
+		return "t".equals(b);
+	}	
 }
