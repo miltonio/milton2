@@ -88,6 +88,7 @@ public class CalendarResourceTypeHelper implements ResourceTypeHelper {
 //        if (r instanceof CalendarResource) {
         LockUtils.add(list, "3");
         LockUtils.add(list, "calendar-access");
+        LockUtils.add(list, "calendarserver-principal-property-search");
 
         // if present (but not actually implemented) causes problems with thunderbird
         LockUtils.add(list, "calendar-schedule");
