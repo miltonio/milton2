@@ -54,14 +54,12 @@ public class PlanetResource extends AbstractResource implements GetableResource,
         this.planet = planet;
     }
 
-    @Override
     public void delete() throws NotAuthorizedException, ConflictException, BadRequestException {
         parent.getSolarSystem().getPlanets().remove(planet);
     }
 
     
     
-    @Override
     public void copyTo(CollectionResource toCollection, String name) throws NotAuthorizedException, BadRequestException, ConflictException {
         if( toCollection instanceof SolarSystemResource ) {
             throw new BadRequestException("Can only copy planet to a SolarSystemResource folder. Current parent=" +parent.getName() + " dest parent=" + toCollection.getName());
@@ -74,7 +72,6 @@ public class PlanetResource extends AbstractResource implements GetableResource,
     }
 
     
-    @Override
     public void sendContent(OutputStream out, Range range, Map<String, String> params, String contentType) throws IOException {
         Properties props = new Properties();
         if( planet.getType() == null ) {
@@ -87,7 +84,6 @@ public class PlanetResource extends AbstractResource implements GetableResource,
         props.store(out, null);
     }
 
-    @Override
     public void replaceContent(InputStream in, Long length) throws BadRequestException, ConflictException, NotAuthorizedException {
         Properties props = new Properties();
         try {
@@ -100,22 +96,18 @@ public class PlanetResource extends AbstractResource implements GetableResource,
         }        
     }    
     
-    @Override
     public Long getContentLength() {
         return null;
     }
 
-    @Override
     public String getContentType(String accept) {
         return "text/plain";
     }
 
-    @Override
     public String getName() {
         return planet.getName();
     }
 
-    @Override
     public Long getMaxAgeSeconds(Auth auth) {
         return null;
     }
@@ -131,7 +123,6 @@ public class PlanetResource extends AbstractResource implements GetableResource,
         return Integer.parseInt(s);
     }
 
-    @Override
     public void moveTo(CollectionResource rDest, String newName) throws ConflictException, NotAuthorizedException, BadRequestException {
         if( rDest != parent ) {
             throw new BadRequestException("Cant move planet to a different folder. Current parent=" +parent.getName() + " dest parent=" + rDest.getName());

@@ -44,3 +44,7 @@
 /examples/milton-spring-fs/target/
 /apps/milton-mini-server/target/
 /external/alertify.js/target/
+/examples/eclipse-tut-1/.classpath
+/examples/eclipse-tut-1/.project
+
+/examples/eclipse-tut-1/.settings/.jsdtscope

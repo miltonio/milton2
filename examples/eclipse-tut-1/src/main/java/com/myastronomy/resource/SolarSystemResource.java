@@ -47,7 +47,6 @@ public class SolarSystemResource extends AbstractResource implements CollectionR
         this.solarSystem = solarSystem;
     }
 
-    @Override
     public Resource createNew(String newName, InputStream inputStream, Long length, String contentType) throws IOException, ConflictException, NotAuthorizedException, BadRequestException {
         Planet p = solarSystem.addPlanet(newName);
         PlanetResource r = new PlanetResource(this, p);
@@ -55,7 +54,6 @@ public class SolarSystemResource extends AbstractResource implements CollectionR
         return r;
     }    
     
-    @Override
     public List<? extends Resource> getChildren() {
         if( children == null ) {
             children = new ArrayList<Resource>();
@@ -67,17 +65,14 @@ public class SolarSystemResource extends AbstractResource implements CollectionR
     }
 
 
-    @Override
     public Resource child(String childName) {
         return ChildUtils.child(childName, getChildren());
     }
 
-    @Override
     public String getName() {
         return solarSystem.getName();
     }
     
-    @Override
     public void moveTo(CollectionResource rDest, String newName) throws ConflictException, NotAuthorizedException, BadRequestException {
         if( rDest != parent ) {
             throw new BadRequestException("Cant move galaxy to a different folder. Current parent=" +parent.getName() + " dest parent=" + rDest.getName());
