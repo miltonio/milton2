@@ -143,6 +143,9 @@ public class SchedulingController {
                             er.setSummary(er.getSummary());
                             er.setUniqueId(er.getUniqueId());
                             list.add(er);
+                            log.info("** INSIDE: " + event.getSummary());
+                        } else {
+                            log.info("Outside dates: " + event.getSummary());
                         }
                     }
                 }

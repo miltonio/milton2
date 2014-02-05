@@ -371,7 +371,7 @@ public class CalendarService {
 
     public net.fortuna.ical4j.model.Calendar getCalendar(CalEvent calEvent) {
         net.fortuna.ical4j.model.Calendar calendar = new net.fortuna.ical4j.model.Calendar();
-        calendar.getProperties().add(new ProdId("-//spliffy.org//iCal4j 1.0//EN"));
+        calendar.getProperties().add(new ProdId("-//milton.io//iCal4j 1.0//EN"));
         calendar.getProperties().add(Version.VERSION_2_0);
         //calendar.getProperties().add(CalScale.GREGORIAN);
         TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();

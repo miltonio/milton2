@@ -15,9 +15,7 @@
 package io.milton.http.annotated;
 
 import io.milton.annotations.FreeBusyQuery;
-import io.milton.resource.ICalResource;
 import io.milton.resource.SchedulingResponseItem;
-import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

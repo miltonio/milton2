@@ -88,6 +88,10 @@ public class MultiGetReport implements Report {
         }
 
         String xml = xmlGenerator.generate(respProps);
+        if(log.isTraceEnabled()) {
+            log.trace("calendar-multiget: response");
+            log.trace(xml);
+        }
         return xml;
     }
 

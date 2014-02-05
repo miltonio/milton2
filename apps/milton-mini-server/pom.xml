@@ -54,7 +54,7 @@
         <dependency>
             <groupId>org.mnode.ical4j</groupId>
             <artifactId>ical4j</artifactId>
-            <version>1.0.2</version>
+            <version>1.0.5.2</version>
         </dependency>        
         <!-- For connection pooling, see http://jolbox.com/index.html?page=http://jolbox.com/benchmarks.html  -->
         <dependency>

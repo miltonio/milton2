@@ -209,7 +209,8 @@ public class ICalFormatter {
         Map<String, String> source = request.getLines();
         StringBuilder sb = new StringBuilder();
         sb.append("BEGIN:VCALENDAR\n");
-        sb.append("VERSION:2.0 PRODID:-//milton.io//CalDAV Server//EN\n");
+        sb.append("VERSION:2.0\n");
+        sb.append("PRODID:-//milton.io//CalDAV Server//EN\n");
         sb.append("METHOD:REPLY\n");
         sb.append("BEGIN:VFREEBUSY\n");
         // Copy these lines back verbatim
