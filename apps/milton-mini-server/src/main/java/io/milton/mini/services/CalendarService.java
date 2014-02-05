@@ -93,7 +93,20 @@ public class CalendarService {
                             attendeeReq.setParticipationStatus(pPartStat.getValue());
                             session.save(attendeeReq);
                             
-                            if( attendeeReq.getParticipationStatus().equals(AttendeeRequest.PARTSTAT_ACCEPTED)) {
+                            if( attendeeReq.getParticipationStatus().equals(AttendeeRequest.PARTSTAT_DECLINED)) {
+                                // Declined, so remove event from attendee if previously created
+                                CalEvent e = attendeeReq.getAttendeeEvent();
+                                if( e != null ) {
+                                    log.info("delete event");
+                                    e.delete(session);
+                                }                                
+                            } else if( attendeeReq.getParticipationStatus().equals(AttendeeRequest.PARTSTAT_NEEDS_ACTION ) ) {
+                                CalEvent e = attendeeReq.getAttendeeEvent();
+                                if( e != null ) {
+                                    log.info("delete event");
+                                    e.delete(session);
+                                }                                 
+                            } else {
                                 CalEvent e = attendeeReq.getAttendeeEvent();
                                 if( e == null ) {
                                     log.info("add event");
@@ -108,14 +121,7 @@ public class CalendarService {
                                     session.save(attendeeReq);
                                 }
                                 return e;
-                            } else if( attendeeReq.getParticipationStatus().equals(AttendeeRequest.PARTSTAT_TENTATIVE)) {
-                            } else if( attendeeReq.getParticipationStatus().equals(AttendeeRequest.PARTSTAT_ACCEPTED)) {
-                            } else {
-                                CalEvent e = attendeeReq.getAttendeeEvent();
-                                if( e != null ) {
-                                    log.info("delete event");
-                                    e.delete(session);
-                                }
+
                             }
                         }
                     }

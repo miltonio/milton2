@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.milton.apps</groupId>
     <artifactId>milton-mini-server</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>war</packaging>
 
 
@@ -11,7 +11,19 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <milton.version>2.6.0.0</milton.version>
     </properties>
-
+    
+    <distributionManagement>
+        <repository>
+            <id>ettrema-repo</id>
+            <url>http://milton.io/maven/</url>
+        </repository>
+        <snapshotRepository>
+            <uniqueVersion>false</uniqueVersion>
+            <id>ettrema-repo</id>
+            <url>http://milton.io/maven/</url>
+        </snapshotRepository>
+    </distributionManagement>
+    
     <repositories>
         <repository>
             <id>milton-repo</id>
@@ -214,5 +226,5 @@
                 </plugins>
             </build>         
         </profile>                                                      
-    </profiles>     
+    </profiles>       
 </project>

@@ -94,9 +94,17 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 						i = isParamMatch(params, cm.anno);
 						if (i >= 0) {
 							score += i;
+							score = score + SpecificityUtils.sourceSpecifityIndex(cm.sourceType, sourceClass);
 							if (score > foundMethodScore) {
 								foundMethod = cm;
 								foundMethodScore = score;
+								if(log.isTraceEnabled()) {
+									log.trace("Found high score method: " + cm + " with score: " + foundMethod);
+								}
+							} else {
+								if( log.isTraceEnabled() ) {
+									log.trace("Not using method: " + cm + " because score:" + score + " is lower then best: " + foundMethodScore);
+								}
 							}
 						}
 					}
@@ -110,6 +118,7 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 	/**
 	 * Locate a ControllerMethod which can create an object of the given type
 	 * (may be null) in the given parent
+	 * @param parent
 	 *
 	 * @param type - final segment of the class name to be created, or null. Eg
 	 * to create com.mycompany.Customer use "Customer"
