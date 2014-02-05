@@ -32,12 +32,14 @@ import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.exceptions.NotFoundException;
 import io.milton.principal.CalDavPrincipal;
 import io.milton.resource.PostableResource;
+import io.milton.resource.PropFindableResource;
 import io.milton.resource.Resource;
 import io.milton.resource.SchedulingResponseItem;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.io.IOUtils;
@@ -156,7 +158,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author brad
  */
-public class SchedulingOutboxResource extends BaseSchedulingResource implements PostableResource {
+public class SchedulingOutboxResource extends BaseSchedulingResource implements PostableResource, PropFindableResource {
 
     private static final Logger log = LoggerFactory.getLogger(SchedulingOutboxResource.class);
     private final SchedulingXmlHelper schedulingHelper = new SchedulingXmlHelper();
@@ -265,4 +267,9 @@ public class SchedulingOutboxResource extends BaseSchedulingResource implements 
             return principal.authorise(request, method, auth);
         }
     }
+
+	@Override
+	public Date getCreateDate() {
+		return null;
+	}
 }

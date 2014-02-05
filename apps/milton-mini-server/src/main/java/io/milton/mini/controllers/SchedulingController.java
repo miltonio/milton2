@@ -90,7 +90,7 @@ public class SchedulingController {
     @CalendarInvitations
     public List<AttendeeRequest> getAttendeeRequests(Profile user) {  
         log.info("getAttendeeRequests: " + user.getName());
-        return calendarService.getAttendeeRequests(user);
+        return calendarService.getAttendeeRequests(user, false);
     }
     
     @CalendarInvitationsCTag    

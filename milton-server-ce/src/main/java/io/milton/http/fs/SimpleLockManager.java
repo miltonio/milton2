@@ -126,6 +126,13 @@ public class SimpleLockManager implements LockManager {
 
 	@Override
     public LockToken getCurrentToken( LockableResource r ) {
+		if( r == null ) {
+			return null;
+		}
+		if( r.getUniqueId() == null ) {
+			log.warn("No uniqueID for resource: " + r.getName() + " :: " + r.getClass());
+			return null;
+		}
         CurrentLock lock = locksByUniqueId.get( r.getUniqueId() );
         if( lock == null ) return null;
         LockToken token = new LockToken();

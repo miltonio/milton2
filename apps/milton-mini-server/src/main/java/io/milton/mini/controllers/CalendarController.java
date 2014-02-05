@@ -142,7 +142,10 @@ public class CalendarController {
         if (currentUser == null) {
             throw new NotAuthorizedException(null);
         }
+        Session session = SessionManager.session();
         Calendar newCal = calendarsHome.user.newCalendar(name, currentUser, SessionManager.session());
+        newCal.setTitle(name);
+        session.save(newCal);
         return newCal;
     }
 
@@ -177,12 +180,19 @@ public class CalendarController {
     @ChildrenOf(override = true)
     public List<CalEvent> getEvents(Calendar calendar, Request request) {
         List<CalEvent> events = calendar.getEvents();
-        if (events != null) {
-            System.out.println("events: " + events.size());
-        } else {
-            System.out.println("null events!");
-        }
         return events;
+    }
+
+    @ChildrenOf(override = true)
+    public List<AttendeeRequest> getAttendeeRequests(Calendar calendar, Request request) {
+        if (calendar.defaultCal()) {
+            try {
+                Profile user = (Profile) calendar.getBaseEntity();
+                return calendarService.getAttendeeRequests(user);
+            } catch (ClassCastException e) {
+            }
+        }
+        return null;
     }
 
     @ChildOf(pathSuffix = "new")
@@ -224,17 +234,38 @@ public class CalendarController {
                 fileNode.writeContent(out, range.getStart(), range.getFinish());
             }
         } else {
-            String s = calendarService.getCalendar(event);
+            String s = calendarService.getCalendarICal(event);
             out.write(s.getBytes(StringUtils.UTF8));
         }
     }
 
     @Get
     @ICalData
-    public void getAttendeeRequestIcal(AttendeeRequest event, Request request, OutputStream out, Range range) throws IOException {
-        CalEvent orgEvent = event.getOrganiserEvent();
-        Calendar calendar = orgEvent.getCalendar();
-        getEventIcal(orgEvent, calendar, request, out, range);
+    public void getAttendeeRequestIcal(AttendeeRequest attendeeRequest, Request request, OutputStream out, Range range) throws IOException {
+        String s = calendarService.getInviteICal(attendeeRequest);
+        out.write(s.getBytes(StringUtils.UTF8));
+    }
+
+    /**
+     * Called on a PUT to an AttendeeRequest, which is typically when the user
+     * is responding that they are attending or not
+     *
+     * @param attendeeReq
+     * @param request
+     */
+    @PutChild
+    public Object respondToAttendanceInvite(AttendeeRequest attendeeReq, Calendar calendar, Request request, InputStream inputStream) throws IOException, ParserException {
+        log.info("respondToAttendanceInvite");
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        IOUtils.copy(inputStream, bout);
+        System.out.println(bout.toString());
+        net.fortuna.ical4j.model.Calendar cal = calendarService.parse(new ByteArrayInputStream(bout.toByteArray()));
+        CalEvent newEvent = calendarService.processResponse(attendeeReq, calendar, cal, SessionManager.session());
+        if (newEvent != null) {
+            return newEvent;
+        } else {
+            return attendeeReq;
+        }
     }
 
     @PutChild
@@ -246,9 +277,6 @@ public class CalendarController {
         final DataSession ds = dataSessionManager.get(request, calendar, true, principal);
 
         String icalData = bout.toString(StringUtils.UTF8.name());
-//        System.out.println("new ical --- " + newName);
-//        System.out.println(icalData);
-//        System.out.println("---");
         CalEvent newEvent = calendarService.createEvent(calendar, newName, icalData, new CalendarService.UpdatedEventCallback() {
             @Override
             public void updated(String updatedIcal, CalEvent e) throws IOException {
@@ -280,6 +308,18 @@ public class CalendarController {
 
         String icalData = bout.toString(StringUtils.UTF8.name());
         calendarService.update(event, icalData, new CalendarService.UpdatedAttendeeCallback() {
+
+            @Override
+            public void deleted(CalEvent deleted) throws IOException {
+                log.info("deleted: " + deleted.getName() + " - " + deleted.getSummary());
+                Calendar calAttendee = deleted.getCalendar();
+                DataSession ds = dataSessionManager.get(request, calAttendee, true, principal);
+                DataSession.FileNode newFileNode = (DataSession.FileNode) ds.getRootDataNode().get(deleted.getName());
+                if (newFileNode != null) { // usually should be null
+                    newFileNode.delete();
+                    ds.save(principal);
+                }
+            }
 
             @Override
             public void updated(CalEvent updated) throws IOException {

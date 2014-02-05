@@ -40,14 +40,21 @@ import org.slf4j.LoggerFactory;
 import io.milton.vfs.db.Calendar;
 import io.milton.vfs.db.Profile;
 import io.milton.vfs.db.utils.SessionManager;
+import java.net.URI;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
 import java.util.List;
+import net.fortuna.ical4j.model.parameter.Cn;
+import net.fortuna.ical4j.model.parameter.PartStat;
+import net.fortuna.ical4j.model.parameter.Role;
 import net.fortuna.ical4j.model.parameter.Rsvp;
+import net.fortuna.ical4j.model.parameter.ScheduleStatus;
 import net.fortuna.ical4j.model.property.Attendee;
 import net.fortuna.ical4j.model.property.Description;
+import net.fortuna.ical4j.model.property.Method;
+import net.fortuna.ical4j.model.property.Organizer;
 import org.apache.commons.codec.digest.DigestUtils;
 
 /**
@@ -63,6 +70,59 @@ public class CalendarService {
         CalendarBuilder builder = new CalendarBuilder();
         net.fortuna.ical4j.model.Calendar cal = builder.build(icalContent);
         return cal;
+    }
+
+    /**
+     * Called when an invitee responds to an invitation
+     *
+     * @param attendeeReq
+     * @param cal
+     * @return returns the user's event if a partstat is found for this user's invitation and the partstat is accepted
+     */
+    public CalEvent processResponse(AttendeeRequest attendeeReq, Calendar userCalendar, net.fortuna.ical4j.model.Calendar cal, Session session) {
+        VEvent ev = event(cal);
+        for (Object p : ev.getProperties()) {
+            if (p instanceof Attendee) {
+                Attendee att = (Attendee) p;
+                String attEmail = findEmail(att);
+                if (attEmail != null) {
+                    if (attEmail.equals(attendeeReq.getAttendee().getEmail())) {
+                        // Found it, find the part-stat
+                        Parameter pPartStat = att.getParameter("PARTSTAT");
+                        if (pPartStat != null) {
+                            attendeeReq.setParticipationStatus(pPartStat.getValue());
+                            session.save(attendeeReq);
+                            
+                            if( attendeeReq.getParticipationStatus().equals(AttendeeRequest.PARTSTAT_ACCEPTED)) {
+                                CalEvent e = attendeeReq.getAttendeeEvent();
+                                if( e == null ) {
+                                    log.info("add event");
+                                    Date now = new Date();
+                                    CalEvent orgEvent = attendeeReq.getOrganiserEvent();
+                                    e = userCalendar.add(attendeeReq.getName(), now);
+                                    e.setAttendeeRequest(attendeeReq);
+                                    copyProps(orgEvent, e);
+                                    session.save(e);
+                                    
+                                    attendeeReq.setAttendeeEvent(e);
+                                    session.save(attendeeReq);
+                                }
+                                return e;
+                            } else if( attendeeReq.getParticipationStatus().equals(AttendeeRequest.PARTSTAT_TENTATIVE)) {
+                            } else if( attendeeReq.getParticipationStatus().equals(AttendeeRequest.PARTSTAT_ACCEPTED)) {
+                            } else {
+                                CalEvent e = attendeeReq.getAttendeeEvent();
+                                if( e != null ) {
+                                    log.info("delete event");
+                                    e.delete(session);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -159,14 +219,19 @@ public class CalendarService {
         destCalendar.getEvents().add(newEvent);
 
         newEvent.setCreatedDate(new Date());
+        newEvent.setModifiedDate(new Date());        
+        newEvent.setName(name);
+        
+        copyProps(event, newEvent);
+        session.save(newEvent);
+    }
+    
+    public void copyProps(CalEvent event, CalEvent newEvent) {
         newEvent.setDescription(event.getDescription());
         newEvent.setEndDate(event.getEndDate());
-        newEvent.setModifiedDate(new Date());
-        newEvent.setName(name);
         newEvent.setStartDate(event.getStartDate());
         newEvent.setSummary(event.getSummary());
-        newEvent.setTimezone(event.getTimezone());
-        session.save(newEvent);
+        newEvent.setTimezone(event.getTimezone());        
     }
 
     public void delete(Calendar calendar) {
@@ -179,11 +244,8 @@ public class CalendarService {
         log.info("createEvent: newName=" + newName + " -- " + icalData);
         Session session = SessionManager.session();
 
-        CalEvent e = new CalEvent();
-        e.setName(newName);
-        e.setCalendar(calendar);
-        e.setCreatedDate(new Date());
-        e.setModifiedDate(new Date());
+        Date now = new Date();
+        CalEvent e = calendar.add(newName, now);
 
         AttendeeRequest ar = AttendeeRequest.findByName(newName, session);
 
@@ -226,20 +288,25 @@ public class CalendarService {
      * @param calendar
      * @param session
      */
-    private void updateAttendeeEvent(CalEvent attendeeEvent, CalEvent event, net.fortuna.ical4j.model.Calendar calendar, UpdatedAttendeeCallback callback, Session session) throws IOException {
+    private void updateAttendeeEvent(AttendeeRequest ar, boolean needsReInvite, CalEvent attendeeEvent, CalEvent event, net.fortuna.ical4j.model.Calendar calendar, UpdatedAttendeeCallback callback, Session session) throws IOException {
         log.info("updateAttendeeEvent: " + event.getSummary());
-        if( event.getSummary() == null ) {
-            throw new RuntimeException("null summary");
-        }
-        attendeeEvent.setStartDate(event.getStartDate());
-        attendeeEvent.setEndDate(event.getEndDate());
-        attendeeEvent.setLocation(event.getLocation());
+
         attendeeEvent.setDescription(event.getDescription());
-        attendeeEvent.setEndDate(event.getEndDate());
         attendeeEvent.setModifiedDate(new Date());
         attendeeEvent.setSummary(event.getSummary());
-        attendeeEvent.setTimezone(event.getTimezone());
-        callback.updated(attendeeEvent);
+
+        if (needsReInvite) {
+            // delete the event and set partstat to NEEDS-ACTION
+            callback.deleted(event);
+            ar.setAttendeeEvent(null);
+            ar.setParticipationStatus(AttendeeRequest.PARTSTAT_NEEDS_ACTION);
+            ar.setAcknowledged(false);
+            session.save(ar);
+            attendeeEvent.delete(session);
+        } else {
+            session.save(attendeeEvent);
+            callback.updated(attendeeEvent);
+        }
     }
 
     /**
@@ -252,7 +319,21 @@ public class CalendarService {
     public void setRsvps(VEvent event, CalEvent e, Session session) {
         log.info("setRsvps: " + event.getName());
         for (Object o : event.getProperties()) {
-            if (o instanceof Attendee) {
+            if (o instanceof Organizer) {
+                Organizer org = (Organizer) o;
+                String mail = org.getCalAddress().toString();
+                System.out.println("------------ org mail = " + mail);
+                mail = mail.replace("mailto:", "");
+                Profile p = Profile.findByEmail(mail, session);
+                if (p != null) {
+                    log.info("set org profile: " + p.getFormattedName());
+                    e.setOrganisor(p);
+                } else {
+                    e.setOrganisor(null);
+                }
+                session.save(e);
+                // TODO
+            } else if (o instanceof Attendee) {
                 Attendee attendee = (Attendee) o;
                 Iterator it = attendee.getParameters().iterator();
                 boolean rsvpFound = false;
@@ -273,7 +354,12 @@ public class CalendarService {
                 if (p != null) {
                     log.info("Check create attendance for: " + p.getName());
                     Date now = new Date();
-                    AttendeeRequest.checkCreate(p, e, now, session);
+                    Parameter sa = attendee.getParameter("SCHEDULE-AGENT");
+                    String scheduleAgent = null;
+                    if (sa != null) {
+                        scheduleAgent = sa.getValue();
+                    }
+                    AttendeeRequest.checkCreate(p, e, now, scheduleAgent, session);
                 } else {
                     log.warn("Did not find user: " + attendeeEmail);
                 }
@@ -283,8 +369,7 @@ public class CalendarService {
 
     }
 
-    public String getCalendar(CalEvent calEvent) {
-
+    public net.fortuna.ical4j.model.Calendar getCalendar(CalEvent calEvent) {
         net.fortuna.ical4j.model.Calendar calendar = new net.fortuna.ical4j.model.Calendar();
         calendar.getProperties().add(new ProdId("-//spliffy.org//iCal4j 1.0//EN"));
         calendar.getProperties().add(Version.VERSION_2_0);
@@ -311,10 +396,70 @@ public class CalendarService {
         TzId tzParam = new TzId(tz.getProperties().getProperty(Property.TZID).getValue());
         vevent.getProperties().getProperty(Property.DTSTART).getParameters().add(tzParam);
 
+        Session session = SessionManager.session();
+        List<AttendeeRequest> attendees = AttendeeRequest.findByOrganisorEvent(calEvent, session);
+        if (!attendees.isEmpty()) {
+            if (calEvent.getOrganisor() != null) {
+                Organizer organizer = new Organizer(URI.create("mailto:" + calEvent.getOrganisor().getEmail()));
+                vevent.getProperties().add(organizer);
+            } else {
+                log.warn("There is no organisaor");
+            }
+        }
+        
+                       
+        for (AttendeeRequest ar : attendees) {
+            String email;
+            StringBuilder sbCommonName = new StringBuilder();
+            String stat;
+            if (ar.getAttendee() != null) {
+                Profile p = ar.getAttendee();
+                sbCommonName.append(p.getFormattedName());
+                stat = "1.2"; // delivered ok
+                email = p.getEmail();
+            } else {
+                if (ar.getFirstName() != null) {
+                    sbCommonName.append(ar.getFirstName());
+                }
+                if (ar.getSurName() != null) {
+                    sbCommonName.append(" ").append(ar.getFirstName());
+                }
+                stat = "5.3"; // we dont deliver to non-system users at the moment
+                email = ar.getMail();
+            }
+            String cn = sbCommonName.toString().trim();
+            Attendee a = new Attendee(URI.create("mailto:" + email));
+            a.getParameters().add(Role.REQ_PARTICIPANT);
+
+            a.getParameters().add(new Cn(cn));
+
+            Parameter ss = new ScheduleStatus(stat);
+            a.getParameters().add(ss);
+
+            if (ar.getParticipationStatus() == null) {
+                ar.setParticipationStatus(AttendeeRequest.PARTSTAT_NEEDS_ACTION);
+            }
+            PartStat partStat = new PartStat(ar.getParticipationStatus());
+            a.getParameters().add(partStat);
+
+            vevent.getProperties().add(a);
+        }
+
         calendar.getComponents().add(vevent);
+        return calendar;
+    }
 
+    public String getCalendarICal(CalEvent calEvent) {
+        net.fortuna.ical4j.model.Calendar calendar = getCalendar(calEvent);
         return formatIcal(calendar);
+    }
 
+    public String getInviteICal(AttendeeRequest attendeeRequest) {
+        net.fortuna.ical4j.model.Calendar calendar = getCalendar(attendeeRequest.getOrganiserEvent());
+        // Need to add method=request
+        VEvent ev = event(calendar);
+        ev.getProperties().add(Method.REQUEST);
+        return formatIcal(calendar);
     }
 
     /**
@@ -368,13 +513,13 @@ public class CalendarService {
         vevent.getEndDate().setTimeZone(timezone);
 
         String summary = calEvent.getSummary();
-        if( summary == null || summary.length() == 0 ) {
+        if (summary == null || summary.length() == 0) {
             throw new RuntimeException("no summary");
         }
- 
+
         vevent.getSummary().setValue(summary);
-        if( vevent.getDescription() != null ) {
-        vevent.getDescription().setValue(calEvent.getDescription());
+        if (vevent.getDescription() != null) {
+            vevent.getDescription().setValue(calEvent.getDescription());
         } else {
             Description d = new Description(calEvent.getDescription());
             vevent.getProperties().add(d);
@@ -406,6 +551,12 @@ public class CalendarService {
         String tzId = getTimeZoneId(calendar);
         calEvent.setTimezone(tzId);
         calEvent.setModifiedDate(new Date());
+
+        String loc = null;
+        if (ev.getLocation() != null) {
+            ev.getLocation().getValue();
+        }
+        calEvent.setLocation(loc);
         session.save(calEvent);
         if (!isAccept) {
             log.info("not an invitation, so check/create invites");
@@ -460,6 +611,8 @@ public class CalendarService {
         net.fortuna.ical4j.model.Calendar calendar = builder.build(new ByteArrayInputStream(data.getBytes("UTF-8")));
         AttendeeRequest invite = AttendeeRequest.findByName(event.getName(), session);
         boolean isAccept = invite != null;
+        boolean needsReInvite = hasSchedulingInfoChanged(event, calendar);
+        log.info("needsReInvite? " + needsReInvite);
         _setCalendar(calendar, event, isAccept, session);
 
         List<AttendeeRequest> attendeeRequests = AttendeeRequest.findByOrganisorEvent(event, session);
@@ -468,7 +621,7 @@ public class CalendarService {
             for (AttendeeRequest ar : attendeeRequests) {
                 CalEvent attendeeEvent = ar.getAttendeeEvent();
                 if (attendeeEvent != null) {
-                    updateAttendeeEvent(attendeeEvent, event, calendar, callback, session);
+                    updateAttendeeEvent(ar, needsReInvite, attendeeEvent, event, calendar, callback, session);
                 }
             }
         }
@@ -486,14 +639,14 @@ public class CalendarService {
         }
         return bout.toString();
     }
-    
+
     public String getCalendarInvitationsCTag(Profile user) {
         try {
             // combine and hash names and mod dates for AR's
             List<AttendeeRequest> list = getAttendeeRequests(user, true);
             MessageDigest cout = MessageDigest.getInstance("SHA");
             Charset charset = Charset.forName("UTF-8");
-            for( AttendeeRequest ar : list ) {
+            for (AttendeeRequest ar : list) {
                 String s = ar.getName() + "-" + ar.getOrganiserEvent().getModifiedDate() + "-" + ar.getParticipationStatus();
                 cout.update(s.getBytes(charset));
             }
@@ -503,25 +656,77 @@ public class CalendarService {
         } catch (NoSuchAlgorithmException ex) {
             throw new RuntimeException(ex);
         }
-    }        
-    
-    public List<AttendeeRequest> getAttendeeRequests(Profile user) {  
-        return getAttendeeRequests(user, false);
     }
-    
-    public List<AttendeeRequest> getAttendeeRequests(Profile user, boolean includeAckd) {  
+
+    public List<AttendeeRequest> getAttendeeRequests(Profile user) {
+        return getAttendeeRequests(user, true);
+    }
+
+    public List<AttendeeRequest> getAttendeeRequests(Profile user, boolean includeAckd) {
         log.info("getAttendeeRequests: " + user.getName());
         List<AttendeeRequest> list = new ArrayList<>();
-        if( user.getAttendeeRequests() != null ) {
-            for( AttendeeRequest ar : user.getAttendeeRequests() ) {
-                if(includeAckd || !ar.isAcknowledged() ) {
+        if (user.getAttendeeRequests() != null) {
+            for (AttendeeRequest ar : user.getAttendeeRequests()) {
+                if (includeAckd || !ar.isAcknowledged() && ar.getAttendeeEvent() == null) {
                     list.add(ar);
                 }
             }
         }
         log.info("getAttendeeRequests: found requests: " + list.size());
         return list;
-    }    
+    }
+
+    /**
+     * Has any of the scheduling related fields in the event changed relative to
+     * its calendar representation
+     *
+     * @param event
+     * @param calendar
+     * @return
+     */
+    private boolean hasSchedulingInfoChanged(CalEvent event, net.fortuna.ical4j.model.Calendar calendar) {
+        VEvent ev = event(calendar);
+        Date calStart = ev.getStartDate().getDate();
+        Date calEnd = ev.getEndDate().getDate();
+        String calTzId = getTimeZoneId(calendar);
+        String calLoc = null;
+        if (ev.getLocation() != null) {
+            ev.getLocation().getValue();
+        }
+
+        return anyChanged(calStart, event.getStartDate(), calEnd, event.getEndDate(), calTzId, event.getTimezone(), calLoc, event.getLocation());
+
+    }
+
+    /**
+     * Given a series of pairs, return true if any of the pairs have not-equal
+     * values
+     *
+     * @param pairs
+     * @return
+     */
+    private boolean anyChanged(Object... pairs) {
+        for (int i = 0; i < pairs.length; i += 2) {
+            Object v1 = pairs[i];
+            Object v2 = pairs[i + 1];
+            if (v1 == null) {
+                if (v2 != null) {
+                    return true;
+                }
+            } else {
+                if (!v1.equals(v2)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private String findEmail(Attendee att) {
+        String mail = att.getCalAddress().toString();
+        mail = mail.replace("mailto:", "");
+        return mail;
+    }
 
     public interface UpdatedEventCallback {
 
@@ -530,6 +735,8 @@ public class CalendarService {
 
     public interface UpdatedAttendeeCallback {
 
-        public void updated(CalEvent updated) throws IOException;
+        void updated(CalEvent updated) throws IOException;
+
+        void deleted(CalEvent deleted) throws IOException;
     }
 }

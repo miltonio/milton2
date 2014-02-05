@@ -404,7 +404,7 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 	private boolean matchesType(Class c, String type) {
 		String name = c.getCanonicalName();
 		int pos = name.lastIndexOf(".");
-		name = name.substring(pos);
+		name = name.substring(pos+1);
 		if (name.equalsIgnoreCase(type)) {
 			return true;
 		}
