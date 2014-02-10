@@ -27,12 +27,12 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 	private static final Logger log = LoggerFactory.getLogger(CookieAuthenticationHandler.class);
 	private static final String HANDLER_ATT_NAME = "_delegatedAuthenticationHandler";
 	public static final int SECONDS_PER_YEAR = 60 * 60 * 24 * 365;
-	private String requestParamLogout = "miltonLogout";
-	private String cookieUserUrlValue = "miltonUserUrl";
-	private String cookieUserUrlHash = "miltonUserUrlHash";
+	private final String requestParamLogout = "miltonLogout";
+	private final String cookieUserUrlValue = "miltonUserUrl";
+	private final String cookieUserUrlHash = "miltonUserUrlHash";
 	private final List<AuthenticationHandler> handlers;
 	private final ResourceFactory principalResourceFactory;
-	private NonceProvider nonceProvider;
+	private final NonceProvider nonceProvider;
 	private String userUrlAttName = "userUrl";
 	private boolean useLongLivedCookies = true;
 	private final List<String> keys;
@@ -327,9 +327,10 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 			log.warn("Invalid cookie signing format, no semi-colon: " + signing + " Should be in form - nonce:hmac");
 			return false;
 		}
+		String host = getDomain(request);		
 		String nonce = signing.substring(0, pos);
 		String hmac = signing.substring(pos + 1);
-		String message = nonce + ":" + userUrl;
+		String message = nonce + ":" + userUrl + ":" + host;
 
 		// Check that the hmac is a valid signature
 		String expectedHmac = HmacUtils.calcShaHash(message, key);
@@ -359,6 +360,17 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 		}
 	}
 
+	private String getDomain(Request request) {
+		String host = request.getHostHeader();
+		if (host.contains(":")) {
+			host = host.substring(0, host.indexOf(":"));
+		}
+		if( host == null ) {
+			host = "nohost";
+		}
+		return host;
+	}
+
 	/**
 	 * The hmac signs a message in the form nonce || userUrl, where the nonce is
 	 * requested from the nonceProvider
@@ -370,8 +382,13 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 	 * @return
 	 */
 	public String getUrlSigningHash(String userUrl, Request request) {
+		String host = getDomain(request);
+		return getUrlSigningHash(userUrl, request, host);
+	}
+	
+	public String getUrlSigningHash(String userUrl, Request request, String host) {
 		String nonce = nonceProvider.createNonce(request);
-		String message = nonce + ":" + userUrl;
+		String message = nonce + ":" + userUrl + ":" + host;
 		String key = keys.get(keys.size() - 1); // Use the last key for new cookies		
 		String signing = nonce + ":" + HmacUtils.calcShaHash(message, key);
 		return signing;
