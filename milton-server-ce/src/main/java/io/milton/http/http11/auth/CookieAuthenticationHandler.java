@@ -334,6 +334,12 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 
 		// Check that the hmac is a valid signature
 		String expectedHmac = HmacUtils.calcShaHash(message, key);
+		if( log.isTraceEnabled()) {
+			log.trace("Message:" + message);
+			log.trace("Key:" + key);
+			log.trace("Hash:" + expectedHmac);
+			log.trace("Given Signing:" + signing);			
+		}
 		boolean ok = expectedHmac.equals(hmac);
 		if (!ok) {
 			if (log.isDebugEnabled()) {
@@ -390,7 +396,14 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 		String nonce = nonceProvider.createNonce(request);
 		String message = nonce + ":" + userUrl + ":" + host;
 		String key = keys.get(keys.size() - 1); // Use the last key for new cookies		
-		String signing = nonce + ":" + HmacUtils.calcShaHash(message, key);
+		String hash = HmacUtils.calcShaHash(message, key);
+		String signing = nonce + ":" + hash;
+		if(log.isTraceEnabled()) {
+			log.trace("Message:" + message);
+			log.trace("Key:" + key);
+			log.trace("Hash:" + hash);
+			log.trace("Signing:" + signing);
+		}
 		return signing;
 	}
 

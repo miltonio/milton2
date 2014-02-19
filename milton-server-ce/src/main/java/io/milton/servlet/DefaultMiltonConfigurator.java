@@ -101,7 +101,7 @@ public class DefaultMiltonConfigurator implements MiltonConfigurator {
 
 		String extraAuthHandlers = config.getInitParameter("extraAuthenticationHandlers");
 		if (extraAuthHandlers != null) {
-			props.remove("extraAuthHandlers"); // so the bub doesnt try to set it
+			props.remove("extraAuthenticationHandlers"); // so the bub doesnt try to set it
 			initExtraAuthHandlers(extraAuthHandlers);
 		}
 

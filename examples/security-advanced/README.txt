@@ -1,0 +1,2 @@
+This example shows integrating non-milton authentication (through the use of AuthenticationHandler) as would
+be the case if using an external authentication server, with milton authorisation in an annotations application

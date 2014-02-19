@@ -210,23 +210,20 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 			oUser = auth.getTag();
 		}
 
-		AnnoPrincipalResource p = null;
-		if (oUser instanceof AnnoPrincipalResource) {
-			p = (AnnoPrincipalResource) oUser;
-		}
 
+		
 		// only check ACL if current user is null (ie guest) or the current user is an AnnoPrincipal
-		if (p != null || (oUser == null && !annoFactory.accessControlListAnnotationHandler.getControllerMethods().isEmpty())) {
+		if ( !annoFactory.accessControlListAnnotationHandler.getControllerMethods().isEmpty()) {
 			if (acl == null) {
 				if (log.isDebugEnabled()) {
-					if (p != null) {
-						log.debug("authorise: find ACL for principle=" + p.getSource());
+					if (oUser != null) {
+						log.debug("authorise: find ACL for principle={}", oUser);
 					} else if (oUser == null) {
 						log.debug("authorise: no logged in user, get ACL for anonymous access");
 					}
 				}
 
-				acl = annoFactory.accessControlListAnnotationHandler.availablePrivs(p, this, auth);
+				acl = annoFactory.accessControlListAnnotationHandler.availablePrivs(oUser, this, auth);
 			}
 			AccessControlledResource.Priviledge requiredPriv = annoFactory.accessControlListAnnotationHandler.requiredPriv(this, method, request);
 			boolean allows;
@@ -239,8 +236,8 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 			} else {
 				allows = AclUtils.containsPriviledge(requiredPriv, acl);
 				if (!allows) {
-					if (p != null) {
-						log.info("Authorisation declined for user: " + p.getName());
+					if (oUser != null) {
+						log.info("Authorisation declined for user: {}", oUser);
 					} else {
 						log.info("Authorisation declined for anonymous access");
 					}

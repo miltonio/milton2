@@ -39,8 +39,8 @@ public interface AuthenticationHandler {
      * will be used for authentication. Ie supports implementations should be
      * mutually exclusive
      *
-     * @param r
-     * @param auth
+     * @param r - the resource being access
+	 * @param request
      * @return
      */
     boolean supports(Resource r, Request request);
@@ -64,7 +64,7 @@ public interface AuthenticationHandler {
      * 
      * @param resource
      * @param request
-     * @return
+	 * @param challenges - the list of challenges to append to, or not, as appropriate
      */
     void appendChallenges( Resource resource, Request request, List<String> challenges );
 
@@ -77,6 +77,7 @@ public interface AuthenticationHandler {
      * If you don't want to add a challenge response, return false
      * 
      * @param resource
+	 * @param request
      * @return - true if this can authenticate the resource, and it should issue a
      * http challenge
      */

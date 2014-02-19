@@ -48,11 +48,10 @@ public class AccessControlListAnnotationHandler extends AbstractAnnotationHandle
 	 *
 	 * @param curUser
 	 * @param res
-	 * @param method
 	 * @param auth
 	 * @return
 	 */
-	public Set<AccessControlledResource.Priviledge> availablePrivs(AnnoPrincipalResource curUser, AnnoResource res, Auth auth) {
+	public Set<AccessControlledResource.Priviledge> availablePrivs(Object curUser, AnnoResource res, Auth auth) {
 		Set<Priviledge> privs = directPrivs(curUser, res, auth);
 		if (privs != null) {
 			return privs;
@@ -73,7 +72,7 @@ public class AccessControlListAnnotationHandler extends AbstractAnnotationHandle
 		return privs;
 	}
 
-	public Set<AccessControlledResource.Priviledge> directPrivs(AnnoPrincipalResource curUser, AnnoResource res, Auth auth) {
+	public Set<AccessControlledResource.Priviledge> directPrivs(Object curUser, AnnoResource res, Auth auth) {
 		Set<AccessControlledResource.Priviledge> acl = new HashSet<Priviledge>();
 		Object source = res.getSource();
 		List<ControllerMethod> availMethods = getMethods(source.getClass());
@@ -92,10 +91,15 @@ public class AccessControlListAnnotationHandler extends AbstractAnnotationHandle
 		return acl;
 	}
 
-	private void addPrivsFromMethod(java.lang.reflect.Method method, Object target, Set<AccessControlledResource.Priviledge> acl, AnnoPrincipalResource curUser, AnnoResource res, Auth auth) throws Exception {
+	private void addPrivsFromMethod(java.lang.reflect.Method method, Object target, Set<AccessControlledResource.Priviledge> acl, Object curUser, AnnoResource res, Auth auth) throws Exception {
 		Object currentUserSource = null;
 		if (curUser != null) {
-			currentUserSource = curUser.getSource();
+			if( curUser instanceof AnnoResource) {
+				AnnoResource ar = (AnnoResource) curUser;
+				currentUserSource = ar.getSource();
+			} else {
+				currentUserSource = curUser;
+			}
 		}
 		Object[] args = annoResourceFactory.buildInvokeArgsExt(res, currentUserSource, true, method, curUser, res, auth);
 		Object result = method.invoke(target, args);

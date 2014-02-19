@@ -45,6 +45,7 @@ import java.util.Properties;
 public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Bufferable {
 
 	private static String miltonVerson;
+
 	{
 		Properties props = new Properties();
 		try {
@@ -55,7 +56,6 @@ public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Buff
 		miltonVerson = props.getProperty("milton.version");
 	}
 
-	
 	public enum BUFFERING {
 
 		always,
@@ -77,6 +77,7 @@ public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Buff
 
 	/**
 	 * Defaults to com.bradmcevoy.http.http11.DefaultCacheControlHelper
+	 *
 	 * @return
 	 */
 	public CacheControlHelper getCacheControlHelper() {
@@ -111,11 +112,19 @@ public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Buff
 		if (authenticationService.canUseExternalAuth(resource, request)) {
 			log.info("respondUnauthorised: use external authentication");
 			initiateExternalAuth(resource, request, response);
-		} else {
-			log.info("respondUnauthorised: return staus: " + Response.Status.SC_UNAUTHORIZED);
-			response.setStatus(Response.Status.SC_UNAUTHORIZED);
-			List<String> challenges = authenticationService.getChallenges(resource, request);
-			response.setAuthenticateHeader(challenges);
+		} else {			
+			Auth auth = request.getAuthorization();
+			if (auth == null || auth.getTag() == null) {
+				log.info("respondUnauthorised: no authenticated user, so return staus: " + Response.Status.SC_UNAUTHORIZED);
+				response.setStatus(Response.Status.SC_UNAUTHORIZED);
+				List<String> challenges = authenticationService.getChallenges(resource, request);
+				response.setAuthenticateHeader(challenges);
+
+			} else {
+				log.info("respondUnauthorised: request has an authenticated user, so return staus: " + Response.Status.SC_FORBIDDEN);
+				response.setStatus(Response.Status.SC_FORBIDDEN);
+
+			}
 		}
 	}
 
@@ -189,8 +198,8 @@ public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Buff
 		long st = range.getStart() == null ? 0 : range.getStart();
 		long fn;
 		Long cl = resource.getContentLength();
-		if( range.getFinish() == null ) {			
-			if( cl != null ) {
+		if (range.getFinish() == null) {
+			if (cl != null) {
 				fn = cl.longValue() - 1; // position is one less then length
 			} else {
 				log.warn("Couldnt calculate range end position because the resource is not reporting a content length, and no end position was requested by the client: " + resource.getName() + " - " + resource.getClass());
@@ -211,7 +220,7 @@ public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Buff
 		if (ct != null) {
 			response.setContentTypeHeader(ct);
 		}
-		response.setContentLengthHeader(contentLength);		
+		response.setContentLengthHeader(contentLength);
 		response.setEntity(new GetableResourceEntity(resource, range, params, ct));
 	}
 
@@ -236,7 +245,7 @@ public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Buff
 			response.setContentLengthHeader(contentLength);
 		} else {
 			log.trace("No content length is available for HEAD request");
-		}		
+		}
 	}
 
 	@Override
