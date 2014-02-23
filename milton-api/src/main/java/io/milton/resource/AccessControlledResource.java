@@ -92,12 +92,12 @@ public interface AccessControlledResource extends Resource {
         WRITE_PROPERTIES(Collections.EMPTY_LIST),
         WRITE_CONTENT(Collections.EMPTY_LIST),        
         WRITE_ACL(Collections.EMPTY_LIST),
+        UNLOCK(Collections.EMPTY_LIST),        
         /**
          * Includes all other WRITE privs
          */
-        WRITE(Arrays.asList(WRITE_CONTENT, WRITE_PROPERTIES, WRITE_ACL)),
+        WRITE(Arrays.asList(WRITE_CONTENT, WRITE_PROPERTIES, WRITE_ACL, UNLOCK)),
         
-        UNLOCK(Collections.EMPTY_LIST),
         BIND(Collections.EMPTY_LIST),
         UNBIND(Collections.EMPTY_LIST),
         ALL(Arrays.asList(READ, WRITE, BIND, UNBIND));
