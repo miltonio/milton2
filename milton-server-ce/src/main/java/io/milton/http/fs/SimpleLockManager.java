@@ -19,6 +19,8 @@
 
 package io.milton.http.fs;
 
+import io.milton.http.Auth;
+import io.milton.http.HttpManager;
 import io.milton.http.LockManager;
 import io.milton.http.LockInfo;
 import io.milton.http.LockResult;
@@ -78,7 +80,14 @@ public class SimpleLockManager implements LockManager {
 		if( curLock == null || curLock.token == null ) {
 			log.warn("attempt to refresh missing token: " + tokenId + " on resource: " + resource.getName() + " will create a new lock");
 			LockTimeout timeout = new LockTimeout(60*60l);
-			LockInfo lockInfo = new LockInfo(LockInfo.LockScope.EXCLUSIVE, LockInfo.LockType.WRITE, tokenId, LockInfo.LockDepth.ZERO);
+			String lockedByUser = null;
+			Auth auth = HttpManager.request().getAuthorization();
+			if( auth != null ) {
+				lockedByUser = auth.getUser();
+			} else {
+				log.warn("No user in context, lock wont be very effective");
+			}
+			LockInfo lockInfo = new LockInfo(LockInfo.LockScope.EXCLUSIVE, LockInfo.LockType.WRITE, lockedByUser, LockInfo.LockDepth.ZERO);
 			return lock(timeout, lockInfo, resource, tokenId);
 		}
         curLock.token.setFrom( new Date() );
@@ -153,6 +162,9 @@ public class SimpleLockManager implements LockManager {
             this.id = id;
             this.token = token;
             this.lockedByUser = lockedByUser;
+//			if( lockedByUser.contains(".html")) {
+//				throw new RuntimeException("Weird user!");
+//			}
         }
     }
 }
