@@ -161,7 +161,7 @@ public class GetHandler implements ExistingEntityHandler {
 					if (log.isTraceEnabled()) {
 						log.trace("no modified date on resource: " + resource.getClass().getCanonicalName());
 					}
-					return true;
+					return false; // no mod date, so cant know if modified or not
 				}
 
 				long resModifiedMs = dtResourceModified.getTime();
