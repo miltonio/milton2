@@ -46,8 +46,16 @@ public class SimpleContentGenerator implements ContentGenerator {
 	private String loginExternal = "<html><body><h1>Not authorised</h1><p>Please login with: ${externalProviders}</p></body></html>";
 	private String unknown = "<html><body><h1>Unknown error</h1></body></html>";
 
+	public SimpleContentGenerator() {
+	}
+
+	
+	
 	@Override
 	public void generate(Resource resource, Request request, Response response, Status status) {
+		
+		Thread.dumpStack();
+		
 		String template;
 		switch (status) {
 			case SC_METHOD_NOT_ALLOWED:

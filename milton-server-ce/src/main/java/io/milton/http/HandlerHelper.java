@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 public class HandlerHelper {
 
 	private final static Logger log = LoggerFactory.getLogger(HandlerHelper.class);
-	private AuthenticationService authenticationService;
+	private final AuthenticationService authenticationService;
 	private final List<StorageChecker> storageCheckers;
 	private boolean enableExpectContinue = true;
 
@@ -61,7 +61,7 @@ public class HandlerHelper {
 	/**
 	 * Checks the expect header, and responds if necessary
 	 *
-	 * @param resource
+	 * @param responseHandler
 	 * @param request
 	 * @param response
 	 * @return - true if the expect header is ok. ie process normally. false

@@ -23,7 +23,6 @@ import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.exceptions.NotFoundException;
-import com.ettrema.cache.Cache;
 import io.milton.common.LogUtils;
 import io.milton.http.Response;
 import java.io.File;
@@ -46,12 +45,12 @@ public class Folder extends Resource {
 
     private static final Logger log = LoggerFactory.getLogger(Folder.class);
     final List<FolderListener> folderListeners = new ArrayList<FolderListener>();
-    protected final Cache<Folder, List<Resource>> cache;
+    protected final Map<Folder, List<Resource>> cache;
 
     /**
      * Special constructor for Host
      */
-    Folder(Cache<Folder, List<Resource>> cache) {
+    Folder(Map<Folder, List<Resource>> cache) {
         super();
         this.cache = cache;
         if (this.cache == null) {
@@ -59,7 +58,7 @@ public class Folder extends Resource {
         }
     }
 
-    public Folder(Folder parent, PropFindResponse resp, Cache<Folder, List<Resource>> cache) {
+    public Folder(Folder parent, PropFindResponse resp, Map<Folder, List<Resource>> cache) {
         super(parent, resp);
         this.cache = cache;
         if (this.cache == null) {
@@ -67,7 +66,7 @@ public class Folder extends Resource {
         }
     }
 
-    public Folder(Folder parent, String name, Cache<Folder, List<Resource>> cache) {
+    public Folder(Folder parent, String name, Map<Folder, List<Resource>> cache) {
         super(parent, name);
         this.cache = cache;
         if (this.cache == null) {

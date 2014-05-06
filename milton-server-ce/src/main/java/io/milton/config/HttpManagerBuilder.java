@@ -373,7 +373,6 @@ public class HttpManagerBuilder {
 		}
 		if (http11ResponseHandler == null) {
 			DefaultHttp11ResponseHandler rh = createDefaultHttp11ResponseHandler(authenticationService);
-			rh.setContentGenerator(contentGenerator);
 			rh.setCacheControlHelper(cacheControlHelper);
 			rh.setBuffering(buffering);
 			http11ResponseHandler = rh;
@@ -508,7 +507,7 @@ public class HttpManagerBuilder {
 	}
 
 	protected DefaultHttp11ResponseHandler createDefaultHttp11ResponseHandler(AuthenticationService authenticationService) {
-		DefaultHttp11ResponseHandler rh = new DefaultHttp11ResponseHandler(authenticationService, eTagGenerator);
+		DefaultHttp11ResponseHandler rh = new DefaultHttp11ResponseHandler(authenticationService, eTagGenerator, contentGenerator);
 		return rh;
 	}
 

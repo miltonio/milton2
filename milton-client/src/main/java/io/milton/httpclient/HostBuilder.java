@@ -19,9 +19,9 @@
 
 package io.milton.httpclient;
 
-import com.ettrema.cache.Cache;
 import io.milton.httpclient.zsyncclient.FileSyncer;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -34,7 +34,7 @@ public class HostBuilder {
     private String password;
     private String rootPath;
     private ProxyDetails proxy;
-    private Cache<Folder, List<Resource>> cache;
+    private Map<Folder, List<Resource>> cache;
     private int timeoutMillis;
     private FileSyncer fileSyncer;
     private boolean secure = false;
@@ -133,11 +133,11 @@ public class HostBuilder {
         this.proxy = proxy;
     }
 
-    public Cache<Folder, List<Resource>> getCache() {
+    public Map<Folder, List<Resource>> getCache() {
         return cache;
     }
 
-    public void setCache(Cache<Folder, List<Resource>> cache) {
+    public void setCache(Map<Folder, List<Resource>> cache) {
         this.cache = cache;
     }
 
