@@ -53,9 +53,7 @@ public class SimpleContentGenerator implements ContentGenerator {
 	
 	@Override
 	public void generate(Resource resource, Request request, Response response, Status status) {
-		
-		Thread.dumpStack();
-		
+				
 		String template;
 		switch (status) {
 			case SC_METHOD_NOT_ALLOWED:
