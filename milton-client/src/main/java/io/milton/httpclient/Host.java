@@ -18,6 +18,7 @@
  */
 package io.milton.httpclient;
 
+import com.googlecode.concurrentlinkedhashmap.ConcurrentLinkedHashMap;
 import io.milton.common.Path;
 import io.milton.http.Range;
 import io.milton.http.Response;
@@ -25,8 +26,6 @@ import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.exceptions.NotFoundException;
-import com.ettrema.cache.Cache;
-import com.ettrema.cache.MemoryCache;
 import io.milton.httpclient.Utils.CancelledException;
 import io.milton.httpclient.zsyncclient.FileSyncer;
 import io.milton.common.LogUtils;
@@ -132,16 +131,17 @@ public class Host extends Folder {
         this(server, null, port, user, password, proxyDetails, 30000, null, null);
     }
 
-    public Host(String server, Integer port, String user, String password, ProxyDetails proxyDetails, Cache<Folder, List<Resource>> cache) {
+    public Host(String server, Integer port, String user, String password, ProxyDetails proxyDetails, Map<Folder, List<Resource>> cache) {
         this(server, null, port, user, password, proxyDetails, 30000, cache, null); // defaul timeout of 30sec
     }
 
-    public Host(String server, String rootPath, Integer port, String user, String password, ProxyDetails proxyDetails, Cache<Folder, List<Resource>> cache) {
+    public Host(String server, String rootPath, Integer port, String user, String password, ProxyDetails proxyDetails, Map<Folder, List<Resource>> cache) {
         this(server, rootPath, port, user, password, proxyDetails, 30000, cache, null); // defaul timeout of 30sec
     }
 
-    public Host(String server, String rootPath, Integer port, String user, String password, ProxyDetails proxyDetails, int timeoutMillis, Cache<Folder, List<Resource>> cache, FileSyncer fileSyncer) {
-        super((cache != null ? cache : new MemoryCache<Folder, List<Resource>>("resource-cache-default", 50, 20)));
+    public Host(String server, String rootPath, Integer port, String user, String password, ProxyDetails proxyDetails, int timeoutMillis, Map<Folder, List<Resource>> cache, FileSyncer fileSyncer) {
+        //super((cache != null ? cache : new MemoryCache<Folder, List<Resource>>("resource-cache-default", 50, 20)));
+        super((cache != null ? cache : new ConcurrentLinkedHashMap.Builder().maximumWeightedCapacity(1000).build()));
         if (server == null) {
             throw new IllegalArgumentException("host name cannot be null");
         }

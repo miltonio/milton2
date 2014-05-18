@@ -75,12 +75,12 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
     private boolean enableWellKnown = true;
     private WebDavLevel2Protocol webDavLevel2Protocol;
     private boolean webdavLevel2Enabled = true;
-    private LockManager lockManager = new SimpleLockManager();
+    private LockManager lockManager;
     private final ICalFormatter iCalFormatter = new ICalFormatter();
 
     private CalendarSearchService calendarSearchService;
     private AnnotationsCalendarSearchService annotationsCalendarSearchService;
-    
+
     private PrincipalSearchService principalSearchService;
     private AnnotationsPrincipalSearchService annotationsPrincipalSearchService;
     private WellKnownResourceFactory wellKnownResourceFactory;
@@ -90,8 +90,18 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
         super.afterInit();
         if (getMainResourceFactory() instanceof AnnotationResourceFactory) {
             AnnotationResourceFactory arf = (AnnotationResourceFactory) getMainResourceFactory();
+
             if (arf.getLockManager() == null) {
+                if (lockManager == null) {                    
+                    lockManager = new SimpleLockManager(getCacheManager());
+                    log.info("Created lock manager: " + lockManager + " with cache manager: " + getCacheManager());
+                } else {
+                    log.info("Using configured cache manager: " + lockManager);
+                }
+
                 arf.setLockManager(lockManager);
+            } else {
+                log.info("Using LockManager from AnnotationResourceFactory: " + arf.getLockManager().getClass());
             }
             if (annotationsCalendarSearchService != null) {
                 annotationsCalendarSearchService.setAnnotationResourceFactory(arf);
@@ -129,7 +139,7 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
                 annotationsCalendarSearchService = new AnnotationsCalendarSearchService(c);
                 calendarSearchService = annotationsCalendarSearchService;
             }
-            if( principalSearchService == null ) {
+            if (principalSearchService == null) {
                 annotationsPrincipalSearchService = new AnnotationsPrincipalSearchService();
                 principalSearchService = annotationsPrincipalSearchService;
             }

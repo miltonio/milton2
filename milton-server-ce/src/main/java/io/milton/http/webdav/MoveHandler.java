@@ -23,6 +23,7 @@ import io.milton.http.ExistingEntityHandler;
 import io.milton.resource.Resource;
 import io.milton.http.HttpManager;
 import io.milton.common.Utils;
+import io.milton.event.AfterMoveEvent;
 import io.milton.http.Response;
 import io.milton.http.DeleteHelper;
 import io.milton.resource.MoveableResource;
@@ -43,7 +44,7 @@ import io.milton.http.Request;
 
 public class MoveHandler implements ExistingEntityHandler {
 
-	private Logger log = LoggerFactory.getLogger(MoveHandler.class);
+	private final Logger log = LoggerFactory.getLogger(MoveHandler.class);
 	private final WebDavResponseHandler responseHandler;
 	private final ResourceHandlerHelper resourceHandlerHelper;
 	private final HandlerHelper handlerHelper;
@@ -60,6 +61,7 @@ public class MoveHandler implements ExistingEntityHandler {
 	 * @param responseHandler
 	 * @param handlerHelper
 	 * @param resourceHandlerHelper
+	 * @param userAgentHelper
 	 */
 	public MoveHandler(WebDavResponseHandler responseHandler, HandlerHelper handlerHelper, ResourceHandlerHelper resourceHandlerHelper, UserAgentHelper userAgentHelper) {
 		this.userAgentHelper = userAgentHelper;
@@ -143,6 +145,7 @@ public class MoveHandler implements ExistingEntityHandler {
 				}
 				manager.getEventManager().fireEvent(new MoveEvent(resource, colDest, dest.name));
 				r.moveTo(colDest, dest.name);
+				manager.getEventManager().fireEvent(new AfterMoveEvent(resource, colDest, dest.name));
 				// See http://www.ettrema.com:8080/browse/MIL-87
 				if (wasDeleted) {
 					responseHandler.respondNoContent(resource, response, request);

@@ -139,7 +139,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 					Resource r;
 					try {
 						r = principalResourceFactory.getResource(host, userUrl);
-						log.info("found current user: " + r);
+						log.trace("found current user: " + r);
 					} catch (NotAuthorizedException ex) {
 						log.error("Couldnt check userUrl in cookie", ex);
 						r = null;

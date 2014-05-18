@@ -237,6 +237,9 @@ public class LockHandler implements ResourceHandler {
             responseHandler.respondPreconditionFailed(request, response, r);
             return;
         }
+        if( result == null ) {
+            throw new NullPointerException("Null lock result returned from: " + r.getClass());
+        }
         if (result.isSuccessful()) {
             LockToken tok = result.getLockToken();
             response.setLockTokenHeader("<opaquelocktoken:" + tok.tokenId + ">");  // spec says to set response header. See 8.10.1

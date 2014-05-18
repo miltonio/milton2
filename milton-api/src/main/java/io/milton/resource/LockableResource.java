@@ -52,6 +52,8 @@ public interface LockableResource extends Resource {
      * 
      * @param token
      * @return
+     * @throws io.milton.http.exceptions.NotAuthorizedException
+     * @throws io.milton.http.exceptions.PreConditionFailedException
      */
     public LockResult refreshLock(String token) throws NotAuthorizedException, PreConditionFailedException;
 

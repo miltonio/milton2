@@ -21,6 +21,8 @@ import io.milton.resource.GetableResource;
 import io.milton.resource.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -28,6 +30,8 @@ import java.util.List;
  */
 public class MatchHelper {
 
+	private static final Logger log = LoggerFactory.getLogger(MatchHelper.class);
+	
 	private final ETagGenerator eTagGenerator;
 
 	public MatchHelper(ETagGenerator eTagGenerator) {
@@ -79,7 +83,7 @@ public class MatchHelper {
 	 * In the usual use case of GET returning false means "do nothing
 	 * different", ie continue processing.
 	 *
-	 * @param handler
+	 * @param r
 	 * @param req
 	 * @return
 	 */
@@ -90,21 +94,24 @@ public class MatchHelper {
 		}
 		if (h.equals("*")) {
 			boolean b = (r != null);
-//			if (b) {
-//				System.out.println("if-none-match header is star, and a resource exists");
-//			}
+			if (r != null ) {
+				log.warn("if-none-match header is star, and a resource exists, so check has failed: resource name=" + r.getName());
+				return true;
+			}
 			return b;
 		}
 		String currentEtag = eTagGenerator.generateEtag(r);
 		if (currentEtag == null) {
+			log.warn("Null etag for resource, so pass if-none-match test");
 			return false;
 		}
 		List<String> etags = splitToList(h);
 		for (String requestedEtag : etags) {
-			if (requestedEtag.equals(currentEtag)) {
+			if (requestedEtag.equals(currentEtag)) {				
 				return true;
 			}
 		}
+		log.warn("None of the provided etags match, so if-none-match test passes");
 		return false;
 	}
 

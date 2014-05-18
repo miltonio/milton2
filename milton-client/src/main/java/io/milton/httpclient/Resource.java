@@ -20,7 +20,6 @@
 package io.milton.httpclient;
 
 import io.milton.common.Path;
-import com.ettrema.cache.Cache;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
@@ -44,7 +43,7 @@ public abstract class Resource {
 
     private static final Logger log = LoggerFactory.getLogger(Resource.class);
 
-    static Resource fromResponse(Folder parent, PropFindResponse resp, Cache<Folder, List<Resource>> cache) {
+    static Resource fromResponse(Folder parent, PropFindResponse resp, Map<Folder, List<Resource>> cache) {
         if (resp.isCollection()) {
             return new Folder(parent, resp, cache);
         } else {

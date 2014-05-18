@@ -35,6 +35,7 @@ public interface ContentGenerator {
 	/**
 	 * Generate an error page for the given status
 	 * 
+	 * @param resource
 	 * @param request
 	 * @param response
 	 * @param status 

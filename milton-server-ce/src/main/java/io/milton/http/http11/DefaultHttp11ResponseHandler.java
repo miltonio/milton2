@@ -65,14 +65,15 @@ public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Buff
 	private static final Logger log = LoggerFactory.getLogger(DefaultHttp11ResponseHandler.class);
 	private final AuthenticationService authenticationService;
 	private final ETagGenerator eTagGenerator;
-	private CacheControlHelper cacheControlHelper = new DefaultCacheControlHelper();
-	private ContentGenerator contentGenerator = new SimpleContentGenerator();
+	private final ContentGenerator contentGenerator;
+	private CacheControlHelper cacheControlHelper = new DefaultCacheControlHelper();	
 	private int maxMemorySize = 100000;
 	private BUFFERING buffering;
 
-	public DefaultHttp11ResponseHandler(AuthenticationService authenticationService, ETagGenerator eTagGenerator) {
+	public DefaultHttp11ResponseHandler(AuthenticationService authenticationService, ETagGenerator eTagGenerator, ContentGenerator contentGenerator) {
 		this.authenticationService = authenticationService;
 		this.eTagGenerator = eTagGenerator;
+		this.contentGenerator = contentGenerator;
 	}
 
 	/**
@@ -145,6 +146,7 @@ public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Buff
 	 *
 	 * @param resource
 	 * @param response
+	 * @param request
 	 * @param message - optional message to output in the body content
 	 */
 	@Override
@@ -200,7 +202,7 @@ public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Buff
 		Long cl = resource.getContentLength();
 		if (range.getFinish() == null) {
 			if (cl != null) {
-				fn = cl.longValue() - 1; // position is one less then length
+				fn = cl - 1; // position is one less then length
 			} else {
 				log.warn("Couldnt calculate range end position because the resource is not reporting a content length, and no end position was requested by the client: " + resource.getName() + " - " + resource.getClass());
 				fn = -1;
@@ -457,9 +459,5 @@ public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Buff
 
 	public ContentGenerator getContentGenerator() {
 		return contentGenerator;
-	}
-
-	public void setContentGenerator(ContentGenerator contentGenerator) {
-		this.contentGenerator = contentGenerator;
 	}
 }

@@ -19,6 +19,8 @@
 package io.milton.config;
 
 import io.milton.annotations.ResourceController;
+import io.milton.cache.CacheManager;
+import io.milton.cache.LocalCacheManager;
 import io.milton.common.FileUtils;
 import io.milton.property.PropertySource;
 import io.milton.common.Stoppable;
@@ -175,6 +177,7 @@ public class HttpManagerBuilder {
 	private String fsHomeDir = null;
 	private PropFindRequestFieldParser propFindRequestFieldParser;
 	private PropFindPropertyBuilder propFindPropertyBuilder;
+	private CacheManager cacheManager = new LocalCacheManager(); // used for locking
 	private RootContext rootContext = new RootContext();
 	private List dependencies;
 	private List<String> cookieSigningKeys;
@@ -373,7 +376,6 @@ public class HttpManagerBuilder {
 		}
 		if (http11ResponseHandler == null) {
 			DefaultHttp11ResponseHandler rh = createDefaultHttp11ResponseHandler(authenticationService);
-			rh.setContentGenerator(contentGenerator);
 			rh.setCacheControlHelper(cacheControlHelper);
 			rh.setBuffering(buffering);
 			http11ResponseHandler = rh;
@@ -508,7 +510,7 @@ public class HttpManagerBuilder {
 	}
 
 	protected DefaultHttp11ResponseHandler createDefaultHttp11ResponseHandler(AuthenticationService authenticationService) {
-		DefaultHttp11ResponseHandler rh = new DefaultHttp11ResponseHandler(authenticationService, eTagGenerator);
+		DefaultHttp11ResponseHandler rh = new DefaultHttp11ResponseHandler(authenticationService, eTagGenerator, contentGenerator);
 		return rh;
 	}
 
@@ -1546,6 +1548,16 @@ public class HttpManagerBuilder {
 	public void setEnableEarlyAuth(boolean enableEarlyAuth) {
 		this.enableEarlyAuth = enableEarlyAuth;
 	}
+
+	public CacheManager getCacheManager() {
+		return cacheManager;
+	}
+
+	public void setCacheManager(CacheManager cacheManager) {
+		this.cacheManager = cacheManager;
+	}
+	
+	
 
 	private Object createObject(Class c) throws CreationException {
 		log.info("createObject: " + c.getCanonicalName());
