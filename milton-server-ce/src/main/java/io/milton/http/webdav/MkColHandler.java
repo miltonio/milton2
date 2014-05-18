@@ -137,6 +137,12 @@ public class MkColHandler implements Handler {
 
 		handlerHelper.checkExpects(responseHandler, request, response);
 
+		if (!isCompatible(resource)) {
+			log.info("not compatible");
+			responseHandler.respondMethodNotImplemented(resource, response, request);
+			return;
+		}		
+		
 		MakeCollectionableResource existingCol = (MakeCollectionableResource) resource;
 //		try {
 //			//For litmus test and RFC support
@@ -155,11 +161,6 @@ public class MkColHandler implements Handler {
 //			}
 //		}
 
-		if (!isCompatible(existingCol)) {
-			log.info("not compatible");
-			responseHandler.respondMethodNotImplemented(existingCol, response, request);
-			return;
-		}
 
 		Resource existingChild = existingCol.child(newName);
 		if (existingChild != null) {
