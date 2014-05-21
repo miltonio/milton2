@@ -30,13 +30,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.OutputStream;
 import java.util.List;
+import org.apache.commons.io.FileUtils;
 
 public class PartialEntity implements Response.Entity {
 
     private static final Logger log = LoggerFactory.getLogger(PartialEntity.class);
 
-    private List<Range> ranges;
-    private File temp;
+    private final List<Range> ranges;
+    private final File temp;
 
     public PartialEntity(List<Range> ranges, File temp) {
         this.ranges = ranges;
@@ -59,6 +60,7 @@ public class PartialEntity implements Response.Entity {
             RangeUtils.writeRanges(fin, ranges, outputStream);
         } finally {
             StreamUtils.close(fin);
+			FileUtils.deleteQuietly(temp);
         }
     }
 }
