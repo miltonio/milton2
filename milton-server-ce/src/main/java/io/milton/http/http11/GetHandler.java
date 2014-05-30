@@ -88,6 +88,11 @@ public class GetHandler implements ExistingEntityHandler {
 	 * Return true if the resource has not been modified
 	 */
 	private boolean checkConditional(GetableResource resource, Request request) {
+		// disable if request params are present
+		Map<String, String> params = request.getParams();
+		if( params != null && !params.isEmpty()) {
+			return false;
+		}
 		// If maxAgeSeconds is null then we do not cache
 		if (resource.getMaxAgeSeconds(request.getAuthorization()) == null) {
 			log.trace("resource has null max age, so not modified response is disabled");

@@ -94,12 +94,6 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 		this.quotaDataAccessor = quotaDataAccessor;
 		this.propertyMap = new PropertyMap(WebDavProtocol.NS_DAV.getName());
 
-		log.info("resourceTypeHelper: " + resourceTypeHelper.getClass());
-		if (quotaDataAccessor == null) {
-			log.info("no quota data");
-		} else {
-			log.info("quotaDataAccessor: " + quotaDataAccessor.getClass());
-		}
 		propertyMap.add(new ContentLengthPropertyWriter());
 		propertyMap.add(new ContentTypePropertyWriter());
 		propertyMap.add(new CreationDatePropertyWriter("getcreated"));
@@ -113,15 +107,19 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 		propertyMap.add(new MSIsReadOnlyPropertyWriter());
 		propertyMap.add(new MSNamePropertyWriter());
 
-		propertyMap.add(new QuotaAvailableBytesPropertyWriter());
-		propertyMap.add(new QuotaUsedBytesPropertyWriter());
+		log.info("resourceTypeHelper: " + resourceTypeHelper.getClass());
+		if (quotaDataAccessor == null) {
+			log.info("no quota data");
+		} else {
+			log.info("quotaDataAccessor: " + quotaDataAccessor.getClass());
+			propertyMap.add(new QuotaAvailableBytesPropertyWriter());
+			propertyMap.add(new QuotaUsedBytesPropertyWriter());
+		}
 
 		propertyMap.add(new SupportedReportSetProperty());
-		if( enableTextContentProperty ) {
+		if (enableTextContentProperty) {
 			propertyMap.add(new MiltonExtTextContentProperty());
 		}
-				
-
 
 		// note valuewriters is also used in DefaultWebDavResponseHandler
 		// if using non-default configuration you should inject the same instance into there
@@ -200,11 +198,11 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 			// Nautilus (at least on Ubuntu 12) doesnt like empty properties
 			if (userAgentHelper.isNautilus(HttpManager.request())) {
 				Object v = getProperty(name, r);
-				if( v == null)  {
+				if (v == null) {
 					return PropertyMetaData.UNKNOWN;
-				} else if( v instanceof String) {
+				} else if (v instanceof String) {
 					String s = (String) v;
-					if( s.trim().length() == 0 ) {
+					if (s.trim().length() == 0) {
 						return PropertyMetaData.UNKNOWN;
 					}
 				}
@@ -491,7 +489,7 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 			return SupportedReportSetList.class;
 		}
 	}
-	
+
 	class MiltonExtTextContentProperty implements StandardProperty<String> {
 
 		@Override
@@ -501,10 +499,10 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 
 		@Override
 		public String getValue(PropFindableResource res) {
-			if( res instanceof GetableResource) {
+			if (res instanceof GetableResource) {
 				GetableResource gr = (GetableResource) res;
 				String ct = gr.getContentType("text");
-				if( ct != null && ct.startsWith("text")) {
+				if (ct != null && ct.startsWith("text")) {
 					ByteArrayOutputStream bout = new ByteArrayOutputStream();
 					try {
 						gr.sendContent(bout, null, Collections.EMPTY_MAP, ct);
@@ -527,7 +525,7 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 		public Class getValueClass() {
 			return String.class;
 		}
-	}	
+	}
 
 	protected void sendStringProp(XmlWriter writer, String name, String value) {
 		String s = value;
