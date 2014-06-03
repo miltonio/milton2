@@ -42,7 +42,7 @@ public class PartialGetHelperTest extends TestCase {
 	@Override
 	protected void setUp() throws Exception {
 		responseHandler = createMock(Http11ResponseHandler.class);
-		partialGetHelper = new PartialGetHelper(responseHandler);
+		partialGetHelper = new PartialGetHelper();
 	}
 
 	public void testGetRange_null() {

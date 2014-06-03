@@ -206,7 +206,7 @@ public class GetHandler implements ExistingEntityHandler {
 					if( matchHelper.checkIfRange(resource, request)) {
 						Long contentLength = resource.getContentLength();
 						if( contentLength != null ) {
-							partialGetHelper.sendPartialContent(resource, request, response, ranges, params);
+							partialGetHelper.sendPartialContent(resource, request, response, ranges, params, responseHandler);
 							return;
 						} else {
 							log.warn("Cant do partial GET because we don't have a content length from resource of type: " + resource.getClass() + " for url: " + request.getAbsoluteUrl());

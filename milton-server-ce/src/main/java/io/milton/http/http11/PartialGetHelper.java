@@ -45,12 +45,7 @@ import org.slf4j.LoggerFactory;
 public class PartialGetHelper {
 
 	private static final Logger log = LoggerFactory.getLogger(PartialGetHelper.class);
-	private final Http11ResponseHandler responseHandler;
 	private int maxMemorySize = 100000;
-
-	public PartialGetHelper(Http11ResponseHandler responseHandler) {
-		this.responseHandler = responseHandler;
-	}
 
 	public List<Range> getRanges(String rangeHeader) {
 		if (rangeHeader == null || rangeHeader.length() == 0) {
@@ -75,7 +70,7 @@ public class PartialGetHelper {
 		}
 	}
 
-	public void sendPartialContent(GetableResource resource, Request request, Response response, List<Range> ranges, Map<String, String> params) throws NotAuthorizedException, BadRequestException, IOException, NotFoundException {
+	public void sendPartialContent(GetableResource resource, Request request, Response response, List<Range> ranges, Map<String, String> params, Http11ResponseHandler responseHandler) throws NotAuthorizedException, BadRequestException, IOException, NotFoundException {
 		log.trace("sendPartialContent");
 		if (ranges.size() == 1) {
 			log.trace("partial get, single range");
