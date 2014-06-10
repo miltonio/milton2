@@ -101,6 +101,11 @@ public class DefaultWebDavResponseHandler implements WebDavResponseHandler, Buff
 	public void respondPartialContent(GetableResource resource, Response response, Request request, Map<String, String> params, Range range) throws NotAuthorizedException, BadRequestException, NotFoundException {
 		wrapped.respondPartialContent(resource, response, request, params, range);
 	}
+	
+	@Override
+	public void respondPartialContent(GetableResource resource, Response response, Request request, Map<String, String> params, List<Range> ranges) throws NotAuthorizedException, BadRequestException, NotFoundException {
+		wrapped.respondPartialContent(resource, response, request, params, ranges);
+	}	
 
 	@Override
 	public void respondCreated(Resource resource, Response response, Request request) {
@@ -250,4 +255,6 @@ public class DefaultWebDavResponseHandler implements WebDavResponseHandler, Buff
 		String b = request.getHeaders().get("Brief");
 		return "t".equals(b);
 	}
+
+
 }

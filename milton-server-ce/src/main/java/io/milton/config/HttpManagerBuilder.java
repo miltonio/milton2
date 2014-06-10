@@ -528,7 +528,7 @@ public class HttpManagerBuilder {
 				matchHelper = new MatchHelper(eTagGenerator);
 			}
 			if (partialGetHelper == null) {
-				partialGetHelper = new PartialGetHelper(webdavResponseHandler);
+				partialGetHelper = new PartialGetHelper();
 			}
 
 			Http11Protocol http11Protocol = new Http11Protocol(webdavResponseHandler, handlerHelper, resourceHandlerHelper, enableOptionsAuth, matchHelper, partialGetHelper);

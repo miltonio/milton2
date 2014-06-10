@@ -73,6 +73,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 
 		for (AuthenticationHandler hnd : handlers) {
 			if (hnd.supports(r, request)) {
+				log.info("Found child handler who supports this request {}", hnd);
 				request.getAttributes().put(HANDLER_ATT_NAME, hnd);
 				return true;
 			}
@@ -358,7 +359,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 				setLoginCookies(userUrl, request);
 				return true;
 			} else if (val == NonceProvider.NonceValidity.INVALID) {
-				log.warn("Received an invalid nonce: " + nonce);
+				log.warn("Received an invalid nonce: " + nonce + " not found in provider: " + nonceProvider);
 				return false;
 			} else {
 				throw new RuntimeException("Unhandled nonce validity value");

@@ -102,6 +102,15 @@ public class AccessControlListAnnotationHandler extends AbstractAnnotationHandle
 			}
 		}
 		Object[] args = annoResourceFactory.buildInvokeArgsExt(res, currentUserSource, true, method, curUser, res, auth);
+		
+		for( Object a : args ) {
+			System.out.println("args: " + a);
+		}
+		System.out.println("method");
+		for( Class<?> p : method.getParameterTypes()) {
+			System.out.println("p: " + p);
+		}
+		
 		Object result = method.invoke(target, args);
 		if (result == null) {
 			// ignore

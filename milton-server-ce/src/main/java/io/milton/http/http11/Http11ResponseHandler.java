@@ -59,7 +59,34 @@ public interface Http11ResponseHandler extends ETagGenerator {
      */
     void respondNoContent(Resource resource, Response response,Request request);
     void respondContent(Resource resource, Response response, Request request, Map<String,String> params) throws NotAuthorizedException, BadRequestException, NotFoundException;
-    void respondPartialContent(GetableResource resource, Response response, Request request, Map<String,String> params, Range range) throws NotAuthorizedException, BadRequestException, NotFoundException;
+    
+	/**
+	 * Respond with content from a single range, in a partial GET
+	 * 
+	 * @param resource
+	 * @param response
+	 * @param request
+	 * @param params
+	 * @param range
+	 * @throws NotAuthorizedException
+	 * @throws BadRequestException
+	 * @throws NotFoundException 
+	 */
+	void respondPartialContent(GetableResource resource, Response response, Request request, Map<String,String> params, Range range) throws NotAuthorizedException, BadRequestException, NotFoundException;
+
+	/**
+	 * Respond with multiple ranges for a partial GET
+	 * 
+	 * @param resource
+	 * @param response
+	 * @param request
+	 * @param params
+	 * @param ranges
+	 * @throws NotAuthorizedException
+	 * @throws BadRequestException
+	 * @throws NotFoundException 
+	 */
+	void respondPartialContent(GetableResource resource, Response response, Request request, Map<String, String> params, List<Range> ranges) throws NotAuthorizedException, BadRequestException, NotFoundException;
     void respondCreated(Resource resource, Response response, Request request);
     void respondUnauthorised(Resource resource, Response response, Request request);
     void respondMethodNotImplemented(Resource resource, Response response, Request request);

@@ -108,6 +108,13 @@ public abstract class AbstractWrappingResponseHandler implements WebDavResponseH
 	}
 
 	@Override
+	public void respondPartialContent(GetableResource resource, Response response, Request request, Map<String, String> params, List<Range> ranges) throws NotAuthorizedException, BadRequestException, NotFoundException {
+		wrapped.respondPartialContent(resource, response, request, params, ranges);
+	}
+
+	
+
+	@Override
 	public void respondCreated(Resource resource, Response response, Request request) {
 		wrapped.respondCreated(resource, response, request);
 	}
@@ -127,47 +134,58 @@ public abstract class AbstractWrappingResponseHandler implements WebDavResponseH
 		wrapped.respondMethodNotAllowed(res, response, request);
 	}
 
+	@Override
 	public void respondConflict(Resource resource, Response response, Request request, String message) {
 		wrapped.respondConflict(resource, response, request, message);
 	}
 
+	@Override
 	public void respondRedirect(Response response, Request request, String redirectUrl) {
 		wrapped.respondRedirect(response, request, redirectUrl);
 	}
 
+	@Override
 	public void responseMultiStatus(Resource resource, Response response, Request request, List<HrefStatus> statii) {
 		wrapped.responseMultiStatus(resource, response, request, statii);
 	}
 
+	@Override
 	public void respondNotModified(GetableResource resource, Response response, Request request) {
 		log.trace("respondNotModified");
 		wrapped.respondNotModified(resource, response, request);
 	}
 
+	@Override
 	public void respondNotFound(Response response, Request request) {
 		wrapped.respondNotFound(response, request);
 	}
 
+	@Override
 	public void respondWithOptions(Resource resource, Response response, Request request, List<String> methodsAllowed) {
 		wrapped.respondWithOptions(resource, response, request, methodsAllowed);
 	}
 
+	@Override
 	public void respondHead(Resource resource, Response response, Request request) {
 		wrapped.respondHead(resource, response, request);
 	}
 
+	@Override
 	public void respondExpectationFailed(Response response, Request request) {
 		wrapped.respondExpectationFailed(response, request);
 	}
 
+	@Override
 	public void respondBadRequest(Resource resource, Response response, Request request) {
 		wrapped.respondBadRequest(resource, response, request);
 	}
 
+	@Override
 	public void respondForbidden(Resource resource, Response response, Request request) {
 		wrapped.respondForbidden(resource, response, request);
 	}
 
+	@Override
 	public void respondDeleteFailed(Request request, Response response, Resource resource, Status status) {
 		wrapped.respondDeleteFailed(request, response, resource, status);
 	}
@@ -176,22 +194,27 @@ public abstract class AbstractWrappingResponseHandler implements WebDavResponseH
 		wrapped.respondPropFind(propFindResponses, response, request, pfr);
 	}
 
+	@Override
 	public void respondPropFind(List<PropFindResponse> propFindResponses, Response response, Request request, Resource r) {
 		wrapped.respondPropFind(propFindResponses, response, request, r);
 	}
 
+	@Override
 	public void respondServerError(Request request, Response response, String reason) {
 		wrapped.respondServerError(request, response, reason);
 	}
 
+	@Override
 	public void respondInsufficientStorage(Request request, Response response, StorageErrorReason storageErrorReason) {
 		wrapped.respondInsufficientStorage(request, response, storageErrorReason);
 	}
 
+	@Override
 	public void respondLocked(Request request, Response response, Resource existingResource) {
 		wrapped.respondLocked(request, response, existingResource);
 	}
 
+	@Override
 	public void respondPreconditionFailed(Request request, Response response, Resource resource) {
 		wrapped.respondPreconditionFailed(request, response, resource);
 	}

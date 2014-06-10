@@ -184,20 +184,22 @@ public class BufferingOutputStream extends OutputStream {
         return this.tempMemoryBuffer.toByteArray();
     }
 
-    @Override
-    protected void finalize() throws Throwable {
-        if( tempFile != null && tempFile.exists() ) {
-            log.warn("finalize called and temp file still exists, will delete");
-        }
-        deleteTempFileIfExists();
-        super.finalize();
-    }
+    // BM: deleting is taken care of by FileDeletingInputStream
+//    @Override
+//    protected void finalize() throws Throwable {
+//        deleteTempFileIfExists();
+//        super.finalize();
+//    }
 
-    public void deleteTempFileIfExists() {
-        
-        System.out.println("deleteTempFileIfExists");
-        Thread.dumpStack();
-        
+    
+
+    
+    /**
+     *  If this is called before the inputstream is used, then the inputstream 
+     * will fail to open (because it needs the file!!) 
+     * So should only use in exception handlers
+     */
+    public void deleteTempFileIfExists() {        
         if( bufOut != null ) {
             IOUtils.closeQuietly(bufOut);
         }

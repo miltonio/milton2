@@ -141,4 +141,14 @@ public class ResponseAdapter extends AbstractResponse {
         }
     }
 
+	@Override
+	public String getAcceptRanges() {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public void setAcceptRanges(String s) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
 }
