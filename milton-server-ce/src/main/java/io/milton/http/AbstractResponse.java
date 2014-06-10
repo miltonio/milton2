@@ -19,6 +19,7 @@
 
 package io.milton.http;
 
+import io.milton.common.RangeUtils;
 import java.util.Date;
 import java.util.List;
 
@@ -64,18 +65,7 @@ public abstract class AbstractResponse implements Response {
 //    }
 	@Override
     public void setContentRangeHeader(long start, long finish, Long totalLength) {
-        String l = totalLength == null ? "*" : totalLength.toString();
-
-        String s = null;
-        if (finish > -1) {
-            s = "bytes " + start + "-" + finish + "/" + l;
-        } else {
-            long wrotetill = totalLength == null ? 0 : totalLength.longValue() - 1;
-            //The end position starts counting at zero. So subtract 1
-            s = "bytes " + start + "-" + wrotetill + "/" + l;
-        }
-
-
+		String s = RangeUtils.toRangeString(start, finish, totalLength);
         setResponseHeader(Header.CONTENT_RANGE, s);
     }
 
@@ -144,6 +134,18 @@ public abstract class AbstractResponse implements Response {
         setResponseHeader(Header.LOCATION, redirectUrl);
     }
 
+	@Override
+	public String getAcceptRanges() {
+		return getResponseHeader(Header.ACCEPT_RANGES);
+	}
+
+	@Override
+	public void setAcceptRanges(String s) {
+		setResponseHeader(Header.ACCEPT_RANGES , s);
+	}
+
+	
+	
 	@Override
     public void setAllowHeader(List<String> methodsAllowed) {
         if (methodsAllowed == null || methodsAllowed.isEmpty()) {

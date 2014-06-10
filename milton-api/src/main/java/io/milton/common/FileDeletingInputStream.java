@@ -38,10 +38,10 @@ import org.slf4j.LoggerFactory;
  */
 public class FileDeletingInputStream extends InputStream{
 
-    private static Logger log = LoggerFactory.getLogger(FileDeletingInputStream.class);
+    private static final Logger log = LoggerFactory.getLogger(FileDeletingInputStream.class);
 
     private File tempFile;
-    private InputStream wrapped;
+    private final InputStream wrapped;
 
     public FileDeletingInputStream( File tempFile ) throws FileNotFoundException {
         this.tempFile = tempFile;

@@ -66,7 +66,9 @@ public interface Response {
         ETAG( "ETag" ),
         VARY( "Vary" ),
         ACCESS_CONTROL_ALLOW_ORIGIN("Access-Control-Allow-Origin"),
+        ACCEPT_RANGES("Accept-Ranges"),
         CONTENT_RANGE( "Content-Range" );
+        
         public String code;
 
         Header( String code ) {
@@ -248,6 +250,10 @@ public interface Response {
     
     void setAccessControlAllowOrigin(String s);
     
+    String getAcceptRanges();
+    
+    void setAcceptRanges(String s);
+    
     /**
      * Called to indicate that the request is completed. Some response implementations
      * might choose to close the http connection, while others which implement pipelining
@@ -260,6 +266,8 @@ public interface Response {
      * choose to close the HTTP connection, because the amount of data already sent
      * might not be consistent with the content length header which may have already
      * been sent
+     * @param status
+     * @param message
      */
     void sendError(Status status, String message);
     

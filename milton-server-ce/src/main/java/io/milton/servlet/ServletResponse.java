@@ -36,11 +36,12 @@ import org.slf4j.LoggerFactory;
 public class ServletResponse extends AbstractResponse {
 
 	private static final Logger log = LoggerFactory.getLogger(ServletResponse.class);
-	private static ThreadLocal<HttpServletResponse> tlResponse = new ThreadLocal<HttpServletResponse>();
+	private static final ThreadLocal<HttpServletResponse> tlResponse = new ThreadLocal<HttpServletResponse>();
 
 	/**
 	 * We make this available via a threadlocal so it can be accessed from parts
 	 * of the application which don't have a reference to the servletresponse
+	 * @return 
 	 */
 	public static HttpServletResponse getResponse() {
 		return tlResponse.get();
@@ -48,7 +49,7 @@ public class ServletResponse extends AbstractResponse {
 	private final HttpServletResponse r;
 //    private ByteArrayOutputStream out = new ByteArrayOutputStream();
 	private Response.Status status;
-	private Map<String, String> headers = new HashMap<String, String>();
+	private final Map<String, String> headers = new HashMap<String, String>();
 
 	public ServletResponse(HttpServletResponse r) {
 		this.r = r;

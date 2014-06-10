@@ -33,6 +33,20 @@ public class RangeUtils {
 
     private static final Logger log = LoggerFactory.getLogger(RangeUtils.class);
 
+    public static String toRangeString(long start, long finish, Long totalLength) {
+        String l = totalLength == null ? "*" : totalLength.toString();
+
+        String s = null;
+        if (finish > -1) {
+            s = "bytes " + start + "-" + finish + "/" + l;
+        } else {
+            long wrotetill = totalLength == null ? 0 : totalLength.longValue() - 1;
+            //The end position starts counting at zero. So subtract 1
+            s = "bytes " + start + "-" + wrotetill + "/" + l;
+        }
+        return s;
+    }
+    
     public static void writeRanges(InputStream in, List<Range> ranges, OutputStream responseOut) throws IOException {
         try {
             InputStream bufIn = in; //new BufferedInputStream(in);

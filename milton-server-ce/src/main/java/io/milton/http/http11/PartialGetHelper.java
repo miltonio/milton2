@@ -78,20 +78,7 @@ public class PartialGetHelper {
 			responseHandler.respondPartialContent(resource, response, request, params, r);
 		} else {
 			log.trace("partial get, multiple ranges");
-			File temp = File.createTempFile("milton_partial_get", null);
-			FileOutputStream fout = null;
-			try {
-				fout = new FileOutputStream(temp);
-				BufferedOutputStream bufOut = new BufferedOutputStream(fout);
-				resource.sendContent(bufOut, null, params, request.getContentTypeHeader());
-				bufOut.flush();
-				fout.flush();
-			} finally {
-				StreamUtils.close(fout);
-			}
-            response.setEntity(
-               new PartialEntity(ranges, temp)
-            );
+			responseHandler.respondPartialContent(resource, response, request, params, ranges);
 		}
 	}
 

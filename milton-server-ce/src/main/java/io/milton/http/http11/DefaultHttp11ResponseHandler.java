@@ -18,6 +18,8 @@
  */
 package io.milton.http.http11;
 
+import io.milton.common.BufferingOutputStream;
+import io.milton.common.StreamUtils;
 import io.milton.http.Range;
 import io.milton.resource.GetableResource;
 import io.milton.http.*;
@@ -25,6 +27,7 @@ import io.milton.resource.Resource;
 import io.milton.http.Response.Status;
 import io.milton.http.entity.BufferingGetableResourceEntity;
 import io.milton.http.entity.GetableResourceEntity;
+import io.milton.http.entity.PartialEntity;
 import io.milton.http.exceptions.BadRequestException;
 import java.util.Date;
 import java.util.List;
@@ -36,8 +39,12 @@ import org.slf4j.LoggerFactory;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.exceptions.NotFoundException;
 import io.milton.resource.BufferingControlResource;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.UUID;
 
 /**
  *
@@ -66,7 +73,7 @@ public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Buff
 	private final AuthenticationService authenticationService;
 	private final ETagGenerator eTagGenerator;
 	private final ContentGenerator contentGenerator;
-	private CacheControlHelper cacheControlHelper = new DefaultCacheControlHelper();	
+	private CacheControlHelper cacheControlHelper = new DefaultCacheControlHelper();
 	private int maxMemorySize = 100000;
 	private BUFFERING buffering;
 
@@ -113,7 +120,7 @@ public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Buff
 		if (authenticationService.canUseExternalAuth(resource, request)) {
 			log.info("respondUnauthorised: use external authentication");
 			initiateExternalAuth(resource, request, response);
-		} else {			
+		} else {
 			Auth auth = request.getAuthorization();
 			if (auth == null || auth.getTag() == null) {
 				log.info("respondUnauthorised: no authenticated user, so return staus: " + Response.Status.SC_UNAUTHORIZED);
@@ -224,6 +231,40 @@ public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Buff
 		}
 		response.setContentLengthHeader(contentLength);
 		response.setEntity(new GetableResourceEntity(resource, range, params, ct));
+	}
+
+	private String multipartBoundary = UUID.randomUUID().toString();
+
+	/**
+	 * Send a partial content response with multiple ranges
+	 *
+	 * @param resource
+	 * @param response
+	 * @param request
+	 * @param params
+	 * @param ranges
+	 * @throws NotAuthorizedException
+	 * @throws BadRequestException
+	 * @throws NotFoundException
+	 */
+	@Override
+	public void respondPartialContent(GetableResource resource, Response response, Request request, Map<String, String> params, List<Range> ranges) throws NotAuthorizedException, BadRequestException, NotFoundException {
+		log.debug("respondPartialContent - multiple ranges");
+		response.setStatus(Response.Status.SC_PARTIAL_CONTENT);
+		response.setAcceptRanges("bytes");
+		response.setDateHeader(new Date());
+		String etag = eTagGenerator.generateEtag(resource);
+		if (etag != null) {
+			response.setEtag(etag);
+		}
+		response.setContentTypeHeader("multipart/byteranges; boundary=" + multipartBoundary);
+		String acc = request.getAcceptHeader();
+		String ct = resource.getContentType(acc);
+
+		response.setEntity(
+				new PartialEntity(resource, ranges, params, ct, multipartBoundary)
+		);
+
 	}
 
 	@Override
