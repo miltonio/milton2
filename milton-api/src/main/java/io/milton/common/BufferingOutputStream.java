@@ -47,9 +47,9 @@ import org.slf4j.LoggerFactory;
  */
 public class BufferingOutputStream extends OutputStream {
 
-    private static Logger log = LoggerFactory.getLogger( BufferingOutputStream.class );
+    private static final Logger log = LoggerFactory.getLogger( BufferingOutputStream.class );
     private ByteArrayOutputStream tempMemoryBuffer = new ByteArrayOutputStream();
-    private int maxMemorySize;
+    private final int maxMemorySize;
     private File tempFile;
     private FileOutputStream fout;
     private BufferedOutputStream bufOut;
