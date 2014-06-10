@@ -186,11 +186,18 @@ public class BufferingOutputStream extends OutputStream {
 
     @Override
     protected void finalize() throws Throwable {
+        if( tempFile != null && tempFile.exists() ) {
+            log.warn("finalize called and temp file still exists, will delete");
+        }
         deleteTempFileIfExists();
         super.finalize();
     }
 
     public void deleteTempFileIfExists() {
+        
+        System.out.println("deleteTempFileIfExists");
+        Thread.dumpStack();
+        
         if( bufOut != null ) {
             IOUtils.closeQuietly(bufOut);
         }
@@ -199,7 +206,7 @@ public class BufferingOutputStream extends OutputStream {
         }
 
         if( tempFile != null && tempFile.exists() ) {
-            log.error( "temporary file was not deleted. Was close called on the inputstream? Will attempt to delete" );
+            log.error( "temporary file exists, will attempt to delete" );
             if( !tempFile.delete() ) {
                 log.error( "Still couldnt delete temporary file: " + tempFile.getAbsolutePath() );
             }
