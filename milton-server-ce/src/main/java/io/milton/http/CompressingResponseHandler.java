@@ -39,6 +39,7 @@ import io.milton.http.http11.DefaultCacheControlHelper;
 import io.milton.http.webdav.WebDavResponseHandler;
 import io.milton.common.BufferingOutputStream;
 import io.milton.common.FileUtils;
+import java.io.IOException;
 import java.util.Date;
 
 /**
@@ -119,21 +120,19 @@ public class CompressingResponseHandler extends AbstractWrappingResponseHandler 
 					tempOut.flush();
 				} catch (NotFoundException e) {
 					throw e;
-				} catch (Exception ex) {
-					tempOut.deleteTempFileIfExists();
+				} catch (IOException ex) {					
 					throw new RuntimeException(ex);
 				} finally {
 					FileUtils.close(tempOut);
+					tempOut.deleteTempFileIfExists();
 				}
 
 				log.trace("respondContent-compressed: " + resource.getClass());
 				setRespondContentCommonHeaders(response, resource, Response.Status.SC_OK, request.getAuthorization());
 				response.setContentEncodingHeader(Response.ContentEncoding.GZIP);
 				response.setVaryHeader("Accept-Encoding");
-				Long contentLength = tempOut.getSize();
-				if (contentLength != null) {
-					response.setContentLengthHeader(contentLength);
-				}
+				long contentLength = tempOut.getSize();
+				response.setContentLengthHeader(contentLength);
 				response.setContentTypeHeader(contentType);
 				cacheControlHelper.setCacheControl(r, response, request.getAuthorization());
                 response.setEntity(new InputStreamEntity(tempOut.getInputStream()));
@@ -167,7 +166,7 @@ public class CompressingResponseHandler extends AbstractWrappingResponseHandler 
 			// This list really should be from a parameter - TODO
 			boolean contentIsCompressable = contentType.contains("text") || contentType.contains("css") || contentType.contains("js") || contentType.contains("javascript");
 			if (contentIsCompressable) {
-				boolean supportsGzip = (acceptableEncodings != null && acceptableEncodings.toLowerCase().indexOf("gzip") > -1);
+				boolean supportsGzip = (acceptableEncodings != null && acceptableEncodings.toLowerCase().contains("gzip"));
 				log.trace("supports gzip: " + supportsGzip);
 				return supportsGzip;
 			}
