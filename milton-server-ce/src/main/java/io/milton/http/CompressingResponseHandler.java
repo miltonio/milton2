@@ -119,12 +119,13 @@ public class CompressingResponseHandler extends AbstractWrappingResponseHandler 
 					gzipOut.close();
 					tempOut.flush();
 				} catch (NotFoundException e) {
+					tempOut.deleteTempFileIfExists();
 					throw e;
-				} catch (IOException ex) {					
+				} catch (IOException ex) {	
+					tempOut.deleteTempFileIfExists();
 					throw new RuntimeException(ex);
 				} finally {
-					FileUtils.close(tempOut);
-					tempOut.deleteTempFileIfExists();
+					FileUtils.close(tempOut);					
 				}
 
 				log.trace("respondContent-compressed: " + resource.getClass());
