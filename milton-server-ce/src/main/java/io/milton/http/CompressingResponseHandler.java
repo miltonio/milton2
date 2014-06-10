@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.milton.http;
 
 import io.milton.resource.GetableResource;
@@ -87,20 +86,20 @@ public class CompressingResponseHandler extends AbstractWrappingResponseHandler 
 			String contentType = r.getContentType(acceptableContentTypes);
 
 			// Experimental support for already compressed content...
-			String acceptableEncodings = request.getAcceptEncodingHeader();			
+			String acceptableEncodings = request.getAcceptEncodingHeader();
 			if (r instanceof CompressedResource) {
 				CompressedResource compressedResource = (CompressedResource) r;
 				String acceptableEncoding = compressedResource.getSupportedEncoding(acceptableEncodings);
 				if (acceptableEncoding != null) {
-                    response.setContentTypeHeader(contentType);
-                    cacheControlHelper.setCacheControl(r, response, request.getAuthorization());
-                    Long contentLength = compressedResource.getCompressedContentLength(acceptableEncoding);
-                    response.setContentLengthHeader(contentLength);
-                    response.setContentEncodingHeader(Response.ContentEncoding.GZIP);
-                    response.setVaryHeader("Accept-Encoding");
-                    response.setEntity(new CompressedResourceEntity(
-                       compressedResource, params, contentType, acceptableEncoding
-                    ));
+					response.setContentTypeHeader(contentType);
+					cacheControlHelper.setCacheControl(r, response, request.getAuthorization());
+					Long contentLength = compressedResource.getCompressedContentLength(acceptableEncoding);
+					response.setContentLengthHeader(contentLength);
+					response.setContentEncodingHeader(Response.ContentEncoding.GZIP);
+					response.setVaryHeader("Accept-Encoding");
+					response.setEntity(new CompressedResourceEntity(
+							compressedResource, params, contentType, acceptableEncoding
+					));
 					return;
 				}
 			}
@@ -130,13 +129,12 @@ public class CompressingResponseHandler extends AbstractWrappingResponseHandler 
 				setRespondContentCommonHeaders(response, resource, Response.Status.SC_OK, request.getAuthorization());
 				response.setContentEncodingHeader(Response.ContentEncoding.GZIP);
 				response.setVaryHeader("Accept-Encoding");
-				Long contentLength = tempOut.getSize();
-				if (contentLength != null) {
-					response.setContentLengthHeader(contentLength);
-				}
+				long contentLength = tempOut.getSize();
+				response.setContentLengthHeader(contentLength);
+
 				response.setContentTypeHeader(contentType);
 				cacheControlHelper.setCacheControl(r, response, request.getAuthorization());
-                response.setEntity(new InputStreamEntity(tempOut.getInputStream()));
+				response.setEntity(new InputStreamEntity(tempOut.getInputStream()));
 			} else {
 				log.trace("respondContent: not compressable");
 				// We really should set this header, but it causes IE to not cache files (eg images)
