@@ -47,9 +47,9 @@ import org.slf4j.LoggerFactory;
  */
 public class BufferingOutputStream extends OutputStream {
 
-    private static final Logger log = LoggerFactory.getLogger( BufferingOutputStream.class );
+    private static Logger log = LoggerFactory.getLogger( BufferingOutputStream.class );
     private ByteArrayOutputStream tempMemoryBuffer = new ByteArrayOutputStream();
-    private final int maxMemorySize;
+    private int maxMemorySize;
     private File tempFile;
     private FileOutputStream fout;
     private BufferedOutputStream bufOut;
@@ -184,22 +184,13 @@ public class BufferingOutputStream extends OutputStream {
         return this.tempMemoryBuffer.toByteArray();
     }
 
-    // BM: deleting is taken care of by FileDeletingInputStream
-//    @Override
-//    protected void finalize() throws Throwable {
-//        deleteTempFileIfExists();
-//        super.finalize();
-//    }
+    @Override
+    protected void finalize() throws Throwable {
+        deleteTempFileIfExists();
+        super.finalize();
+    }
 
-    
-
-    
-    /**
-     *  If this is called before the inputstream is used, then the inputstream 
-     * will fail to open (because it needs the file!!) 
-     * So should only use in exception handlers
-     */
-    public void deleteTempFileIfExists() {        
+    public void deleteTempFileIfExists() {
         if( bufOut != null ) {
             IOUtils.closeQuietly(bufOut);
         }
@@ -208,7 +199,7 @@ public class BufferingOutputStream extends OutputStream {
         }
 
         if( tempFile != null && tempFile.exists() ) {
-            log.error( "temporary file exists, will attempt to delete" );
+            log.error( "temporary file was not deleted. Was close called on the inputstream? Will attempt to delete" );
             if( !tempFile.delete() ) {
                 log.error( "Still couldnt delete temporary file: " + tempFile.getAbsolutePath() );
             }

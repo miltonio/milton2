@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package io.milton.http;
 
 import io.milton.resource.GetableResource;
@@ -38,7 +39,6 @@ import io.milton.http.http11.DefaultCacheControlHelper;
 import io.milton.http.webdav.WebDavResponseHandler;
 import io.milton.common.BufferingOutputStream;
 import io.milton.common.FileUtils;
-import java.io.IOException;
 import java.util.Date;
 
 /**
@@ -87,20 +87,20 @@ public class CompressingResponseHandler extends AbstractWrappingResponseHandler 
 			String contentType = r.getContentType(acceptableContentTypes);
 
 			// Experimental support for already compressed content...
-			String acceptableEncodings = request.getAcceptEncodingHeader();
+			String acceptableEncodings = request.getAcceptEncodingHeader();			
 			if (r instanceof CompressedResource) {
 				CompressedResource compressedResource = (CompressedResource) r;
 				String acceptableEncoding = compressedResource.getSupportedEncoding(acceptableEncodings);
 				if (acceptableEncoding != null) {
-					response.setContentTypeHeader(contentType);
-					cacheControlHelper.setCacheControl(r, response, request.getAuthorization());
-					Long contentLength = compressedResource.getCompressedContentLength(acceptableEncoding);
-					response.setContentLengthHeader(contentLength);
-					response.setContentEncodingHeader(Response.ContentEncoding.GZIP);
-					response.setVaryHeader("Accept-Encoding");
-					response.setEntity(new CompressedResourceEntity(
-							compressedResource, params, contentType, acceptableEncoding
-					));
+                    response.setContentTypeHeader(contentType);
+                    cacheControlHelper.setCacheControl(r, response, request.getAuthorization());
+                    Long contentLength = compressedResource.getCompressedContentLength(acceptableEncoding);
+                    response.setContentLengthHeader(contentLength);
+                    response.setContentEncodingHeader(Response.ContentEncoding.GZIP);
+                    response.setVaryHeader("Accept-Encoding");
+                    response.setEntity(new CompressedResourceEntity(
+                       compressedResource, params, contentType, acceptableEncoding
+                    ));
 					return;
 				}
 			}
@@ -118,24 +118,25 @@ public class CompressingResponseHandler extends AbstractWrappingResponseHandler 
 					gzipOut.close();
 					tempOut.flush();
 				} catch (NotFoundException e) {
-					tempOut.deleteTempFileIfExists();
 					throw e;
-				} catch (IOException ex) {	
+				} catch (Exception ex) {
 					tempOut.deleteTempFileIfExists();
 					throw new RuntimeException(ex);
 				} finally {
-					FileUtils.close(tempOut);					
+					FileUtils.close(tempOut);
 				}
 
 				log.trace("respondContent-compressed: " + resource.getClass());
 				setRespondContentCommonHeaders(response, resource, Response.Status.SC_OK, request.getAuthorization());
 				response.setContentEncodingHeader(Response.ContentEncoding.GZIP);
 				response.setVaryHeader("Accept-Encoding");
-				long contentLength = tempOut.getSize();
-				response.setContentLengthHeader(contentLength);
+				Long contentLength = tempOut.getSize();
+				if (contentLength != null) {
+					response.setContentLengthHeader(contentLength);
+				}
 				response.setContentTypeHeader(contentType);
 				cacheControlHelper.setCacheControl(r, response, request.getAuthorization());
-				response.setEntity(new InputStreamEntity(tempOut.getInputStream()));
+                response.setEntity(new InputStreamEntity(tempOut.getInputStream()));
 			} else {
 				log.trace("respondContent: not compressable");
 				// We really should set this header, but it causes IE to not cache files (eg images)
@@ -166,7 +167,7 @@ public class CompressingResponseHandler extends AbstractWrappingResponseHandler 
 			// This list really should be from a parameter - TODO
 			boolean contentIsCompressable = contentType.contains("text") || contentType.contains("css") || contentType.contains("js") || contentType.contains("javascript");
 			if (contentIsCompressable) {
-				boolean supportsGzip = (acceptableEncodings != null && acceptableEncodings.toLowerCase().contains("gzip"));
+				boolean supportsGzip = (acceptableEncodings != null && acceptableEncodings.toLowerCase().indexOf("gzip") > -1);
 				log.trace("supports gzip: " + supportsGzip);
 				return supportsGzip;
 			}
