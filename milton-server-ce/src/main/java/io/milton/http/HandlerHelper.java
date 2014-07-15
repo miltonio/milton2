@@ -165,8 +165,17 @@ public class HandlerHelper {
 		}
 	}
 
+	public boolean isLocked(Resource inResource) {
+		if (inResource == null || !(inResource instanceof LockableResource)) {
+			return false;
+		}
+		LockableResource lr = (LockableResource) inResource;
+		LockToken token = lr.getCurrentLock();
+		return token != null;
+	}
+	
 	/**
-	 * TODO: move to webdav
+	 * 
 	 *
 	 * @param inRequest
 	 * @param inResource
@@ -223,6 +232,13 @@ public class HandlerHelper {
 		return false;
 	}
 
+	/**
+	 * Check of an IF header, and if it exists return true if it contains "no-lock"
+	 * 
+	 * @param inRequest
+	 * @param inParentcol
+	 * @return 
+	 */
 	public boolean missingLock(Request inRequest, Resource inParentcol) {
 		//make sure we are not requiring a lock
 		String value = inRequest.getIfHeader();

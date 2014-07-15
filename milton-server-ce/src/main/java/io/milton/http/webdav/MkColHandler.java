@@ -88,12 +88,12 @@ public class MkColHandler implements Handler {
 		if (parentcol != null) {
 			log.debug("process: resource: " + parentcol.getClass().getName());
 
-            if( handlerHelper.isNotCompatible( parentcol, request.getMethod() ) ) {
-                log.debug( "resource not compatible. Resource class: " + parentcol.getClass() + " handler: " + getClass() );
-                responseHandler.respondMethodNotImplemented( parentcol, response, request );
-                return;
-            }			
-			
+			if (handlerHelper.isNotCompatible(parentcol, request.getMethod())) {
+				log.debug("resource not compatible. Resource class: " + parentcol.getClass() + " handler: " + getClass());
+				responseHandler.respondMethodNotImplemented(parentcol, response, request);
+				return;
+			}
+
 			if (handlerHelper.isLockedOut(request, parentcol)) {
 				log.warn("isLockedOut");
 				response.setStatus(Status.SC_LOCKED);
@@ -101,14 +101,24 @@ public class MkColHandler implements Handler {
 			}
 			Resource dest = manager.getResourceFactory().getResource(host, finalpath.toString());
 
-			if (dest != null && handlerHelper.isLockedOut(request, dest)) {
-				log.info("destination exists and is locked");
-				responseHandler.respondLocked(request, response, dest);
+			if (dest != null) {
+				if (handlerHelper.isLockedOut(request, dest)) {
+					log.info("destination exists and is locked");
+					responseHandler.respondLocked(request, response, dest);
+				} else {
+					log.info("destination exists and is not locked");
+					responseHandler.respondMethodNotAllowed(dest, response, request);
+				}
 				return;
-			} else if (handlerHelper.missingLock(request, parentcol)) {
-				log.info("precondition failed");
-				response.setStatus(Status.SC_PRECONDITION_FAILED); //notowner_modify wants this code here
-				return;
+			}
+			if (handlerHelper.missingLock(request, parentcol)) {
+				// ensure the dest is not locked
+				if (handlerHelper.isLocked(dest)) {
+					log.info("precondition failed");
+					//response.setStatus(Status.SC_PRECONDITION_FAILED); //notowner_modify wants this code here
+					responseHandler.respondPreconditionFailed(request, response, dest);
+					return;
+				}
 			}
 
 			if (parentcol instanceof CollectionResource) {
@@ -141,8 +151,8 @@ public class MkColHandler implements Handler {
 			log.info("not compatible");
 			responseHandler.respondMethodNotImplemented(resource, response, request);
 			return;
-		}		
-		
+		}
+
 		MakeCollectionableResource existingCol = (MakeCollectionableResource) resource;
 //		try {
 //			//For litmus test and RFC support
@@ -160,7 +170,6 @@ public class MkColHandler implements Handler {
 //				return;
 //			}
 //		}
-
 
 		Resource existingChild = existingCol.child(newName);
 		if (existingChild != null) {
@@ -182,6 +191,14 @@ public class MkColHandler implements Handler {
 		}
 	}
 
+	public CollectionResourceCreator getCollectionResourceCreator() {
+		return collectionResourceCreator;
+	}
+
+	public void setCollectionResourceCreator(CollectionResourceCreator collectionResourceCreator) {
+		this.collectionResourceCreator = collectionResourceCreator;
+	}
+
 	public interface CollectionResourceCreator {
 
 		CollectionResource createResource(MakeCollectionableResource existingCol, String newName, Request request) throws ConflictException, NotAuthorizedException, BadRequestException, IOException;
@@ -195,4 +212,5 @@ public class MkColHandler implements Handler {
 			return made;
 		}
 	}
+
 }

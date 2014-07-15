@@ -23,8 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Attempt to locate an Access Control List of the given resource for the
- * current user
+ * 
  *
  * @author brad
  */
