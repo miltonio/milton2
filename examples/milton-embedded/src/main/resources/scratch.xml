@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<d:multistatus xmlns:cs="http://calendarserver.org/ns/" xmlns:d="DAV:" xmlns:cal="urn:ietf:params:xml:ns:caldav" xmlns:card="urn:ietf:params:xml:ns:carddav">
+    <d:response>
+        <d:href>/users/bob/scheduling/inbox/</d:href>
+        <d:propstat>
+            <d:prop>
+                <d:getcontenttype></d:getcontenttype>
+                <d:resourcetype>
+                    <d:collection/>
+                    <cal:schedule-inbox/>
+                </d:resourcetype>
+                <d:getetag/>
+            </d:prop>
+            <d:status>HTTP/1.1 200 OK</d:status>
+        </d:propstat>
+    </d:response>
+    <d:response>
+        <d:href>/users/bob/scheduling/inbox/893244e8-7485-40b0-ae10-d2c7cb4a5385</d:href>
+        <d:propstat>
+            <d:prop>
+                <d:getcontenttype>text/calendar</d:getcontenttype>
+                <d:resourcetype/>
+                <d:getetag>"1_-331513177"</d:getetag>
+            </d:prop>
+            <d:status>HTTP/1.1 200 OK</d:status>
+        </d:propstat>
+    </d:response>
+</d:multistatus>
