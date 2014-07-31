@@ -18,7 +18,7 @@
     
     <profiles>        
         <profile>
-            <id>run-tomcat</id>                
+            <id>run-embedded-jetty</id>                
             <build>              
                 <plugins>                                      
                     <plugin>
