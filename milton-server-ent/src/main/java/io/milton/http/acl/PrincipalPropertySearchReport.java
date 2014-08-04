@@ -21,14 +21,16 @@ import io.milton.principal.DiscretePrincipal;
 import io.milton.principal.PrincipalSearchCriteria;
 import io.milton.principal.PrincipalSearchCriteria.SearchItem;
 import io.milton.principal.PrincipalSearchService;
-import io.milton.resource.ICalResource;
 import io.milton.resource.PropFindableResource;
 import io.milton.resource.Resource;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import javax.xml.namespace.QName;
+
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Namespace;
@@ -40,21 +42,21 @@ import org.slf4j.LoggerFactory;
  * return specified properties for the matching principal resources. To search
  * for an address book owned by a user named "Laurie", the REPORT request body
  * would look like this:
- *
- * <?xml version="1.0" encoding="utf-8" ?>
- * <D:principal-property-search xmlns:D="DAV:">
- * <D:property-search>
- * <D:prop>
- * <D:displayname/>
- * </D:prop>
- * <D:match>Laurie</D:match>
- * </D:property-search>
- * <D:prop>
- * <C:addressbook-home-set xmlns:C="urn:ietf:params:xml:ns:carddav"/>
- * <D:displayname/>
- * </D:prop>
- * </D:principal-property-search>
- *
+ * <code><pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt;
+&lt;D:principal-property-search xmlns:D=&quot;DAV:&quot;&gt;
+&lt;D:property-search&gt;
+&lt;D:prop&gt;
+&lt;D:displayname/&gt;
+&lt;/D:prop&gt;
+&lt;D:match&gt;Laurie&lt;/D:match&gt;
+&lt;/D:property-search&gt;
+&lt;D:prop&gt;
+&lt;C:addressbook-home-set xmlns:C=&quot;urn:ietf:params:xml:ns:carddav&quot;/&gt;
+&lt;D:displayname/&gt;
+&lt;/D:prop&gt;
+&lt;/D:principal-property-search&gt;
+ * </pre></code>
  * The server performs a case-sensitive or caseless search for a matching string
  * subset of "Laurie" within the DAV:displayname property. Thus, the server
  * might return "Laurie Dusseault", "Laurier Desruisseaux", or "Wilfrid Laurier"
@@ -78,7 +80,6 @@ public class PrincipalPropertySearchReport implements Report {
         this.principalSearchService = principalSearchService;
     }
 
-        
     @Override
     public String getName() {
         return "principal-property-search";
@@ -118,7 +119,6 @@ public class PrincipalPropertySearchReport implements Report {
         parentHref = Utils.suffixSlash(parentHref);
         for (DiscretePrincipal dp : foundResources) {
             String href = parentHref + dp.getName();
-            //List<PropFindResponse> resps = propertyBuilder.buildProperties(calendar, 0, parseResult, href);
 
             List<PropFindResponse> resps = new ArrayList<PropFindResponse>();
             if (dp instanceof PropFindableResource) {
@@ -130,7 +130,7 @@ public class PrincipalPropertySearchReport implements Report {
         }
 
         String xml = xmlGenerator.generate(respProps);
-        System.out.println(xml);
+        log.debug(xml);
         return xml;
     }
 

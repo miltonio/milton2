@@ -18,43 +18,43 @@
  */
 package io.milton.http.http11;
 
-import io.milton.http.Handler;
-import io.milton.resource.ReplaceableResource;
-import io.milton.resource.PutableResource;
-import io.milton.resource.CollectionResource;
-import io.milton.resource.Resource;
-import io.milton.http.HandlerHelper;
-import io.milton.http.HttpManager;
-import io.milton.resource.GetableResource;
-import io.milton.http.Range;
-import io.milton.resource.MakeCollectionableResource;
-import io.milton.http.exceptions.BadRequestException;
-import io.milton.http.exceptions.NotFoundException;
-import io.milton.http.quota.StorageChecker.StorageErrorReason;
-import java.io.IOException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import io.milton.common.Path;
-import io.milton.http.Request.Method;
-import io.milton.http.Response.Status;
-import io.milton.http.exceptions.ConflictException;
-import io.milton.http.exceptions.NotAuthorizedException;
-import io.milton.http.webdav.WebDavResponseHandler;
 import io.milton.common.FileUtils;
-import io.milton.common.RandomFileOutputStream;
 import io.milton.common.LogUtils;
+import io.milton.common.Path;
+import io.milton.common.RandomFileOutputStream;
 import io.milton.event.NewFolderEvent;
 import io.milton.event.PutEvent;
+import io.milton.http.Handler;
+import io.milton.http.HandlerHelper;
+import io.milton.http.HttpManager;
+import io.milton.http.Range;
 import io.milton.http.Request;
+import io.milton.http.Request.Method;
 import io.milton.http.Response;
+import io.milton.http.Response.Status;
+import io.milton.http.exceptions.BadRequestException;
+import io.milton.http.exceptions.ConflictException;
+import io.milton.http.exceptions.NotAuthorizedException;
+import io.milton.http.exceptions.NotFoundException;
+import io.milton.http.quota.StorageChecker.StorageErrorReason;
+import io.milton.http.webdav.WebDavResponseHandler;
 import io.milton.resource.CalendarResource;
+import io.milton.resource.CollectionResource;
+import io.milton.resource.GetableResource;
+import io.milton.resource.MakeCollectionableResource;
+import io.milton.resource.PutableResource;
+import io.milton.resource.ReplaceableResource;
+import io.milton.resource.Resource;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PutHandler implements Handler {
 

@@ -108,7 +108,6 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 							}
 						}
 					}
-					//System.out.println("score=" + score + " method=" + cm.method.getName() + " - foundmethod=" + foundMethod + " foundscore=" + foundMethodScore);
 				}
 			}
 		}
@@ -226,7 +225,6 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 		if (anno instanceof Get) {
 			Get g = (Get) anno;
 			if (g.contentType() != null && g.contentType().length() > 0) {
-				System.out.println(g.contentType() + " == " + reqContentType);
 				if (g.contentType().equals(reqContentType)) {
 					return 1;
 				} else {
@@ -251,7 +249,6 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 		if (matchParams != null && matchParams.length > 0) {
 			for (String paramName : matchParams) {
 				if (params == null || !params.containsKey(paramName)) {
-					//System.out.println("param not tound: " + paramName + " in map: " + params.size());
 					return -1; // does not match
 				}
 			}

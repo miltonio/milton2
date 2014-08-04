@@ -19,8 +19,8 @@ public interface ZoneDomainResource extends DomainResource{
 	 * 
 	 * @return
 	 */
-	public Set<DomainResource> getDomainResoures();
-	
+	public Set<DomainResource> getDomainResources();
+
 	//public SOARecord getSOARecord();
 	//public List<NSRecord< getNSRecords();
 }

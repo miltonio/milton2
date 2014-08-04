@@ -3,17 +3,17 @@
  */
 package io.milton.http.webdav2;
 
-import io.milton.webdav.utils.LockUtils;
 import io.milton.http.LockInfo;
 import io.milton.http.LockToken;
 import io.milton.http.XmlWriter;
 import io.milton.http.XmlWriter.Element;
 import io.milton.http.values.ValueWriter;
 import io.milton.http.webdav.WebDavProtocol;
+import io.milton.webdav.utils.LockUtils;
+
 import java.util.Map;
 
 public class LockTokenValueWriter implements ValueWriter {
-
 
     @Override
     public boolean supports(String nsUri, String localName, Class c) {

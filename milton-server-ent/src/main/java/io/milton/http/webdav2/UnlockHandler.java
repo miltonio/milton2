@@ -1,8 +1,6 @@
 /*
  * Copyright 2012 McEvoy Software Ltd.
  */
-
-
 package io.milton.http.webdav2;
 
 import io.milton.http.ExistingEntityHandler;

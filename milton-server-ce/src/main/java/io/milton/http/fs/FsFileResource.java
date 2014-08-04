@@ -30,10 +30,20 @@ import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.exceptions.NotFoundException;
-import io.milton.resource.*;
-import java.io.*;
+import io.milton.resource.CopyableResource;
+import io.milton.resource.DeletableResource;
+import io.milton.resource.GetableResource;
+import io.milton.resource.MoveableResource;
+import io.milton.resource.PropFindableResource;
+import io.milton.resource.ReplaceableResource;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Map;
-import java.util.logging.Level;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;

@@ -19,19 +19,18 @@
 
 package io.milton.http.http11;
 
-import io.milton.http.ResourceHandlerHelper;
-import io.milton.http.Response;
-import io.milton.resource.Resource;
-import io.milton.http.HandlerHelper;
 import io.milton.http.ExistingEntityHandler;
 import io.milton.http.HttpManager;
-import io.milton.resource.PostableResource;
 import io.milton.http.Request;
+import io.milton.http.ResourceHandlerHelper;
+import io.milton.http.Response;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
-
 import io.milton.http.exceptions.NotFoundException;
+import io.milton.resource.PostableResource;
+import io.milton.resource.Resource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

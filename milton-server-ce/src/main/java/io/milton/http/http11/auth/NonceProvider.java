@@ -20,7 +20,6 @@
 package io.milton.http.http11.auth;
 
 import io.milton.http.Request;
-import io.milton.resource.Resource;
 
 /**
  * Provides a source of nonce values to be used in Digest authentication,

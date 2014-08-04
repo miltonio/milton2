@@ -8,8 +8,6 @@ package io.milton.sso;
 
 import io.milton.http.Request;
 import io.milton.http.Response;
-import java.io.OutputStream;
-import java.util.List;
 //import org.opensaml.ws.transport.http.HTTPOutTransport;
 //import org.opensaml.xml.security.credential.Credential;
 

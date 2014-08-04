@@ -37,7 +37,6 @@ public class ByteArrayEntity implements Response.Entity{
 
     @Override
     public void write(Response response, OutputStream outputStream) throws Exception {
-		System.out.println("ByteArrayEntity: write: " + arr.length + " - " + outputStream.getClass());
         outputStream.write(arr);
 		outputStream.flush();
     }

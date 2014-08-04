@@ -38,9 +38,7 @@ public class RootContext extends Context implements Closeable {
                 f.init(this);
             }
         } catch (Throwable e) {
-            System.out.println("Exception initialising the rootcontext. Forcing shutdown");
-            e.printStackTrace();
-            log.error("Exception initialising the rootcontext. Forcing shutdown", e);
+            log.error("Exception initializing the rootcontext. Forcing shutdown", e);
             try {
                 this.shutdown();
             } catch (Throwable e2) {

@@ -19,22 +19,19 @@
 
 package io.milton.http.http11;
 
-import io.milton.resource.GetableResource;
 import io.milton.http.Range;
 import io.milton.http.Request;
 import io.milton.http.Response;
-import io.milton.http.entity.PartialEntity;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.exceptions.NotFoundException;
-import io.milton.common.StreamUtils;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
+import io.milton.resource.GetableResource;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

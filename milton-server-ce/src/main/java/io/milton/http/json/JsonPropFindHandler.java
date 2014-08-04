@@ -24,12 +24,15 @@ import io.milton.http.Range;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.values.ValueAndType;
+import io.milton.http.webdav.PropFindPropertyBuilder;
+import io.milton.http.webdav.PropFindResponse;
+import io.milton.http.webdav.PropertiesRequest;
 import io.milton.http.webdav.PropertiesRequest.Property;
-import io.milton.http.webdav.*;
-import io.milton.property.PropertySource;
+import io.milton.http.webdav.WebDavProtocol;
 import io.milton.resource.CollectionResource;
 import io.milton.resource.PropFindableResource;
 import io.milton.resource.Resource;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -44,11 +47,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+
 import javax.xml.namespace.QName;
+
 import net.sf.json.JSON;
 import net.sf.json.JSONSerializer;
 import net.sf.json.JsonConfig;
 import net.sf.json.util.CycleDetectionStrategy;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

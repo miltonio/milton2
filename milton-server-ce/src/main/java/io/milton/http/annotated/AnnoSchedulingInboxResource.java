@@ -14,15 +14,13 @@
  */
 package io.milton.http.annotated;
 
-import io.milton.http.exceptions.BadRequestException;
-import io.milton.http.exceptions.NotAuthorizedException;
 import org.slf4j.LoggerFactory;
 
 /**
- * Placeholder object to represent a node in an annotations hierachy acting as a
+ * Placeholder object to represent a node in an annotations hierarchy acting as a
  * collection
  *
- * A source object (ie your pojo) is considered a collection if it can have
+ * A source object (ie your POJO) is considered a collection if it can have
  * children , ie if there exists at least one @ChildOf or @ChildrenOf method
  * which has that object as its source type. Note this is keyed on the class.
  *

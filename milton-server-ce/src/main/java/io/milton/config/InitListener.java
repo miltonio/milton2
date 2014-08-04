@@ -21,7 +21,7 @@ package io.milton.config;
 import io.milton.http.HttpManager;
 
 /**
- * Listener interface to hook into the initialisatio process for HttpManagerBuilder
+ * Listener interface to hook into the initialization process for HttpManagerBuilder
  *
  * @author brad
  */
@@ -41,7 +41,7 @@ public interface InitListener {
 	void afterInit(HttpManagerBuilder b);
 	
 	/**
-	 * Called immediately after bulding the http manager
+	 * Called immediately after building the http manager
 	 * 
 	 * @param b
 	 * @param m 

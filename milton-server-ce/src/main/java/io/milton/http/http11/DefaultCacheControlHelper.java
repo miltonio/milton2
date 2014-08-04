@@ -39,7 +39,7 @@ public class DefaultCacheControlHelper implements CacheControlHelper {
     public void setCacheControl( final GetableResource resource, final Response response, Auth auth ) {
         Long delta = resource.getMaxAgeSeconds( auth );
         if( log.isTraceEnabled() ) {
-            log.trace( "setCacheControl: " + delta + " - " + resource.getClass() );
+            log.trace("setCacheControl: {} - {}", delta, resource.getClass() );
         }
         if( delta != null && delta > 0 ) {
             if( usePrivateCache && auth != null ) {
