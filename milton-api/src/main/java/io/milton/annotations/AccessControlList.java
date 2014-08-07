@@ -18,34 +18,32 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.List;
 
 /**
  * Marks a method as one which returns the Access Control List for a user
  * on a given resource
  * 
- * The method must have at least 2 parameters
+ * <p>The method must have at least 2 parameters:
  *  <ul>
  *  <li>The object to return an access control list for. For example, if you want to return permissions for a Calendar, then this should be a Calendar</li>
- *  <li>The current user. This is the object returned by the @Authenticate method</li>
+ *  <li>The current user. This is the object returned by the {@code @Authenticate} method</li>
  * </ul>
  * 
- * Milton will search up the object hierarchy to find a @AccessControlList method. The
+ * <p>Milton will search up the object hierarchy to find a {@code @AccessControlList} method. The
  * first one found which returns a non-null value will be used. Returning null
- * indicates the method is not able to determine an ACL, so milton will continue the search up the parents.
+ * indicates the method is not able to determine an ACL, so Milton will continue the search up the parents.
+ *
+ * <p>So if a request is made to a URL like this: {@code /users/brad/calenars/cal1}
  * 
- * So if a request is made to a URL like this: /users/brad/calenars/cal1
- * 
- * Then if cal1 represents an instance of a MyCalendar, and @Authenticate returned
+ * <p>Then if cal1 represents an instance of a MyCalendar, and {@code @Authenticate} returned
  * an instance of MyUser, then you should have a method like this:
  * 
- * @AccessControlList public List<AccessControlledResource.Priviledge> getUserPrivs(MyCalendar target, MyUser currentUser)
+ * <pre>{@code @AccessControlList public List{@literal <}AccessControlledResource.Priviledge{@literal >} getUserPrivs(MyCalendar target, MyUser currentUser)}</pre>
  * 
- * But if you want to apply permissions at a higher level, say at the level of the user
+ * <p>But if you want to apply permissions at a higher level, say at the level of the user
  * object, and lets say that "brad" is an instance of a MyUser object then you would have this:
  * 
- * @AccessControlList public List<AccessControlledResource.Priviledge> getUserPrivs(MyUser target, MyUser currentUser)
- * 
+ * <pre>{@code {@literal @}AccessControlList public List{@literal <}AccessControlledResource.Priviledge{@literal >} getUserPrivs(MyUser target, MyUser currentUser)}</pre>
  *
  * @author brad
  */

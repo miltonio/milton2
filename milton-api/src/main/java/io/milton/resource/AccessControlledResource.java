@@ -22,16 +22,16 @@ package io.milton.resource;
 import io.milton.http.Auth;
 import io.milton.http.values.HrefList;
 import io.milton.principal.Principal;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * 5.4.1. Example: Retrieving the User's Current Set of Assigned Privileges
  *
- * Continuing the example from Section 5.3.1, this example shows a client
+ * <p>Continuing the example from Section 5.3.1, this example shows a client
  * requesting the DAV:current-user-privilege-set property from the resource with
  * URL http://www.example.com/papers/. The username of the principal making the
  * request is "khare", and Digest authentication is used in the request. The
@@ -46,18 +46,20 @@ import java.util.Set;
  * principal with username "khare" is not listed in an ACE granting that
  * principal write permission.
  *
- * >> Request <<
+ * <p>>> Request <<
  *
- * PROPFIND /papers/ HTTP/1.1 Host: www.example.com Content-type: text/xml;
+ * <pre>PROPFIND /papers/ HTTP/1.1 Host: www.example.com Content-type: text/xml;
  * charset="utf-8" Content-Length: xxx Depth: 0 Authorization: Digest
  * username="khare", realm="users@example.com", nonce="...", uri="/papers/",
  * response="...", opaque="..."
  *
  * <?xml version="1.0" encoding="utf-8" ?> <D:propfind xmlns:D="DAV:"> <D:prop>
  * <D:current-user-privilege-set/> </D:prop> </D:propfind>
+ *</pre>
  *
- * >> Response <<
- *
+ * <p>>> Response <<
+ * 
+ * <pre>
  * HTTP/1.1 207 Multi-Status Content-Type: text/xml; charset="utf-8"
  * Content-Length: xxx
  *
@@ -66,7 +68,7 @@ import java.util.Set;
  * <D:prop> <D:current-user-privilege-set> <D:privilege><D:read/></D:privilege>
  * </D:current-user-privilege-set> </D:prop> <D:status>HTTP/1.1 200
  * OK</D:status> </D:propstat> </D:response> </D:multistatus>
- *
+ * </pre>
  *
  *
  * @author alex

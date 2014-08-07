@@ -23,13 +23,13 @@ import java.lang.annotation.Target;
 /**
  * Marks a method as one which performs a free busy query
  * 
- * Must take the following arguments: 
+ * <p>Must take the following arguments: 
  * <ul>
  *  <li>Source object, representing a caldav principal/user</li>
  *  <li>The query parameters, as an ical formatted text message</li>
  * </ul>
  * 
- * MUST return a List<SchedulingResponseItem>
+ * <p>MUST return a {@code List{@literal <}SchedulingResponseItem{@literal >}}
  * 
  *
  * @author brad

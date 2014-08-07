@@ -28,7 +28,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 /**
- * Defines a source of properties. This is used by both propfind and proppatch
+ * Defines a source of properties. This is used by both PROPFIND and PROPPATCH
  * 
  *
  * @author brad

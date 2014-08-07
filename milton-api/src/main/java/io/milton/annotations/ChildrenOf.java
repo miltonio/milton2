@@ -18,30 +18,33 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.List;
 
 /**
  * Marks a method as one which locates children for the given parent. The parent
  * will always be the first method argument
  * 
- * There may be multiple matching childrenOf methods for a given parent object,
+ * <p>There may be multiple matching childrenOf methods for a given parent object,
  * in which case all of the results are merged into a single set
  * 
- * The method must
- *  - return a collection, or array, or a single pojo object which has appropriate controllers
- *  - the first argument must be the hierachial parent of these objects
+ * <p>The method must:
+ * <ul>
+ *  <li>return a collection, or array, or a single POJO object which has appropriate controllers
+ *  <li>the first argument must be the hierarchical parent of these objects
+ * </ul>
  * 
- * Example:
- *  @ChildrenOf
-    public List<Band> getBands(BandsController root) {
-        return Band.findAll(SessionManager.session());
-    }
+ * <p>Example:
+ * <pre>
+ *  {@literal @}ChildrenOf
+ *    public List{@literal <}Band{@literal >} getBands(BandsController root) {
+ *        return Band.findAll(SessionManager.session());
+ *    }
+ * </pre>
  *
- * Performance Tip
- * Note that milton will scan children collections to locate single objects
- * as part of resource location if no @ChildOf method is present. It will
- * also scan by default if any @ChildOf methods have returned null. This
- * can be a performance problem in many cases. To prevent @ChildrenOf methods
+ * <strong>Performance Tip</strong>
+ * Note that Milton will scan children collections to locate single objects
+ * as part of resource location if no {@code @ChildOf} method is present. It will
+ * also scan by default if any {@code @ChildOf} methods have returned null. This
+ * can be a performance problem in many cases. To prevent {@code @ChildrenOf} methods
  * being used to locate single items set the allowChildLookups property to false
  * 
  * @author brad

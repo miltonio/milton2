@@ -24,7 +24,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-/** Immutable
+/**
+ * Immutable
  */
 public class Path implements Serializable {
 

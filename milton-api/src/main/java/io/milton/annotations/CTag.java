@@ -22,11 +22,11 @@ import java.lang.annotation.Target;
 /**
  * Marks the method which returns a CTag for the resource
  * 
- * A CTag "tags" a collection with some identifier representing the current state.
+ * <p>A CTag "tags" a collection with some identifier representing the current state.
  * The only requirement for this tag is that it changes whenever the state of
  * any member changes
  * 
- * A simple way to achieve this is to set the ctag to the system clock whenever
+ * <p>A simple way to achieve this is to set the ctag to the system clock whenever
  * any member of the collection changes
  *
  * @author brad

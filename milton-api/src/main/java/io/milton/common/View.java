@@ -14,8 +14,6 @@
  */
 package io.milton.common;
 
-import java.io.OutputStream;
-import java.util.Map;
 
 /**
  * Abstraction of a view.

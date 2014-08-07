@@ -23,9 +23,9 @@ import java.lang.annotation.Target;
  * Marks a method as one which creates a child resource containing the given content,
  * or replaces an existing child's content with new data<br/><br/>
  * 
- * Return type - Must return the created pojo object, or the updated child
+ * <p>Return type - Must return the created POJO object, or the updated child
  * 
- * Parameters:
+ * <p>Parameters:
  * <ol>
  *  <li>first arg must be the object to update OR..</li>
  *  <li>the parent object, followed by the name of the child resource</li> 
@@ -40,10 +40,9 @@ import java.lang.annotation.Target;
  * 
  * <p>
  * Example: Creating a new child resource
- * </p>
  * 
  * <pre>
- *    @PutChild
+ *    {@literal @}PutChild
  *    public MyDatabase.FileContentItem createFile(MyDatabase.FolderContentItem parent, String name, byte[] bytes) {
  *        FileContentItem file = parent.addFile(name);
  *        file.setBytes(bytes);
@@ -54,28 +53,26 @@ import java.lang.annotation.Target;
  *
  * <p>
  * Example: updating an existing resource
- * <br/>
- * 
- *     @PutChild<br/>
- *    public Image uploadImage(Image image, byte[] bytes) throws IOException {<br/>
- *        File fRoot = getContentRoot();<br/>
- *        File content = new File(fRoot, image.getFileName());<br/>
- *        FileUtils.writeByteArrayToFile(content, bytes);<br/>
- *        return image;<br/>
- *    }    <br/>
- * </p>
+ * <pre>
+ *    {@literal @}PutChild
+ *    public Image uploadImage(Image image, byte[] bytes) throws IOException {
+ *        File fRoot = getContentRoot();
+ *        File content = new File(fRoot, image.getFileName());
+ *        FileUtils.writeByteArrayToFile(content, bytes);
+ *        return image;
+ *    }
+ * </pre>
  * 
  * <p>
  * Example: Creating a new child resource from an inputstream. This uses the contentLength and contentType
  * headers, but please note these are not always sent by client apps.
- * </p>
  * 
  * <pre>
- *    @PutChild
+ *    {@literal @}PutChild
  *    public MyDatabase.FileContentItem createFile(MyDatabase.FolderContentItem parent, String name, InputStream in, Long contentLength, String contentType) {
  *      ...
  *    }
- * </pre>*
+ * </pre>
  *
  * @author brad
  */

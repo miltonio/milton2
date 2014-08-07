@@ -65,7 +65,6 @@ public class FileUtils {
         return os;
     }
 
-    @SuppressWarnings("unchecked")
     public static String readResource(Class cl, String res) throws IOException {
         InputStream in = cl.getResourceAsStream(res);
         if (in == null) {

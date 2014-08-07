@@ -22,8 +22,9 @@ package io.milton.resource;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
-import io.milton.http.webdav.PropPatchParseResult;
+
 import java.util.Map;
+
 import javax.xml.namespace.QName;
 
 /**

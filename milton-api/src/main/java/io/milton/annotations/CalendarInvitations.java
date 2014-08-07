@@ -22,11 +22,9 @@ import java.lang.annotation.Target;
 /**
  * Marks a method as one which finds calendar event invitations for a user
  * 
- * First argument must be the user source object
+ * <p>First argument must be the user source object
  * 
- * Returns a list of objects which represent calendar items
- * 
- * 
+ * <p>Returns a list of objects which represent calendar items
  *
  * @author brad
  */

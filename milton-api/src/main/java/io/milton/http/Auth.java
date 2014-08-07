@@ -20,9 +20,10 @@
 package io.milton.http;
 
 import io.milton.common.StringSplitUtils;
+
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
-import java.util.logging.Level;
+
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -20,11 +20,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Methods return the realm to be used for authentication
+ * Marks the method which returns the realm to be used for authentication
  *
  * @author brad
  */
-    @Target(ElementType.METHOD)
+@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Realm {
     
