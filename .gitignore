@@ -62,3 +62,15 @@ milton-proxy/.classpath
 milton-server-ce/.classpath
 
 milton-server-ent/.classpath
+
+*.component
+
+milton-api/.settings/org.eclipse.wst.common.project.facet.core.xml
+
+milton-mail-api/.settings/org.eclipse.wst.common.project.facet.core.xml
+
+milton-mail-server/.settings/org.eclipse.wst.common.project.facet.core.xml
+
+milton-server-ce/.settings/org.eclipse.wst.common.project.facet.core.xml
+
+milton-server-ent/.settings/org.eclipse.wst.common.project.facet.core.xml
