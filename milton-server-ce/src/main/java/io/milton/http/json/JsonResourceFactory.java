@@ -24,17 +24,19 @@ import io.milton.common.Path;
 import io.milton.event.EventManager;
 import io.milton.http.HttpManager;
 import io.milton.http.Request;
-import io.milton.http.Request.Method;
 import io.milton.http.ResourceFactory;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
-import io.milton.http.webdav.PropFindPropertyBuilder;
-import io.milton.http.webdav.PropPatchSetter;
-import io.milton.property.PropertyAuthoriser;
-import io.milton.property.PropertySource;
-import io.milton.resource.*;
+import io.milton.resource.CopyableResource;
+import io.milton.resource.MakeCollectionableResource;
+import io.milton.resource.MoveableResource;
+import io.milton.resource.PropFindableResource;
+import io.milton.resource.PutableResource;
+import io.milton.resource.Resource;
+
 import java.util.Arrays;
 import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

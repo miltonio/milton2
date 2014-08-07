@@ -16,8 +16,10 @@ package io.milton.http.annotated;
 
 import io.milton.annotations.PutChild;
 import io.milton.http.Request.Method;
+
 import java.io.InputStream;
-import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,12 +41,9 @@ public class PutChildAnnotationHandler extends AbstractAnnotationHandler {
 		ControllerMethod cm = getBestMethod(source.getClass());
 		if (cm == null) {
 			if (controllerMethods.isEmpty()) {
-				log.info("Method not found for source: " + source.getClass() + " No methods registered for " + PutChild.class);
+				log.info("Method not found for source: {}. No methods registered for {}", source.getClass().getSimpleName(), PutChild.class.getSimpleName());
 			} else {
-				log.info("Method not found for source " + source.getClass() + " Listing methods registered for " + PutChild.class + " :");
-				for (ControllerMethod cmm : controllerMethods) {
-					System.out.println("	- " + cmm);
-				}
+				log.info("Method not found for source {}. Listing methods registered for {}: {}", new Object[] {source.getClass().getSimpleName(), PutChild.class.getSimpleName(), StringUtils.join(controllerMethods, ",")});
 			}
 			throw new RuntimeException("Method not found: " + getClass() + " - " + source.getClass());
 		}

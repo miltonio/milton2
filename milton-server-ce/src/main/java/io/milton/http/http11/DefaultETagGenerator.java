@@ -47,7 +47,7 @@ public class DefaultETagGenerator implements ETagGenerator {
         String s = r.getUniqueId();
         if( s == null ) {
 			if( log.isTraceEnabled()) {
-				log.trace("no uniqueId, so no etag for class: " + r.getClass());
+				log.trace("no uniqueId, so no etag for class: {}", r.getClass());
 			}
             return null;
         } else {

@@ -14,37 +14,39 @@
  */
 package io.milton.annotations;
 
-import io.milton.common.Utils;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.List;
 
 /**
  * Marks a method as one which locates a child of a parent with a given name. This
  * will be used in preference to ChildrenOf for locating single items. If not
- * present milton will iterate over the list of children.
+ * present Milton will iterate over the list of children.
  * 
- * Optionally, ChildOf methods may be marked as user locator methods by setting 
+ * <p>Optionally, ChildOf methods may be marked as user locator methods by setting 
  * the isUser property of the annotation to true. If this is done then the method
  * will be used for authentication, and the returned object will be used to derive
- * an Access Control List which will be used for authorisation.
+ * an Access Control List which will be used for authorization.
  * 
- * Note that to perform authentication you MUST use a ChildOf method, you cannot
+ * <p>Note that to perform authentication you MUST use a ChildOf method, you cannot
  * use a ChildrenOf method
  * 
- * The method must
- *  - return a single object. This must be the same object as would be returned in a corresponding ChildrenOf object (ie both may be called in a single request)
- *  - the first argument must be the hierachial parent of these objects
- *  - the second argument must be the name of the resource
+ * <p>The method must:
+ * <ul>
+ *  <li>return a single object. This must be the same object as would be returned in a corresponding ChildrenOf object (ie both may be called in a single request)</li>
+ *  <li>the first argument must be the hierarchical parent of these objects</li>
+ *  <li>the second argument must be the name of the resource</li>
+ * </ul>
  * 
  * Eg
- * @ChildOf
+ * <pre>
+ * {@literal @}ChildOf
  * public User findUser(UsersHome homeFolder, String userId) {
- *  return UserDao.findUser(userId);
+ *    return UserDao.findUser(userId);
  * }
- *
+ * </pre>
+ * 
  * @author brad
  */
 @Target(ElementType.METHOD)
@@ -52,7 +54,7 @@ import java.util.List;
 public @interface ChildOf {
     
     /**
-     * Will only match on paths which end with the given suffic. Default is empty
+     * Will only match on paths which end with the given suffix. Default is empty
      * string so will always match
      * 
      * @return 

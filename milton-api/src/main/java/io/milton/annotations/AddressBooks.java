@@ -23,12 +23,13 @@ import java.lang.annotation.Target;
  * Marks a method as one which returns address book object. An address book is something
  * which contains contacts.
  * 
- * @AddressBooks methods MUST take a @User folder collection object as their parent. For example:
- *  @User       /users/brad
- *  @AddressBooks  /users/brad/abooks
+ * <p>{@literal @}AddressBooks methods MUST take a {@literal @}User folder collection object as their parent. For example:
+ * <pre>
+ * {@literal @}User       /users/brad
+ * {@literal @}AddressBooks  /users/brad/abooks
  *              /user/brad/abooks/default
  *              /user/brad/abooks/default/contact1
- * 
+ * <pre>
  * 
  *
  * @author brad

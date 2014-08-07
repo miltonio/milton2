@@ -539,7 +539,6 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 						argValue = findArgValue(type, request, response, list);
 					} catch (UnresolvableParameterException e) {
 						log.warn("Could not resolve parameter: " + i + "  in method: " + m.getName());
-						//System.out.println("Couldnt find parameter " + type + " for method: " + m);				
 						argValue = null;
 					}
 					args[i] = argValue;
@@ -569,7 +568,6 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 			return toBytes(in);
 		} else {
 			for (Object o : otherAvailValues) {
-				//System.out.println("is assignable: " + o + " == " + type + " = " + o.getClass().isAssignableFrom(type) );				 
 				if (o != null && type.isAssignableFrom(o.getClass())) {
 					otherAvailValues.remove(o); // remove it so that we dont use same value for next param of same type
 					return o;

@@ -55,7 +55,7 @@ public class OptionsHandler implements ResourceHandler {
     private boolean enableAuthorisation;
 
     /**
-     * Creates an OptionHandler with no authorisation
+     * Creates an OptionHandler with no authorization
      * 
      * @param responseHandler
      */

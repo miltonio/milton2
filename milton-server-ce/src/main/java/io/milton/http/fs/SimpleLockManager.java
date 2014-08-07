@@ -233,7 +233,7 @@ public class SimpleLockManager implements LockManager {
 	}
 
 	public void clearLocks() {
-		log.warn("CLEARNING LOCKS!!!");
+		log.warn("CLEARING LOCKS!!!");
 		locksByToken.clear();
 		locksByUniqueId.clear();
 	}
@@ -248,7 +248,6 @@ public class SimpleLockManager implements LockManager {
 			this.id = uniqueId;
 			this.token = token;
 			this.lockedByUser = lockedByUser;
-			System.out.println("Created CurrentLock with token: " + token.tokenId);
 		}
 
 		/**
@@ -257,7 +256,7 @@ public class SimpleLockManager implements LockManager {
 		 * @param tokenId - the lock token
 		 * @param from - the date the lock was from
 		 * @param lockedByUser - who locked it
-		 * @param seconds - seconds to lock the resoure for
+		 * @param seconds - seconds to lock the resource for
 		 */
 		public CurrentLock(String uniqueId, String tokenId, Date from, String lockedByUser, Long seconds) {
 			this.id = uniqueId;

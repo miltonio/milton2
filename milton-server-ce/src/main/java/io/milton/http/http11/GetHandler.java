@@ -152,7 +152,7 @@ public class GetHandler implements ExistingEntityHandler {
 			long timeElapsedMs = timeNowMs - timeRequestMs;
 			long timeElapsed = timeElapsedMs / 1000;
 			// If the max-age period has elapsed then we don't bother to check if
-			// it has actually been modified. This is useful for dyamically generated
+			// it has actually been modified. This is useful for dynamically generated
 			// resources (ie JSP's) which we want cached for a fixed period, but the modified
 			// date doesnt reflect that the content will change
 			if (timeElapsed > maxAgeSecs) {

@@ -20,14 +20,14 @@
 package io.milton.http.http11;
 
 import io.milton.http.Request;
-import io.milton.resource.Resource;
 import io.milton.http.Response;
 import io.milton.http.Response.Status;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import io.milton.resource.Resource;
 
 import java.io.OutputStream;
-import java.io.PrintWriter;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Just uses simple property values to generate error content
@@ -48,8 +48,6 @@ public class SimpleContentGenerator implements ContentGenerator {
 
 	public SimpleContentGenerator() {
 	}
-
-	
 	
 	@Override
 	public void generate(Resource resource, Request request, Response response, Status status) {

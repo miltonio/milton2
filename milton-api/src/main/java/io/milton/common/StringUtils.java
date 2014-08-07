@@ -68,7 +68,7 @@ public abstract class StringUtils {
 
 	/**
 	 * 
-	 * true iff the given string contains any of the given strings
+	 * true if the given string contains any of the given strings
 	 * 
 	 * @param ua
 	 * @param browserIds

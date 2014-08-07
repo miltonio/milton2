@@ -22,7 +22,7 @@ package io.milton.http.exceptions;
 import io.milton.resource.Resource;
 
 /**
- *  Indicates that the requested operation could not be performed because of
+ * Indicates that the requested operation could not be performed because of
  * prior state. Ie there is an existing resource preventing a new one from being
  * created.
  */
@@ -31,7 +31,7 @@ public class ConflictException extends MiltonException {
 	private final String message;
 
 	/**
-	 * The resource idenfitied by the URI.
+	 * The resource identified by the URI.
 	 *
 	 * @param r
 	 */

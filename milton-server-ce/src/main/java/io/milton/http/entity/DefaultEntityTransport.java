@@ -18,15 +18,15 @@
  */
 package io.milton.http.entity;
 
-import io.milton.http.HttpManager;
 import io.milton.http.Response;
 import io.milton.http.webdav.UserAgentHelper;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * The normal, trivial, implementation of EntityTransport which simply writes
- * immediately and directly to the Response outputstream
+ * immediately and directly to the Response output stream
  *
  * @author brad
  */
@@ -62,6 +62,5 @@ public class DefaultEntityTransport implements EntityTransport {
 	public void setUserAgentHelper(UserAgentHelper userAgentHelper) {
 		this.userAgentHelper = userAgentHelper;
 	}
-	
 	
 }

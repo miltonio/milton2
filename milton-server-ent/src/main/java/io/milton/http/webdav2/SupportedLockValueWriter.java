@@ -15,7 +15,7 @@ import java.util.Map;
 public class SupportedLockValueWriter implements ValueWriter {
 
 	private static String D = WebDavProtocol.DAV_PREFIX;
-	
+
 	@Override
 	public boolean supports(String nsUri, String localName, Class c) {
 		return SupportedLocks.class.isAssignableFrom(c);

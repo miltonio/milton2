@@ -15,8 +15,9 @@
 package io.milton.http.annotated;
 
 import io.milton.resource.AddressResource;
-import io.milton.resource.ICalResource;
+
 import java.util.Date;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

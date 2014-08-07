@@ -22,7 +22,7 @@ import java.lang.annotation.Target;
 /**
  * Marks the method as one which returns the email address for a type of object.
  * 
- * Usually the type of object will be the same as returned by @Users method,
+ * <p>Usually the type of object will be the same as returned by {@code @Users} method,
  * ie your principal source object
  *
  * @author brad

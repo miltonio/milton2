@@ -19,12 +19,12 @@
 
 package io.milton.common;
 
-import io.milton.common.BufferingOutputStream;
-import io.milton.common.StreamUtils;
-import org.apache.commons.io.output.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
+
 import junit.framework.TestCase;
+
+import org.apache.commons.io.output.ByteArrayOutputStream;
 
 /**
  *

@@ -29,6 +29,7 @@ import io.milton.http.Response;
  * @author brad
  */
 public interface CacheControlHelper {
+
     /**
      *
      * @param resource

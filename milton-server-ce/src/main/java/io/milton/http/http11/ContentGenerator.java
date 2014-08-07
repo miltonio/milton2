@@ -32,6 +32,7 @@ import io.milton.http.Response.Status;
  * @author brad
  */
 public interface ContentGenerator {
+
 	/**
 	 * Generate an error page for the given status
 	 * 

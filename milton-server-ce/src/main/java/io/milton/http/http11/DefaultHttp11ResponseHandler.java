@@ -18,33 +18,32 @@
  */
 package io.milton.http.http11;
 
-import io.milton.common.BufferingOutputStream;
-import io.milton.common.StreamUtils;
+import io.milton.http.Auth;
+import io.milton.http.AuthenticationService;
+import io.milton.http.ExternalIdentityProvider;
 import io.milton.http.Range;
-import io.milton.resource.GetableResource;
-import io.milton.http.*;
-import io.milton.resource.Resource;
+import io.milton.http.Request;
+import io.milton.http.Response;
 import io.milton.http.Response.Status;
 import io.milton.http.entity.BufferingGetableResourceEntity;
 import io.milton.http.entity.GetableResourceEntity;
 import io.milton.http.entity.PartialEntity;
 import io.milton.http.exceptions.BadRequestException;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.exceptions.NotFoundException;
 import io.milton.resource.BufferingControlResource;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
+import io.milton.resource.GetableResource;
+import io.milton.resource.Resource;
+
 import java.io.IOException;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *

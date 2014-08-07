@@ -43,12 +43,8 @@ public class ServletResourceFactory implements ResourceFactory {
 	@Override
 	public Resource getResource(String host, String path) {
 		String contextPath = MiltonServlet.request().getContextPath();
-//		System.out.println("url: " + path);
-//		System.out.println("context: " + contextPath);
 		String localPath = path.substring(contextPath.length());
-//		System.out.println("localpath: " + localPath);
 		String realPath = servletContext.getRealPath(localPath);
-//		System.out.println("realpath: " + realPath);
 		if (realPath != null) {
 			File file = new File(realPath);
 			if (file.exists() && !file.isDirectory()) {

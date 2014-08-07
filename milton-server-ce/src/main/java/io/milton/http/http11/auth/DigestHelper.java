@@ -22,8 +22,9 @@ package io.milton.http.http11.auth;
 import io.milton.http.Auth;
 import io.milton.http.Request.Method;
 import io.milton.http.http11.auth.NonceProvider.NonceValidity;
+
 import java.io.UnsupportedEncodingException;
-import java.util.logging.Level;
+
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

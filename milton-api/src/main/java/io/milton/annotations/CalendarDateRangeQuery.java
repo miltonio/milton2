@@ -24,13 +24,12 @@ import java.lang.annotation.Target;
  * Marks a method as one which performs a query of events in a calendar for a given 
  * date range
  * 
- * Must take the following arguments: 
+ * <p>Must take the following arguments: 
  * <ul>
  *  <li>Source object, representing a calendar</li>
  *  <li>Start date, as a java.util.Date</li>
  *  <li>Finish date</li>
  * </ul>
- * 
  *
  * @author brad
  */

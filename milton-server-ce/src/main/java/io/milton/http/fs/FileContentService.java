@@ -21,7 +21,6 @@ package io.milton.http.fs;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOError;
 import java.io.IOException;
 import java.io.InputStream;
 
