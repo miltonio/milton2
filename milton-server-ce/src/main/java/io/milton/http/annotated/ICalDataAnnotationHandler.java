@@ -15,9 +15,10 @@
 package io.milton.http.annotated;
 
 import io.milton.annotations.ICalData;
+
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.util.Date;
+
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.io.IOUtils;
 

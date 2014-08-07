@@ -26,9 +26,9 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation type to identify classes to be accessible by
- * BeanPropertySource
+ * {@link BeanPropertyResource}
  *
- * This allows them to have their properties read from and written to
+ * <p>This allows them to have their properties read from and written to
  * by PROPFIND and PROPPATCH.
  *
  * @author brad

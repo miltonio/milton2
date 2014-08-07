@@ -22,7 +22,7 @@ package io.milton.http.values;
 /**
  * This class exists to convey type information even when a value is null.
  *
- * This is important because we will often want to select parses and formatters
+ * <p>This is important because we will often want to select parses and formatters
  * based on knowledge of the type of the value, even when that value is null.
  * 
  *

@@ -22,10 +22,10 @@ import java.lang.annotation.Target;
 /**
  * Marks the method which returns a unique identifier for this resource.
  * 
- * The uniqueId should be guaranteed to not conflict with any other resource
+ * <p>The uniqueId should be guaranteed to not conflict with any other resource
  * but should remain constant across versions.
  * 
- * This will be used as the key for locking resources (by default)
+ * <p>This will be used as the key for locking resources (by default)
  *
  * @author brad
  */

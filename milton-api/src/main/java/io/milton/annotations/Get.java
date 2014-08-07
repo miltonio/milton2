@@ -26,19 +26,22 @@ import java.lang.annotation.Target;
 /**
  * Marks a method as one which generates content for the given resource
  * 
- * The method return type can be
- *  - void, in which case you must write content to the outputStream in the method call
- *  - a byte[] which is written to the output
- *  - an InputStream, which will be written to output, then closed (in a try/finally block)
- *  - a String, which is interpreted as a template name. The ViewResolver is used to locate a template with the
+ * <p>The method return type can be
+ * <ul>
+ *  <li>void, in which case you must write content to the outputStream in the method call
+ *  <li>a byte[] which is written to the output
+ *  <li>an InputStream, which will be written to output, then closed (in a try/finally block)
+ *  <li>a String, which is interpreted as a template name. The ViewResolver is used to locate a template with the
  * given name, and it is invoked with a model object with name "resource"
- *  - a io.milton.common.ModelAndView which is passed to the ViewResolver to execute the template
- *  Any other return type causes an exception
+ *  <li>a {@link io.milton.common.ModelAndView} which is passed to the ViewResolver to execute the template
+ * </ul>
+ * Any other return type causes an exception
  * 
- * The input parameters must be:
- *  - first must be the source object
- *  - then any of Request, Response, Range, contentType (String), parameters (Map), OutputStream
- *  
+ * <p>The input parameters must be:
+ * <ul>
+ *  <li>first must be the source object
+ *  <li>then any of Request, Response, Range, contentType (String), parameters (Map), OutputStream
+ * </ul>
  *
  * @author brad
  */

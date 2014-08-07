@@ -19,8 +19,9 @@
 
 package io.milton.http.http11.auth;
 
-import io.milton.http.HttpManager;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import io.milton.common.Service;
+
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
@@ -28,10 +29,9 @@ import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static java.util.concurrent.TimeUnit.*;
 
 /**
  * Periodically checks a map of Nonce's to remove those which

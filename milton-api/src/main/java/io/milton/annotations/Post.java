@@ -23,12 +23,12 @@ import java.lang.annotation.Target;
 /**
  * Marks a method as one which handles POST requests for a given resource
  * 
- * Typically used with ajax requests.
+ * <p>Typically used with AJAX requests.
  * 
- * The return value can either be a String, which is interpreted as a redirect url;
- * or it can be a JsonResult, which will be serialised back to the client
+ * <p>The return value can either be a String, which is interpreted as a redirect URL;
+ * or it can be a JsonResult, which will be serialized back to the client
  * 
- * If null is returned then a response will be generated as if the request was
+ * <p>If {@code null} is returned then a response will be generated as if the request was
  * a GET
  *  
  *

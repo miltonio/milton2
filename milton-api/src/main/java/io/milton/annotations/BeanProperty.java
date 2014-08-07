@@ -1,6 +1,8 @@
 package io.milton.annotations;
 
+import io.milton.property.PropertySource.PropertySetException;
 import io.milton.resource.AccessControlledResource.Priviledge;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -8,13 +10,13 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation type to identify properties to be accessible by
- * BeanPropertySource
+ * {@link BeanPropertySource}
  *
- * This allows them to have their properties read from and written to
+ * <p>This allows them to have their properties read from and written to
  * by PROPFIND and PROPPATCH.
  *
- * Note that to implement validation rules with feedback to the user you
- * can throw a PropertySetException from within your setters.
+ * <p>Note that to implement validation rules with feedback to the user you
+ * can throw a {@link PropertySetException} from within your setters.
  *
  * @author brad
  */

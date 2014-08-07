@@ -20,7 +20,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks the method which returns the date the resource was modified
+ * Marks the method which returns the date the resource was created
  *
  * @author brad
  */

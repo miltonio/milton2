@@ -22,7 +22,7 @@ import java.lang.annotation.Target;
 /**
  * Marks the method which gets/sets the color for the given calendar object
  * 
- * There should be a setter (ie void return type) and a getter (return String)
+ * <p>There should be a setter (ie void return type) and a getter (return {@link String})
  *
  * @author brad
  */

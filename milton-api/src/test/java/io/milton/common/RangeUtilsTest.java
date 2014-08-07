@@ -17,6 +17,7 @@
 package io.milton.common;
 
 import io.milton.http.Range;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -24,7 +25,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import static junit.framework.Assert.assertEquals;
+
 import junit.framework.TestCase;
 
 /**

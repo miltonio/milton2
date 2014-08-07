@@ -23,13 +23,13 @@ import java.lang.annotation.Target;
  * Marks a method as one which returns calendar objects. A calendar is something
  * which contains events.
  * 
- * @Calendars methods MUST take a @User folder collection object as their parent. For example:
+ * <p>{@literal @}Calendars methods MUST take a {@literal @}User folder collection object as their parent. For example:
+ * <pre>
  *  @User       /users/brad
  *  @Calendars  /users/brad/calendars
  *              /user/brad/calendars/default
  *              /user/brad/calendars/default/event1.ics
- * 
- * 
+ * </pre>
  *
  * @author brad
  */

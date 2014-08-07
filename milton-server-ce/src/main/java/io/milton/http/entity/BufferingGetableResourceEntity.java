@@ -19,21 +19,20 @@
 
 package io.milton.http.entity;
 
-import io.milton.resource.GetableResource;
-import io.milton.http.Response;
 import io.milton.common.BufferingOutputStream;
 import io.milton.common.ReadingException;
-import io.milton.common.StreamUtils;
 import io.milton.common.WritingException;
-import java.io.ByteArrayOutputStream;
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import io.milton.http.Response;
+import io.milton.resource.GetableResource;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
+
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BufferingGetableResourceEntity extends GetableResourceEntity {
 

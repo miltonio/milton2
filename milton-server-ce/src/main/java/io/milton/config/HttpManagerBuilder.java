@@ -22,14 +22,24 @@ import io.milton.annotations.ResourceController;
 import io.milton.cache.CacheManager;
 import io.milton.cache.LocalCacheManager;
 import io.milton.common.FileUtils;
-import io.milton.property.PropertySource;
 import io.milton.common.Stoppable;
 import io.milton.context.RootContext;
 import io.milton.event.EventManager;
 import io.milton.event.EventManagerImpl;
-import io.milton.http.*;
+import io.milton.http.AuthenticationHandler;
+import io.milton.http.AuthenticationService;
+import io.milton.http.CompressingResponseHandler;
+import io.milton.http.Filter;
+import io.milton.http.HandlerHelper;
+import io.milton.http.HttpExtension;
+import io.milton.http.HttpManager;
+import io.milton.http.ProtocolHandlers;
+import io.milton.http.ResourceFactory;
+import io.milton.http.ResourceHandlerHelper;
+import io.milton.http.StandardFilter;
+import io.milton.http.UrlAdapter;
+import io.milton.http.UrlAdapterImpl;
 import io.milton.http.annotated.AnnotationResourceFactory;
-import io.milton.http.annotated.AnnotationResourceFactory.AnnotationsDisplayNameFormatter;
 import io.milton.http.entity.DefaultEntityTransport;
 import io.milton.http.entity.EntityTransport;
 import io.milton.http.fck.FckResourceFactory;
@@ -37,18 +47,58 @@ import io.milton.http.fs.FileContentService;
 import io.milton.http.fs.FileSystemResourceFactory;
 import io.milton.http.fs.SimpleFileContentService;
 import io.milton.http.fs.SimpleSecurityManager;
-import io.milton.http.http11.*;
+import io.milton.http.http11.CacheControlHelper;
+import io.milton.http.http11.ContentGenerator;
+import io.milton.http.http11.DefaultCacheControlHelper;
+import io.milton.http.http11.DefaultETagGenerator;
+import io.milton.http.http11.DefaultHttp11ResponseHandler;
 import io.milton.http.http11.DefaultHttp11ResponseHandler.BUFFERING;
-import io.milton.http.http11.auth.*;
+import io.milton.http.http11.ETagGenerator;
+import io.milton.http.http11.Http11Protocol;
+import io.milton.http.http11.Http11ResponseHandler;
+import io.milton.http.http11.MatchHelper;
+import io.milton.http.http11.PartialGetHelper;
+import io.milton.http.http11.SimpleContentGenerator;
+import io.milton.http.http11.auth.BasicAuthHandler;
+import io.milton.http.http11.auth.CookieAuthenticationHandler;
+import io.milton.http.http11.auth.DigestAuthenticationHandler;
+import io.milton.http.http11.auth.ExpiredNonceRemover;
+import io.milton.http.http11.auth.FormAuthenticationHandler;
+import io.milton.http.http11.auth.LoginResponseHandler;
 import io.milton.http.http11.auth.LoginResponseHandler.LoginPageTypeHandler;
+import io.milton.http.http11.auth.Nonce;
+import io.milton.http.http11.auth.NonceProvider;
+import io.milton.http.http11.auth.SimpleMemoryNonceProvider;
 import io.milton.http.json.JsonPropFindHandler;
 import io.milton.http.json.JsonPropPatchHandler;
 import io.milton.http.json.JsonResourceFactory;
 import io.milton.http.quota.DefaultQuotaDataAccessor;
 import io.milton.http.quota.QuotaDataAccessor;
 import io.milton.http.values.ValueWriters;
-import io.milton.http.webdav.*;
-import io.milton.property.*;
+import io.milton.http.webdav.DefaultDisplayNameFormatter;
+import io.milton.http.webdav.DefaultPropFindPropertyBuilder;
+import io.milton.http.webdav.DefaultPropFindRequestFieldParser;
+import io.milton.http.webdav.DefaultUserAgentHelper;
+import io.milton.http.webdav.DefaultWebDavResponseHandler;
+import io.milton.http.webdav.DisplayNameFormatter;
+import io.milton.http.webdav.MsPropFindRequestFieldParser;
+import io.milton.http.webdav.PropFindPropertyBuilder;
+import io.milton.http.webdav.PropFindRequestFieldParser;
+import io.milton.http.webdav.PropFindXmlGenerator;
+import io.milton.http.webdav.PropPatchSetter;
+import io.milton.http.webdav.PropertySourcePatchSetter;
+import io.milton.http.webdav.ResourceTypeHelper;
+import io.milton.http.webdav.UserAgentHelper;
+import io.milton.http.webdav.WebDavProtocol;
+import io.milton.http.webdav.WebDavResourceTypeHelper;
+import io.milton.http.webdav.WebDavResponseHandler;
+import io.milton.property.BeanPropertyAuthoriser;
+import io.milton.property.BeanPropertySource;
+import io.milton.property.DefaultPropertyAuthoriser;
+import io.milton.property.MultiNamespaceCustomPropertySource;
+import io.milton.property.PropertyAuthoriser;
+import io.milton.property.PropertySource;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -64,33 +114,39 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+
 import javax.inject.Inject;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * <p>
  * Manages the options for configuring a HttpManager. To use it just set
  * properties on this class, then call init, then call buildHttpManager to get a
  * reference to the HttpManager.
- *
+ * </p>
+ * <p>
  * Note that this uses a two-step construction process: init()
  * buildHttpManager()
- *
+ * </p>
+ * <p>
  * The first step creates instances of any objects which have not been set and
  * the second binds them onto the HttpManager. You might want to modify the
  * objects created in the first step, eg setting properties on default
  * implementations. Note that you should not modify the structure of the
  * resultant object graph, because you could then end up with an inconsistent
  * configuration
- *
+ * </p>
+ * <p>
  * Where possible, default implementations are created when this class is
  * constructed allowing them to be overwritten where needed. However this is
  * only done for objects and values which are "leaf" nodes in the config object
  * graph. This is to avoid inconsistent configuration where different parts of
  * milton end up with different implementations of the same concern. For
  * example, PropFind and PropPatch could end up using different property sources
- *
+ * </p>
  * @author brad
  */
 public class HttpManagerBuilder {
@@ -190,14 +246,14 @@ public class HttpManagerBuilder {
 			if (mapOfNameAndPasswords == null) {
 				mapOfNameAndPasswords = new HashMap<String, String>();
 				mapOfNameAndPasswords.put(defaultUser, defaultPassword);
-				log.info("Configuring default user and password: " + defaultUser + "/" + defaultPassword + " for SimpleSecurityManager");
+				log.info("Configuring default user and password: {}/{} for SimpleSecurityManager", defaultUser, defaultPassword);
 			}
 			if (fsRealm == null) {
 				fsRealm = "milton";
 			}
 			securityManager = new SimpleSecurityManager(fsRealm, mapOfNameAndPasswords);
 		}
-		log.info("Using securityManager: " + securityManager.getClass());
+		log.info("Using securityManager: {}", securityManager.getClass());
 		rootContext.put(securityManager);
 		return securityManager;
 	}
@@ -236,19 +292,19 @@ public class HttpManagerBuilder {
 			if (!rootDir.exists() || !rootDir.isDirectory()) {
 				throw new RuntimeException("Root directory is not valid: " + rootDir.getAbsolutePath());
 			}
-			log.info("Using FileSystemResourceFactory with context path: " + contextPath);
+			log.info("Using FileSystemResourceFactory with context path: {}", contextPath);
 			FileSystemResourceFactory fsResourceFactory = new FileSystemResourceFactory(rootDir, securityManager(), contextPath);
 			fsResourceFactory.setContentService(fileContentService);
 			mainResourceFactory = fsResourceFactory;
-			log.info("Using file system with root directory: " + rootDir.getAbsolutePath());
+			log.info("Using file system with root directory: {}", rootDir.getAbsolutePath());
 		}
 		if( mainResourceFactory instanceof AnnotationResourceFactory ) {
 			AnnotationResourceFactory arf = (AnnotationResourceFactory) mainResourceFactory;
-			log.info("Set AnnotationResourceFactory context path to: " + contextPath);
+			log.info("Set AnnotationResourceFactory context path to: {}", contextPath);
 			arf.setContextPath(contextPath);
 		}
 
-		log.info("Using mainResourceFactory: " + mainResourceFactory.getClass());
+		log.info("Using mainResourceFactory: {}", mainResourceFactory.getClass());
 		if (authenticationService == null) {
 			if (authenticationHandlers == null) {
 				authenticationHandlers = new ArrayList<AuthenticationHandler>();
@@ -286,7 +342,7 @@ public class HttpManagerBuilder {
 					authenticationHandlers.add(formAuthenticationHandler);
 				}
 				if (extraAuthenticationHandlers != null && !extraAuthenticationHandlers.isEmpty()) {
-					log.info("Adding extra auth handlers: " + extraAuthenticationHandlers.size());
+					log.info("Adding extra auth handlers: {}", extraAuthenticationHandlers.size());
 					authenticationHandlers.addAll(extraAuthenticationHandlers);
 				}
 				if (cookieAuthenticationHandler == null) {
@@ -338,15 +394,15 @@ public class HttpManagerBuilder {
 				fKeys = new File(cookieSigningKeysFile);
 			}
 			if (fKeys.exists()) {
-				log.info("Reading cookie signing keys from: " + fKeys.getAbsolutePath());
+				log.info("Reading cookie signing keys from: {}", fKeys.getAbsolutePath());
 				FileUtils.readLines(fKeys, cookieSigningKeys);
-				log.info("Loaded Keys: " + cookieSigningKeys.size());
+				log.info("Loaded Keys: {}", cookieSigningKeys.size());
 				if( cookieSigningKeys.isEmpty()) {
 					UUID newKey = UUID.randomUUID();
 					cookieSigningKeys.add(newKey.toString());
 					FileUtils.writeLines(fKeys, cookieSigningKeys);					
 				}
-				
+
 				// Remove any blank lines
 				Iterator<String> it = cookieSigningKeys.iterator();
 				while( it.hasNext() ) {
@@ -356,7 +412,7 @@ public class HttpManagerBuilder {
 					}
 				}
 			} else {
-				log.warn("Cookie signing keys file does not exist: " + fKeys.getAbsolutePath() + " Will attempt to create it with a random key");
+				log.warn("Cookie signing keys file does not exist: {}. Will attempt to create it with a random key", fKeys.getAbsolutePath());
 				log.warn("*** If using a server cluster you MUST ensure a common key file is used ***");
 				UUID newKey = UUID.randomUUID();
 				cookieSigningKeys.add(newKey.toString());
@@ -393,7 +449,7 @@ public class HttpManagerBuilder {
 			showLog("webdavResponseHandler", webdavResponseHandler);
 		}
 		if (enableFormAuth) {
-			log.info("form authentication is enabled, so wrap response handler with " + LoginResponseHandler.class);
+			log.info("form authentication is enabled, so wrap response handler with {}", LoginResponseHandler.class);
 			if (loginResponseHandler == null) {
 				loginResponseHandler = new LoginResponseHandler(outerWebdavResponseHandler, mainResourceFactory, loginPageTypeHandler);
 				loginResponseHandler.setExcludePaths(loginPageExcludePaths);
@@ -458,7 +514,7 @@ public class HttpManagerBuilder {
 
 		if (expiredNonceRemover != null) {
 			shutdownHandlers.add(expiredNonceRemover);
-			log.info("Starting " + expiredNonceRemover + " this will remove Digest nonces from memory when they expire");
+			log.info("Starting {} this will remove Digest nonces from memory when they expire", expiredNonceRemover);
 			expiredNonceRemover.start();
 		}
 
@@ -536,7 +592,7 @@ public class HttpManagerBuilder {
 			initDefaultPropertySources(resourceTypeHelper);
 			if (extraPropertySources != null) {
 				for (PropertySource ps : extraPropertySources) {
-					log.info("Add extra property source: " + ps.getClass());
+					log.info("Add extra property source: {}", ps.getClass());
 					propertySources.add(ps);
 				}
 			}
@@ -584,11 +640,11 @@ public class HttpManagerBuilder {
 			outerResourceFactory = mainResourceFactory; // in case nothing else enabled
 			if (enabledJson) {
 				outerResourceFactory = buildJsonResourceFactory();
-				log.info("Enabled json/ajax gatewayw with: " + outerResourceFactory.getClass());
+				log.info("Enabled json/ajax gatewayw with: {}", outerResourceFactory.getClass());
 			}
 			if (enabledCkBrowser) {
 				outerResourceFactory = new FckResourceFactory(outerResourceFactory);
-				log.info("Enabled CK Editor support with: " + outerResourceFactory.getClass());
+				log.info("Enabled CK Editor support with: {}", outerResourceFactory.getClass());
 			}
 		}
 	}
@@ -924,7 +980,7 @@ public class HttpManagerBuilder {
 	 * @param defaultedTo
 	 */
 	protected void showLog(String propertyName, Object defaultedTo) {
-		log.info("set property: " + propertyName + " to: " + defaultedTo);
+		log.info("set property: {} to: {}", propertyName, defaultedTo);
 	}
 
 	public boolean isEnableBasicAuth() {
@@ -1435,7 +1491,7 @@ public class HttpManagerBuilder {
 			if (getMainResourceFactory() instanceof AnnotationResourceFactory) {
 				AnnotationResourceFactory arf = (AnnotationResourceFactory) getMainResourceFactory();
 				arf.setDoEarlyAuth(enableEarlyAuth);
-				log.info("enableEarlyAuth=" + enableEarlyAuth);
+				log.info("enableEarlyAuth={}", enableEarlyAuth);
 				if (enableEarlyAuth) {
 					if (arf.getAuthenticationService() == null) {
 						if (authenticationService == null) {
@@ -1452,10 +1508,10 @@ public class HttpManagerBuilder {
 						controllers = new ArrayList();
 					}
 					if (controllerPackagesToScan != null) {
-						log.info("Scan for controller classes: " + controllerPackagesToScan);
+						log.info("Scan for controller classes: {}", controllerPackagesToScan);
 						for (String packageName : controllerPackagesToScan.split(",")) {
 							packageName = packageName.trim();
-							log.info("init annotations controllers from package: " + packageName);
+							log.info("init annotations controllers from package: {}", packageName);
 							List<Class> classes = ReflectionUtils.getClassNamesFromPackage(packageName);
 							for (Class c : classes) {
 								Annotation a = c.getAnnotation(ResourceController.class);
@@ -1467,23 +1523,23 @@ public class HttpManagerBuilder {
 						}
 					}
 					if (controllerClassNames != null) {
-						log.info("Initialise controller classes: " + controllerClassNames);
+						log.info("Initialise controller classes: {}", controllerClassNames);
 						for (String className : controllerClassNames.split(",")) {
 							className = className.trim();
-							log.info("init annotation controller: " + className);
+							log.info("init annotation controller: {}", className);
 							Class c = ReflectionUtils.loadClass(className);
 							Annotation a = c.getAnnotation(ResourceController.class);
 							if (a != null) {
 								Object controller = createObject(c);
 								controllers.add(controller);
 							} else {
-								log.warn("No " + ResourceController.class + " annotation on class: " + c.getCanonicalName() + " provided in controlleClassNames");
+								log.warn("No {} annotation on class: {} provided in controlleClassNames", ResourceController.class, c.getCanonicalName());
 							}
 						}
 					}
 
 					if (controllers.isEmpty()) {
-						log.warn("No controllers found in controllerClassNames=" + controllerClassNames + "  or controllerPackagesToScan=" + controllerPackagesToScan);
+						log.warn("No controllers found in controllerClassNames={} or controllerPackagesToScan={}", controllerClassNames, controllerPackagesToScan);
 					}
 					arf.setControllers(controllers);
 				}
@@ -1556,12 +1612,10 @@ public class HttpManagerBuilder {
 	public void setCacheManager(CacheManager cacheManager) {
 		this.cacheManager = cacheManager;
 	}
-	
-	
 
 	private Object createObject(Class c) throws CreationException {
-		log.info("createObject: " + c.getCanonicalName());
-		// Look for an @Inject or default construcctor
+		log.info("createObject: {}", c.getCanonicalName());
+		// Look for an @Inject or default constructor
 		Constructor found = null;
 
 		for (Constructor con : c.getConstructors()) {
@@ -1589,7 +1643,7 @@ public class HttpManagerBuilder {
 		}
 		Object created;
 		try {
-			log.info("Creating: " + c.getCanonicalName());
+			log.info("Creating: {}", c.getCanonicalName());
 			created = found.newInstance(args);
 			rootContext.put(created);
 		} catch (InstantiationException ex) {

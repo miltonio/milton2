@@ -28,8 +28,6 @@ public class WebDavLevel2ResourceTypeHelper implements ResourceTypeHelper {
         this.wrapped = wrapped;
     }
     
-    
-    
     @Override
     public List<QName> getResourceTypes(Resource r) {
         return wrapped.getResourceTypes(r);

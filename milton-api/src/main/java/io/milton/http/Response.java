@@ -147,7 +147,7 @@ public interface Response {
         }
 
         public Status fromCode( int i ) {
-            for( Status s : this.values() ) {
+            for( Status s : values() ) {
                 if( s.code == i ) return s;
             }
             return null;

@@ -27,10 +27,11 @@ import io.milton.http.Range;
 import io.milton.http.Request.Method;
 import io.milton.http.template.TemplateProcessor;
 import io.milton.principal.DiscretePrincipal;
-import java.io.IOException;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
+
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,7 +100,6 @@ public class GetAnnotationHandler extends AbstractAnnotationHandler {
 		if (HttpManager.request().getAuthorization() != null) {
 			Object principal = HttpManager.request().getAuthorization().getTag();
 			if (principal instanceof DiscretePrincipal) {
-				System.out.println("put user in model: " + principal);
 				modelAndView.getModel().put("principal", principal);
 			}
 		}

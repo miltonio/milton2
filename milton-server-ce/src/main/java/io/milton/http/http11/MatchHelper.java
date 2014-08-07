@@ -17,10 +17,11 @@
 package io.milton.http.http11;
 
 import io.milton.http.Request;
-import io.milton.resource.GetableResource;
 import io.milton.resource.Resource;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,12 +68,11 @@ public class MatchHelper {
 		List<String> etags = splitToList(h);
 		for (String requestedEtag : etags) {
 			requestedEtag = cleanUp(requestedEtag);
-			//System.out.println("checkIfMatch: compare: " + requestedEtag + " = " + currentEtag);
 			if (requestedEtag.equals(currentEtag) || requestedEtag.equals("*")) {
 				return true; // found a matching tag, return true to continue
 			}
 		}
-		System.out.println("checkIfMatch: did not find matching etag");
+		log.debug("Did not find matching etag");
 		return false; // a if-match header was sent, but a matching tag is not present, so return false
 	}
 
@@ -95,7 +95,7 @@ public class MatchHelper {
 		if (h.equals("*")) {
 			boolean b = (r != null);
 			if (r != null ) {
-				log.warn("if-none-match header is star, and a resource exists, so check has failed: resource name=" + r.getName());
+				log.warn("if-none-match header is star, and a resource exists, so check has failed: resource name={}", r.getName());
 				return true;
 			}
 			return b;

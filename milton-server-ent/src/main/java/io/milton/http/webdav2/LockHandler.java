@@ -65,7 +65,7 @@ public class LockHandler implements ResourceHandler {
         // Find a resource if it exists
         Resource r = manager.getResourceFactory().getResource(host, url);
         if (r != null) {
-            log.debug("locking existing resource: " + r.getName());
+            log.debug("locking existing resource: {}", r.getName());
             processExistingResource(manager, request, response, r);
         } else {
             log.debug("lock target doesnt exist, attempting lock null..");
@@ -205,7 +205,7 @@ public class LockHandler implements ResourceHandler {
             return;
         }
 
-        log.debug("locking: " + r.getName());
+        log.debug("locking: {}", r.getName());
         LockResult result;
         try {
             result = r.lock(timeout, lockInfo);
@@ -219,7 +219,7 @@ public class LockHandler implements ResourceHandler {
 
         if (result.isSuccessful()) {
             LockToken tok = result.getLockToken();
-            log.debug("..locked ok: " + tok.tokenId);
+            log.debug("..locked ok: {}", tok.tokenId);
             response.setLockTokenHeader("<opaquelocktoken:" + tok.tokenId + ">");  // spec says to set response header. See 8.10.1
             LockUtils.respondLocked(tok, request, response);
         } else {
@@ -229,7 +229,7 @@ public class LockHandler implements ResourceHandler {
 
     protected void processRefresh(HttpManager milton, Request request, Response response, LockableResource r, LockTimeout timeout, String ifHeader) throws NotAuthorizedException {
         String token = LockUtils.parse(ifHeader);
-        log.debug("refreshing lock: " + token);
+        log.debug("refreshing lock: {}", token);
         LockResult result;
         try {
             result = r.refreshLock(token);
@@ -248,6 +248,5 @@ public class LockHandler implements ResourceHandler {
             LockUtils.respondLockFailure(result, request, response);
         }
     }
-
 
 }

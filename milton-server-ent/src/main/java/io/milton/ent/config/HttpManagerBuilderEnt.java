@@ -4,9 +4,11 @@
  */
 package io.milton.ent.config;
 
-import io.milton.property.PropertySource;
 import io.milton.config.HttpManagerBuilder;
-import io.milton.http.*;
+import io.milton.http.HttpExtension;
+import io.milton.http.LockManager;
+import io.milton.http.ProtocolHandlers;
+import io.milton.http.WellKnownResourceFactory;
 import io.milton.http.acl.ACLProtocol;
 import io.milton.http.acl.AccessControlledResourceTypeHelper;
 import io.milton.http.acl.AnnotationsPrincipalSearchService;
@@ -23,7 +25,9 @@ import io.milton.http.carddav.AddressBookResourceTypeHelper;
 import io.milton.http.carddav.CardDavProtocol;
 import io.milton.http.fck.FckResourceFactory;
 import io.milton.http.fs.SimpleLockManager;
-import io.milton.http.http11.*;
+import io.milton.http.http11.Http11Protocol;
+import io.milton.http.http11.MatchHelper;
+import io.milton.http.http11.PartialGetHelper;
 import io.milton.http.webdav.PropertySourcePatchSetter;
 import io.milton.http.webdav.ResourceTypeHelper;
 import io.milton.http.webdav.WebDavResourceTypeHelper;
@@ -33,33 +37,41 @@ import io.milton.http.webdav2.SupportedLockValueWriter;
 import io.milton.http.webdav2.WebDavLevel2Protocol;
 import io.milton.http.webdav2.WebDavLevel2ResourceTypeHelper;
 import io.milton.principal.PrincipalSearchService;
+import io.milton.property.PropertySource;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * <p>
  * Manages the options for configuring a HttpManager. To use it just set
  * properties on this class, then call init, then call buildHttpManager to get a
  * reference to the HttpManager.
- *
+ * </p>
+ * <p>
  * Note that this uses a two-step construction process: init()
  * buildHttpManager()
- *
+ * </p>
+ * <p>
  * The first step creates instances of any objects which have not been set and
  * the second binds them onto the HttpManager. You might want to modify the
  * objects created in the first step, eg setting properties on default
  * implementations. Note that you should not modify the structure of the
  * resultant object graph, because you could then end up with an inconsistent
  * configuration
- *
+ * </p>
+ * <p>
  * Where possible, default implementations are created when this class is
  * constructed allowing them to be overwritten where needed. However this is
  * only done for objects and values which are "leaf" nodes in the config object
  * graph. This is to avoid inconsistent configuration where different parts of
  * milton end up with different implementations of the same concern. For
  * example, PropFind and PropPatch could end up using different property sources
- *
+ * </p>
+ * 
  * @author brad
  */
 public class HttpManagerBuilderEnt extends HttpManagerBuilder {
@@ -94,14 +106,14 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
             if (arf.getLockManager() == null) {
                 if (lockManager == null) {                    
                     lockManager = new SimpleLockManager(getCacheManager());
-                    log.info("Created lock manager: " + lockManager + " with cache manager: " + getCacheManager());
+                    log.info("Created lock manager: {} with cache manager: {}",lockManager, getCacheManager());
                 } else {
-                    log.info("Using configured cache manager: " + lockManager);
+                    log.info("Using configured cache manager: {}", lockManager);
                 }
 
                 arf.setLockManager(lockManager);
             } else {
-                log.info("Using LockManager from AnnotationResourceFactory: " + arf.getLockManager().getClass());
+                log.info("Using LockManager from AnnotationResourceFactory: {}", arf.getLockManager().getClass());
             }
             if (annotationsCalendarSearchService != null) {
                 annotationsCalendarSearchService.setAnnotationResourceFactory(arf);
@@ -122,17 +134,17 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
             outerResourceFactory = mainResourceFactory; // in case nothing else enabled
             if (enabledJson) {
                 outerResourceFactory = buildJsonResourceFactory();
-                log.info("Enabled json/ajax gatewayw with: " + outerResourceFactory.getClass());
+                log.info("Enabled json/ajax gateway with: {}", outerResourceFactory.getClass());
             }
 
             if (enableWellKnown) {
                 wellKnownResourceFactory = new WellKnownResourceFactory(outerResourceFactory);
                 outerResourceFactory = wellKnownResourceFactory;
                 // will set well known handlers after protocol init
-                log.info("Enabled well-known protocol support with: " + outerResourceFactory.getClass());
+                log.info("Enabled well-known protocol support with: {}", outerResourceFactory.getClass());
             }
             if (calendarSearchService == null) {
-                log.warn("Using the default calendar search service. Calendar search functions may exhibit poor performance. If thats a problem implement your own: " + CalendarSearchService.class);
+                log.warn("Using the default calendar search service. Calendar search functions may exhibit poor performance. If thats a problem implement your own: {}", CalendarSearchService.class);
                 DefaultCalendarSearchService c = new DefaultCalendarSearchService(iCalFormatter, mainResourceFactory);
                 // Wrap the default in an annotations handler. It will forward requests to the wrapped
                 // instance for non-annotation resources
@@ -178,7 +190,7 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
             initDefaultPropertySources(resourceTypeHelper);
             if (extraPropertySources != null) {
                 for (PropertySource ps : extraPropertySources) {
-                    log.info("Add extra property source: " + ps.getClass());
+                    log.info("Add extra property source: {}", ps.getClass());
                     propertySources.add(ps);
                 }
             }
@@ -210,7 +222,7 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
                 calDavProtocol = new CalDavProtocol(outerResourceFactory, webdavResponseHandler, handlerHelper, webDavProtocol, propFindXmlGenerator, propFindPropertyBuilder(), calendarSearchService);
             }
             if (calDavProtocol != null) {
-                log.info("Add Caldav protocol: " + calDavProtocol.getClass() + " with resource factory: " + calDavProtocol.getResourceFactory());
+                log.info("Add Caldav protocol: {} with resource factory: {}", calDavProtocol.getClass(), calDavProtocol.getResourceFactory());
                 protocols.add(calDavProtocol);
             }
 

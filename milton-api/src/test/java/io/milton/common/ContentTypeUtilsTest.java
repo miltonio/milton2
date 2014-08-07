@@ -19,7 +19,6 @@
 
 package io.milton.common;
 
-import io.milton.common.ContentTypeUtils;
 import junit.framework.TestCase;
 
 /**

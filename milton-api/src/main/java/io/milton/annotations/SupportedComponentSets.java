@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 /**
  * Return the types of calendar objects supported for this user
  * 
- * Eg SupportedCalendarComponentListsSet.EVENTS_ONLY
+ * <p>Eg SupportedCalendarComponentListsSet.EVENTS_ONLY
  *
  * @author brad
  */

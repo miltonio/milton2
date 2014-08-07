@@ -22,7 +22,7 @@ import java.lang.annotation.Target;
 /**
  * Marks the method which returns the display name for a resource
  * 
- * The display name is intended for user friendly understanding of the content. It
+ * <p>The display name is intended for user friendly understanding of the content. It
  * is not required to be unique in a collection and may contain special characters
  * It is not used in URL's
  *

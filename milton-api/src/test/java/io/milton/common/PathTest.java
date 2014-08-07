@@ -19,7 +19,6 @@
 
 package io.milton.common;
 
-import io.milton.common.Path;
 import junit.framework.TestCase;
 
 /**

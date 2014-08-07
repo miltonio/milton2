@@ -19,9 +19,6 @@
 
 package io.milton.common;
 
-import io.milton.common.FileUtils;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
 import junit.framework.TestCase;
 
 /**

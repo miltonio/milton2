@@ -18,7 +18,6 @@
  */
 package io.milton.dns.resource;
 
-import java.net.InetAddress;
 
 /**
  *

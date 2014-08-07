@@ -31,9 +31,7 @@ public class ChildrenOfTypeMap implements Map<String,ResourceList>{
     public ChildrenOfTypeMap(ResourceList list) {
         this.list = list;
     }
-    
-    
-    
+
     @Override
     public int size() {
         throw new UnsupportedOperationException("Not supported yet.");

@@ -50,7 +50,6 @@ public class SimpleSecurityManager implements io.milton.http.SecurityManager{
     public SimpleSecurityManager( DigestGenerator digestGenerator ) {
         this.digestGenerator = digestGenerator;
     }
-
    
     public SimpleSecurityManager( String realm, Map<String,String> nameAndPasswords ) {
         this.realm = realm;
@@ -66,27 +65,19 @@ public class SimpleSecurityManager implements io.milton.http.SecurityManager{
         return null;
     }
 
-
-
 	@Override
     public Object authenticate( String user, String password ) {
         log.debug( "authenticate: " + user + " - " + password);
         // user name will include domain when coming form ftp. we just strip it off
-        if( user.contains( "@")) {
+        if (user.contains( "@")) {
             user = user.substring( 0, user.indexOf( "@"));
         }
         String actualPassword = nameAndPasswords.get( user );
-        if( actualPassword == null ) {
-            log.debug( "user not found: " + user);
+        if (actualPassword == null) {
+            log.debug("user not found: " + user);
             return null;
         } else {
-            boolean ok;
-            if( actualPassword == null ) {
-                ok = password == null || password.length()==0;
-            } else {
-                ok = actualPassword.equals( password);
-            }
-            return ok ? user : null;
+            return (actualPassword.equals(password)) ? user : null;
         }
     }
 
@@ -105,8 +96,6 @@ public class SimpleSecurityManager implements io.milton.http.SecurityManager{
             return null;
         }
     }
-
-
 
 	@Override
     public boolean authorise( Request request, Method method, Auth auth, Resource resource ) {
@@ -148,7 +137,6 @@ public class SimpleSecurityManager implements io.milton.http.SecurityManager{
 	public boolean isDigestAllowed() {
 		return digestGenerator != null;
 	}
-
 
 //    public MiltonUser getUserByName( String name, String domain ) {
 //        log.debug( "getUserByName: " + name + " - " + domain);

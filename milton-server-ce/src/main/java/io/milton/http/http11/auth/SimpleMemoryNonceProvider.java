@@ -19,11 +19,12 @@
 package io.milton.http.http11.auth;
 
 import io.milton.http.Request;
-import io.milton.resource.Resource;
+
 import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +37,7 @@ import org.slf4j.LoggerFactory;
  *
  * To improve reliability and scalability provide an alternative map
  * implementation. For example, it could be a cluster aware map which
- * synchonrises across a cluster. Or it could be a map which persists entries to
+ * synchronizes across a cluster. Or it could be a map which persists entries to
  * a database or file.
  *
  * @author brad

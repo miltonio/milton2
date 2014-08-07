@@ -18,11 +18,10 @@
  */
 package io.milton.common;
 
-import io.milton.http.Request;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
