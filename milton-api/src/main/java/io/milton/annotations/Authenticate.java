@@ -23,8 +23,8 @@ import java.lang.annotation.Target;
  * Marks a method as one which can be used to authenticate a user. This is done
  * in 3 possible ways:
  * <ul>
- *  <li>return a password. This allows milton to authenticate the user given a variety on inputs</li>
- *  <li>method which takes a requested password and verifies it. This is useful for Basic auth if you store hashed passwords</li>
+ *  <li>return a password. This allows Milton to authenticate the user given a variety on inputs</li>
+ *  <li>method which takes a requested password and verifies it. This is useful for Basic authentication if you store hashed passwords</li>
  *  <li>method which takes a Digest request and verifies it. This is useful for supporting Digest authentication if you store hashed passwords</li>
  * </ul>
  *
