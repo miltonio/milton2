@@ -53,23 +53,29 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
- * Loads the spring context from classpath at applicationContext.xml
+ * Loads the spring context either from a spring configuration XML file or a spring @Configuration class.
  *
+ * <p>Use {@code contextConfigClass} to define the @Configuration class or {@code contextConfigLocation}
+ * to define the Spring XML configuration file. If any of them is defined, {@link SpringMiltonFilter} will
+ * try to load a file named applicationContext.xml from the classpath.
+ * <br>If it still fails, only the parent context will be considered.
+ * 
  * <p>This filter then gets the bean named milton.http.manager and uses that for
  * Milton processing.
  *
- * <p>The milton.http.manager bean can either be a HttpManager or it can be a
- * HttpManagerBuilder, in which case a HttpManager is constructed from it
+ * <p>The milton.http.manager bean can either be a {@link HttpManager} or it can be a
+ * {@link HttpManagerBuilder}, in which case a {@link HttpManager} is constructed from it
  *
  * <p>Requests with a path which begins with one of the exclude paths will not be
  * processed by Milton. Instead, for these requests, the filter chain will be
  * invoked so the request can be serviced by JSP or a servlet, etc
  *
- * <p>This uses an init parameter called milton.exclude.paths, which should be a
+ * <p>This uses an init parameter called {@code milton.exclude.paths}, which should be a
  * comma separated list of paths to ignore. For example:
- * /static,/images,/login.jsp
+ * 
+ * <pre>/static,/images,/login.jsp</pre>
  *
- * This allows non-Milton resources to be accessed, while still mapping all URLs
+ * <p>This allows non-Milton resources to be accessed, while still mapping all URLs
  * to Milton
  *
  * @author bradm
