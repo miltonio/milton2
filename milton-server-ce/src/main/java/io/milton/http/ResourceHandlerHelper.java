@@ -19,6 +19,8 @@
 package io.milton.http;
 
 import io.milton.common.Path;
+import io.milton.event.AccessedEvent;
+import io.milton.event.PostEvent;
 import io.milton.resource.Resource;
 import io.milton.http.AuthenticationService.AuthStatus;
 import io.milton.http.Request.Method;
@@ -91,7 +93,7 @@ public class ResourceHandlerHelper {
 			// If the request is anonymous we might not want to send a 404 for a couple of reasons
 			// 1. MS Office 2010 requires a challenge from a HEAD request prior to PUT to create a new file
 			// 2. Potentially unsafe, because an anonymous user could determine the existence (though not content) of certain files
-			
+
 			// But dont check on OPTIONS, because some clients need unauthenticated OPTIONS (i think)
 			if (!request.getMethod().equals(Method.OPTIONS)) {
 				if (!authenticationService.authenticateDetailsPresent(request)) {
@@ -140,8 +142,7 @@ public class ResourceHandlerHelper {
 				responseHandler.respondMethodNotImplemented(resource, response, request);
 				return;
 			}
-			
-			
+
 			// redirect check must be after authorisation, because the check redirect
 			// logic might depend on logged in user
 			// but the actual redirection must be before we respond unathorised, because
@@ -162,6 +163,14 @@ public class ResourceHandlerHelper {
 				return;
 			}
 
+			AccessedEvent e = new AccessedEvent(resource);
+			manager.getEventManager().fireEvent(e);
+			String redirectUrl = e.getReturnRedirectUrl();
+			if (allowRedirect) {
+				log.debug("event handler returned redirect");
+				responseHandler.respondRedirect(response, request, redirectUrl);
+				return ;
+			}
 
 			// Do not lock on POST requests. It is up to the application to decide whether or not
 			// a POST requires a lock
