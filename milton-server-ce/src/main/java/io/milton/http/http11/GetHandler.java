@@ -78,7 +78,7 @@ public class GetHandler implements ExistingEntityHandler {
 				log.trace("respond not modified with: " + responseHandler.getClass().getCanonicalName());
 			}
 			responseHandler.respondNotModified(r, response, request);
-			return;
+			return; 
 		}
 
 		sendContent(manager, request, response, r, request.getParams());
