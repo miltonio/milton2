@@ -19,6 +19,7 @@
 
 package io.milton.http.http11;
 
+import io.milton.event.PostEvent;
 import io.milton.http.ExistingEntityHandler;
 import io.milton.http.HttpManager;
 import io.milton.http.Request;
@@ -36,7 +37,7 @@ import org.slf4j.LoggerFactory;
 
 public class PostHandler implements ExistingEntityHandler {
 
-    private Logger log = LoggerFactory.getLogger( PostHandler.class );
+    private static final Logger log = LoggerFactory.getLogger( PostHandler.class );
     private final Http11ResponseHandler responseHandler;
     private final ResourceHandlerHelper resourceHandlerHelper;
     
@@ -77,7 +78,14 @@ public class PostHandler implements ExistingEntityHandler {
                 return ;
             }
         }
-        String url = r.processForm( request.getParams(), request.getFiles() );
+		PostEvent e = new PostEvent(resource);
+		manager.getEventManager().fireEvent(e);
+		String url = e.getReturnRedirectUrl();
+		if( url == null) {
+			url = r.processForm( request.getParams(), request.getFiles() );
+		} else {
+			log.debug("Redircect set by event handler");
+		}
         if( url != null ) {
             log.debug("redirect: " + url );
             responseHandler.respondRedirect( response, request, url );
