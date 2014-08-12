@@ -166,10 +166,14 @@ public class ResourceHandlerHelper {
 			AccessedEvent e = new AccessedEvent(resource);
 			manager.getEventManager().fireEvent(e);
 			String redirectUrl = e.getReturnRedirectUrl();
-			if (allowRedirect) {
-				log.debug("event handler returned redirect");
-				responseHandler.respondRedirect(response, request, redirectUrl);
-				return ;
+			if (redirectUrl != null) {
+				if (allowRedirect) {
+					log.debug("event handler returned redirect");
+					responseHandler.respondRedirect(response, request, redirectUrl);
+					return;
+				} else {
+					log.warn("Would have done redirect from event handler, but redirect is disabled for this request");
+				}
 			}
 
 			// Do not lock on POST requests. It is up to the application to decide whether or not
