@@ -3,22 +3,22 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.milton</groupId>
 	<artifactId>milton</artifactId>
-	<version>2.0.5-SNAPSHOT</version>
+	<version>2.6.2.4</version>
 	<packaging>pom</packaging>
 	<name>milton</name>
-	<url>http://milton.ettrema.com</url>
+	<url>http://milton.io</url>
 	<scm>
-		<connection>scm:svn:http://svn.ettrema.com/svn/milton/trunk/milton</connection>
+		<connection>scm:git:git@github.com:miltonio/milton2.git</connection>
 	</scm>
 	<distributionManagement>
 		<repository>
 			<id>ettrema-repo</id>
-			<url>http://www.ettrema.com/maven2</url>
+			<url>http://milton.io/maven/</url>
 		</repository>
 		<snapshotRepository>
 			<uniqueVersion>false</uniqueVersion>
 			<id>ettrema-repo</id>
-			<url>http://www.ettrema.com/maven2</url>
+			<url>http://milton.io/maven/</url>
 		</snapshotRepository>
 	</distributionManagement>
 	<developers>
@@ -28,29 +28,23 @@
 		</developer>
 	</developers>
 	<properties>
+		<servlet.version>2.4</servlet.version>
 		<mime-util.version>2.1.3</mime-util.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding> 
 		<easy-mock.version>3.1</easy-mock.version>
-		<netbeans.hint.license>agpl3</netbeans.hint.license>
+		<netbeans.hint.license>apache20</netbeans.hint.license>
 	</properties>
-	<licenses>
-		<license>
-            <name>Affero GPL3</name>
-            <url>http://www.gnu.org/licenses/agpl.html</url>
-            <distribution>repo</distribution>
-            <comments>The GNU Affero General Public License is a free, copyleft license for software and other kinds of works, specifically designed to ensure cooperation with the community in the case of network server software.</comments>
-        </license>
-	</licenses>	
+
     <organization>
         <name>McEvoy Software Ltd</name>
         <url>http://www.mcevoysoftware.co.nz/</url>
     </organization>    	
 	<modules>
 		<module>milton-api</module>
-		<module>milton-server</module>
+		<module>milton-server-ce</module>
+		<module>milton-server-ent</module>
 		<module>milton-client</module>
 		<module>milton-proxy</module>
-		<module>milton-restlet</module>
 		<module>milton-mail-api</module>
 		<module>milton-mail-server</module>
 
@@ -172,9 +166,15 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>${servlet.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.5.8</version>
+			<version>1.7.5</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -186,14 +186,14 @@
             <scope>test</scope>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-            <version>1.5.8</version>
+            <version>1.7.5</version>
         </dependency>    		
 	</dependencies>
 
 	<repositories>
 		<repository>
-			<id>ettrema-repo</id>
-			<url>http://www.ettrema.com/maven2</url>
+			<id>milton-repo</id>
+			<url>http://milton.io/maven/</url>
 		</repository> 
          <!--		
         <repository>

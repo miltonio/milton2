@@ -31,7 +31,7 @@ import java.util.List;
  * http://localhost:8080/users/userA/ - iCal will discover the calendar inside
  * that user.
  *
- * For Mozilla clients (eg thunderbird) connect directory to the calendar url,
+ * For Mozilla clients (eg thunderbird) connect directly to the calendar url,
  * eg
  *
  * http://localhost:8080/users/userA/calendars/cal1/
@@ -55,13 +55,16 @@ public class TResourceFactory implements ResourceFactory {
     }
 
     private static void addUser(TFolderResource users, String name, String password, String email, String org, String phone) {
-        TCalDavPrincipal user = new TCalDavPrincipal(users, name, password, null, null, null, null, null);
+        TCalDavPrincipal user = new TCalDavPrincipal(users, name, password, null, null, null);
         user.setGivenName("joe");
         user.setSurName("blogs" + users.children.size());
         user.setMail(email);
         user.setOrganizationName(org);
         user.setTelephonenumber(phone);
 
+        TFolderResource files = new TFolderResource(user, "files");
+        
+        
         TFolderResource calendars = new TFolderResource(user, "calendars");
         TCalendarResource cal1 = new TCalendarResource(calendars, "cal1");
         TEvent e = new TEvent(cal1, "event1.ics");
@@ -75,12 +78,7 @@ public class TResourceFactory implements ResourceFactory {
         addContact(addressBook1, "sam@blah.com", "sam", "smith", "111 222 444", "contact2.vcf");
         addContact(addressBook1, "john@blah.com", "john", "long", "111 222 555", "contact3.vcf");
 
-
-        TScheduleInboxResource scheduleInbox = new TScheduleInboxResource(calendars, "inbox");
-        TScheduleOutboxResource scheduleOutbox = new TScheduleOutboxResource(calendars, "outbox");
         user.setCalendarHome(calendars);
-        user.setScheduleInboxResource(scheduleInbox);
-        user.setScheduleOutboxResource(scheduleOutbox);
     }
 
     private static void addContact(TAddressBookResource ab, String email, String givenName, String surName, String phone, String filename) {
@@ -143,6 +141,7 @@ public class TResourceFactory implements ResourceFactory {
     }
     
     public List<Resource> getUsers() {
+        System.out.println("TResourcEFactory: " + users.children);
         return users.children;
     }    
 

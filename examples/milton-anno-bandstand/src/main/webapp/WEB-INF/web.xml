@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+         version="3.0">
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>classpath:rootContext.xml</param-value>
+    </context-param>
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+
+    <filter>
+        <filter-name>openSessionInViewFilter</filter-name>
+        <filter-class>
+            org.springframework.orm.hibernate3.support.OpenSessionInViewFilter
+        </filter-class>
+        <init-param>
+            <param-name>singleSession</param-name>
+            <param-value>true</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>openSessionInViewFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>        
+    
+    <filter>
+        <filter-name>miltonFilter</filter-name>
+        <filter-class>io.milton.servlet.SpringMiltonFilter</filter-class>
+        <init-param>
+            <param-name>milton.exclude.paths</param-name>	
+            <param-value>/static,/templates</param-value>
+        </init-param>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>	
+            <param-value>classpath:miltonContext.xml</param-value>
+        </init-param>
+    </filter>
+    
+    <filter-mapping>
+        <filter-name>miltonFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+        
+</web-app>

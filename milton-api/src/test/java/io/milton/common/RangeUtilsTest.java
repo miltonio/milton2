@@ -17,12 +17,15 @@
 package io.milton.common;
 
 import io.milton.http.Range;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import junit.framework.TestCase;
 
 /**
@@ -72,13 +75,25 @@ public class RangeUtilsTest extends TestCase {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         List<Range> ranges = new ArrayList<Range>();
-        ranges.add(new Range(500, 1000));
-        ranges.add(new Range(2000, 2500));
-        ranges.add(new Range(3000, 3500));
+        ranges.add(new Range(501l, 1000l));
+        ranges.add(new Range(2001l, 2500l));
+        ranges.add(new Range(3001l, 3500l));
 
         RangeUtils.writeRanges(in, ranges, out);
 
         assertEquals(1500, out.toByteArray().length);
 
     }
+    
+    public void testWrite_OpenRange() throws IOException {
+        InputStream in = this.getClass().getResourceAsStream("/jquery-ui-1.8.20.custom.min.js");
+        if( in == null ) {
+            throw new RuntimeException("Couldnt find test file");
+        }
+        Range r = Range.parse("30357-71179");
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        RangeUtils.writeRange(in, r, out);
+        assertEquals(40822, out.toByteArray().length);
+
+    }    
 }

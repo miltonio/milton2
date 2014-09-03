@@ -1,16 +1,20 @@
 /*
- * Copyright 2012 McEvoy Software Ltd.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 package io.milton.resource;
@@ -18,13 +22,16 @@ package io.milton.resource;
 import io.milton.http.Auth;
 import io.milton.http.values.HrefList;
 import io.milton.principal.Principal;
+
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 /**
  * 5.4.1. Example: Retrieving the User's Current Set of Assigned Privileges
  *
- * Continuing the example from Section 5.3.1, this example shows a client
+ * <p>Continuing the example from Section 5.3.1, this example shows a client
  * requesting the DAV:current-user-privilege-set property from the resource with
  * URL http://www.example.com/papers/. The username of the principal making the
  * request is "khare", and Digest authentication is used in the request. The
@@ -39,18 +46,20 @@ import java.util.Map;
  * principal with username "khare" is not listed in an ACE granting that
  * principal write permission.
  *
- * >> Request <<
+ * <p>>> Request <<
  *
- * PROPFIND /papers/ HTTP/1.1 Host: www.example.com Content-type: text/xml;
+ * <pre>PROPFIND /papers/ HTTP/1.1 Host: www.example.com Content-type: text/xml;
  * charset="utf-8" Content-Length: xxx Depth: 0 Authorization: Digest
  * username="khare", realm="users@example.com", nonce="...", uri="/papers/",
  * response="...", opaque="..."
  *
  * <?xml version="1.0" encoding="utf-8" ?> <D:propfind xmlns:D="DAV:"> <D:prop>
  * <D:current-user-privilege-set/> </D:prop> </D:propfind>
+ *</pre>
  *
- * >> Response <<
- *
+ * <p>>> Response <<
+ * 
+ * <pre>
  * HTTP/1.1 207 Multi-Status Content-Type: text/xml; charset="utf-8"
  * Content-Length: xxx
  *
@@ -59,27 +68,61 @@ import java.util.Map;
  * <D:prop> <D:current-user-privilege-set> <D:privilege><D:read/></D:privilege>
  * </D:current-user-privilege-set> </D:prop> <D:status>HTTP/1.1 200
  * OK</D:status> </D:propstat> </D:response> </D:multistatus>
- *
+ * </pre>
  *
  *
  * @author alex
  */
 public interface AccessControlledResource extends Resource {
-
+  
+    
     public enum Priviledge {
+        /**
+         * READ the content of resources, but this does not permit reading PROPFIND (milton extension)
+         */
+        READ_CONTENT(Collections.EMPTY_LIST),
+        /**
+         * Permits PROPFIND (milton extension)
+         */
+        READ_PROPERTIES(Collections.EMPTY_LIST),
+        READ_CURRENT_USER_PRIVILEDGE(Collections.EMPTY_LIST),        
+        READ_ACL(Collections.EMPTY_LIST),        
+        /**
+         * READ permits all other READ operations
+         */
+        READ(Arrays.asList(READ_CONTENT, READ_PROPERTIES, READ_ACL, READ_CURRENT_USER_PRIVILEDGE)),
+        WRITE_PROPERTIES(Collections.EMPTY_LIST),
+        WRITE_CONTENT(Collections.EMPTY_LIST),        
+        WRITE_ACL(Collections.EMPTY_LIST),
+        UNLOCK(Collections.EMPTY_LIST),        
+        /**
+         * Includes all other WRITE privs
+         */
+        WRITE(Arrays.asList(WRITE_CONTENT, WRITE_PROPERTIES, WRITE_ACL, UNLOCK)),
+        
+        BIND(Collections.EMPTY_LIST),
+        UNBIND(Collections.EMPTY_LIST),
+        ALL(Arrays.asList(READ, WRITE, BIND, UNBIND));
+        
+        public List<Priviledge> contains;
 
-        READ,
-        WRITE,
-        READ_ACL,
-        WRITE_ACL,
-        UNLOCK,
-        READ_CURRENT_USER_PRIVILEDGE,
-        WRITE_PROPERTIES,
-        WRITE_CONTENT,
-        BIND,
-        UNBIND,
-        ALL
+        private Priviledge(List<Priviledge>contains) {
+            this.contains = contains;
+        }               
     }
+    
+    /**
+     * Just an empty list which conveys no permissions. This is an appropriate value
+     * to return from ACL methods when you want to deny access
+     */
+    public final static List<AccessControlledResource.Priviledge> NONE = Arrays.asList();
+    
+    public final static List<AccessControlledResource.Priviledge> READ_WRITE = Arrays.asList(Priviledge.READ, Priviledge.WRITE);
+    
+    public final static List<AccessControlledResource.Priviledge> READ_CONTENT = Arrays.asList(Priviledge.READ_CONTENT);
+    
+    public final static List<AccessControlledResource.Priviledge> READ_BROWSE = Arrays.asList(Priviledge.READ_CONTENT, Priviledge.READ_PROPERTIES);
+    
 
     /**
      * A URL which identifies the principal owner of this resource

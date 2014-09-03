@@ -21,9 +21,12 @@ package com.mycompany;
 import io.milton.common.StreamUtils;
 import io.milton.http.Range;
 import io.milton.http.Request;
+import io.milton.http.annotated.CommonResource;
 import io.milton.http.exceptions.BadRequestException;
+import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.resource.CollectionResource;
+import io.milton.resource.MakeCalendarResource;
 import io.milton.resource.MakeCollectionableResource;
 import io.milton.resource.PutableResource;
 import io.milton.resource.Resource;
@@ -32,12 +35,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 
-public class TFolderResource extends TResource implements PutableResource, MakeCollectionableResource {
+public class TFolderResource extends TResource implements PutableResource, MakeCollectionableResource, MakeCalendarResource {
 
     private static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(TResource.class);
     ArrayList<Resource> children = new ArrayList<Resource>();
@@ -120,6 +124,7 @@ public class TFolderResource extends TResource implements PutableResource, MakeC
     }
 
     protected void doBody(PrintWriter pw) {
+        System.out.println("dobody - " + children.size());
         pw.print("<ul>");
         for (Resource r : this.children) {
             String href = r.getName();
@@ -137,17 +142,38 @@ public class TFolderResource extends TResource implements PutableResource, MakeC
     }
 
     public String getCTag() {
-        int x = this.hashCode();
-        for (Resource r : this.children) {
+        Date d = getMostRecentModDate();
+        if( d == null ) {
+            System.out.println("No ctag");
+            return "000";
+        } else {
+            
+            String s = d.getTime() + "t";                    
+            System.out.println("ctag=" + s);
+            return s;
+        }
+    }
+
+    public Date getMostRecentModDate() {
+        Date latest = this.getModifiedDate();
+        for (Resource r : this.getChildren()) {
+            Date d;
             if (r instanceof TFolderResource) {
-                TFolderResource tfr = (TFolderResource) r;
-                x = x ^ tfr.getCTag().hashCode();
+                TFolderResource tf = (TFolderResource) r;
+                d = tf.getMostRecentModDate();
             } else {
-                x = x ^ r.getUniqueId().hashCode();
+                d = r.getModifiedDate();
+            }
+            if (d != null && (latest == null || d.after(latest))) {
+                latest = d;
             }
         }
-        String ctag = "c" + x;
-        log.trace("ctag is: " + ctag + " for: " + this.getHref());
-        return ctag;
+        return latest;
+    }
+
+    @Override
+    public CollectionResource createCalendar(String newName) throws NotAuthorizedException, ConflictException, BadRequestException {
+        TCalendarResource cal = new TCalendarResource(this, newName);
+        return cal;
     }
 }

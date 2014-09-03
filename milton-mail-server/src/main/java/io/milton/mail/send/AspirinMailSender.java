@@ -13,15 +13,10 @@ import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import org.masukomi.aspirin.core.AspirinInternal;
-import org.masukomi.aspirin.core.config.Configuration;
 import org.masukomi.aspirin.core.delivery.DeliveryManager;
 import org.masukomi.aspirin.core.listener.AspirinListener;
 import org.masukomi.aspirin.core.listener.ListenerManager;
 import org.masukomi.aspirin.core.listener.ResultState;
-import org.masukomi.aspirin.core.store.mail.FileMailStore;
-import org.masukomi.aspirin.core.store.mail.MailStore;
-import org.masukomi.aspirin.core.store.queue.QueueStore;
-import org.masukomi.aspirin.core.store.queue.SimpleQueueStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

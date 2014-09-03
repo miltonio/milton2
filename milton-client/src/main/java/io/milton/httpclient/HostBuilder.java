@@ -1,23 +1,27 @@
 /*
- * Copyright 2012 McEvoy Software Ltd.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 package io.milton.httpclient;
 
-import com.ettrema.cache.Cache;
 import io.milton.httpclient.zsyncclient.FileSyncer;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -30,12 +34,15 @@ public class HostBuilder {
     private String password;
     private String rootPath;
     private ProxyDetails proxy;
-    private Cache<Folder, List<Resource>> cache;
+    private Map<Folder, List<Resource>> cache;
     private int timeoutMillis;
     private FileSyncer fileSyncer;
+    private boolean secure = false;
     
     public Host buildHost() {
-        return new Host(server, rootPath, port, user, password, proxy, timeoutMillis, cache, fileSyncer);
+        Host h = new Host(server, rootPath, port, user, password, proxy, timeoutMillis, cache, fileSyncer);
+        h.setSecure(secure);
+        return h;
     }
 
     /**
@@ -52,6 +59,16 @@ public class HostBuilder {
         this.server = server;
     }
 
+    public void setSecure(boolean secure) {
+        this.secure = secure;
+    }
+
+    public boolean isSecure() {
+        return secure;
+    }
+
+    
+    
     /**
      * @return the port
      */
@@ -116,11 +133,11 @@ public class HostBuilder {
         this.proxy = proxy;
     }
 
-    public Cache<Folder, List<Resource>> getCache() {
+    public Map<Folder, List<Resource>> getCache() {
         return cache;
     }
 
-    public void setCache(Cache<Folder, List<Resource>> cache) {
+    public void setCache(Map<Folder, List<Resource>> cache) {
         this.cache = cache;
     }
 

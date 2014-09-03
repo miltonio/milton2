@@ -33,10 +33,17 @@ public abstract class MiltonException extends Exception {
 		super(message);
         this.resource = resource;
     }
-	
+
+    public MiltonException(Resource resource, Throwable cause) {
+        super(cause);
+        this.resource = resource;
+    }
+    
+    
     public MiltonException(Resource resource) {
         this.resource = resource;
     }
+    
 	public MiltonException(String message) {
 		super(message);
 	}

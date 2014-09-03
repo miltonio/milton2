@@ -1,6 +1,3 @@
-
-package io.milton.common;
-
 /*
  * Copyright 2012 McEvoy Software Ltd.
  *
@@ -16,6 +13,7 @@ package io.milton.common;
  * You should have received a copy of the GNU General Public License
  * along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
  */
+package io.milton.common;
 
 import io.milton.common.StreamUtils;
 import io.milton.http.Range;
@@ -23,18 +21,31 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
- /**
+/**
  *
  * @author brad
  */
-
 public class RangeUtils {
 
     private static final Logger log = LoggerFactory.getLogger(RangeUtils.class);
+
+    public static String toRangeString(long start, long finish, Long totalLength) {
+        String l = totalLength == null ? "*" : totalLength.toString();
+
+        String s = null;
+        if (finish > -1) {
+            s = "bytes " + start + "-" + finish + "/" + l;
+        } else {
+            long wrotetill = totalLength == null ? 0 : totalLength.longValue() - 1;
+            //The end position starts counting at zero. So subtract 1
+            s = "bytes " + start + "-" + wrotetill + "/" + l;
+        }
+        return s;
+    }
     
     public static void writeRanges(InputStream in, List<Range> ranges, OutputStream responseOut) throws IOException {
         try {
@@ -43,7 +54,10 @@ public class RangeUtils {
             for (Range r : ranges) {
                 long skip = r.getStart() - pos;
                 bufIn.skip(skip);
-                long length = r.getFinish() - r.getStart();
+                Long length = r.getLength();
+                if (length == null) { // will return null if cant calculate
+                    throw new IOException("Unable to write range because either start or finish index are not provided: " + r);
+                }
                 sendBytes(bufIn, responseOut, length);
                 pos = r.getFinish();
             }
@@ -53,7 +67,6 @@ public class RangeUtils {
     }
 
     public static void sendBytes(InputStream in, OutputStream out, long length) throws IOException {
-        log.trace("sendBytes: " + length);
         long numRead = 0;
         byte[] b = new byte[1024];
         while (numRead < length) {
@@ -70,9 +83,20 @@ public class RangeUtils {
     }
 
     public static void writeRange(InputStream in, Range r, OutputStream responseOut) throws IOException {
-        long skip = r.getStart();
-        in.skip(skip);
-        long length = r.getFinish() - r.getStart();
-        sendBytes(in, responseOut, length);
-    }    
+        if (r != null) {
+            if( r.getStart() != null ) {
+                long skip = r.getStart();
+                in.skip(skip);
+            }
+            if (r.getFinish() != null) {
+                long length = r.getFinish() - r.getStart() + 1;
+                sendBytes(in, responseOut, length);
+            } else {
+                IOUtils.copy(in, responseOut);
+            }
+        } else {
+            IOUtils.copy(in, responseOut);
+        }
+    }
+
 }

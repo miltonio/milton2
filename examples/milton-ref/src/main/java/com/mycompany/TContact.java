@@ -27,7 +27,7 @@ import io.milton.http.Range;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
-import io.milton.property.BeanPropertyResource;
+import io.milton.annotations.BeanPropertyResource;
 import io.milton.resource.AddressResource;
 import io.milton.resource.GetableResource;
 import io.milton.resource.LdapContact;
@@ -69,7 +69,7 @@ public class TContact extends TResource implements GetableResource, ReplaceableR
 
     @Override
     public void sendContent(OutputStream out, Range range, Map<String, String> params, String contentType) throws IOException, NotAuthorizedException, BadRequestException {
-        out.write(data.getBytes());
+        out.write(data.getBytes("UTF-8"));
     }
 
     @Override

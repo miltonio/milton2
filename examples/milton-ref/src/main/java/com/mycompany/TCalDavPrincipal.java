@@ -20,19 +20,21 @@
 package com.mycompany;
 
 import io.milton.common.StreamUtils;
-import io.milton.http.caldav.CalDavPrincipal;
 import io.milton.http.caldav.ICalFormatter;
-import io.milton.http.carddav.CardDavPrincipal;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.values.HrefList;
+import io.milton.http.values.SupportedCalendarComponentList;
+import io.milton.http.values.SupportedCalendarComponentListsSet;
 import io.milton.ldap.Condition;
 import io.milton.ldap.LdapPrincipal;
 import io.milton.mail.Mailbox;
 import io.milton.mail.MessageFolder;
+import io.milton.principal.CalDavPrincipal;
+import io.milton.principal.CardDavPrincipal;
 import io.milton.principal.HrefPrincipleId;
 import io.milton.principal.Principal.PrincipleId;
-import io.milton.property.BeanPropertyResource;
+import io.milton.annotations.BeanPropertyResource;
 import io.milton.resource.CalendarResource;
 import io.milton.resource.CollectionResource;
 import io.milton.resource.LdapContact;
@@ -49,14 +51,12 @@ import javax.mail.internet.MimeMessage;
  * @author brad
  */
 @BeanPropertyResource(value = "ldap")
-public class TCalDavPrincipal extends TFolderResource implements CalDavPrincipal, Mailbox, CalendarResource, CardDavPrincipal, LdapPrincipal, LdapContact {
+public class TCalDavPrincipal extends TFolderResource implements CalDavPrincipal, Mailbox, CalendarResource, CardDavPrincipal, LdapPrincipal, LdapContact { 
 
     private static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(AbstractResource.class);
     private HrefPrincipleId principleId;
     private TFolderResource calendarHome;
     private TFolderResource addressBookHome;
-    private TScheduleInboxResource scheduleInboxResource;
-    private TScheduleOutboxResource scheduleOutboxResource;
     private TFolderResource dropBox;
     private String password;
     private final TMailFolder mailInbox;
@@ -68,13 +68,11 @@ public class TCalDavPrincipal extends TFolderResource implements CalDavPrincipal
     private String organizationName;
     private String telephonenumber;
 
-    public TCalDavPrincipal(TFolderResource parent, String name, String password, TFolderResource calendarHome, TScheduleInboxResource scheduleInboxResource, TScheduleOutboxResource scheduleOutboxResource, TFolderResource dropBox, TFolderResource addressBookHome) {
+    public TCalDavPrincipal(TFolderResource parent, String name, String password, TFolderResource calendarHome, TFolderResource dropBox, TFolderResource addressBookHome) {
         super(parent, name);
         this.principleId = new HrefPrincipleId(getHref());
         this.calendarHome = calendarHome;
         this.addressBookHome = addressBookHome;
-        this.scheduleInboxResource = scheduleInboxResource;
-        this.scheduleOutboxResource = scheduleOutboxResource;
         this.dropBox = dropBox;
         this.mailInbox = new TMailFolder(this, "Inbox");
         this.password = password;
@@ -169,22 +167,6 @@ public class TCalDavPrincipal extends TFolderResource implements CalDavPrincipal
         this.calendarHome = calendarHome;
     }
 
-    public TScheduleInboxResource getScheduleInboxResource() {
-        return scheduleInboxResource;
-    }
-
-    public void setScheduleInboxResource(TScheduleInboxResource scheduleInboxResource) {
-        this.scheduleInboxResource = scheduleInboxResource;
-    }
-
-    public TScheduleOutboxResource getScheduleOutboxResource() {
-        return scheduleOutboxResource;
-    }
-
-    public void setScheduleOutboxResource(TScheduleOutboxResource scheduleOutboxResource) {
-        this.scheduleOutboxResource = scheduleOutboxResource;
-    }
-
     @Override
     public HrefList getCalendarHomeSet() {
         return HrefList.asList(calendarHome.getHref());
@@ -202,27 +184,7 @@ public class TCalDavPrincipal extends TFolderResource implements CalDavPrincipal
 
     @Override
     public HrefList getCalendarUserAddressSet() {
-
         return HrefList.asList("mailto:" + name + "@localhost", getHref());
-    }
-
-    @Override
-    public String getScheduleInboxUrl() {
-        if (scheduleInboxResource != null) {
-            return scheduleInboxResource.getHref();
-        } else {
-            return null;
-        }
-    }
-
-    @Override
-    public String getScheduleOutboxUrl() {
-        if (scheduleOutboxResource != null) {
-            return scheduleOutboxResource.getHref();
-        } else {
-            return null;
-        }
-
     }
 
     @Override
@@ -241,7 +203,7 @@ public class TCalDavPrincipal extends TFolderResource implements CalDavPrincipal
 
     @Override
     protected Object clone(TFolderResource newParent, String newName) {
-        return new TCalDavPrincipal(newParent, newName, password, calendarHome, scheduleInboxResource, scheduleOutboxResource, dropBox, addressBookHome);
+        return new TCalDavPrincipal(newParent, newName, password, calendarHome, dropBox, addressBookHome);
     }
 
     /**
@@ -353,4 +315,18 @@ public class TCalDavPrincipal extends TFolderResource implements CalDavPrincipal
     public String getCommonName() {
         return givenName + " " + surName;
     }
+
+    @Override
+    public SupportedCalendarComponentListsSet getSupportedComponentSets() {
+        return null;
+    }
+
+    @Override
+    public SupportedCalendarComponentList getSupportedComponentSet() {
+        return null; // probably should not implement CalendarResource ... ?
+    }
+
+    
+
+    
 }

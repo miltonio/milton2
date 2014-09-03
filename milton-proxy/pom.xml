@@ -4,23 +4,31 @@
     <parent>
         <groupId>io.milton</groupId>
         <artifactId>milton</artifactId>
-        <version>2.0.5-SNAPSHOT</version>
+        <version>2.6.2.4</version>
     </parent>
     <groupId>io.milton</groupId>
     <artifactId>milton-proxy</artifactId>
     <packaging>jar</packaging>
     <name>milton-proxy</name>
+    <licenses>
+        <license>
+            <name>Apache2</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+            <distribution>repo</distribution>
+            <comments>Permissive, business friendly license.</comments>
+        </license>
+    </licenses>	     
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>milton-server</artifactId>
+            <artifactId>milton-server-ce</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>milton-client</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency>     
     </dependencies>
 </project>
 

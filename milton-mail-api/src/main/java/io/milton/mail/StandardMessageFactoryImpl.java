@@ -1,3 +1,21 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package io.milton.mail;
 
 import java.io.IOException;
@@ -30,6 +48,7 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
 
     private final static Logger log = LoggerFactory.getLogger(StandardMessageFactoryImpl.class);
 
+    @Override
     public void toStandardMessage(MimeMessage mm, StandardMessage sm) {
         try {
             sm.setFrom(findFromAddress(mm));
@@ -175,6 +194,7 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
     }
 
     protected void fillContent(StandardMessage sm, Part message) throws MessagingException {
+        System.out.println("StandardMessageFactoryImpl - fillContent");
         if (isText(sm)) {
             if (isHtml(sm)) {
                 if (hasAttachments(sm)) {
@@ -252,12 +272,14 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
     }
 
     private void addAttachmentToMime(MimeMultipart multipart, Attachment att) throws MessagingException {
+        System.out.println("StandardMessageFactoryImpl - addAttachmentToMime2 - " + att.getContentId());
         MimeBodyPart bp = new MimeBodyPart();
 
         DataSource fds = new AttachmentReadingDataSource(att);
         bp.setDataHandler(new DataHandler(fds));
         bp.setHeader("Content-ID", att.getContentId());
         bp.setDisposition(att.getDisposition());
+        bp.setFileName(att.getName());
 
         multipart.addBodyPart(bp);
     }
@@ -269,10 +291,14 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
      * @param sm
      */
     private void addAttachmentsToMime(MimeMultipart multipart, StandardMessage sm) throws MessagingException {
+        System.out.println("StandardMessageFactoryImpl - addAttachmentsToMime1");
         if (sm.getAttachments() != null && sm.getAttachments().size() > 0) {
             for (Attachment att : sm.getAttachments()) {
                 if( !isInline(att) ) {
+                    System.out.println("StandardMessageFactoryImpl - addAttachmentToMime1");
                     addAttachmentToMime(multipart, att);
+                } else {
+                    System.out.println("StandardMessageFactoryImpl - is inline so ignore");
                 }
             }
         }
@@ -478,6 +504,7 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
 
     @Override
     public void toMimeMessage(StandardMessage sm, MimeMessage mm) {
+        System.out.println("StandardMessageFactoryImpl - toMimeMessage");
         try {
             //mm.setS
             mm.setFrom(sm.getFrom().toInternetAddress());
@@ -511,6 +538,7 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
 
         @Override
         public InputStream getInputStream() throws IOException {
+            System.out.println("AttachmentReadingDataSource - getInputStream - " + att.getName());
             return att.getInputStream();
         }
 

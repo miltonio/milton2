@@ -4,15 +4,23 @@
     <parent>
         <groupId>io.milton</groupId>
         <artifactId>milton</artifactId>
-        <version>2.0.5-SNAPSHOT</version>
+        <version>2.6.2.4</version>
     </parent>
     <artifactId>milton-mail-api</artifactId>
     <packaging>jar</packaging>
+    <licenses>
+        <license>
+            <name>Apache2</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+            <distribution>repo</distribution>
+            <comments>Permissive, business friendly license.</comments>
+        </license>
+    </licenses>	    
     <dependencies>
         <dependency>
             <groupId>javax.mail</groupId>
             <artifactId>mail</artifactId>
-            <version>1.4.1</version>
+            <version>1.4.7</version>
         </dependency>
 
 
@@ -27,6 +35,18 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>1.5.8</version>
-        </dependency>              
+        </dependency>
+        <dependency>
+            <artifactId>activation</artifactId>
+            <groupId>javax.activation</groupId>
+            <type>jar</type>
+            <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <artifactId>commons-io</artifactId>
+            <groupId>commons-io</groupId>
+            <type>jar</type>
+            <version>2.4</version>
+        </dependency>
     </dependencies>
 </project>

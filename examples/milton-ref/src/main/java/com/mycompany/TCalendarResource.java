@@ -20,6 +20,7 @@
 package com.mycompany;
 
 import io.milton.common.StreamUtils;
+import io.milton.http.values.SupportedCalendarComponentList;
 import io.milton.resource.CalendarResource;
 import io.milton.resource.ReportableResource;
 import io.milton.resource.Resource;
@@ -63,7 +64,8 @@ public class TCalendarResource extends TFolderResource implements CalendarResour
             ByteArrayOutputStream bout = new ByteArrayOutputStream();
             StreamUtils.readTo(inputStream, bout);
             bout.close();
-            String data = bout.toString();
+            String data = bout.toString("UTF-8");
+            System.out.println(data);
             e.setiCalData(data);
             return e;
 //        } else {
@@ -86,6 +88,11 @@ public class TCalendarResource extends TFolderResource implements CalendarResour
     @Override
     public void setColor(String s) {
         this.color = s;
+    }
+
+    @Override
+    public SupportedCalendarComponentList getSupportedComponentSet() {
+        return SupportedCalendarComponentList.asList(ComponentType.VEVENT, ComponentType.VTODO);
     }
 
 }

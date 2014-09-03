@@ -1,16 +1,20 @@
 /*
- * Copyright 2012 McEvoy Software Ltd.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 package io.milton.http;
@@ -61,7 +65,10 @@ public interface Response {
         EXPIRES( "Expires" ),
         ETAG( "ETag" ),
         VARY( "Vary" ),
+        ACCESS_CONTROL_ALLOW_ORIGIN("Access-Control-Allow-Origin"),
+        ACCEPT_RANGES("Accept-Ranges"),
         CONTENT_RANGE( "Content-Range" );
+        
         public String code;
 
         Header( String code ) {
@@ -140,7 +147,7 @@ public interface Response {
         }
 
         public Status fromCode( int i ) {
-            for( Status s : this.values() ) {
+            for( Status s : values() ) {
                 if( s.code == i ) return s;
             }
             return null;
@@ -234,8 +241,36 @@ public interface Response {
 
     void setDateHeader( Date date );
 
+    /**
+     * Used for CORS responses
+     * 
+     * @return 
+     */
+    String getAccessControlAllowOrigin();
+    
+    void setAccessControlAllowOrigin(String s);
+    
+    String getAcceptRanges();
+    
+    void setAcceptRanges(String s);
+    
+    /**
+     * Called to indicate that the request is completed. Some response implementations
+     * might choose to close the http connection, while others which implement pipelining
+     * might not
+     */
     void close();
 
+    /**
+     * Called by milton when an error occurs. The underlying HTTP provider should
+     * choose to close the HTTP connection, because the amount of data already sent
+     * might not be consistent with the content length header which may have already
+     * been sent
+     * @param status
+     * @param message
+     */
+    void sendError(Status status, String message);
+    
     /**
      * Will set the status to moved_temporaruly and set the location header
      * to the given url

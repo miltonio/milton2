@@ -1,16 +1,20 @@
 /*
- * Copyright 2012 McEvoy Software Ltd.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 package io.milton.http.caldav;
@@ -23,7 +27,7 @@ public class ITip {
 
     public enum StatusResponse {
 
-        RS_SUCCESS_20("2.0", "Success.", "None."),
+        RS_SUCCESS_20("2.0", "Success", "None."),
         RS_SUCCESS_21("2.1", "Success but fallback taken on one or more property values.", "Property name and value MAY be specified."),
         RS_SUCCESS_22("2.2", "Success, invalid property ignored.", "Property name MAY be specified."),
         RS_SUCCESS_23("2.3", "Success, invalid property parameter ignored.", "Property parameter name and value MAY be specified."),
@@ -43,8 +47,8 @@ public class ITip {
         RS_INVALID_33("3.3", "Invalid property parameter value.", "Property parameter name and value MAY be specified."),
         RS_INVALID_34("3.4", "Invalid calendar componentsequence.", "Calendar component sentinel MAY be specified (e.g., BEGIN:VTIMEZONE)."),
         RS_INVALID_35("3.5", "Invalid date or time.", "Date/time value(s) MAY be specified."),
-        RS_INVALID_36("3.6", "Invalid rule.", "Rule value MAY be specified."),
-        RS_INVALID_37("3.7", "Invalid Calendar User.", "Attendee property value MAY be specified."),
+        RS_INVALID_36("3.6", "Invalid rule", "Rule value MAY be specified."),
+        RS_INVALID_37("3.7", "Invalid Calendar User", "Attendee property value MAY be specified."),
         RS_INVALID_38("3.8", "No authority.", "METHOD and Attendee property values MAY be specified."),
         RS_INVALID_39("3.9", "Unsupported version.", "VERSION property name and value MAY be specified."),
         RS_INVALID_310("3.10", "Request entity too large.", "None."),
@@ -60,7 +64,7 @@ public class ITip {
         RS_ERROR_50("5.0", "Request MAY supported. (WTF?!)", "Method property value MAY be specified."),
         RS_ERROR_51("5.1", "Service unavailable.", "ATTENDEE property value MAY be specified."),
         RS_ERROR_52("5.2", "Invalid calendar service.", "ATTENDEE property value MAY be specified."),
-        RS_ERROR_53("5.3", "No scheduling support for user.", "ATTENDEE property value MAY be specified.         ");
+        RS_ERROR_53("5.3", "No scheduling support for user.", "ATTENDEE property value MAY be specified");
         public String code;
         public String description;
         public String longerDesc;

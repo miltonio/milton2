@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+
+    <bean id="resource.factory" class="io.milton.http.annotated.AnnotationResourceFactory">
+        <property name="controllers">
+            <list>
+                <bean class="com.bandstand.web.BandsController" /> 
+                <bean class="com.bandstand.web.RootController" /> 
+                <bean class="com.bandstand.web.MusiciansController" /> 
+                <bean class="com.bandstand.web.ImagesController" /> 
+                <bean class="com.bandstand.web.GigController" /> 
+                <bean class="com.bandstand.web.BandMembersController" /> 
+                <bean class="com.bandstand.web.ContactsController" /> 
+                <bean class="com.bandstand.web.SongsController" /> 
+            </list>
+        </property>
+        <property name="viewResolver">
+            <bean class="io.milton.http.template.JspViewResolver">
+                <constructor-arg ref="servletContext"/>
+                <property name="theme" value="united" />
+            </bean> 
+        </property>
+    </bean>
+
+    <bean id="milton.http.manager" class="io.milton.ent.config.HttpManagerBuilderEnt"> <!-- Note enterprise version. Only available for AGPL + Commercial users of milton -->
+        <property name="mainResourceFactory" ref="resource.factory" /> 
+        <property name="enableCompression" value="false"/>
+        <property name="buffering" value="never"/>      
+    </bean>    
+</beans>
