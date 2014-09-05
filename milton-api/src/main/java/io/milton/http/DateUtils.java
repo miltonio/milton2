@@ -30,6 +30,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -118,29 +119,45 @@ public class DateUtils {
      * @param s
      * @return
      */
-    public static Date parseIcalDateTime(String s) throws DateParseException {
-        Matcher m = DATE_VALUE.matcher(s);
-        if (!m.matches()) {
-            throw new DateParseException("Does not match regex: " + s);
-        }
-        int year = Integer.parseInt(m.group(1));
-        int month = Integer.parseInt(m.group(2));
-        int day = Integer.parseInt(m.group(3));
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.YEAR, year);
-        cal.set(Calendar.MONTH, month);
-        cal.set(Calendar.DAY_OF_MONTH, day);
-        
-        if (null != m.group(4)) { // hour
-            int hour = Integer.parseInt(m.group(4));
-            int minute = Integer.parseInt(m.group(5));
-            int second = Integer.parseInt(m.group(6));
-            boolean utc = null != m.group(7);
-            cal.set(Calendar.HOUR, hour);
-            cal.set(Calendar.MINUTE, minute);
-            cal.set(Calendar.SECOND, second);
-        }
-        return cal.getTime();
+	public static Date parseIcalDateTime( String s ) throws DateParseException
+	{
+		SimpleDateFormat sdf = new SimpleDateFormat( "yyyyMMdd'T'HHmmss'Z'" );
+		sdf.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
+		try
+		{
+			return sdf.parse( s );
+		}
+		catch( ParseException e )
+		{
+			throw new DateParseException( "Does not match regex: " + s );
+		}
+	}
+	
+	public static Date parseIcalDateTime_old( String s ) throws DateParseException
+	{
+		Matcher m = DATE_VALUE.matcher( s );
+		if ( !m.matches() )
+		{
+			throw new DateParseException( "Does not match regex: " + s );
+		}
+		int year = Integer.parseInt( m.group( 1 ) );
+		int month = Integer.parseInt( m.group( 2 ) );
+		int day = Integer.parseInt( m.group( 3 ) );
+		Calendar cal = Calendar.getInstance();
+		cal.set( Calendar.YEAR, year );
+		cal.set( Calendar.MONTH, month );
+		cal.set( Calendar.DAY_OF_MONTH, day );
+
+		if (null != m.group(4) ) { // hour
+			int hour = Integer.parseInt( m.group( 4 ) );
+			int minute = Integer.parseInt( m.group( 5 ) );
+			int second = Integer.parseInt( m.group( 6 ) );
+			boolean utc = null != m.group( 7 );
+			cal.set( Calendar.HOUR, hour );
+			cal.set( Calendar.MINUTE, minute );
+			cal.set( Calendar.SECOND, second );
+		}
+		return cal.getTime();
 
     }
 
