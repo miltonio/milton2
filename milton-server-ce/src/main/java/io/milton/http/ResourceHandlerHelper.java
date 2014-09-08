@@ -20,7 +20,6 @@ package io.milton.http;
 
 import io.milton.common.Path;
 import io.milton.event.AccessedEvent;
-import io.milton.event.PostEvent;
 import io.milton.resource.Resource;
 import io.milton.http.AuthenticationService.AuthStatus;
 import io.milton.http.Request.Method;

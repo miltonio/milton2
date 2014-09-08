@@ -44,6 +44,7 @@ public interface Report {
      * Must be a multistatus response.
      *
      * @param host 
+	 * @param path 
      * @param r 
      * @param doc
      * @return the response body, usually xml
