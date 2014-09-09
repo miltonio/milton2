@@ -20,7 +20,9 @@
 package io.milton.http.http11;
 
 import io.milton.resource.Resource;
+
 import java.util.Date;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,11 +41,14 @@ public class DefaultETagGenerator implements ETagGenerator {
 
 	public DefaultETagGenerator() {
 	}
-	
-	
+
+
 	@Override
     public String generateEtag( Resource r ) {
         log.trace( "generateEtag" );
+        if ( r == null ) {
+        	return null;
+        }
         String s = r.getUniqueId();
         if( s == null ) {
 			if( log.isTraceEnabled()) {
