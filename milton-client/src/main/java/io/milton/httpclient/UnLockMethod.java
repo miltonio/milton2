@@ -34,7 +34,7 @@ public class UnLockMethod extends HttpRequestBase {
     public UnLockMethod( String uri, String lockToken ) throws URISyntaxException {
         setURI(new URI(uri));
 		this.lockToken = lockToken;
-		addHeader("Lock-Token", lockToken);
+		addHeader("Lock-Token", String.format("<%s>", lockToken));
     }
 
     @Override
