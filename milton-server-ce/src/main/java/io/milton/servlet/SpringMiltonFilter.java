@@ -23,16 +23,15 @@ import io.milton.http.HttpManager;
 import io.milton.http.Request;
 import io.milton.http.ResourceFactory;
 import io.milton.http.Response;
-import io.milton.http.annotated.AnnoResource;
 import io.milton.http.annotated.AnnotationResourceFactory;
 import io.milton.http.template.JspViewResolver;
 import io.milton.http.template.ViewResolver;
-import io.milton.http.webdav.DisplayNameFormatter;
 import io.milton.mail.MailServer;
 import io.milton.mail.MailServerBuilder;
-import io.milton.resource.PropFindableResource;
+
 import java.io.File;
 import java.io.IOException;
+
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
@@ -41,46 +40,57 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
- * Loads the spring context from classpath at applicationContext.xml
+ * Loads the spring context either from a spring configuration XML file or a spring @Configuration class.
  *
- * This filter then gets the bean named milton.http.manager and uses that for
- * milton processing.
+ * <p>Use {@code contextConfigClass} to define the @Configuration class or {@code contextConfigLocation}
+ * to define the Spring XML configuration file. If any of them is defined, {@link SpringMiltonFilter} will
+ * try to load a file named applicationContext.xml from the classpath.
+ * <br>If it still fails, only the parent context will be considered.
+ * 
+ * <p>This filter then gets the bean named milton.http.manager and uses that for
+ * Milton processing.
  *
- * The milton.http.manager bean can either be a HttpManager or it can be a
- * HttpManagerBuilder, in which case a HttpManager is constructed from it
+ * <p>The milton.http.manager bean can either be a {@link HttpManager} or it can be a
+ * {@link HttpManagerBuilder}, in which case a {@link HttpManager} is constructed from it
  *
- * Requests with a path which begins with one of the exclude paths will not be
- * processed by milton. Instead, for these requests, the filter chain will be
+ * <p>Requests with a path which begins with one of the exclude paths will not be
+ * processed by Milton. Instead, for these requests, the filter chain will be
  * invoked so the request can be serviced by JSP or a servlet, etc
  *
- * This uses an init parameter called milton.exclude.paths, which should be a
- * comma seperated list of paths to ignore. For example:
- * /static,/images,/login.jsp
+ * <p>This uses an init parameter called {@code milton.exclude.paths}, which should be a
+ * comma separated list of paths to ignore. For example:
+ * 
+ * <pre>/static,/images,/login.jsp</pre>
  *
- * This allows non-milton resources to be accessed, while still mapping all urls
- * to milton
+ * <p>This allows non-Milton resources to be accessed, while still mapping all URLs
+ * to Milton
  *
  * @author bradm
  */
 public class SpringMiltonFilter implements javax.servlet.Filter {
 
 	private static final Logger log = LoggerFactory.getLogger(SpringMiltonFilter.class);
-	private ClassPathXmlApplicationContext context;
+	private ConfigurableApplicationContext context;
 	private HttpManager httpManager;
 	private MailServer mailServer;
-	private FilterConfig filterConfig;
 	private ServletContext servletContext;
+
 	/**
 	 * Resources with this as the first part of their path will not be served
-	 * from milton. Instead, this filter will allow filter processing to
+	 * from Milton. Instead, this filter will allow filter processing to
 	 * continue so they will be served by JSP or a servlet
 	 */
 	private String[] excludeMiltonPaths;
@@ -88,40 +98,16 @@ public class SpringMiltonFilter implements javax.servlet.Filter {
 	@Override
 	public void init(FilterConfig fc) throws ServletException {
 		log.info("init");
-		WebApplicationContext rootContext = WebApplicationContextUtils.getWebApplicationContext(fc.getServletContext());
 
-		StaticApplicationContext parent;
-		if (rootContext != null) {
-			log.info("Found a root spring context, and using it");
-			parent = new StaticApplicationContext(rootContext);
-		} else {
-			log.info("No root spring context");
-			parent = new StaticApplicationContext();
-		}
-		FilterConfigWrapper configWrapper = new FilterConfigWrapper(fc);
-		parent.getBeanFactory().registerSingleton("config", configWrapper);
-		parent.getBeanFactory().registerSingleton("servletContext", fc.getServletContext());
-		File webRoot = new File(fc.getServletContext().getRealPath("/"));
-		parent.getBeanFactory().registerSingleton("webRoot", webRoot);
-		log.info("Registered root webapp path in: webroot=" + webRoot.getAbsolutePath());
-		parent.refresh();
-		
-		this.filterConfig = fc;
+		initSpringApplicationContext(fc);
+
 		servletContext = fc.getServletContext();
+
 		String sExcludePaths = fc.getInitParameter("milton.exclude.paths");
 		log.info("init: exclude paths: " + sExcludePaths);
 		excludeMiltonPaths = sExcludePaths.split(",");
 
-		String sFiles = fc.getInitParameter("contextConfigLocation");
-		String[] contextFiles;
-		if (sFiles != null && sFiles.trim().length() > 0) {
-			contextFiles = sFiles.split(" ");
-		} else {
-			contextFiles = new String[]{"applicationContext.xml"};
-		}
 
-		context = new ClassPathXmlApplicationContext(contextFiles, parent);
-		
 		Object milton = context.getBean("milton.http.manager");
 		if (milton instanceof HttpManager) {
 			this.httpManager = (HttpManager) milton;
@@ -157,12 +143,74 @@ public class SpringMiltonFilter implements javax.servlet.Filter {
 		log.info("Finished init");
 	}
 
+	@SuppressWarnings("resource")
+	protected void initSpringApplicationContext(FilterConfig fc) {
+
+		final WebApplicationContext rootContext = WebApplicationContextUtils.getWebApplicationContext(fc.getServletContext());
+
+		StaticApplicationContext parent;
+		if (rootContext != null) {
+			log.info("Found a root spring context, and using it");
+			parent = new StaticApplicationContext(rootContext);
+		} else {
+			log.info("No root spring context");
+			parent = new StaticApplicationContext();
+		}
+
+		final FilterConfigWrapper configWrapper = new FilterConfigWrapper(fc);
+		parent.getBeanFactory().registerSingleton("config", configWrapper);
+		parent.getBeanFactory().registerSingleton("servletContext", fc.getServletContext());
+		File webRoot = new File(fc.getServletContext().getRealPath("/"));
+		parent.getBeanFactory().registerSingleton("webRoot", webRoot);
+		log.info("Registered root webapp path in: webroot=" + webRoot.getAbsolutePath());
+		parent.refresh();
+
+		final String configClass = fc.getInitParameter("contextConfigClass");
+		final String sFiles = fc.getInitParameter("contextConfigLocation");
+
+		ConfigurableApplicationContext ctx = null;
+		if (StringUtils.isNotBlank(configClass)) {
+			try {
+				Class<?> clazz = Class.forName(configClass);
+				final AnnotationConfigApplicationContext annotationCtx = new AnnotationConfigApplicationContext();
+				annotationCtx.setParent(parent);
+				annotationCtx.register(clazz);
+				annotationCtx.refresh();
+				ctx = annotationCtx;
+			} catch (ClassNotFoundException e) {
+				ctx = null;
+				log.error("Unable to create a child context for Milton. Cause: {}", e.getMessage());
+			}
+		} else {
+			String[] contextFiles;
+			if (sFiles != null && sFiles.trim().length() > 0) {
+				contextFiles = sFiles.split(" ");
+			} else {
+				contextFiles = new String[]{"applicationContext.xml"};
+			}
+
+			try {
+				ctx = new ClassPathXmlApplicationContext(contextFiles, parent);
+			} catch (BeansException e) {
+				log.error("Unable to create a child context for Milton. Cause: {}", e.getMessage());
+			}
+		}
+
+		if (ctx == null) {
+			log.warn("No child context available, only using parent context");
+			context = parent;
+		} else {
+			context = ctx;
+		}
+
+	}
+
 	@Override
 	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain fc) throws IOException, ServletException {		
 		if (req instanceof HttpServletRequest) {			
 			HttpServletRequest hsr = (HttpServletRequest) req;
 			String url = hsr.getRequestURI();
-			// Allow certain paths to be excluded from milton, these might be other servlets, for example
+			// Allow certain paths to be excluded from Milton, these might be other servlets, for example
 			for (String s : excludeMiltonPaths) {
 				if (url.startsWith(s)) {
 					log.trace("doFilter: is excluded path");
