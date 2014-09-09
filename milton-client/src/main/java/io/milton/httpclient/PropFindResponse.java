@@ -68,11 +68,7 @@ public class PropFindResponse {
                         owner = RespUtils.asString(elActiveLock, "owner");
                         Element elToken = elActiveLock.getChild("locktoken", RespUtils.NS_DAV);
                         if (elToken != null) {
-                            String t = RespUtils.asString(elToken, "href");
-                            if (t != null && t.contains(":")) {
-                                t = t.substring(t.indexOf(":"));
-                            }
-                            token = t;
+                            token = RespUtils.asString(elToken, "href");
                         } else {
                             token = null;
                         }
