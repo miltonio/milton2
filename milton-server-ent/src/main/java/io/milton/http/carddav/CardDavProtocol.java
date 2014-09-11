@@ -76,7 +76,7 @@ public class CardDavProtocol implements HttpExtension, PropertySource, WellKnown
         webDavProtocol.addPropertySource(this);
         
         webDavProtocol.addReport(new AddressBookMultiGetReport(resourceFactory, propertyBuilder, gen));
-        webDavProtocol.addReport(new AddressBookQueryReport());
+        webDavProtocol.addReport(new AddressBookQueryReport(resourceFactory, propertyBuilder, gen));
         webDavProtocol.addReport(new ExpandPropertyReport(resourceFactory, propertyBuilder, gen));
     }
 

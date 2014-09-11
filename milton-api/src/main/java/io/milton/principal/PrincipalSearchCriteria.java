@@ -1,7 +1,6 @@
 package io.milton.principal;
 
 import java.util.List;
-import javax.xml.namespace.QName;
 
 /**
  *
@@ -29,8 +28,23 @@ public class PrincipalSearchCriteria {
         }
 
         public String getCode() {
-            return code;
+            return this.code;
         }
+
+        public static MatchType fromCode( String code )
+    		{
+    			if ( code != null )
+    			{
+    				for ( MatchType enumm : MatchType.values() )
+    				{
+    					if ( enumm.name().equalsIgnoreCase( code ) || enumm.code.equalsIgnoreCase( code ) )
+    					{
+    						return enumm;
+    					}
+    				}
+    			}
+    			return null;
+    		}
     }
 
     private TestType test;
@@ -94,7 +108,7 @@ public class PrincipalSearchCriteria {
 
     public static class SearchItem {
 
-        private List<QName> fields;
+        private String field;
         private MatchType matchType;
         private String value;
 
@@ -107,29 +121,28 @@ public class PrincipalSearchCriteria {
             if( value != null ) {
                 sb.append("value=").append(value);
             }
-            if( fields != null ) {
-                sb.append(" [");
-                for( QName f : fields ) {
-                    sb.append(f.toString()).append(",");
-                }
-                sb.append("]");
-            }
+            if ( field != null )
+      			{
+      				sb.append( field ).append( "," );
+      			}
             return sb.toString();
         }
 
         /**
-         * @return the fields
-         */
-        public List<QName> getFields() {
-            return fields;
-        }
+    		 * @return the fields
+    		 */
+    		public String getField()
+    		{
+    			return field;
+    		}
 
-        /**
-         * @param fields the fields to set
-         */
-        public void setFields(List<QName> fields) {
-            this.fields = fields;
-        }
+    		/**
+    		 * @param fields the fields to set
+    		 */
+    		public void setField( String fields )
+    		{
+    			this.field = fields;
+    		}
 
         /**
          * @return the matchType
