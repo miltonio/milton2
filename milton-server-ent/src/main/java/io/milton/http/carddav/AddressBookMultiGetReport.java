@@ -6,7 +6,7 @@
 package io.milton.http.carddav;
 
 import io.milton.http.ResourceFactory;
-import io.milton.http.caldav.MultiGetReport;
+import io.milton.http.report.AbstractMultiGetReport;
 import io.milton.http.webdav.PropFindPropertyBuilder;
 import io.milton.http.webdav.PropFindXmlGenerator;
 
@@ -45,7 +45,7 @@ import io.milton.http.webdav.PropFindXmlGenerator;
  * 
  * @author nabil.shams
  */
-public class AddressBookMultiGetReport extends MultiGetReport {
+public class AddressBookMultiGetReport extends AbstractMultiGetReport {
 
     public AddressBookMultiGetReport(ResourceFactory resourceFactory, PropFindPropertyBuilder propertyBuilder, PropFindXmlGenerator xmlGenerator) {
         super(resourceFactory, propertyBuilder, xmlGenerator);
