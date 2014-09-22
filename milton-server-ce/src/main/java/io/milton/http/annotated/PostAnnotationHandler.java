@@ -18,6 +18,9 @@ import io.milton.annotations.Post;
 import io.milton.common.JsonResult;
 import io.milton.http.Request;
 import io.milton.http.Request.Method;
+import io.milton.http.exceptions.BadRequestException;
+import io.milton.http.exceptions.ConflictException;
+import io.milton.http.exceptions.NotAuthorizedException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.TimeZone;
@@ -46,7 +49,7 @@ public class PostAnnotationHandler extends AbstractAnnotationHandler {
 	 * @param params
 	 * @return
 	 */
-	public Object execute(AnnoResource resource, Request request, Map<String, String> params) {
+	public Object execute(AnnoResource resource, Request request, Map<String, String> params) throws BadRequestException, NotAuthorizedException, ConflictException {
 		Object source = resource.getSource();
 		ControllerMethod cm = getBestMethod(source.getClass(), null, params, null);
 		if (cm == null) {
@@ -79,6 +82,12 @@ public class PostAnnotationHandler extends AbstractAnnotationHandler {
 			Object[] args = annoResourceFactory.buildInvokeArgs(resource, cm.method, params);
 			Object result = cm.method.invoke(cm.controller, args);
 			return result;
+		} catch (NotAuthorizedException e) {
+			throw e;
+		} catch (BadRequestException e) {
+			throw e;
+		} catch (ConflictException e) {
+			throw e;				
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

@@ -20,6 +20,7 @@ import io.milton.http.HttpManager;
 import io.milton.http.Request;
 import io.milton.http.Request.Method;
 import io.milton.http.exceptions.BadRequestException;
+import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.exceptions.NotFoundException;
 import java.lang.annotation.Annotation;
@@ -280,6 +281,8 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 				throw (BadRequestException)cause;
 			} else if( cause instanceof NotFoundException) {
 				throw (NotFoundException)cause;
+			} else if( cause instanceof ConflictException) {
+				throw (ConflictException)cause;				
 			}
 			throw e;			
 		} catch(NotAuthorizedException e) {

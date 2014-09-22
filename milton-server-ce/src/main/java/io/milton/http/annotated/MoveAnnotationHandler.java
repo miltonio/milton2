@@ -16,6 +16,9 @@ package io.milton.http.annotated;
 
 import io.milton.annotations.Move;
 import io.milton.http.Request.Method;
+import io.milton.http.exceptions.BadRequestException;
+import io.milton.http.exceptions.ConflictException;
+import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.resource.CollectionResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +35,7 @@ public class MoveAnnotationHandler extends AbstractAnnotationHandler {
 		super(outer, Move.class, Method.MOVE);
 	}
 
-	void execute(AnnoResource res, CollectionResource rDest, String newName) {
+	void execute(AnnoResource res, CollectionResource rDest, String newName)  throws ConflictException, NotAuthorizedException, BadRequestException{
 		log.trace("execute MOVE method");
 		Object source = res.getSource();
 		ControllerMethod cm = getBestMethod(source.getClass());
@@ -47,6 +50,12 @@ public class MoveAnnotationHandler extends AbstractAnnotationHandler {
 			}
 			Object[] args = annoResourceFactory.buildInvokeArgs(res, cm.method, newName, rDest, destObject);
 			cm.method.invoke(cm.controller, args);
+		} catch (NotAuthorizedException e) {
+			throw e;
+		} catch (BadRequestException e) {
+			throw e;
+		} catch (ConflictException e) {
+			throw e;				
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

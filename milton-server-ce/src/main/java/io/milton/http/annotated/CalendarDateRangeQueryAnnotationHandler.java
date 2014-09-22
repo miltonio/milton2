@@ -15,6 +15,8 @@
 package io.milton.http.annotated;
 
 import io.milton.annotations.CalendarDateRangeQuery;
+import io.milton.http.exceptions.BadRequestException;
+import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.resource.ICalResource;
 import java.util.ArrayList;
 import java.util.Date;
@@ -34,7 +36,7 @@ public class CalendarDateRangeQueryAnnotationHandler extends AbstractAnnotationH
 		super(outer, CalendarDateRangeQuery.class);
 	}
 
-	public List<ICalResource> execute(AnnoCalendarResource parent, Date start, Date finish) {
+	public List<ICalResource> execute(AnnoCalendarResource parent, Date start, Date finish) throws NotAuthorizedException, BadRequestException{
 		Object source = parent.getSource();
 		try {
 			ControllerMethod cm = getBestMethod(source.getClass());
@@ -53,7 +55,10 @@ public class CalendarDateRangeQueryAnnotationHandler extends AbstractAnnotationH
 				}
 				return list;
 			}
-			
+		} catch (NotAuthorizedException e) {
+			throw e;
+		} catch (BadRequestException e) {
+			throw e;	
 		} catch (Exception e) {
 			throw new RuntimeException("Exception executing " + getClass() + " - " + source.getClass(), e);
 		}

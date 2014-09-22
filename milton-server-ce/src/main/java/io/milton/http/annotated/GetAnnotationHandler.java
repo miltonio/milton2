@@ -25,8 +25,12 @@ import io.milton.common.StreamUtils;
 import io.milton.http.HttpManager;
 import io.milton.http.Range;
 import io.milton.http.Request.Method;
+import io.milton.http.exceptions.BadRequestException;
+import io.milton.http.exceptions.NotAuthorizedException;
+import io.milton.http.exceptions.NotFoundException;
 import io.milton.http.template.TemplateProcessor;
 import io.milton.principal.DiscretePrincipal;
+import java.io.IOException;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -48,7 +52,7 @@ public class GetAnnotationHandler extends AbstractAnnotationHandler {
 		super(outer, Get.class, Method.GET);
 	}
 
-	public void execute(AnnoResource resource, OutputStream out, Range range, Map<String, String> params, String contentType) {
+	public void execute(AnnoResource resource, OutputStream out, Range range, Map<String, String> params, String contentType)  throws IOException, NotAuthorizedException, BadRequestException, NotFoundException {
 		Object source = resource.getSource();
 		ControllerMethod cm = getBestMethod(source.getClass(), contentType, params, null);
 		if (cm == null) {
@@ -89,6 +93,14 @@ public class GetAnnotationHandler extends AbstractAnnotationHandler {
 				}
 			}
 			out.flush();
+		} catch(IOException e) {
+			throw e;			
+		} catch(NotAuthorizedException e) {
+			throw e;			
+		} catch(BadRequestException e) {
+			throw e;			
+		} catch(NotFoundException e) {
+			throw e;						
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

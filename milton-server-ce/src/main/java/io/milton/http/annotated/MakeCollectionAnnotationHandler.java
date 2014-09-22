@@ -16,6 +16,9 @@ package io.milton.http.annotated;
 
 import io.milton.annotations.MakeCollection;
 import io.milton.http.Request.Method;
+import io.milton.http.exceptions.BadRequestException;
+import io.milton.http.exceptions.ConflictException;
+import io.milton.http.exceptions.NotAuthorizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +34,7 @@ public class MakeCollectionAnnotationHandler extends AbstractAnnotationHandler {
 		super(outer, MakeCollection.class, Method.MKCOL);
 	}
 
-	public Object execute(AnnoResource res, String newName) {
+	public Object execute(AnnoResource res, String newName) throws NotAuthorizedException, ConflictException, BadRequestException {
 		log.trace("execute MKCOL method");
 		Object source = res.getSource();
 		ControllerMethod cm = getBestMethod(source.getClass());
@@ -45,6 +48,12 @@ public class MakeCollectionAnnotationHandler extends AbstractAnnotationHandler {
 				throw new RuntimeException("Method returned null object or void: " + cm.controller.getClass() + "::" + cm.method.getName() + " - should return newly created object");
 			}
 			return o;
+		} catch(NotAuthorizedException e) {
+			throw e;			
+		} catch(BadRequestException e) {
+			throw e;			
+		} catch(ConflictException e) {
+			throw e;				
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

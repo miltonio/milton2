@@ -16,6 +16,9 @@ package io.milton.http.annotated;
 
 import io.milton.annotations.MakeCalendar;
 import io.milton.http.Request.Method;
+import io.milton.http.exceptions.BadRequestException;
+import io.milton.http.exceptions.ConflictException;
+import io.milton.http.exceptions.NotAuthorizedException;
 import java.util.Map;
 import javax.xml.namespace.QName;
 import org.slf4j.Logger;
@@ -33,7 +36,7 @@ public class MakeCalendarAnnotationHandler extends AbstractAnnotationHandler {
 		super(outer, MakeCalendar.class, Method.MKCALENDAR);
 	}
 
-	public Object execute(AnnoResource res, String newName, Map<QName, String> fieldsToSet) {
+	public Object execute(AnnoResource res, String newName, Map<QName, String> fieldsToSet)  throws NotAuthorizedException, ConflictException, BadRequestException {
 		log.trace("execute MKCALENDAR method");
 		Object source = res.getSource();
 		ControllerMethod cm = getBestMethod(source.getClass());
@@ -47,6 +50,12 @@ public class MakeCalendarAnnotationHandler extends AbstractAnnotationHandler {
 				throw new RuntimeException("Method returned null object or void: " + cm.controller.getClass() + "::" + cm.method.getName() + " - should return newly created object");
 			}
 			return o;
+		} catch(NotAuthorizedException e) {
+			throw e;			
+		} catch(BadRequestException e) {
+			throw e;			
+		} catch(ConflictException e) {
+			throw e;					
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

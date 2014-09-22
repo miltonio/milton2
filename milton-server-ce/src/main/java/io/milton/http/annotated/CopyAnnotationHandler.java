@@ -16,6 +16,9 @@ package io.milton.http.annotated;
 
 import io.milton.annotations.Copy;
 import io.milton.http.Request.Method;
+import io.milton.http.exceptions.BadRequestException;
+import io.milton.http.exceptions.ConflictException;
+import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.resource.CollectionResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,14 +28,14 @@ import org.slf4j.LoggerFactory;
  * @author brad
  */
 public class CopyAnnotationHandler extends AbstractAnnotationHandler {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(CopyAnnotationHandler.class);
-	
+
 	public CopyAnnotationHandler(final AnnotationResourceFactory outer) {
 		super(outer, Copy.class, Method.COPY);
 	}
 
-	void execute(AnnoResource res, CollectionResource rDest, String newName) {
+	void execute(AnnoResource res, CollectionResource rDest, String newName) throws NotAuthorizedException, BadRequestException, ConflictException {
 		log.trace("execute COPY method");
 		Object source = res.getSource();
 		ControllerMethod cm = getBestMethod(source.getClass());
@@ -46,9 +49,15 @@ public class CopyAnnotationHandler extends AbstractAnnotationHandler {
 				destObject = arDest.getSource();
 			}
 			invoke(cm, res, newName, rDest, destObject);
+		} catch (NotAuthorizedException e) {
+			throw e;
+		} catch (BadRequestException e) {
+			throw e;
+		} catch (ConflictException e) {
+			throw e;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
-    
+
 }

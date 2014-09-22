@@ -16,6 +16,10 @@ package io.milton.http.annotated;
 
 import io.milton.annotations.PutChild;
 import io.milton.http.Request.Method;
+import io.milton.http.exceptions.BadRequestException;
+import io.milton.http.exceptions.ConflictException;
+import io.milton.http.exceptions.NotAuthorizedException;
+import java.io.IOException;
 
 import java.io.InputStream;
 
@@ -35,7 +39,7 @@ public class PutChildAnnotationHandler extends AbstractAnnotationHandler {
 		super(outer, PutChild.class, Method.PUT);
 	}
 
-	public Object execute(AnnoResource res, String newName, InputStream inputStream, Long length, String contentType) {
+	public Object execute(AnnoResource res, String newName, InputStream inputStream, Long length, String contentType) throws IOException, ConflictException, NotAuthorizedException, BadRequestException {
 		log.trace("execute PUT method");
 		Object source = res.getSource();
 		ControllerMethod cm = getBestMethod(source.getClass());
@@ -56,7 +60,7 @@ public class PutChildAnnotationHandler extends AbstractAnnotationHandler {
 		}
 	}
 
-	public void replace(AnnoFileResource fileRes, InputStream inputStream, Long length) {
+	public void replace(AnnoFileResource fileRes, InputStream inputStream, Long length) throws IOException, ConflictException, NotAuthorizedException, BadRequestException {
 		log.trace("execute PUT (replace) method");
 		Object source = fileRes.getSource();
 		ControllerMethod cm = getBestMethod(source.getClass());
