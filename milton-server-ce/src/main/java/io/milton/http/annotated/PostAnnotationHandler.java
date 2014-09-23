@@ -48,6 +48,9 @@ public class PostAnnotationHandler extends AbstractAnnotationHandler {
 	 * @param request
 	 * @param params
 	 * @return
+	 * @throws io.milton.http.exceptions.BadRequestException
+	 * @throws io.milton.http.exceptions.NotAuthorizedException
+	 * @throws io.milton.http.exceptions.ConflictException
 	 */
 	public Object execute(AnnoResource resource, Request request, Map<String, String> params) throws BadRequestException, NotAuthorizedException, ConflictException {
 		Object source = resource.getSource();

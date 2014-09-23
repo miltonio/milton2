@@ -39,7 +39,7 @@ public class PutChildAnnotationHandler extends AbstractAnnotationHandler {
 		super(outer, PutChild.class, Method.PUT);
 	}
 
-	public Object execute(AnnoResource res, String newName, InputStream inputStream, Long length, String contentType) throws IOException, ConflictException, NotAuthorizedException, BadRequestException {
+	public Object execute(AnnoResource res, String newName, InputStream inputStream, Long length, String contentType) throws ConflictException, NotAuthorizedException, BadRequestException {
 		log.trace("execute PUT method");
 		Object source = res.getSource();
 		ControllerMethod cm = getBestMethod(source.getClass());
@@ -47,7 +47,7 @@ public class PutChildAnnotationHandler extends AbstractAnnotationHandler {
 			if (controllerMethods.isEmpty()) {
 				log.info("Method not found for source: {}. No methods registered for {}", source.getClass().getSimpleName(), PutChild.class.getSimpleName());
 			} else {
-				log.info("Method not found for source {}. Listing methods registered for {}: {}", new Object[] {source.getClass().getSimpleName(), PutChild.class.getSimpleName(), StringUtils.join(controllerMethods, ",")});
+				log.info("Method not found for source {}. Listing methods registered for {}: {}", new Object[]{source.getClass().getSimpleName(), PutChild.class.getSimpleName(), StringUtils.join(controllerMethods, ",")});
 			}
 			throw new RuntimeException("Method not found: " + getClass() + " - " + source.getClass());
 		}
@@ -55,12 +55,18 @@ public class PutChildAnnotationHandler extends AbstractAnnotationHandler {
 			//Object[] args = outer.buildInvokeArgs(source, cm.method, newName, inputStream, length, contentType);
 			//return cm.method.invoke(cm.controller, args); 
 			return invoke(cm, res, newName, inputStream, length, contentType);
+		} catch (NotAuthorizedException e) {
+			throw e;
+		} catch (BadRequestException e) {
+			throw e;
+		} catch (ConflictException e) {
+			throw e;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	public void replace(AnnoFileResource fileRes, InputStream inputStream, Long length) throws IOException, ConflictException, NotAuthorizedException, BadRequestException {
+	public void replace(AnnoFileResource fileRes, InputStream inputStream, Long length) throws ConflictException, NotAuthorizedException, BadRequestException {
 		log.trace("execute PUT (replace) method");
 		Object source = fileRes.getSource();
 		ControllerMethod cm = getBestMethod(source.getClass());
@@ -73,6 +79,12 @@ public class PutChildAnnotationHandler extends AbstractAnnotationHandler {
 		} else {
 			try {
 				invoke(cm, fileRes, inputStream, length, fileRes);
+			} catch (NotAuthorizedException e) {
+				throw e;
+			} catch (BadRequestException e) {
+				throw e;
+			} catch (ConflictException e) {
+				throw e;
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
