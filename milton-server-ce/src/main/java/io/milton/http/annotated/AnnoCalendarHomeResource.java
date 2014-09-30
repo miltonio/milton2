@@ -22,6 +22,8 @@ import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.resource.Resource;
 import java.util.ArrayList;
 import java.util.List;
+
+import io.milton.resource.SchedulingHomeResource;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -29,7 +31,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author brad
  */
-public class AnnoCalendarHomeResource extends AnnoCollectionResource {
+public class AnnoCalendarHomeResource extends AnnoCollectionResource implements SchedulingHomeResource {
 
 	private static final org.slf4j.Logger log = LoggerFactory.getLogger(AnnoCalendarHomeResource.class);
 
@@ -66,7 +68,13 @@ public class AnnoCalendarHomeResource extends AnnoCollectionResource {
 		outboxResource = new SchedulingOutboxResource(principal, calendarSearchService, calendarSearchService.getSchedulingOutboxColName());
 	}
 
-	
-	
-	
+    @Override
+    public String getInboxName() {
+        return calendarSearchService.getSchedulingInboxColName();
+    }
+
+    @Override
+    public String getOutboxName() {
+        return calendarSearchService.getSchedulingOutboxColName();
+    }
 }

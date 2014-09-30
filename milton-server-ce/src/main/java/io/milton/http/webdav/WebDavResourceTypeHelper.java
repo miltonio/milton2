@@ -19,6 +19,8 @@
 
 package io.milton.http.webdav;
 
+import io.milton.principal.CalDavPrincipal;
+import io.milton.principal.DiscretePrincipal;
 import io.milton.resource.CollectionResource;
 import io.milton.resource.LockableResource;
 import io.milton.resource.Resource;
@@ -39,14 +41,20 @@ public class WebDavResourceTypeHelper implements ResourceTypeHelper {
 
 	@Override
     public List<QName> getResourceTypes( Resource r ) {
-        if( r instanceof CollectionResource ) {
-            ArrayList<QName> list = new ArrayList<QName>();
-            QName qn = new QName( WebDavProtocol.NS_DAV.getName(), "collection" );
+        ArrayList<QName> list = null;
+        if (r instanceof DiscretePrincipal) {
+            QName qn = new QName( WebDavProtocol.NS_DAV.getName() , "principal");
+            if(list == null)
+                list = new ArrayList<QName>();
             list.add( qn );
-            return list;
-        } else {
-            return null;
         }
+        if( r instanceof CollectionResource ) {
+            QName qn = new QName( WebDavProtocol.NS_DAV.getName(), "collection" );
+            if(list == null)
+                list = new ArrayList<QName>();
+            list.add( qn );
+        }
+        return list;
     }
 
     //Need to create a ArrayList as Arrays.asList returns a fixed length list which

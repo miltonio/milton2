@@ -4,6 +4,7 @@
  */
 package io.milton.http.caldav;
 
+import io.milton.principal.CalDavSchedulingPrincipal;
 import io.milton.webdav.utils.CalendarDataProperty;
 import io.milton.http.values.SupportedCalendarComponentList;
 import io.milton.principal.CalDavPrincipal;
@@ -303,13 +304,17 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
 
         @Override
         public WrappedHref getValue(PropFindableResource res) {
-            if (res instanceof CalDavPrincipal) {
+            WrappedHref href = null;
+            if (res instanceof CalDavSchedulingPrincipal) {
+                String url = ((CalDavSchedulingPrincipal) res).getSchedulingInboxUrl();
+                href = new WrappedHref(url);
+            }
+            if(href == null && (res instanceof CalDavPrincipal)) {
                 CalDavPrincipal p = (CalDavPrincipal) res;
                 String s = p.getPrincipalURL() + calendarSearchService.getSchedulingColName() + "/" + calendarSearchService.getSchedulingInboxColName() + "/";
-                return new WrappedHref(s);
-            } else {
-                return null;
+                href = new WrappedHref(s);
             }
+            return href;
         }
 
         @Override
@@ -332,14 +337,17 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
 
         @Override
         public WrappedHref getValue(PropFindableResource res) {
-            if (res instanceof CalDavPrincipal) {
+            WrappedHref href = null;
+            if (res instanceof CalDavSchedulingPrincipal) {
+                String url = ((CalDavSchedulingPrincipal) res).getSchedulingOutboxUrl();
+                href = new WrappedHref(url);
+            }
+            if(href == null && (res instanceof CalDavPrincipal)) {
                 CalDavPrincipal p = (CalDavPrincipal) res;
                 String s = p.getPrincipalURL() + calendarSearchService.getSchedulingColName() + "/" + calendarSearchService.getSchedulingOutboxColName() + "/";
-                return new WrappedHref(s);
-            } else {
-                return null;
+                href = new WrappedHref(s);
             }
-
+            return href;
         }
 
         @Override
