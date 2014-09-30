@@ -23,12 +23,11 @@ import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.values.HrefList;
 import io.milton.http.values.SupportedCalendarComponentListsSet;
-import io.milton.principal.CalDavPrincipal;
-import io.milton.principal.CardDavPrincipal;
-import io.milton.principal.DiscretePrincipal;
-import io.milton.principal.HrefPrincipleId;
+import io.milton.principal.*;
 import io.milton.resource.Resource;
 import java.util.List;
+
+import io.milton.resource.SchedulingHomeResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +35,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author brad
  */
-public class AnnoPrincipalResource extends AnnoCollectionResource implements DiscretePrincipal, CalDavPrincipal, CardDavPrincipal {
+public class AnnoPrincipalResource extends AnnoCollectionResource implements DiscretePrincipal, CalDavSchedulingPrincipal, CardDavPrincipal {
 
 	private static final Logger log = LoggerFactory.getLogger(AnnoPrincipalResource.class);
 	private String email;
@@ -163,4 +162,40 @@ public class AnnoPrincipalResource extends AnnoCollectionResource implements Dis
 		}
 		return cuType;
 	}
+
+    protected SchedulingHomeResource getSchedulingHome() {
+        SchedulingHomeResource schedulingHomeResource = null;
+        try
+        {
+            for (Resource r : getChildren()) {
+                if (r instanceof SchedulingHomeResource) {
+                    schedulingHomeResource = (SchedulingHomeResource)r;
+                    break;
+                }
+            }
+        } catch (BadRequestException e) {
+            throw new RuntimeException(e);
+        } catch (NotAuthorizedException e) {
+            throw new RuntimeException(e);
+        }
+        return schedulingHomeResource;
+    }
+
+    @Override
+    public String getSchedulingInboxUrl() {
+        String inboxUrl = null;
+        SchedulingHomeResource home = getSchedulingHome();
+        if(home != null)
+            inboxUrl = getPrincipalURL() + home.getName() + "/" + home.getInboxName() + "/";
+        return inboxUrl;
+    }
+
+    @Override
+    public String getSchedulingOutboxUrl() {
+        String inboxUrl = null;
+        SchedulingHomeResource home = getSchedulingHome();
+        if(home != null)
+            inboxUrl = getPrincipalURL() + home.getName() + "/" + home.getOutboxName() + "/";
+        return inboxUrl;
+    }
 }
