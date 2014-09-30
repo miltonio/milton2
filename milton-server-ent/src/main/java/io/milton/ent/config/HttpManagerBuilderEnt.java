@@ -357,4 +357,34 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
         this.lockManager = lockManager;
     }
 
+    /**
+     * By default this wraps the default calendarsearchservice, and is only used
+     * for resources which have appropriate annotations, otherwise processing
+     * falls through to the default
+     * 
+     * @return 
+     */
+    public AnnotationsCalendarSearchService getAnnotationsCalendarSearchService() {
+        return annotationsCalendarSearchService;
+    }
+
+    public void setAnnotationsCalendarSearchService(AnnotationsCalendarSearchService annotationsCalendarSearchService) {
+        this.annotationsCalendarSearchService = annotationsCalendarSearchService;
+    }
+
+    /**
+     * This is the instance that gets wired directly into the stack. You can set
+     * this to prevent any default instances being created
+     * 
+     * @return 
+     */
+    public CalendarSearchService getCalendarSearchService() {
+        return calendarSearchService;
+    }
+
+    public void setCalendarSearchService(CalendarSearchService calendarSearchService) {
+        this.calendarSearchService = calendarSearchService;
+    }
+
+    
 }

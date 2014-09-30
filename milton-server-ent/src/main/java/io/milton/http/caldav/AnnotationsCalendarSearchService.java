@@ -118,4 +118,10 @@ public class AnnotationsCalendarSearchService implements CalendarSearchService {
     public String getSchedulingOutboxColName() {
         return wrapped.getSchedulingOutboxColName();
     }
+
+    public CalendarSearchService getWrapped() {
+        return wrapped;
+    }
+    
+    
 }
