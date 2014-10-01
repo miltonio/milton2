@@ -187,7 +187,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		mapOfAnnotationHandlers.put(CTag.class, cTagAnnotationHandler);
 		mapOfAnnotationHandlers.put(ICalData.class, iCalDataAnnotationHandler);
 		mapOfAnnotationHandlers.put(CalendarColor.class, calendarColorAnnotationHandler);
-		mapOfAnnotationHandlers.put(CalendarColor.class, calendarOrderAnnotationHandler);
+		mapOfAnnotationHandlers.put(CalendarOrder.class, calendarOrderAnnotationHandler);
 		mapOfAnnotationHandlers.put(CalendarUserType.class, calendarUserTypeAnnotationHandler);		
 		mapOfAnnotationHandlers.put(ContactData.class, contactDataAnnotationHandler);
 
