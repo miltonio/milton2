@@ -23,21 +23,22 @@ import io.milton.http.*;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.exceptions.NotFoundException;
-import io.milton.resource.CollectionResource;
-import io.milton.resource.GetableResource;
 import io.milton.http.http11.CustomPostHandler;
-import io.milton.property.PropertySource;
-import io.milton.resource.PropFindableResource;
-import io.milton.resource.PutableResource;
-import io.milton.resource.Resource;
 import io.milton.http.http11.ETagGenerator;
 import io.milton.http.quota.QuotaDataAccessor;
+import io.milton.http.report.Report;
+import io.milton.http.report.ReportHandler;
 import io.milton.http.values.SupportedReportSetList;
 import io.milton.http.values.ValueWriters;
 import io.milton.http.webdav.PropertyMap.StandardProperty;
-import io.milton.http.report.Report;
-import io.milton.http.report.ReportHandler;
+import io.milton.http.webdav.PropertyMap.WritableStandardProperty;
 import io.milton.property.PropertyAuthoriser;
+import io.milton.property.PropertySource;
+import io.milton.resource.CollectionResource;
+import io.milton.resource.GetableResource;
+import io.milton.resource.PropFindableResource;
+import io.milton.resource.PutableResource;
+import io.milton.resource.Resource;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -233,10 +234,11 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 		return displayNameFormatter;
 	}
 
-	class DisplayNamePropertyWriter implements StandardProperty<String> {
+	class DisplayNamePropertyWriter implements WritableStandardProperty<String> {
 
 		@Override
 		public String getValue(PropFindableResource res) {
+			if( res instanceof displayn)
 			return displayNameFormatter.formatDisplayName(res);
 		}
 
@@ -248,6 +250,11 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 		@Override
 		public Class<String> getValueClass() {
 			return String.class;
+		}
+
+		@Override
+		public void setValue(PropFindableResource res, String value) {
+			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 		}
 	}
 
