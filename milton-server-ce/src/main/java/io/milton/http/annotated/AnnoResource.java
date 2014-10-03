@@ -429,7 +429,7 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 	}
 
 	public String getDisplayName() {
-		return annoFactory.displayNameAnnotationHandler.execute(this);
+		return annoFactory.displayNameAnnotationHandler.executeRead(this);
 	}
 
 	@Override

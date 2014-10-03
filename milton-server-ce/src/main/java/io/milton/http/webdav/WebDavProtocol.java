@@ -35,6 +35,7 @@ import io.milton.http.webdav.PropertyMap.WritableStandardProperty;
 import io.milton.property.PropertyAuthoriser;
 import io.milton.property.PropertySource;
 import io.milton.resource.CollectionResource;
+import io.milton.resource.DisplayNameResource;
 import io.milton.resource.GetableResource;
 import io.milton.resource.PropFindableResource;
 import io.milton.resource.PutableResource;
@@ -238,7 +239,9 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 
 		@Override
 		public String getValue(PropFindableResource res) {
-			if( res instanceof displayn)
+			if( res instanceof DisplayNameResource) {
+				DisplayNameResource dnr = (DisplayNameResource) res;
+			}
 			return displayNameFormatter.formatDisplayName(res);
 		}
 
@@ -254,7 +257,12 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 
 		@Override
 		public void setValue(PropFindableResource res, String value) {
-			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			if( res instanceof DisplayNameResource) {
+				DisplayNameResource dnr = (DisplayNameResource) res;
+				dnr.setDisplayName(value);
+			} else {
+				log.warn("Attempt to set displayname property, but resource is not compatible: " + res.getClass());
+			}
 		}
 	}
 

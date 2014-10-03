@@ -26,7 +26,7 @@ public class DisplayNameAnnotationHandler extends AbstractAnnotationHandler {
 		super(outer, DisplayName.class);
 	}
 
-	public String execute(AnnoResource res) {
+	public String executeRead(AnnoResource res) {
 		Object source = res.getSource();
 		try {
 			ControllerMethod cm = getBestMethod(source.getClass());

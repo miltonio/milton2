@@ -16,12 +16,13 @@ package io.milton.http.annotated;
 
 import io.milton.http.values.SupportedCalendarComponentList;
 import io.milton.resource.CalendarResource;
+import io.milton.resource.DisplayNameResource;
 
 /**
  *
  * @author brad
  */
-public class AnnoCalendarResource extends AnnoCollectionResource implements CalendarResource{
+public class AnnoCalendarResource extends AnnoCollectionResource implements CalendarResource, DisplayNameResource {
 
 	public AnnoCalendarResource(AnnotationResourceFactory outer, Object source, AnnoCollectionResource parent) {
 		super(outer, source, parent);
@@ -71,6 +72,11 @@ public class AnnoCalendarResource extends AnnoCollectionResource implements Cale
 	@Override
 	public void setCalendarOrder(String value) {
 		annoFactory.calendarOrderAnnotationHandler.set(this, value); 
+	}
+
+	@Override
+	public void setDisplayName(String s) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 }
