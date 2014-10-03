@@ -197,6 +197,7 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 	 * Returns true if it was able to set the property
 	 *
 	 * @param source
+	 * @param value
 	 * @param propNames
 	 * @return
 	 * @throws IllegalAccessException

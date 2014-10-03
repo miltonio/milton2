@@ -48,6 +48,7 @@ import io.milton.resource.CollectionResource;
 import io.milton.resource.CopyableResource;
 import io.milton.resource.DeletableResource;
 import io.milton.resource.DigestResource;
+import io.milton.resource.DisplayNameResource;
 import io.milton.resource.GetableResource;
 import io.milton.resource.LockableResource;
 import io.milton.resource.MoveableResource;
@@ -69,7 +70,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author brad
  */
-public abstract class AnnoResource implements GetableResource, PropFindableResource, DeletableResource, CopyableResource, MoveableResource, LockableResource, ConditionalCompatibleResource, CommonResource, DigestResource, PostableResource, ReportableResource, AccessControlledResource {
+public abstract class AnnoResource implements GetableResource, PropFindableResource, DeletableResource, CopyableResource, MoveableResource, LockableResource, ConditionalCompatibleResource, CommonResource, DigestResource, PostableResource, ReportableResource, AccessControlledResource, DisplayNameResource {
 
 	private static final Logger log = LoggerFactory.getLogger(AnnoResource.class);
 	protected Object source;
@@ -428,9 +429,17 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 		return "<a href=\"" + getHref() + "\">" + getName() + "</a>";
 	}
 
+	@Override
 	public String getDisplayName() {
 		return annoFactory.displayNameAnnotationHandler.executeRead(this);
 	}
+
+	@Override
+	public void setDisplayName(String s) {
+		annoFactory.displayNameSetterAnnotationHandler.executeWrite(this, s);
+	}
+	
+	
 
 	@Override
 	public LockResult lock(LockTimeout timeout, LockInfo lockInfo) throws NotAuthorizedException, PreConditionFailedException, LockedException {
@@ -511,4 +520,6 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 		}
 		return null;
 	}
+	
+	
 }

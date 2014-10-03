@@ -122,6 +122,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	ChildrenOfAnnotationHandler childrenOfAnnotationHandler = new ChildrenOfAnnotationHandler(this);
 	ChildOfAnnotationHandler childOfAnnotationHandler = new ChildOfAnnotationHandler(this);
 	DisplayNameAnnotationHandler displayNameAnnotationHandler = new DisplayNameAnnotationHandler(this);
+	DisplayNameSetterAnnotationHandler displayNameSetterAnnotationHandler = new DisplayNameSetterAnnotationHandler(this);
 	MakeCollectionAnnotationHandler makCollectionAnnotationHandler = new MakeCollectionAnnotationHandler(this);
 	MakeCalendarAnnotationHandler makeCalendarAnnotationHandler = new MakeCalendarAnnotationHandler(this);
 	MoveAnnotationHandler moveAnnotationHandler = new MoveAnnotationHandler(this);
@@ -165,6 +166,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		mapOfAnnotationHandlers.put(ChildOf.class, childOfAnnotationHandler);
 		mapOfAnnotationHandlers.put(Name.class, nameAnnotationHandler);
 		mapOfAnnotationHandlers.put(DisplayNameAnnotationHandler.class, displayNameAnnotationHandler);
+		mapOfAnnotationHandlers.put(DisplayNameSetterAnnotationHandler.class, displayNameSetterAnnotationHandler);		
 		mapOfAnnotationHandlers.put(MakeCollection.class, makCollectionAnnotationHandler);
 		mapOfAnnotationHandlers.put(Move.class, moveAnnotationHandler);
 		mapOfAnnotationHandlers.put(Delete.class, deleteAnnotationHandler);
