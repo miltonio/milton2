@@ -68,6 +68,7 @@ public class DefaultPropPatchParser implements PropPatchRequestParser {
             log.debug( "processing content" );
             ByteArrayInputStream bin = new ByteArrayInputStream( arr );
             XMLReader reader = XMLReaderFactory.createXMLReader();
+			reader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             PropPatchSaxHandler handler = new PropPatchSaxHandler();
             reader.setContentHandler( handler );
             reader.parse( new InputSource( bin ) );

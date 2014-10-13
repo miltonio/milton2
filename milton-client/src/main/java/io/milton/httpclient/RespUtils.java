@@ -106,24 +106,5 @@ public class RespUtils {
         }
         return list;
     }    
-    
-    public static  org.jdom.Document getJDomDocument(InputStream in) throws JDOMException {
-		ByteArrayOutputStream bout = new ByteArrayOutputStream();
-		try {
-			IOUtils.copy(in, bout);
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}		
-//		System.out.println("");
-//		System.out.println(bout.toString());
-//		System.out.println("");
-		ByteArrayInputStream bin = new ByteArrayInputStream(bout.toByteArray());
-        try {
-            SAXBuilder builder = new SAXBuilder();
-            builder.setExpandEntities(false);
-            return builder.build(bin);
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        }
-    }        
+          
 }

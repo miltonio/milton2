@@ -77,6 +77,8 @@ public class ReportHandler implements ExistingEntityHandler {
 	public void processExistingResource(HttpManager manager, Request request, Response response, Resource resource) throws NotAuthorizedException, BadRequestException, ConflictException {
 		try {
 			org.jdom.input.SAXBuilder builder = new org.jdom.input.SAXBuilder();
+			// Prevent possibily of malicious clients using remote the parser to load remote resources
+			builder.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
 			org.jdom.Document doc = builder.build(request.getInputStream());
 			String reportName = doc.getRootElement().getName();
 			Report r = reports.get(reportName);

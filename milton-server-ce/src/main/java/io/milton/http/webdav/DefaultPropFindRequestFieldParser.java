@@ -60,6 +60,7 @@ public class DefaultPropFindRequestFieldParser implements PropFindRequestFieldPa
             if( arr.length > 1 ) {
                 ByteArrayInputStream bin = new ByteArrayInputStream( arr );
                 XMLReader reader = XMLReaderFactory.createXMLReader();
+				reader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
                 PropFindSaxHandler handler = new PropFindSaxHandler();
                 reader.setContentHandler( handler );
                 try {
