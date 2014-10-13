@@ -37,10 +37,12 @@ import javax.xml.namespace.QName;
 public class TestSaxHandler extends TestCase {
     public void testPropFind() throws Exception{
         XMLReader reader = XMLReaderFactory.createXMLReader();
+		reader.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
         PropFindSaxHandler handler = new PropFindSaxHandler();
         reader.setContentHandler(handler);
         reader.parse(new InputSource(PropFindSaxHandler.class.getResourceAsStream("/sample_prop_find.xml")));
         Map<QName,String> result = handler.getAttributes();
+		System.out.println("result: " + result);
         assertEquals("httpd/unix-directory", result.get(new QName( "DAV:", "getcontenttype")));
         assertEquals("", result.get(new QName( "DAV:", "resourcetype")));
         assertEquals("Thu, 01 Jan 1970 00:00:00 GMT", result.get(new QName( "DAV:", "getlastmodified")));
@@ -48,6 +50,7 @@ public class TestSaxHandler extends TestCase {
     }
     public void testLockInfo() throws Exception{
         XMLReader reader = XMLReaderFactory.createXMLReader();
+		reader.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
         LockInfoSaxHandler handler = new LockInfoSaxHandler();
         reader.setContentHandler(handler);
         reader.parse(new InputSource(LockInfoSaxHandler.class.getResourceAsStream("/sample_lockinfo.xml")));

