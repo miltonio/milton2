@@ -39,7 +39,7 @@ public class MakeCollectionAnnotationHandler extends AbstractAnnotationHandler {
 		Object source = res.getSource();
 		ControllerMethod cm = getBestMethod(source.getClass());
 		if (cm == null) {
-			throw new RuntimeException("Method not found: " + getClass() + " - " + source.getClass());
+			throw new RuntimeException("Method not found: Annotation=" + MakeCollection.class + " - source object=" + source.getClass());
 		}
 		try {
 			Object[] args = annoResourceFactory.buildInvokeArgs(res, cm.method, newName);
