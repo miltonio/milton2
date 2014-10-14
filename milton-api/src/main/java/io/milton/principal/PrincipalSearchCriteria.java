@@ -8,10 +8,30 @@ import java.util.List;
  */
 public class PrincipalSearchCriteria {
 
-    public enum TestType {
+    public enum TestType
+    {
+        ANY("anyof"),
+        ALL("allof"),;
 
-        ANY,
-        ALL
+        private String code;
+
+        private TestType(String code)
+        {
+            this.code = code;
+        }
+
+        public static TestType fromCode( String code )
+        {
+           TestType testType = ALL;
+           if(code != null && code.equals(ANY.code))
+              testType = ANY;
+           return testType;
+        }
+
+        public String getCode()
+        {
+            return code;
+        }
     }
 
     public enum MatchType {

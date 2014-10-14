@@ -24,16 +24,14 @@ import io.milton.principal.PrincipalSearchService;
 import io.milton.resource.PropFindableResource;
 import io.milton.resource.Resource;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import javax.xml.namespace.QName;
 
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Namespace;
+import org.jdom.filter.ElementFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,16 +96,36 @@ public class PrincipalPropertySearchReport implements Report {
         PrincipalSearchCriteria crit = new PrincipalSearchCriteria();
         List<PrincipalSearchCriteria.SearchItem> searchTerms = new ArrayList<PrincipalSearchCriteria.SearchItem>();
         for (Element el : ReportUtils.findAll(doc.getRootElement(), "property-search", NS_DAV)) {
+            String field = null;
+            Element elProp = ReportUtils.find(el, "prop", NS_DAV);
+            Iterator propIter = elProp.getContent(new ElementFilter()).iterator();
+            if(propIter.hasNext()) {
+               Element elPropChild = (Element) propIter.next();
+               QName qname = new QName(elPropChild.getNamespaceURI(), elPropChild.getName());
+               field = qname.toString();
+               if(propIter.hasNext()) {
+                  log.warn("Multiple children of property-search/prop element not supported");
+               }
+            } else {
+               log.warn("property-search/prop element has no children");
+            }
             Element elMatch = ReportUtils.find(el, "match", NS_DAV);
-            SearchItem item = new PrincipalSearchCriteria.SearchItem();
-            item.setMatchType(PrincipalSearchCriteria.MatchType.CONTAINS); // TODO
+            PrincipalSearchCriteria.MatchType matchType = PrincipalSearchCriteria.MatchType.CONTAINS;
+            String matchAttr = elMatch.getAttributeValue("match-type");
+            if(matchAttr != null) {
+               matchType = PrincipalSearchCriteria.MatchType.fromCode(matchAttr);
+            }
             String matchVal = elMatch.getText();
+            SearchItem item = new PrincipalSearchCriteria.SearchItem();
+            item.setField(field);
+            item.setMatchType(matchType);
             item.setValue(matchVal);
             searchTerms.add(item);
         }
         crit.setSearchItems(searchTerms);
         crit.setCuType(null); // TODO
-        crit.setTest(PrincipalSearchCriteria.TestType.ANY); // TODO
+        String typeAttr = doc.getRootElement().getAttributeValue("test");
+        crit.setTest(PrincipalSearchCriteria.TestType.fromCode(typeAttr));
 
         List<DiscretePrincipal> foundResources = principalSearchService.search(crit, r);
         if (foundResources != null) {

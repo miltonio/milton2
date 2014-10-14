@@ -386,5 +386,17 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
         this.calendarSearchService = calendarSearchService;
     }
 
-    
+   /**
+    * Search service used to satisfy principal property search reports. You can set this
+    *  to prevent the default search service from being created.
+    *
+    * @return Principal search service
+    */
+    public PrincipalSearchService getPrincipalSearchService() {
+       return principalSearchService;
+    }
+
+    public void setPrincipalSearchService(PrincipalSearchService principalSearchService) {
+       this.principalSearchService = principalSearchService;
+    }
 }
