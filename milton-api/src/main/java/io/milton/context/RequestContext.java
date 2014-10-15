@@ -26,20 +26,6 @@ public class RequestContext extends Context implements RemovalCallback {
     }
     
     /**
-     * Will be removed for Java8. Use the C method instead
-     * 
-     * @param <T>
-     * @param c
-     * @return
-     * @throws ClassNotInContextException
-     * @deprecated
-     */
-    @Deprecated
-    public static <T> T _(Class<T> c) throws ClassNotInContextException {
-        return C(c);
-    }
-
-    /**
      * For convenience, equivalent to RequestContext.getCurrent().get(c)
      *
      * Returns the object in context of the given type or null if not found and
@@ -59,20 +45,6 @@ public class RequestContext extends Context implements RemovalCallback {
         return t;
     }
     
-    /**
-     * Will be removed for Java8. Use the C method instead
-     * 
-     * @param <T>
-     * @param c
-     * @param required
-     * @return
-     * @throws ClassNotInContextException
-     * @deprecated
-     */
-    @Deprecated
-    public static <T> T _(Class<T> c, boolean required) throws ClassNotInContextException {
-        return C(c, required);
-    }
 
     public static RequestContext getCurrent() {
         RequestContext c = tlContext.get();
