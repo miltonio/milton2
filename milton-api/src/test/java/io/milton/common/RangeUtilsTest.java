@@ -93,6 +93,7 @@ public class RangeUtilsTest extends TestCase {
         Range r = Range.parse("30357-71179");
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         RangeUtils.writeRange(in, r, out);
+        System.out.println("testWrite_OpenRange wrote: " + out.toByteArray().length + " bytes");
         assertEquals(40822, out.toByteArray().length);
 
     }    
