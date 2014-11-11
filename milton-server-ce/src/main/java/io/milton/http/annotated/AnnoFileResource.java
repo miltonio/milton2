@@ -33,7 +33,7 @@ public class AnnoFileResource extends AnnoResource implements GetableResource, R
 
 	@Override
 	public void replaceContent(InputStream in, Long length) throws BadRequestException, ConflictException, NotAuthorizedException {
-		annoFactory.putChildAnnotationHandler.replace(this, in, length);
+		source = annoFactory.putChildAnnotationHandler.replace(this, in, length);
 	}
 
 	@Override
