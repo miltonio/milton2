@@ -77,6 +77,7 @@ import org.apache.http.protocol.*;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -126,6 +127,26 @@ public class Host extends Folder {
 //    System.setProperty("org.apache.commons.logging.simplelog.log.httpclient.wire.header", "debug");
 //    System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient", "debug");    
     }
+    
+    public static  org.jdom.Document getJDomDocument(InputStream in) throws JDOMException {
+		ByteArrayOutputStream bout = new ByteArrayOutputStream();
+		try {
+			IOUtils.copy(in, bout);
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}		
+//		System.out.println("");
+//		System.out.println(bout.toString());
+//		System.out.println("");
+		ByteArrayInputStream bin = new ByteArrayInputStream(bout.toByteArray());
+        try {
+            SAXBuilder builder = new SAXBuilder();
+            builder.setExpandEntities(false);
+            return builder.build(bin);
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }         
 
     public Host(String server, Integer port, String user, String password, ProxyDetails proxyDetails) {
         this(server, null, port, user, password, proxyDetails, 30000, null, null);
@@ -664,7 +685,7 @@ public class Host extends Folder {
 //        IOUtils.copy( in, out );
 //        String xml = out.toString();
         try {
-            Document document = RespUtils.getJDomDocument(in);
+            Document document = getJDomDocument(in);
             return document;
         } catch (JDOMException ex) {
             throw new RuntimeException(ex);
