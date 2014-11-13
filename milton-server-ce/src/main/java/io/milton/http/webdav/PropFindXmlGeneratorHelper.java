@@ -93,17 +93,21 @@ public class PropFindXmlGeneratorHelper {
 	}
 
 	public void appendResponse(XmlWriter writer, PropFindResponse r, Map<String, String> mapOfNamespaces, boolean writeErrorProps) {
-		XmlWriter.Element el = writer.begin(WebDavProtocol.NS_DAV.getPrefix(), "response");
-		el.open();
-		writer.writeProperty(WebDavProtocol.NS_DAV.getPrefix(), "href", r.getHref());
-		sendKnownProperties(writer, mapOfNamespaces, r.getKnownProperties(), r.getHref());
-		if (r.getErrorProperties() != null && writeErrorProps) {
-			for (Status status : r.getErrorProperties().keySet()) {
-				List<NameAndError> props = r.getErrorProperties().get(status);
-				sendErrorProperties(status, writer, mapOfNamespaces, props);
-			}
-		}
-		el.close();
+      XmlWriter.Element el = writer.begin(WebDavProtocol.NS_DAV.getPrefix(), "response");
+      el.open();
+      writer.writeProperty(WebDavProtocol.NS_DAV.getPrefix(), "href", r.getHref());
+      if (r.getStatus() != null) {
+          writer.writeProperty(WebDavProtocol.NS_DAV.getPrefix(), "status", r.getStatus().toString());
+      } else {
+          sendKnownProperties(writer, mapOfNamespaces, r.getKnownProperties(), r.getHref());
+          if (r.getErrorProperties() != null && writeErrorProps) {
+              for (Status status : r.getErrorProperties().keySet()) {
+                  List<NameAndError> props = r.getErrorProperties().get(status);
+                  sendErrorProperties(status, writer, mapOfNamespaces, props);
+              }
+          }
+      }
+      el.close();
 	}
 
 	private void sendKnownProperties(XmlWriter writer, Map<String, String> mapOfNamespaces, Map<QName, ValueAndType> properties, String href) {

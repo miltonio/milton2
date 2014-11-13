@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 public class PropFindXmlGenerator {
 
     private static final Logger log = LoggerFactory.getLogger( PropFindXmlGenerator.class );
-    private final PropFindXmlGeneratorHelper helper;    
+    private final PropFindXmlGeneratorHelper helper;
 
     public PropFindXmlGenerator( ValueWriters valueWriters ) {
         helper = new PropFindXmlGeneratorHelper(valueWriters);
@@ -48,29 +48,41 @@ public class PropFindXmlGenerator {
         this.helper = helper;
     }
 
-	
-	public void generate( List<PropFindResponse> propFindResponses, OutputStream responseOutput,  boolean writeErrorProps ) {
+    /**
+     * @param footerGenerator  Use this parameter for writing additional footer elements.
+     */
+    public void generate( List<PropFindResponse> propFindResponses, OutputStream responseOutput, boolean writeErrorProps, PropFindXmlFooter footerGenerator ) {
         Map<String, String> mapOfNamespaces = helper.findNameSpaces( propFindResponses );
         XmlWriter writer = new XmlWriter( responseOutput );
         writer.writeXMLHeader();
         writer.open(WebDavProtocol.NS_DAV.getPrefix() ,"multistatus" + helper.generateNamespaceDeclarations( mapOfNamespaces ) );
         writer.newLine();
         helper.appendResponses( writer, propFindResponses, mapOfNamespaces, writeErrorProps );
+        if (footerGenerator != null) {
+            footerGenerator.footer(writer);
+        }
         writer.close(WebDavProtocol.NS_DAV.getPrefix(),"multistatus" );
         writer.flush();
-	}
+    }
+
+    public void generate( List<PropFindResponse> propFindResponses, OutputStream responseOutput, boolean writeErrorProps ) {
+        generate(propFindResponses, responseOutput, writeErrorProps, null);
+    }
 	
     public String generate( List<PropFindResponse> propFindResponses ) {
-		
-		boolean writeErrorProps = true;
-		Request req = HttpManager.request();
-		if( req != null ) {
-			writeErrorProps = isBriefHeader(req);
-		}
+        return generate(propFindResponses, null);
+    }
+
+    public String generate( List<PropFindResponse> propFindResponses, PropFindXmlFooter footerGenerator ) {
+        boolean writeErrorProps = true;
+        Request req = HttpManager.request();
+        if( req != null ) {
+            writeErrorProps = isBriefHeader(req);
+        }
 		
         ByteArrayOutputStream responseOutput = new ByteArrayOutputStream();
 		
-		generate(propFindResponses, responseOutput, writeErrorProps);
+        generate(propFindResponses, responseOutput, writeErrorProps, footerGenerator);
 		
         Map<String, String> mapOfNamespaces = helper.findNameSpaces( propFindResponses );
         ByteArrayOutputStream generatedXml = new ByteArrayOutputStream();
@@ -79,13 +91,16 @@ public class PropFindXmlGenerator {
         writer.open(WebDavProtocol.NS_DAV.getPrefix() ,"multistatus" + helper.generateNamespaceDeclarations( mapOfNamespaces ) );
         writer.newLine();
         helper.appendResponses( writer, propFindResponses, mapOfNamespaces, writeErrorProps );
+        if (footerGenerator != null) {
+            footerGenerator.footer(writer);
+        }
         writer.close(WebDavProtocol.NS_DAV.getPrefix(),"multistatus" );
         writer.flush();
-		if(log.isTraceEnabled()) {
-			log.trace("---- PROPFIND response START: " + HttpManager.request().getAbsolutePath() + " -----");
-			log.trace( generatedXml.toString() );
-			log.trace("---- PROPFIND response END -----");
-		}
+        if(log.isTraceEnabled()) {
+            log.trace("---- PROPFIND response START: " + HttpManager.request().getAbsolutePath() + " -----");
+            log.trace( generatedXml.toString() );
+            log.trace("---- PROPFIND response END -----");
+        }
 		
         try {
             return responseOutput.toString("UTF-8");
@@ -94,8 +109,8 @@ public class PropFindXmlGenerator {
         }
     }
 	
-	private boolean isBriefHeader(Request request) {
-		String b = request.getHeaders().get("Brief");
-		return "t".equals(b);
-	}	
+    private boolean isBriefHeader(Request request) {
+        String b = request.getHeaders().get("Brief");
+        return "t".equals(b);
+    }
 }
