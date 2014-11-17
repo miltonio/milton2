@@ -12,7 +12,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <milton.version>2.6.3.3</milton.version>
+        <milton.version>2.6.3.4</milton.version>
     </properties>
 
     <build>
@@ -38,7 +38,7 @@
 
     <repositories>
         <repository>
-            <id>ettrema-repo</id>
+            <id>milton-repo</id>
             <url>http://milton.io/maven/</url>
         </repository>       
     </repositories>     
