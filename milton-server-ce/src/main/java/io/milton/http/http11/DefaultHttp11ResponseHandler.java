@@ -49,10 +49,10 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Bufferable {
-
+	private static final Logger log = LoggerFactory.getLogger(DefaultHttp11ResponseHandler.class);
 	private static String miltonVerson;
 
-	{
+	static {
 		Properties props = new Properties();
 		try {
 			props.load(DefaultHttp11ResponseHandler.class.getResourceAsStream("/milton.properties"));
@@ -68,13 +68,14 @@ public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Buff
 		never,
 		whenNeeded
 	}
-	private static final Logger log = LoggerFactory.getLogger(DefaultHttp11ResponseHandler.class);
+	
 	private final AuthenticationService authenticationService;
 	private final ETagGenerator eTagGenerator;
 	private final ContentGenerator contentGenerator;
 	private CacheControlHelper cacheControlHelper = new DefaultCacheControlHelper();
 	private int maxMemorySize = 100000;
 	private BUFFERING buffering;
+	private String multipartBoundary = UUID.randomUUID().toString();
 
 	public DefaultHttp11ResponseHandler(AuthenticationService authenticationService, ETagGenerator eTagGenerator, ContentGenerator contentGenerator) {
 		this.authenticationService = authenticationService;
@@ -223,16 +224,16 @@ public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Buff
 		if (etag != null) {
 			response.setEtag(etag);
 		}
-		String acc = request.getAcceptHeader();
-		String ct = resource.getContentType(acc);
-		if (ct != null) {
-			response.setContentTypeHeader(ct);
-		}
+		//String acc = request.getAcceptHeader();
+//		String ct = resource.getContentType(acc);
+//		if (ct != null) {
+//			response.setContentTypeHeader(ct);
+//		}
 		response.setContentLengthHeader(contentLength);
-		response.setEntity(new GetableResourceEntity(resource, range, params, ct));
+		response.setEntity(new GetableResourceEntity(resource, range, params, null));
 	}
 
-	private String multipartBoundary = UUID.randomUUID().toString();
+	
 
 	/**
 	 * Send a partial content response with multiple ranges
@@ -500,4 +501,12 @@ public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Buff
 	public ContentGenerator getContentGenerator() {
 		return contentGenerator;
 	}
+
+	public String getMultipartBoundary() {
+		return multipartBoundary;
+	}
+
+	public void setMultipartBoundary(String multipartBoundary) {
+		this.multipartBoundary = multipartBoundary;
+	}		
 }
