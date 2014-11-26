@@ -20,6 +20,7 @@
 package io.milton.http.json;
 
 import io.milton.common.Path;
+import io.milton.common.Utils;
 import io.milton.http.FileItem;
 import io.milton.http.Range;
 import io.milton.http.Request;
@@ -28,6 +29,7 @@ import io.milton.http.ResourceFactory;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
+import io.milton.http.webdav.Dest;
 import io.milton.resource.CollectionResource;
 import io.milton.resource.CopyableResource;
 import io.milton.resource.PostableResource;
@@ -57,7 +59,8 @@ public class CopyJsonResource extends JsonResource implements PostableResource{
         this.resourceFactory = resourceFactory;
     }
     public String processForm( Map<String, String> parameters, Map<String, FileItem> files ) throws BadRequestException, NotAuthorizedException {
-        String dest = parameters.get( "destination");
+        String destHeader = parameters.get( "destination");
+		String dest = Utils.decodePath(destHeader);
         Path pDest = Path.path( dest );
         Resource rDestParent = resourceFactory.getResource( host, pDest.getParent().toString());
         if( rDestParent == null ) throw new BadRequestException( wrapped, "The destination parent does not exist");
