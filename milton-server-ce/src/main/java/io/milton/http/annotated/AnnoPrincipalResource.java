@@ -24,7 +24,7 @@ import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.values.HrefList;
 import io.milton.http.values.SupportedCalendarComponentListsSet;
 import io.milton.principal.CalDavPrincipal;
-import io.milton.principal.CardDavPrincipal;
+import io.milton.principal.DirectoryGatewayCardDavPrincipal;
 import io.milton.principal.DiscretePrincipal;
 import io.milton.principal.HrefPrincipleId;
 import io.milton.resource.Resource;
@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author brad
  */
-public class AnnoPrincipalResource extends AnnoCollectionResource implements DiscretePrincipal, CalDavPrincipal, CardDavPrincipal {
+public class AnnoPrincipalResource extends AnnoCollectionResource implements DiscretePrincipal, CalDavPrincipal, DirectoryGatewayCardDavPrincipal {
 
 	private static final Logger log = LoggerFactory.getLogger(AnnoPrincipalResource.class);
 	private String email;
@@ -118,6 +118,27 @@ public class AnnoPrincipalResource extends AnnoCollectionResource implements Dis
 	}
 
 	@Override
+	public HrefList getDirectoryGateway() {
+		try {
+			HrefList list = new HrefList();
+			// add all addressbooks as gateways
+			for (Resource r : getChildren()) {
+				if (r instanceof AnnoCollectionResource) {
+					AnnoCollectionResource col = (AnnoCollectionResource) r;
+					if (annoFactory.addressBooksAnnotationHandler.hasAddressBooks(col.getSource())) {
+						list.add(col.getHref());
+					}
+				}
+			}
+			return list;
+		} catch (NotAuthorizedException e) {
+			throw new RuntimeException(e);
+		} catch (BadRequestException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
 	public String getPrincipalURL() {
 		return getHref();
 	}
@@ -158,7 +179,7 @@ public class AnnoPrincipalResource extends AnnoCollectionResource implements Dis
 		if (cuType == null) {
 			cuType = annoFactory.calendarUserTypeAnnotationHandler.get(this);
 		}
-		if( cuType == null ) {
+		if (cuType == null) {
 			cuType = "INDIVIDUAL";
 		}
 		return cuType;

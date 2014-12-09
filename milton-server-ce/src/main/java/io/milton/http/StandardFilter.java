@@ -53,7 +53,7 @@ public class StandardFilter implements Filter {
 					manager.sendResponseEntity(response);
 				} else {
 					log.debug("No response entity to send to client for method: " + request.getMethod());
-				}				
+				}
 			}
 
 		} catch (BadRequestException ex) {
@@ -66,10 +66,14 @@ public class StandardFilter implements Filter {
 			log.warn("NotAuthorizedException", ex);
 			manager.getResponseHandler().respondUnauthorised(ex.getResource(), response, request);
 		} catch (Throwable e) {
+			if (log.isDebugEnabled()) {
+				e.printStackTrace();
+			}
 			// Looks like in some cases we can be left with a connection in an indeterminate state
 			// due to the content length not being equal to the content length header, so
 			// fall back on the udnerlying connection provider to manage the error
 			log.error("exception sending content", e);
+
 			response.sendError(Response.Status.SC_INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR_HTML);
 		} finally {
 			manager.closeResponse(response);
