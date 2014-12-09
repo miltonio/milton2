@@ -268,10 +268,14 @@ public class ExpandPropertyReport implements Report {
 				if (val instanceof HrefList) {
 					HrefList hrefList = (HrefList) val;
 					Property nestedProp = prop.getNestedMap().get(name);
-					PropFindResponseList nestedList = toResponseList(host, hrefList, nestedProp);
-					replaceHrefs(host, nestedList, nestedProp);
-					r.getKnownProperties().remove(name);
-					r.getKnownProperties().put(name, new ValueAndType(nestedList, PropFindResponseList.class));
+					// Check for another level of nesting
+					if (nestedProp != null && nestedProp.getNested() != null && !nestedProp.getNested().isEmpty())
+					{
+						PropFindResponseList nestedList = toResponseList(host, hrefList, nestedProp);
+						replaceHrefs(host, nestedList, nestedProp);
+						r.getKnownProperties().remove(name);
+						r.getKnownProperties().put(name, new ValueAndType(nestedList, PropFindResponseList.class));
+					}
 				}
 			}
 		}
