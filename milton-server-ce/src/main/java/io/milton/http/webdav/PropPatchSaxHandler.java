@@ -87,6 +87,7 @@ public class PropPatchSaxHandler extends DefaultHandler {
 					}
 				}
 				sb = new StringBuilder();
+				inProp = false;
 			} else {
 				if (inProp) {
 					sb.append("</" + localName + ">");
