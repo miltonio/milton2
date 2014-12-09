@@ -28,7 +28,7 @@ import java.util.Set;
 /**
  * @author brad
  */
-public abstract class AbstractMultiGetReport implements Report {
+public abstract class AbstractMultiGetReport implements QualifiedReport {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractMultiGetReport.class);
     protected final ResourceFactory resourceFactory;
