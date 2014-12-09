@@ -24,7 +24,7 @@ import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.values.HrefList;
 import io.milton.http.values.SupportedCalendarComponentListsSet;
 import io.milton.principal.CalDavPrincipal;
-import io.milton.principal.CardDavPrincipal;
+import io.milton.principal.DirectoryGatewayCardDavPrincipal;
 import io.milton.principal.DiscretePrincipal;
 import io.milton.principal.HrefPrincipleId;
 import io.milton.resource.Resource;
@@ -36,12 +36,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author brad
  */
-public class AnnoPrincipalResource extends AnnoCollectionResource implements DiscretePrincipal, CalDavPrincipal, CardDavPrincipal {
+public class AnnoPrincipalResource extends AnnoCollectionResource implements DiscretePrincipal, CalDavPrincipal, DirectoryGatewayCardDavPrincipal {
 
 	private static final Logger log = LoggerFactory.getLogger(AnnoPrincipalResource.class);
 	private String email;
 	private String cuType;
-
+ 
 	public AnnoPrincipalResource(AnnotationResourceFactory outer, Object source, AnnoCollectionResource parent) {
 		super(outer, source, parent);
 	}
@@ -120,6 +120,7 @@ public class AnnoPrincipalResource extends AnnoCollectionResource implements Dis
  	@Override
 	public HrefList getDirectoryGateway() {
 		HrefList list = new HrefList();
+		// TODO: implementation annotation
 		return list;
 	}
 
