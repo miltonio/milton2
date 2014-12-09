@@ -69,6 +69,7 @@ public class CardDavProtocol implements HttpExtension, PropertySource, WellKnown
         propertyMapCardDav.add(new AddressBookDescriptionProperty());
         propertyMapCardDav.add(new SupportedAddressData());
         propertyMapCardDav.add(new PrincipalAddress());
+        propertyMapCardDav.add(new DirectoryGateway());
         propertyMapCardDav.add(new AddressDataProperty());
 
         handlers = new HashSet<Handler>();
@@ -410,7 +411,38 @@ public class CardDavProtocol implements HttpExtension, PropertySource, WellKnown
         }
     }
     
+    /**
+     * The CARDDAV:directory-gateway identifies address book collection
+     * resources that are directory gateway address books for the server.
+     *
+     * Definition: <!ELEMENT directory-gateway (DAV:href*)>
+     *
+     * Example: <C:directory-gateway xmlns:D="DAV:"
+     * xmlns:C="urn:ietf:params:xml:ns:carddav"> <D:href>/directory</D:href>
+     * </C:directory-gateway>
+     *
+     */
+    class DirectoryGateway implements StandardProperty<HrefList> {
     
+    	@Override
+    	public String fieldName() {
+    	    return "directory-gateway";
+    	}
+    
+    	@Override
+    	public HrefList getValue(PropFindableResource res) {
+    	    if (res instanceof CardDavPrincipal) {
+    		return ((CardDavPrincipal) res).getDirectoryGateway();
+    	    } else {
+    		return null;
+    	    }
+    	}
+    
+    	@Override
+    	public Class<HrefList> getValueClass() {
+    	    return HrefList.class;
+    	}
+    }
 
     @Override
     public String getWellKnownName() {

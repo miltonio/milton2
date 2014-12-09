@@ -40,5 +40,12 @@ public interface CardDavPrincipal extends DiscretePrincipal {
      * 
      */
     String getAddress();
+    
+    /**
+     * This is usually a single href which identifies the collection which
+     * contains the users Directory addressbooks.
+     *
+     */
+    HrefList getDirectoryGateway();
 
 }

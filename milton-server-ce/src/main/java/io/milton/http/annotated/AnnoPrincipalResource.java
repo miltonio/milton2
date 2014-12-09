@@ -116,6 +116,12 @@ public class AnnoPrincipalResource extends AnnoCollectionResource implements Dis
 			throw new RuntimeException(e);
 		}
 	}
+	
+ 	@Override
+	public HrefList getDirectoryGateway() {
+		HrefList list = new HrefList();
+		return list;
+	}
 
 	@Override
 	public String getPrincipalURL() {
