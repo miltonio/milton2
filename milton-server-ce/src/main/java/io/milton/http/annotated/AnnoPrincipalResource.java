@@ -41,7 +41,7 @@ public class AnnoPrincipalResource extends AnnoCollectionResource implements Dis
 	private static final Logger log = LoggerFactory.getLogger(AnnoPrincipalResource.class);
 	private String email;
 	private String cuType;
- 
+
 	public AnnoPrincipalResource(AnnotationResourceFactory outer, Object source, AnnoCollectionResource parent) {
 		super(outer, source, parent);
 	}
@@ -116,12 +116,26 @@ public class AnnoPrincipalResource extends AnnoCollectionResource implements Dis
 			throw new RuntimeException(e);
 		}
 	}
-	
- 	@Override
+
+	@Override
 	public HrefList getDirectoryGateway() {
-		HrefList list = new HrefList();
-		// TODO: implementation annotation
-		return list;
+		try {
+			HrefList list = new HrefList();
+			// add all addressbooks as gateways
+			for (Resource r : getChildren()) {
+				if (r instanceof AnnoCollectionResource) {
+					AnnoCollectionResource col = (AnnoCollectionResource) r;
+					if (annoFactory.addressBooksAnnotationHandler.hasAddressBooks(col.getSource())) {
+						list.add(col.getHref());
+					}
+				}
+			}
+			return list;
+		} catch (NotAuthorizedException e) {
+			throw new RuntimeException(e);
+		} catch (BadRequestException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
@@ -165,7 +179,7 @@ public class AnnoPrincipalResource extends AnnoCollectionResource implements Dis
 		if (cuType == null) {
 			cuType = annoFactory.calendarUserTypeAnnotationHandler.get(this);
 		}
-		if( cuType == null ) {
+		if (cuType == null) {
 			cuType = "INDIVIDUAL";
 		}
 		return cuType;
