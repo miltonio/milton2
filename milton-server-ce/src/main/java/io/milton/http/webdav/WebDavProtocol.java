@@ -242,6 +242,7 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 		public String getValue(PropFindableResource res) {
 			if( res instanceof DisplayNameResource) {
 				DisplayNameResource dnr = (DisplayNameResource) res;
+				return dnr.getDisplayName();
 			}
 			return displayNameFormatter.formatDisplayName(res);
 		}
