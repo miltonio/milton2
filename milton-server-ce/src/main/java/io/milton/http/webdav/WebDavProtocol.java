@@ -26,6 +26,7 @@ import io.milton.http.exceptions.NotFoundException;
 import io.milton.http.http11.CustomPostHandler;
 import io.milton.http.http11.ETagGenerator;
 import io.milton.http.quota.QuotaDataAccessor;
+import io.milton.http.report.QualifiedReport;
 import io.milton.http.report.Report;
 import io.milton.http.report.ReportHandler;
 import io.milton.http.values.SupportedReportSetList;
@@ -493,8 +494,11 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 		@Override
 		public SupportedReportSetList getValue(PropFindableResource res) {
 			SupportedReportSetList reportSet = new SupportedReportSetList();
-			for (String reportName : reports.keySet()) {
-				reportSet.add(reportName);
+			for (Report report: reports.values()) {
+				if(report instanceof QualifiedReport)
+					reportSet.add(((QualifiedReport) report).getQualifiedName());
+				else
+					reportSet.add(new QName(DAV_URI, report.getName()));
 			}
 			return reportSet;
 		}

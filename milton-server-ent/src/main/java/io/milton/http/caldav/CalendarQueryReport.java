@@ -10,6 +10,7 @@ import io.milton.http.HttpManager;
 import io.milton.common.Utils;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
+import io.milton.http.report.QualifiedReport;
 import io.milton.http.webdav.PropFindPropertyBuilder;
 import io.milton.http.webdav.PropFindResponse;
 import io.milton.http.webdav.PropFindXmlGenerator;
@@ -37,7 +38,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author brad
  */
-public class CalendarQueryReport implements Report {
+public class CalendarQueryReport implements QualifiedReport {
 
     private static final Logger log = LoggerFactory.getLogger(CalendarQueryReport.class);
     private final PropFindPropertyBuilder propertyBuilder;
@@ -55,6 +56,12 @@ public class CalendarQueryReport implements Report {
     @Override
     public String getName() {
         return "calendar-query";
+    }
+
+    @Override
+    public QName getQualifiedName()
+    {
+        return new QName(NS_CAL.getURI(), getName());
     }
 
     @Override

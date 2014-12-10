@@ -8,6 +8,7 @@ package io.milton.http.carddav;
 import io.milton.http.ResourceFactory;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
+import io.milton.http.report.QualifiedReport;
 import io.milton.http.report.Report;
 import io.milton.http.report.ReportUtils;
 import io.milton.http.webdav.PropFindPropertyBuilder;
@@ -106,7 +107,8 @@ or more complex with many criterias
  * @author charly-alinto
  * @date 10 sept. 2014
  */
-public class AddressBookQueryReport implements Report {
+public class AddressBookQueryReport implements QualifiedReport
+{
 
 	private static final Logger log = LoggerFactory.getLogger(AddressBookMultiGetReport.class);
 
@@ -129,6 +131,12 @@ public class AddressBookQueryReport implements Report {
   	public String getName() {
   		return "addressbook-query";
   	}
+
+    @Override
+    public QName getQualifiedName()
+    {
+        return new QName(CARDDAV_NS.getURI(), getName());
+    }
 
   	@Override
   	public String process( String host, String path, Resource res, Document doc )
