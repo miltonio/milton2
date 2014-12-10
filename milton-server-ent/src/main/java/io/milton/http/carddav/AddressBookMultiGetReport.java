@@ -10,6 +10,8 @@ import io.milton.http.report.AbstractMultiGetReport;
 import io.milton.http.webdav.PropFindPropertyBuilder;
 import io.milton.http.webdav.PropFindXmlGenerator;
 
+import javax.xml.namespace.QName;
+
 /**
  * The CARDDAV:addressbook-multiget REPORT is used to retrieve specific
  * address object resources from within a collection, if the Request-URI
@@ -54,5 +56,11 @@ public class AddressBookMultiGetReport extends AbstractMultiGetReport {
     @Override
     public String getName() {
         return "addressbook-multiget";
+    }
+
+    @Override
+    public QName getQualifiedName()
+    {
+        return new QName(CardDavProtocol.CARDDAV_NS, getName());
     }
 }

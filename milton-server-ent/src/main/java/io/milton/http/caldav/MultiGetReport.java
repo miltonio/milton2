@@ -10,6 +10,8 @@ import io.milton.http.report.AbstractMultiGetReport;
 import io.milton.http.webdav.PropFindPropertyBuilder;
 import io.milton.http.webdav.PropFindXmlGenerator;
 
+import javax.xml.namespace.QName;
+
 /**
  *
  * @author brad
@@ -23,5 +25,11 @@ public class MultiGetReport extends AbstractMultiGetReport {
     @Override
     public String getName() {
         return "calendar-multiget";
+    }
+
+    @Override
+    public QName getQualifiedName()
+    {
+        return new QName(CalDavProtocol.CALDAV_NS, getName());
     }
 }
