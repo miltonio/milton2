@@ -6,12 +6,16 @@
 package io.milton.http.carddav;
 
 import io.milton.http.webdav.ResourceTypeHelper;
+import io.milton.resource.AddressBookDirectoryResource;
 import io.milton.resource.AddressBookResource;
 import io.milton.resource.Resource;
 import io.milton.webdav.utils.LockUtils;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.namespace.QName;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,15 +38,19 @@ public class AddressBookResourceTypeHelper implements ResourceTypeHelper {
         if (log.isTraceEnabled()) {
             log.trace("getResourceTypes:" + r.getClass().getCanonicalName());
         }
-        QName qn;
+        QName qn, qn2;
         List<QName> list = wrapped.getResourceTypes(r);
-		
+        
         if (r instanceof AddressBookResource) {
             log.trace("getResourceTypes: is a AddressBookResource");
             qn = new QName(CardDavProtocol.CARDDAV_NS, "addressbook");
+            qn2 = new QName(CardDavProtocol.CARDDAV_NS, "directory");
             if (list == null) {
                 list = new ArrayList<QName>();
             }
+    	    if (r instanceof AddressBookDirectoryResource) {
+                list.add(qn2);
+    	    }
             list.add(qn);
         }
         return list;

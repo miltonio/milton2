@@ -2,7 +2,6 @@
  * Copyright 2012 McEvoy Software Ltd.
  *
  */
-
 package io.milton.http.carddav;
 
 import io.milton.principal.CardDavPrincipal;
@@ -46,6 +45,7 @@ import io.milton.http.values.Pair;
 import io.milton.http.values.AddressDataTypeList;
 import io.milton.http.webdav.PropFindPropertyBuilder;
 import io.milton.http.caldav.ExpandPropertyReport;
+import io.milton.principal.DirectoryGatewayCardDavPrincipal;
 import io.milton.resource.DigestResource;
 import io.milton.resource.GetableResource;
 import io.milton.resource.PropFindableResource;
@@ -69,12 +69,13 @@ public class CardDavProtocol implements HttpExtension, PropertySource, WellKnown
         propertyMapCardDav.add(new AddressBookDescriptionProperty());
         propertyMapCardDav.add(new SupportedAddressData());
         propertyMapCardDav.add(new PrincipalAddress());
+        propertyMapCardDav.add(new DirectoryGateway());
         propertyMapCardDav.add(new AddressDataProperty());
 
         handlers = new HashSet<Handler>();
 
         webDavProtocol.addPropertySource(this);
-        
+
         webDavProtocol.addReport(new AddressBookMultiGetReport(resourceFactory, propertyBuilder, gen));
         webDavProtocol.addReport(new AddressBookQueryReport(resourceFactory, propertyBuilder, gen));
         webDavProtocol.addReport(new ExpandPropertyReport(resourceFactory, propertyBuilder, gen));
@@ -136,68 +137,69 @@ public class CardDavProtocol implements HttpExtension, PropertySource, WellKnown
     public List<CustomPostHandler> getCustomPostHandlers() {
         return null;
     }
-    
+
     // (CARDDAV:supported-address-data-conversion -- requires implemenation
     /**
-     * When used in an address book REPORT request, the CARDDAV:address-data XML 
-     * element specifies which parts of address object resources need to be 
-     * returned in the response. If the CARDDAV:address-data XML element doesn’t 
-     * contain any CARDDAV:prop elements, address object resources will be 
-     * returned in their entirety. Additionally, a media type and version can be 
-     * specified to request that the server return the data in that format if possible.
-     * Finally, when used in an address book REPORT response, the CARDDAV:address-data 
-     * XML element specifies the content of an address object resource. Given that 
-     * XML parsers normalize the two-character sequence CRLF (US-ASCII decimal 13 and US-ASCII
-     * decimal 10) to a single LF character (US-ASCII decimal 10), the CR
-     * character (US-ASCII decimal 13) MAY be omitted in address object
-     * resources specified in the CARDDAV:address-data XML element.
-     * Furthermore, address object resources specified in the
-     * CARDDAV:address-data XML element MAY be invalid per their media
-     * type specification if the CARDDAV:address-data XML element part of
-     * the address book REPORT request did not specify required vCard
-     * properties (e.g., UID, etc.) or specified a CARDDAV:prop XML
-     * element with the "novalue" attribute set to "yes".
-     * 
-     * Note: The CARDDAV:address-data XML element is specified in requests
-     * and responses inside the DAV:prop XML element as if it were a
-     * WebDAV property. However, the CARDDAV:address-data XML element is
-     * not a WebDAV property and as such it is not returned in PROPFIND
-     * responses nor used in PROPPATCH requests.
-     * 
+     * When used in an address book REPORT request, the CARDDAV:address-data XML
+     * element specifies which parts of address object resources need to be
+     * returned in the response. If the CARDDAV:address-data XML element doesn’t
+     * contain any CARDDAV:prop elements, address object resources will be
+     * returned in their entirety. Additionally, a media type and version can be
+     * specified to request that the server return the data in that format if
+     * possible. Finally, when used in an address book REPORT response, the
+     * CARDDAV:address-data XML element specifies the content of an address
+     * object resource. Given that XML parsers normalize the two-character
+     * sequence CRLF (US-ASCII decimal 13 and US-ASCII decimal 10) to a single
+     * LF character (US-ASCII decimal 10), the CR character (US-ASCII decimal
+     * 13) MAY be omitted in address object resources specified in the
+     * CARDDAV:address-data XML element. Furthermore, address object resources
+     * specified in the CARDDAV:address-data XML element MAY be invalid per
+     * their media type specification if the CARDDAV:address-data XML element
+     * part of the address book REPORT request did not specify required vCard
+     * properties (e.g., UID, etc.) or specified a CARDDAV:prop XML element with
+     * the "novalue" attribute set to "yes".
+     *
+     * Note: The CARDDAV:address-data XML element is specified in requests and
+     * responses inside the DAV:prop XML element as if it were a WebDAV
+     * property. However, the CARDDAV:address-data XML element is not a WebDAV
+     * property and as such it is not returned in PROPFIND responses nor used in
+     * PROPPATCH requests.
+     *
      * Note: The address data embedded within the CARDDAV:address-data XML
-     * element MUST follow the standard XML character data encoding
-     * rules, including use of &lt;, &gt;, &amp; etc., entity encoding or
-     * the use of a <![CDATA[ ... ]]> construct. In the latter case, the
-     * vCard data cannot contain the character sequence "]]>", which is
-     * the end delimiter for the CDATA section.
-     * 
+     * element MUST follow the standard XML character data encoding rules,
+     * including use of &lt;, &gt;, &amp; etc., entity encoding or the use of a
+     * <![CDATA[ ... ]]> construct. In the latter case, the vCard data cannot
+     * contain the character sequence "]]>", which is the end delimiter for the
+     * CDATA section.
+     *
      * Definition:
      * <!ELEMENT address-data (allprop | prop*)>
-     * when nested in the DAV:prop XML element in an address book
-     * REPORT request to specify which parts of address object
-     * resources should be returned in the response;
+     * when nested in the DAV:prop XML element in an address book REPORT request
+     * to specify which parts of address object resources should be returned in
+     * the response;
      * <!ELEMENT address-data (#PCDATA)>
      * <!-- PCDATA value: address data -->
-     * when nested in the DAV:prop XML element in an address book
-     * REPORT response to specify the content of a returned
-     * address object resource.
+     * when nested in the DAV:prop XML element in an address book REPORT
+     * response to specify the content of a returned address object resource.
      * <!ATTLIST address-data content-type CDATA "text/vcard"
      * version CDATA "3.0">
      * <!-- content-type value: a MIME media type -->
      * <!-- version value: a version string -->
-     * attributes can be used on each variant of the
-     * CALDAV:address-data XML element.
+     * attributes can be used on each variant of the CALDAV:address-data XML
+     * element.
      */
     class AddressDataProperty implements StandardProperty<String> {
+
         @Override
         public String fieldName() {
             return "address-data";
         }
+
         @Override
         public String getValue(PropFindableResource res) {
             if (res instanceof AddressResource) {
                 AddressResource resource = (AddressResource) res;
-                return resource.getAddressData(); 
+                return resource.getAddressData();
             } else {
                 return null;
             }
@@ -210,19 +212,19 @@ public class CardDavProtocol implements HttpExtension, PropertySource, WellKnown
     }
 
     /**
-     * This property is meant to allow users to easily find the address book 
-     * collections owned by the principal. Typically, users will group all the 
+     * This property is meant to allow users to easily find the address book
+     * collections owned by the principal. Typically, users will group all the
      * address book collections that they own under a common collection. This
-     * property specifies the URL of collections that are either address
-     * book collections or ordinary collections that have child or
-     * descendant address book collections owned by the principal.
-     * 
+     * property specifies the URL of collections that are either address book
+     * collections or ordinary collections that have child or descendant address
+     * book collections owned by the principal.
+     *
      * Definition:
      * <!ELEMENT addressbook-home-set (DAV:href*)>
-     * 
+     *
      * Example:
      * <C:addressbook-home-set xmlns:D="DAV:" xmlns:C="urn:ietf:params:xml:ns:carddav">
-     *      <D:href>/bernard/addresses/</D:href>
+     * <D:href>/bernard/addresses/</D:href>
      * </C:addressbook-home-set>
      */
     class AddressBookHomeSetProperty implements StandardProperty<HrefList> {
@@ -261,11 +263,13 @@ public class CardDavProtocol implements HttpExtension, PropertySource, WellKnown
      * xmlns:C="urn:ietf:params:xml:ns:carddav">Adresses de Oliver Daboo</C:addressbook-description>
      */
     class AddressBookDescriptionProperty implements StandardProperty<String> {
+
         // todo - add support of internationalization so the protocol can allow
         // multiple language description, this can be accomplished by either 
         // add a method(getAttributes) to StandardProperty interface or we can 
         // have an InternationalizedStandardProperty interface that would extend
         // from StandardProperty and have an additional method (getLanguage)
+
         @Override
         public String fieldName() {
             return "addressbook-description";
@@ -288,25 +292,25 @@ public class CardDavProtocol implements HttpExtension, PropertySource, WellKnown
     }
 
     /**
-     * This property is used to specify the media type supported for the address 
-     * object resources contained in a given address book collection (e.g., 
-     * vCard version 3.0). Any attempt by the client to store address object 
-     * resources with a media type not listed in this property MUST result in 
-     * an error, with the CARDDAV:supported-address-data precondition 
-     * (Section 6.3.2.1) being violated. In the absence of this property, 
-     * the server MUST only accept data with the media type "text/vcard" and 
-     * vCard version 3.0, and clients can assume that is all the server will accept.
-     * 
+     * This property is used to specify the media type supported for the address
+     * object resources contained in a given address book collection (e.g.,
+     * vCard version 3.0). Any attempt by the client to store address object
+     * resources with a media type not listed in this property MUST result in an
+     * error, with the CARDDAV:supported-address-data precondition (Section
+     * 6.3.2.1) being violated. In the absence of this property, the server MUST
+     * only accept data with the media type "text/vcard" and vCard version 3.0,
+     * and clients can assume that is all the server will accept.
+     *
      * Definition:
      * <!ELEMENT supported-address-data (address-data-type+)>
-     *      <!ELEMENT address-data-type EMPTY>
+     * <!ELEMENT address-data-type EMPTY>
      * <!ATTLIST address-data-type content-type CDATA "text/vcard" version CDATA "3.0">
      * <!-- content-type value: a MIME media type -->
      * <!-- version value: a version string -->
-     * 
+     *
      * Example:
      * <C:supported-address-data xmlns:C="urn:ietf:params:xml:ns:carddav">
-     *      <C:address-data-type content-type="text/vcard" version="3.0"/>
+     * <C:address-data-type content-type="text/vcard" version="3.0"/>
      * </C:supported-address-data>
      */
     class SupportedAddressData implements StandardProperty<List<Pair<String, String>>> {
@@ -332,22 +336,22 @@ public class CardDavProtocol implements HttpExtension, PropertySource, WellKnown
     }
 
     /**
-     * This property is used to specify a numeric value that represents the 
-     * maximum size in octets that the server is willing to accept when an 
-     * address object resource is stored in an address book collection. 
-     * Any attempt to store an address book object resource exceeding this 
-     * size MUST result in an error, with the CARDDAV:max-resource-size precondition
-     * (Section 6.3.2.1) being violated. In the absence of this
-     * property, the client can assume that the server will allow storing
-     * a resource of any reasonable size.
-     * 
+     * This property is used to specify a numeric value that represents the
+     * maximum size in octets that the server is willing to accept when an
+     * address object resource is stored in an address book collection. Any
+     * attempt to store an address book object resource exceeding this size MUST
+     * result in an error, with the CARDDAV:max-resource-size precondition
+     * (Section 6.3.2.1) being violated. In the absence of this property, the
+     * client can assume that the server will allow storing a resource of any
+     * reasonable size.
+     *
      * Definition:
      * <!ELEMENT max-resource-size (#PCDATA)>
      * <!-- PCDATA value: a numeric value (positive decimal integer) -->
-     * 
+     *
      * Example:
      * <C:max-resource-size xmlns:C="urn:ietf:params:xml:ns:carddav">102400</C:max-resource-size>
-     * 
+     *
      */
     class MaxResourceSize implements StandardProperty<Long> {
 
@@ -370,23 +374,23 @@ public class CardDavProtocol implements HttpExtension, PropertySource, WellKnown
             return Long.class;
         }
     }
-    
+
     /**
-     * This property is meant to allow users to easily find contact information 
-     * for users represented by principals on the system. This property specifies
-     * the URL of the resource containing the corresponding contact
-     * information. The resource could be an address object resource in
-     * an address book collection, or it could be a resource in a
-     * "regular" collection.
-     * 
+     * This property is meant to allow users to easily find contact information
+     * for users represented by principals on the system. This property
+     * specifies the URL of the resource containing the corresponding contact
+     * information. The resource could be an address object resource in an
+     * address book collection, or it could be a resource in a "regular"
+     * collection.
+     *
      * Definition:
      * <!ELEMENT principal-address (DAV:href)>
-     * 
+     *
      * Example:
      * <C:principal-address xmlns:D="DAV:"xmlns:C="urn:ietf:params:xml:ns:carddav">
-     *      <D:href>/system/cyrus.vcf</D:href>
+     * <D:href>/system/cyrus.vcf</D:href>
      * </C:principal-address>
-     * 
+     *
      */
     class PrincipalAddress implements StandardProperty<String> {
 
@@ -409,8 +413,39 @@ public class CardDavProtocol implements HttpExtension, PropertySource, WellKnown
             return Long.class;
         }
     }
-    
-    
+
+    /**
+     * The CARDDAV:directory-gateway identifies address book collection
+     * resources that are directory gateway address books for the server.
+     *
+     * Definition: <!ELEMENT directory-gateway (DAV:href*)>
+     *
+     * Example: <C:directory-gateway xmlns:D="DAV:"
+     * xmlns:C="urn:ietf:params:xml:ns:carddav"> <D:href>/directory</D:href>
+     * </C:directory-gateway>
+     *
+     */
+    class DirectoryGateway implements StandardProperty<HrefList> {
+
+        @Override
+        public String fieldName() {
+            return "directory-gateway";
+        }
+
+        @Override
+        public HrefList getValue(PropFindableResource res) {
+            if (res instanceof DirectoryGatewayCardDavPrincipal) {
+                return ((DirectoryGatewayCardDavPrincipal) res).getDirectoryGateway();
+            } else {
+                return null;
+            }
+        }
+
+        @Override
+        public Class<HrefList> getValueClass() {
+            return HrefList.class;
+        }
+    }
 
     @Override
     public String getWellKnownName() {

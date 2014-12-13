@@ -19,6 +19,7 @@
 
 package io.milton.http.values;
 
+import javax.xml.namespace.QName;
 import java.util.ArrayList;
 
 /**
@@ -28,6 +29,6 @@ import java.util.ArrayList;
  *
  * @author alex
  */
-public class SupportedReportSetList extends ArrayList<String> {
+public class SupportedReportSetList extends ArrayList<QName> {
   private static final long serialVersionUID = 1L;
 }

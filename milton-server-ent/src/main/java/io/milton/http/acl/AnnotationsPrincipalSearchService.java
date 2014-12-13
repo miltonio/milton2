@@ -16,6 +16,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * This is a default implementation of principal search which iterates over the
+ * principals in the users home and applies critieria.
+ * 
+ * It should generally not be used in production. Instead you should replace it
+ * with something that integrates into the query facilities of your persistence
+ * tier to search efficiently.
  *
  * @author brad
  */

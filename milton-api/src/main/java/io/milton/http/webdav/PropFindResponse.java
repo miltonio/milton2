@@ -23,11 +23,14 @@ import io.milton.http.Response;
 import io.milton.http.Response.Status;
 import io.milton.common.Utils;
 import io.milton.http.values.ValueAndType;
+
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import javax.xml.namespace.QName;
 
 public class PropFindResponse {
+    private final Response.Status status; 
 
     private final String href;
     private Map<QName, ValueAndType> knownProperties;
@@ -36,12 +39,28 @@ public class PropFindResponse {
     public PropFindResponse(String href, Map<QName, ValueAndType> knownProperties, Map<Response.Status, List<NameAndError>> errorProperties) {
         super();
         this.href = Utils.stripServer(href);
+        this.status = null;
         this.knownProperties = knownProperties;
         this.errorProperties = errorProperties;
     }
 
+    /**
+     * used in sync-collection response.
+     */
+    public PropFindResponse(String href, Response.Status status) {
+        super();
+        this.href = Utils.stripServer(href);
+        this.status = status;
+        this.knownProperties = Collections.emptyMap();
+        this.errorProperties = Collections.emptyMap();
+    }
+
     public String getHref() {
         return href;
+    }
+
+    public Response.Status getStatus() {
+        return status;
     }
 
     public Map<QName, ValueAndType> getKnownProperties() {

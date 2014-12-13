@@ -22,6 +22,8 @@ package io.milton.http.values;
 import io.milton.http.XmlWriter;
 import io.milton.http.XmlWriter.Element;
 import io.milton.http.webdav.WebDavProtocol;
+
+import javax.xml.namespace.QName;
 import java.util.Map;
 
 /**
@@ -42,10 +44,20 @@ public class SupportedReportSetWriter  implements ValueWriter {
         SupportedReportSetList list = (SupportedReportSetList) val;
         Element reportSet = writer.begin( WebDavProtocol.DAV_PREFIX + ":supported-report-set" ).open();
         if( list != null ) {
-            for( String s : list) {
+            for( QName n : list) {
                 Element supportedReport = writer.begin( WebDavProtocol.DAV_PREFIX + ":supported-report" ).open();
                 Element report = writer.begin( WebDavProtocol.DAV_PREFIX + ":report" ).open();
-                writer.writeProperty( WebDavProtocol.DAV_PREFIX + ":" + s );
+                String reportPrefix = nsPrefixes.get(n.getNamespaceURI());
+                if(reportPrefix != null)
+                {
+                    writer.writeProperty( reportPrefix + ":" + n.getLocalPart() );
+                }
+                else
+                {
+                    XmlWriter.Element reportName = writer.begin(n.getLocalPart());
+                    reportName.writeAtt("xmlns", n.getNamespaceURI());
+                    reportName.noContent();
+                }
                 report.close();
                 supportedReport.close();
             }

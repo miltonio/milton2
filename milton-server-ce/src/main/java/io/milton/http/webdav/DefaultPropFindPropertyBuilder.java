@@ -128,7 +128,7 @@ public class DefaultPropFindPropertyBuilder implements PropFindPropertyBuilder {
 		Iterator<QName> it = requestedFields.iterator();
 		while (it.hasNext()) {
 			QName field = it.next();
-			LogUtils.trace(log, "processResoource: find property:", field);
+			LogUtils.trace(log, "processResource: find property:", field);
 			if (field.getLocalPart().equals("href")) {
 				knownProperties.put(field, new ValueAndType(href, String.class));
 			} else {

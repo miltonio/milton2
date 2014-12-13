@@ -133,11 +133,8 @@ public class PrincipalPropertySearchReport implements Report {
         } else {
             log.info("foundResources: null");
         }
-        String parentHref = HttpManager.request().getAbsolutePath();
-        parentHref = Utils.suffixSlash(parentHref);
         for (DiscretePrincipal dp : foundResources) {
-            String href = parentHref + dp.getName();
-
+            String href = dp.getPrincipalURL();
             List<PropFindResponse> resps = new ArrayList<PropFindResponse>();
             if (dp instanceof PropFindableResource) {
                 PropFindableResource pfr = (PropFindableResource) dp;
