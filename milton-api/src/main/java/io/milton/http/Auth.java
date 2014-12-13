@@ -22,6 +22,7 @@ package io.milton.http;
 import io.milton.common.StringSplitUtils;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
@@ -47,6 +48,23 @@ public class Auth {
 
     private static final Logger log = LoggerFactory.getLogger( Auth.class );
 
+    private static Charset basicParserCharset;
+    
+    static {
+        try {
+            basicParserCharset = Charset.forName("ISO-8859-1");
+        } catch (Exception e) {
+            // fall
+            basicParserCharset = Charset.forName("UTF-8");
+        }
+    }
+    
+    public static Charset getBasicParCharset() {
+        return basicParserCharset;
+    }
+    
+    
+    
     /**
      * Holds application specific user data, as returned from the authenticate
      * method on Resource
