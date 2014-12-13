@@ -246,7 +246,7 @@ public class SpringMiltonFilter implements javax.servlet.Filter {
 			httpManager.process(request, response);
 		} finally {
 			MiltonServlet.clearThreadlocals();
-			resp.getOutputStream().flush();
+			//resp.getOutputStream().flush();
 			resp.flushBuffer();
 		}
 	}
