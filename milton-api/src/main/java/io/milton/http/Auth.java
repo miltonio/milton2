@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.milton.http;
 
 import io.milton.common.StringSplitUtils;
@@ -32,12 +31,12 @@ import org.slf4j.LoggerFactory;
 /**
  * Holds authentication information for a request
  *
- * There are two sets of information:
- *   - that which is present in the request
- *   - that which is determined as part of performing authentication
+ * There are two sets of information: - that which is present in the request -
+ * that which is determined as part of performing authentication
  *
  * Note that even if authentication fails, this object will still be available
- * in the request - DO NOT USE THE PRESENCE OF THIS OBJECT TO CHECK FOR A VALID LOGIN!!!
+ * in the request - DO NOT USE THE PRESENCE OF THIS OBJECT TO CHECK FOR A VALID
+ * LOGIN!!!
  *
  * Instead use the tag property. This will ONLY be not null after a successful
  * authentication
@@ -46,10 +45,11 @@ import org.slf4j.LoggerFactory;
  */
 public class Auth {
 
-    private static final Logger log = LoggerFactory.getLogger( Auth.class );
+    private static final Logger log = LoggerFactory.getLogger(Auth.class);
 
     private static Charset basicParserCharset;
-    
+
+    // use 8859-1 as required by spec - https://github.com/miltonio/milton2/issues/19
     static {
         try {
             basicParserCharset = Charset.forName("ISO-8859-1");
@@ -58,13 +58,11 @@ public class Auth {
             basicParserCharset = Charset.forName("UTF-8");
         }
     }
-    
+
     public static Charset getBasicParCharset() {
         return basicParserCharset;
     }
-    
-    
-    
+
     /**
      * Holds application specific user data, as returned from the authenticate
      * method on Resource
@@ -74,17 +72,18 @@ public class Auth {
     private Object tag;
 
     /**
-     * Common HTTP authentication schemes, and some non-http specified but common
-     * ones
+     * Common HTTP authentication schemes, and some non-http specified but
+     * common ones
      */
     public enum Scheme {
+
         BASIC,
         DIGEST,
         NEGOTIATE,
         FORM,
         SESSION,
-		NTLM,
-		OAUTH
+        NTLM,
+        OAUTH
     };
     private Scheme scheme;
     private String user;
@@ -99,47 +98,45 @@ public class Auth {
     private String cnonce;
     private boolean nonceStale; // set by digest auth handler
 
-
-    public Auth( String sAuth ) {
+    public Auth(String sAuth) {
 //        log.debug( "parse: " + sAuth);
-        int pos = sAuth.indexOf( " " );
+        int pos = sAuth.indexOf(" ");
         String schemeCode;
         String enc;
-        if( pos >= 0 ) {
-            schemeCode = sAuth.substring( 0, pos );
-            scheme = Scheme.valueOf( schemeCode.toUpperCase() );
-            enc = sAuth.substring( pos + 1 );
+        if (pos >= 0) {
+            schemeCode = sAuth.substring(0, pos);
+            scheme = Scheme.valueOf(schemeCode.toUpperCase());
+            enc = sAuth.substring(pos + 1);
         } else {
             // assume basic
             scheme = Scheme.BASIC;
             enc = sAuth;
         }
-        if( scheme.equals( Scheme.BASIC ) ) {
-            parseBasic( enc );
-        } else if( scheme.equals( Scheme.DIGEST ) ) {
-            parseDigest( enc );
+        if (scheme.equals(Scheme.BASIC)) {
+            parseBasic(enc);
+        } else if (scheme.equals(Scheme.DIGEST)) {
+            parseDigest(enc);
         }
     }
 
-    public Auth( String user, Object userTag ) {
+    public Auth(String user, Object userTag) {
         this.scheme = Scheme.BASIC;
         this.user = user;
         this.password = null;
         this.tag = userTag;
     }
 
-    public Auth( Scheme scheme, String user, Object userTag ) {
+    public Auth(Scheme scheme, String user, Object userTag) {
         this.scheme = scheme;
         this.user = user;
         this.password = null;
         this.tag = userTag;
     }
 
-
     /**
      *
-     * @return - the user property in the request. This MIGHT NOT be an
-     * actual user
+     * @return - the user property in the request. This MIGHT NOT be an actual
+     * user
      */
     public String getUser() {
         return user;
@@ -149,8 +146,10 @@ public class Auth {
      * Set after a successful authenticate method with a not-null value
      *
      * The actual value will be application dependent
+     *
+     * @param authTag
      */
-    public void setTag( Object authTag ) {
+    public void setTag(Object authTag) {
         tag = authTag;
     }
 
@@ -159,6 +158,10 @@ public class Auth {
      * method on Resource
      *
      * This should be used to test for a valid login.
+     *
+     * @return some object identifying the user, normally returned from
+     * Resource.authenticate
+     *
      */
     public Object getTag() {
         return tag;
@@ -206,57 +209,45 @@ public class Auth {
 
     /**
      * set by digest auth processing. Used to add stale nonce flag to challenge
-     * 
+     *
      * @param nonceStale
      */
-    public void setNonceStale( boolean nonceStale ) {
+    public void setNonceStale(boolean nonceStale) {
         this.nonceStale = nonceStale;
     }
 
-
-    
-
-
-
-
-    private void parseBasic( String enc ) {
-        try {
-            byte[] bytes = Base64.decodeBase64( enc.getBytes("UTF-8") );
-            String s = new String( bytes );
-            int pos = s.indexOf( ":" );
-            if( pos >= 0 ) {
-                user = s.substring( 0, pos );
-                password = s.substring( pos + 1 );
-            } else {
-                user = s;
-                password = null;
-            }
-        } catch (UnsupportedEncodingException ex) {
-            throw new RuntimeException(ex);
+    private void parseBasic(String enc) {
+        byte[] bytes = Base64.decodeBase64(enc.getBytes(basicParserCharset));
+        String s = new String(bytes);
+        int pos = s.indexOf(":");
+        if (pos >= 0) {
+            user = s.substring(0, pos);
+            password = s.substring(pos + 1);
+        } else {
+            user = s;
+            password = null;
         }
+
     }
 
-    private void parseDigest( String s ) {
-        String[] headerEntries = StringSplitUtils.splitIgnoringQuotes( s, ',' );
-        Map headerMap = StringSplitUtils.splitEachArrayElementAndCreateMap( headerEntries, "=", "\"" );
+    private void parseDigest(String s) {
+        String[] headerEntries = StringSplitUtils.splitIgnoringQuotes(s, ',');
+        Map headerMap = StringSplitUtils.splitEachArrayElementAndCreateMap(headerEntries, "=", "\"");
 
 //        log.debug( "headerMap: " + headerMap);
-
-        user = (String) headerMap.get( "username" );
-        realm = (String) headerMap.get( "realm" );
-        nonce = (String) headerMap.get( "nonce" );
-        uri = (String) headerMap.get( "uri" );
-        responseDigest = (String) headerMap.get( "response" );
-        qop = (String) headerMap.get( "qop" ); // RFC 2617 extension
-        nc = (String) headerMap.get( "nc" ); // RFC 2617 extension
-        cnonce = (String) headerMap.get( "cnonce" ); // RFC 2617 extension
+        user = (String) headerMap.get("username");
+        realm = (String) headerMap.get("realm");
+        nonce = (String) headerMap.get("nonce");
+        uri = (String) headerMap.get("uri");
+        responseDigest = (String) headerMap.get("response");
+        qop = (String) headerMap.get("qop"); // RFC 2617 extension
+        nc = (String) headerMap.get("nc"); // RFC 2617 extension
+        cnonce = (String) headerMap.get("cnonce"); // RFC 2617 extension
     }
 
     @Override
     public String toString() {
         return "scheme: " + scheme + " user:" + user + " tag:" + tag;
     }
-
-
 
 }
