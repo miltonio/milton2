@@ -4,7 +4,6 @@ package io.milton.dns.record;
 
 import io.milton.dns.Name;
 import io.milton.dns.TextParseException;
-import io.milton.dns.record.Tokenizer.Token;
 
 import java.io.*;
 import java.util.*;
@@ -83,7 +82,7 @@ rdataFromString(Tokenizer st, Name origin) throws IOException {
 /** converts to a String */
 String
 rrToString() {
-	StringBuffer sb = new StringBuffer();
+	StringBuilder sb = new StringBuilder();
 	Iterator it = strings.iterator();
 	while (it.hasNext()) {
 		byte [] array = (byte []) it.next();

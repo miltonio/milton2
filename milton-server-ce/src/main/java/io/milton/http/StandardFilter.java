@@ -19,16 +19,14 @@
 package io.milton.http;
 
 import io.milton.http.exceptions.BadRequestException;
-
+import io.milton.http.exceptions.ConflictException;
+import io.milton.http.exceptions.NotAuthorizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.milton.http.exceptions.ConflictException;
-import io.milton.http.exceptions.NotAuthorizedException;
-
 public class StandardFilter implements Filter {
 
-	private Logger log = LoggerFactory.getLogger(StandardFilter.class);
+	private final Logger log = LoggerFactory.getLogger(StandardFilter.class);
 	public static final String INTERNAL_SERVER_ERROR_HTML = "<html><body><h1>Internal Server Error (500)</h1></body></html>";
 
 	public StandardFilter() {

@@ -27,7 +27,7 @@ public class LockHolder {
 	private final UUID id;
 	private String name;
 	private String parentCollectionId;
-	private Date createdDate;
+	private final Date createdDate;
 	private LockTimeout lockTimeout;
 	private LockInfo lockInfo;
 

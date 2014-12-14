@@ -22,8 +22,9 @@ private static class Entry {
 
 private static final int TABLE_SIZE = 17;
 private static final int MAX_POINTER = 0x3FFF;
-private Entry [] table;
-private boolean verbose = Options.check("verbosecompression");
+
+private final Entry[] table;
+private final boolean verbose = Options.check("verbosecompression");
 
 /**
  * Creates a new Compression object.

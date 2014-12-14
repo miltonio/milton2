@@ -22,13 +22,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class AbstractRequest implements Request {
 
-	private Logger log = LoggerFactory.getLogger(AbstractRequest.class);
+	private final Logger log = LoggerFactory.getLogger(AbstractRequest.class);
 	public static final int INFINITY = 3; // To limit tree browsing a bit
 
 	@Override

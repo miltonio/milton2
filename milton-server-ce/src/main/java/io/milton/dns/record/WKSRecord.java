@@ -4,7 +4,6 @@ package io.milton.dns.record;
 
 import io.milton.dns.Address;
 import io.milton.dns.Name;
-import io.milton.dns.record.Tokenizer.Token;
 
 import java.net.*;
 import java.io.*;
@@ -153,8 +152,7 @@ public static class Protocol {
 	/** WIDEBAND EXPAK */
 	public static final int WB_EXPAK = 79;
 
-	private static Mnemonic protocols = new Mnemonic("IP protocol",
-							 Mnemonic.CASE_LOWER);
+	private static final Mnemonic protocols = new Mnemonic("IP protocol", Mnemonic.CASE_LOWER);
 
 	static {
 		protocols.setMaximum(0xFF);
@@ -470,8 +468,7 @@ public static class Service {
 	/** LINK */
 	public static final int LINK = 245;
 
-	private static Mnemonic services = new Mnemonic("TCP/UDP service",
-							Mnemonic.CASE_LOWER);
+	private static final Mnemonic services = new Mnemonic("TCP/UDP service", Mnemonic.CASE_LOWER);
 
 	static {
 		services.setMaximum(0xFFFF);
@@ -660,7 +657,7 @@ rdataFromString(Tokenizer st, Name origin) throws IOException {
 	st.unget();
 	services = new int[list.size()];
 	for (int i = 0; i < list.size(); i++) {
-		services[i] = ((Integer) list.get(i)).intValue();
+		services[i] = ((Integer) list.get(i));
 	}
 }
 
@@ -669,12 +666,12 @@ rdataFromString(Tokenizer st, Name origin) throws IOException {
  */
 String
 rrToString() {
-	StringBuffer sb = new StringBuffer();
+	StringBuilder sb = new StringBuilder();
 	sb.append(Address.toDottedQuad(address));
 	sb.append(" ");
 	sb.append(protocol);
 	for (int i = 0; i < services.length; i++) {
-		sb.append(" " + services[i]);
+		sb.append(" ").append(services[i]);
 	}
 	return sb.toString();
 }

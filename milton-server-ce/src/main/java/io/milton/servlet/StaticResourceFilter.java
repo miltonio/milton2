@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 
 public class StaticResourceFilter implements Filter {
     
-    private Logger log = LoggerFactory.getLogger(StaticResourceFilter.class);
+    private final Logger log = LoggerFactory.getLogger(StaticResourceFilter.class);
     
     private FilterConfig filterConfig = null;
     

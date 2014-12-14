@@ -22,7 +22,6 @@ package io.milton.http.webdav;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
-
 import javax.xml.namespace.QName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,9 +33,9 @@ public class PropFindSaxHandler extends DefaultHandler {
 
     private static final Logger log = LoggerFactory.getLogger( PropFindSaxHandler.class );
 
-    private Stack<QName> elementPath = new Stack<QName>();
-    private Map<QName, String> attributes = new HashMap<QName, String>();
-    private StringBuilder sb = new StringBuilder();
+    private final Stack<QName> elementPath = new Stack<QName>();
+    private final Map<QName, String> attributes = new HashMap<QName, String>();
+    private final StringBuilder sb = new StringBuilder();
     private boolean inProp;
     private boolean allProp;
 

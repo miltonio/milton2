@@ -293,8 +293,7 @@ ExtendedResolver(String [] servers) throws UnknownHostException {
 public
 ExtendedResolver(Resolver [] res) throws UnknownHostException {
 	init();
-	for (int i = 0; i < res.length; i++)
-		resolvers.add(res[i]);
+	resolvers.addAll(Arrays.asList(res));
 }
 
 public void

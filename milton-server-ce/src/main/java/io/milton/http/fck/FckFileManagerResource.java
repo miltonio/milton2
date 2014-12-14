@@ -123,8 +123,8 @@ public class FckFileManagerResource extends FckCommon implements GetableResource
         String sFolder;
         String serverPath;
         String newFolderName;
-        private XmlWriter writer;
-        private OutputStream out;
+		private final XmlWriter writer;
+		private final OutputStream out;
 
         FckGetParams( OutputStream out, Map<String, String> params ) {
             super( params );

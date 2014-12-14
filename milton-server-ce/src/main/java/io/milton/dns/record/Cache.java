@@ -71,7 +71,7 @@ private static class CacheRRset extends RRset implements Element {
 
 	public String
 	toString() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append(super.toString());
 		sb.append(" cl = ");
 		sb.append(credibility);
@@ -116,11 +116,11 @@ private static class NegativeElement implements Element {
 
 	public String
 	toString() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		if (type == 0)
-			sb.append("NXDOMAIN " + name);
+			sb.append("NXDOMAIN ").append(name);
 		else
-			sb.append("NXRRSET " + name + " " + Type.string(type));
+			sb.append("NXRRSET ").append(name).append(" ").append(Type.string(type));
 		sb.append(" cl = ");
 		sb.append(credibility);
 		return sb.toString();
@@ -299,7 +299,7 @@ removeElement(Name name, int type) {
 			Element elt = (Element) list.get(i);
 			if (elt.getType() == type) {
 				list.remove(i);
-				if (list.size() == 0)
+				if (list.isEmpty())
 					data.remove(name);
 				return;
 			}
@@ -831,7 +831,7 @@ getDClass() {
  */ 
 public String
 toString() {
-	StringBuffer sb = new StringBuffer();
+	StringBuilder sb = new StringBuilder();
 	synchronized (this) {
 		Iterator it = data.values().iterator();
 		while (it.hasNext()) {

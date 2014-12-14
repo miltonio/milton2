@@ -23,8 +23,8 @@ public static class Alphabet {
 		"0123456789ABCDEFGHIJKLMNOPQRSTUV=";
 };
 
-private String alphabet;
-private boolean padding, lowercase;
+private final String alphabet;
+private final boolean padding, lowercase;
 
 /**
  * Creates an object that can be used to do base32 conversions.

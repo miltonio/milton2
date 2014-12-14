@@ -84,8 +84,8 @@ public class ServletRequest extends AbstractRequest {
             typeContents.put(contentTypes.get(key), key);
         }
     }
-    private static ThreadLocal<HttpServletRequest> tlRequest = new ThreadLocal<HttpServletRequest>();
-    private static ThreadLocal<ServletContext> tlServletContext = new ThreadLocal<ServletContext>();
+    private static final ThreadLocal<HttpServletRequest> tlRequest = new ThreadLocal<HttpServletRequest>();
+    private static final ThreadLocal<ServletContext> tlServletContext = new ThreadLocal<ServletContext>();
 
     public static HttpServletRequest getRequest() {
         return tlRequest.get();

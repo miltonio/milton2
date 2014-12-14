@@ -8,7 +8,6 @@ import io.milton.dns.utils.HMAC;
 import io.milton.dns.utils.base64;
 
 import java.util.*;
-import io.milton.dns.utils.*;
 
 /**
  * Transaction signature handling.  This class generates and verifies
@@ -483,8 +482,8 @@ public static class StreamVerifier {
 	 * A helper class for verifying multiple message responses.
 	 */
 
-	private TSIG key;
-	private HMAC verifier;
+	private final TSIG key;
+	private final HMAC verifier;
 	private int nresponses;
 	private int lastsigned;
 	private TSIGRecord lastTSIG;

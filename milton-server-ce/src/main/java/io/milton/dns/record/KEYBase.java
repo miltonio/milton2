@@ -3,14 +3,11 @@
 package io.milton.dns.record;
 
 import io.milton.dns.Name;
-import io.milton.dns.record.DNSSEC.Algorithm;
-import io.milton.dns.record.DNSSEC.DNSSECException;
 import io.milton.dns.utils.base64;
 
 import java.io.*;
 import java.security.PublicKey;
 
-import io.milton.dns.utils.*;
 
 /**
  * The base class for KEY/DNSKEY records, which have identical formats 
@@ -53,7 +50,7 @@ rrFromWire(DNSInput in) throws IOException {
 /** Converts the DNSKEY/KEY Record to a String */
 String
 rrToString() {
-	StringBuffer sb = new StringBuffer();
+	StringBuilder sb = new StringBuilder();
 	sb.append(flags);
 	sb.append(" ");
 	sb.append(proto);

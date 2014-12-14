@@ -40,12 +40,12 @@ import org.slf4j.LoggerFactory;
 
 public class CopyHandler implements ExistingEntityHandler {
 
-	private Logger log = LoggerFactory.getLogger(CopyHandler.class);
+	private final Logger log = LoggerFactory.getLogger(CopyHandler.class);
 	private final WebDavResponseHandler responseHandler;
 	private final HandlerHelper handlerHelper;
 	private final ResourceHandlerHelper resourceHandlerHelper;
 	private final UserAgentHelper userAgentHelper;
-	private DeleteHelper deleteHelper;
+	private final DeleteHelper deleteHelper;
 	private boolean deleteExistingBeforeCopy = true;
 
 	public CopyHandler(WebDavResponseHandler responseHandler, HandlerHelper handlerHelper, ResourceHandlerHelper resourceHandlerHelper, UserAgentHelper userAgentHelper) {
@@ -165,7 +165,7 @@ public class CopyHandler implements ExistingEntityHandler {
 
 	private boolean canOverwrite(Request request) {
 		Boolean ow = request.getOverwriteHeader();
-		boolean bHasOverwriteHeader = (ow != null && request.getOverwriteHeader().booleanValue());
+		boolean bHasOverwriteHeader = (ow != null && request.getOverwriteHeader());
 		if (bHasOverwriteHeader) {
 			return true;
 		} else {

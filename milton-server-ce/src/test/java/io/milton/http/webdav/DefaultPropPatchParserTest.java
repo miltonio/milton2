@@ -20,8 +20,6 @@
 
 package io.milton.http.webdav;
 
-import io.milton.http.webdav.DefaultPropPatchParser;
-import io.milton.http.webdav.PropPatchParseResult;
 import java.io.ByteArrayInputStream;
 import junit.framework.TestCase;
 
@@ -31,16 +29,16 @@ import junit.framework.TestCase;
  */
 public class DefaultPropPatchParserTest extends TestCase {
 	
-	private String XML_list_property = "<D:propertyupdate xmlns:D=\"DAV:\"  xmlns:Z=\"http://ns.example.com/standards/z39.50/\">\n" +
-"<D:set>\n" +
-"<D:prop>\n" +
-"<Z:Authors>\n" +
-"<Z:Author>Jim Whitehead</Z:Author>\n" +
-"<Z:Author>Roy Fielding</Z:Author>\n" +
-"</Z:Authors>\n" +
-"</D:prop>\n" +
-"</D:set>\n" +
-"</D:propertyupdate>";
+	private static final String XML_list_property = "<D:propertyupdate xmlns:D=\"DAV:\"  xmlns:Z=\"http://ns.example.com/standards/z39.50/\">\n" +
+		"<D:set>\n" +
+		"<D:prop>\n" +
+		"<Z:Authors>\n" +
+		"<Z:Author>Jim Whitehead</Z:Author>\n" +
+		"<Z:Author>Roy Fielding</Z:Author>\n" +
+		"</Z:Authors>\n" +
+		"</D:prop>\n" +
+		"</D:set>\n" +
+		"</D:propertyupdate>";
 	
 	public DefaultPropPatchParserTest(String testName) {
 		super(testName);

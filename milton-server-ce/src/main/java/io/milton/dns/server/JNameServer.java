@@ -70,14 +70,14 @@ import org.slf4j.LoggerFactory;
 
 public class JNameServer implements Service {
 
-	private static Logger log = LoggerFactory.getLogger(JNameServer.class.getName());
+	private static final Logger log = LoggerFactory.getLogger(JNameServer.class.getName());
 	static final int FLAG_DNSSECOK = 1;
 	static final int FLAG_SIGONLY = 2;
 	DomainResourceFactory drf;
 	List<InetSocketAddress> sockAddrs = new ArrayList<InetSocketAddress>();
 	List<TcpListener> tcpListeners = new ArrayList<TcpListener>();
 	List<UdpListener> udpListeners = new ArrayList<UdpListener>();
-	private RecordTypes recordTypes = new RecordTypes();
+	private final RecordTypes recordTypes = new RecordTypes();
 	volatile boolean running;
 
 	public JNameServer(DomainResourceFactory drf, InetSocketAddress... sockAddrs) {

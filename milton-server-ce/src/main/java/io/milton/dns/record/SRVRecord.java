@@ -68,10 +68,10 @@ rdataFromString(Tokenizer st, Name origin) throws IOException {
 /** Converts rdata to a String */
 String
 rrToString() {
-	StringBuffer sb = new StringBuffer();
-	sb.append(priority + " ");
-	sb.append(weight + " ");
-	sb.append(port + " ");
+	StringBuilder sb = new StringBuilder();
+	sb.append(priority).append(" ");
+	sb.append(weight).append(" ");
+	sb.append(port).append(" ");
 	sb.append(target);
 	return sb.toString();
 }

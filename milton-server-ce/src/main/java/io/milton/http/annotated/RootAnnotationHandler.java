@@ -24,7 +24,7 @@ import java.util.List;
  * @author brad
  */
 public class RootAnnotationHandler implements AnnotationHandler {
-	private List<ControllerMethod> controllerMethods = new ArrayList<ControllerMethod>();
+	private final List<ControllerMethod> controllerMethods = new ArrayList<ControllerMethod>();
 	private final AnnotationResourceFactory outer;
 
 	public RootAnnotationHandler(final AnnotationResourceFactory outer) {

@@ -19,7 +19,6 @@
 
 package io.milton.http.webdav;
 
-import io.milton.resource.Resource;
 import io.milton.http.Response;
 import io.milton.http.Response.Status;
 import io.milton.http.exceptions.BadRequestException;
@@ -27,10 +26,10 @@ import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.values.ValueAndType;
 import io.milton.http.values.ValueWriters;
 import io.milton.http.webdav.PropFindResponse.NameAndError;
-import io.milton.http.webdav.PropPatchParseResult;
 import io.milton.property.PropertySource;
 import io.milton.property.PropertySource.PropertyMetaData;
 import io.milton.property.PropertySource.PropertySetException;
+import io.milton.resource.Resource;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;

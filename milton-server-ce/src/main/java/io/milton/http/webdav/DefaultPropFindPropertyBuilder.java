@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
 public class DefaultPropFindPropertyBuilder implements PropFindPropertyBuilder {
 
 	private static final Logger log = LoggerFactory.getLogger(DefaultPropFindPropertyBuilder.class);
-	private List<PropertySource> propertySources;
+	private final List<PropertySource> propertySources;
 
 	/**
 	 *

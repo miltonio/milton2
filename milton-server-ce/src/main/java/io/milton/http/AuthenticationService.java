@@ -34,10 +34,10 @@ public class AuthenticationService {
 	private static final Logger log = LoggerFactory.getLogger(AuthenticationService.class);
 	public static final String ATT_AUTH_STATUS = "auth.service.status";
 	public static final String ATT_AUTH_CALLED = "auth.service.called";
-	private List<AuthenticationHandler> authenticationHandlers;
+	private final List<AuthenticationHandler> authenticationHandlers;
 	private List<ExternalIdentityProvider> externalIdentityProviders;
 	private boolean disableExternal;
-	private String[] browserIds = {"msie", "firefox", "chrome", "safari", "opera"};
+	private final String[] browserIds = {"msie", "firefox", "chrome", "safari", "opera"};
 
 	/**
 	 * Creates a AuthenticationService using the given handlers. Use this if you

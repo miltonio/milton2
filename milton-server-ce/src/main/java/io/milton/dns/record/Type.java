@@ -191,7 +191,7 @@ public static final int DLV		= 32769;
 
 
 private static class TypeMnemonic extends Mnemonic {
-	private HashMap objects;
+	private final HashMap objects;
 
 	public
 	TypeMnemonic() {
@@ -218,7 +218,7 @@ private static class TypeMnemonic extends Mnemonic {
 	}
 }
 
-private static TypeMnemonic types = new TypeMnemonic();
+private static final TypeMnemonic types = new TypeMnemonic();
 
 static {
 	types.add(A, "A", new ARecord());

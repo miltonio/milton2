@@ -9,13 +9,16 @@ package io.milton.dns.record;
  */
 
 import io.milton.dns.TextParseException;
-
-import java.util.*;
-import java.text.*;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 public final class FormattedTime {
 
-private static NumberFormat w2, w4;
+private static final NumberFormat w2, w4;
 
 static {
 	w2 = new DecimalFormat();
@@ -37,7 +40,7 @@ FormattedTime() {}
 public static String
 format(Date date) {
 	Calendar c = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
-	StringBuffer sb = new StringBuffer();
+	StringBuilder sb = new StringBuilder();
 
 	c.setTime(date);
 	sb.append(w4.format(c.get(Calendar.YEAR)));

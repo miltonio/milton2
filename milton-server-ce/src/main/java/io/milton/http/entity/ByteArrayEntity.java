@@ -20,12 +20,11 @@
 package io.milton.http.entity;
 
 import io.milton.http.Response;
-
 import java.io.OutputStream;
 
 public class ByteArrayEntity implements Response.Entity{
 
-    private byte[] arr;
+	private final byte[] arr;
 
     public ByteArrayEntity(byte[] arr) {
         this.arr = arr;

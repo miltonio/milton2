@@ -18,7 +18,6 @@
  */
 package io.milton.servlet;
 
-import io.milton.servlet.Config;
 import java.util.Enumeration;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;

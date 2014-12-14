@@ -19,13 +19,11 @@ package io.milton.dns.record;
 
 import io.milton.dns.Address;
 import io.milton.dns.Name;
-import io.milton.dns.record.Tokenizer.Token;
 import io.milton.dns.utils.base16;
 
 import java.io.*;
 import java.net.*;
 import java.util.*;
-import io.milton.dns.utils.*;
 
 /**
  * APL - Address Prefix List.  See RFC 3123.
@@ -74,7 +72,7 @@ public static class Element {
 
 	public String
 	toString() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		if (negative)
 			sb.append("!");
 		sb.append(family);
@@ -252,7 +250,7 @@ rdataFromString(Tokenizer st, Name origin) throws IOException {
 
 String
 rrToString() {
-	StringBuffer sb = new StringBuffer();
+	StringBuilder sb = new StringBuilder();
 	for (Iterator it = elements.iterator(); it.hasNext(); ) {
 		Element element = (Element) it.next();
 		sb.append(element);

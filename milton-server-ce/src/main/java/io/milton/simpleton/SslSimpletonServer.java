@@ -330,8 +330,8 @@ public class SslSimpletonServer implements Container {
 
     private static class SecureProcessor implements org.simpleframework.transport.Server {
 
-        private ContainerServer processor;
-        private SSLContext context;
+		private final ContainerServer processor;
+		private final SSLContext context;
 
         public SecureProcessor( ContainerServer processor, SSLContext context ) {
             this.processor = processor;
