@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  */
 public class TypeResourceMatcher implements ResourceMatcher{
 
-    private Logger log = LoggerFactory.getLogger( TypeResourceMatcher.class );
+    private final Logger log = LoggerFactory.getLogger( TypeResourceMatcher.class );
 
     private final Class matchClass;
 

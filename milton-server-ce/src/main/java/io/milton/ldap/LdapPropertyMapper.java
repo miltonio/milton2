@@ -47,7 +47,7 @@ public class LdapPropertyMapper {
 	private final Map<String, String> mapLocalNameDavToLdap = new ConcurrentHashMap<String, String>();
 	private final Map<String, String> mapLocalNameLdapToDav = new ConcurrentHashMap< String, String>();
 	
-	private String ldapNameSpace = "ldap";
+	private final String ldapNameSpace = "ldap";
 
 	public LdapPropertyMapper(PropFindPropertyBuilder propertyBuilder) {
 		this.propertyBuilder = propertyBuilder;

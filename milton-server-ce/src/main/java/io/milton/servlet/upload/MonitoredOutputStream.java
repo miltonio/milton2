@@ -28,13 +28,13 @@
 */
 package io.milton.servlet.upload;
 
-import java.io.OutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 public class MonitoredOutputStream extends OutputStream
 {
-    private OutputStream target;
-    private OutputStreamListener listener;
+    private final OutputStream target;
+    private final OutputStreamListener listener;
 
     public MonitoredOutputStream(OutputStream target, OutputStreamListener listener)
     {

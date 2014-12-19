@@ -19,9 +19,7 @@
 
 package io.milton.http;
 
-import io.milton.http.Request;
 import io.milton.resource.Resource;
-import io.milton.http.Response;
 
 /**
  * Represents a method of authenticating users using remote sites. This is generally

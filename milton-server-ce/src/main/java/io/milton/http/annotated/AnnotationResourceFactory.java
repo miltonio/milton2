@@ -228,7 +228,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 
 		Resource r;
 		url = stripContext(url);
-		if (url.equals("/") || url.equals("")) {
+		if (url.equals("/") || url.isEmpty()) {
 			r = hostRoot;
 		} else {
 			Path path = Path.path(url);
@@ -364,7 +364,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	 */
 	public String getValidContextPath() {
 		String s = getContextPath();
-		if (s == null || s.equals("")) {
+		if (s == null || s.isEmpty()) {
 			return "/";
 		}
 		if (!s.endsWith("/")) {

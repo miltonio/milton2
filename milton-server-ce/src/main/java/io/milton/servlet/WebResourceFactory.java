@@ -47,7 +47,7 @@ public class WebResourceFactory implements ResourceFactory, Initable {
 
 	private Config config;
 	private String basePath = "WEB-INF/static";
-	private Date modDate = new Date();
+	private final Date modDate = new Date();
 
 	public WebResourceFactory() {
 	}
@@ -117,7 +117,7 @@ public class WebResourceFactory implements ResourceFactory, Initable {
 
 	private String stripContext(String url) {
 		String contextName = config.getServletContext().getServletContextName();
-		if (contextName == null || contextName.equals("") || config.getServletContext().getServletContextName().equals("/")) {
+		if (contextName == null || contextName.isEmpty() || config.getServletContext().getServletContextName().equals("/")) {
 			return url;
 		}
 		String contextPath = "/" + contextName;

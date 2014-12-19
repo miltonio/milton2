@@ -23,13 +23,12 @@ import io.milton.http.HrefStatus;
 import io.milton.http.Response;
 import io.milton.http.XmlWriter;
 import io.milton.http.webdav.WebDavProtocol;
-
 import java.io.OutputStream;
 import java.util.List;
 
 public class MultiStatusEntity implements Response.Entity {
 
-    private List<HrefStatus> statii;
+	private final List<HrefStatus> statii;
 
     public MultiStatusEntity(List<HrefStatus> statii) {
         this.statii = statii;

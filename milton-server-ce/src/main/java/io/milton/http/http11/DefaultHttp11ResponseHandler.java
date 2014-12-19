@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Bufferable {
 	private static final Logger log = LoggerFactory.getLogger(DefaultHttp11ResponseHandler.class);
-	private static String miltonVerson;
+	private static final String miltonVerson;
 
 	static {
 		Properties props = new Properties();

@@ -54,9 +54,9 @@ public class CookieAuthenticationHandlerTest extends TestCase {
 //		System.out.println("decoded2=" + decoded);
 //	}
 	
-	private List<String> keys = Arrays.asList("abc");
+	private final List<String> keys = Arrays.asList("abc");
 	
-	private SimpleMemoryNonceProvider nonceProvider = new SimpleMemoryNonceProvider(100);
+	private final SimpleMemoryNonceProvider nonceProvider = new SimpleMemoryNonceProvider(100);
 	
 	private static final String nonce = "cbc86104-aaf4-455d-8937-b095a21481cf";
 

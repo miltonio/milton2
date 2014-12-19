@@ -69,7 +69,7 @@ safeAddRR(Record r) {
 /** Adds a Record to an RRset */
 public synchronized void
 addRR(Record r) {
-	if (rrs.size() == 0) {
+	if (rrs.isEmpty()) {
 		safeAddRR(r);
 		return;
 	}
@@ -218,14 +218,14 @@ getTTL() {
  */
 public synchronized Record
 first() {
-	if (rrs.size() == 0)
+	if (rrs.isEmpty())
 		throw new IllegalStateException("rrset is empty");
 	return (Record) rrs.get(0);
 }
 
 private String
 iteratorToString(Iterator it) {
-	StringBuffer sb = new StringBuffer();
+	StringBuilder sb = new StringBuilder();
 	while (it.hasNext()) {
 		Record rr = (Record) it.next();
 		sb.append("[");
@@ -242,12 +242,12 @@ public String
 toString() {
 	if (rrs == null)
 		return ("{empty}");
-	StringBuffer sb = new StringBuffer();
+	StringBuilder sb = new StringBuilder();
 	sb.append("{ ");
-	sb.append(getName() + " ");
-	sb.append(getTTL() + " ");
-	sb.append(DClass.string(getDClass()) + " ");
-	sb.append(Type.string(getType()) + " ");
+	sb.append(getName()).append(" ");
+	sb.append(getTTL()).append(" ");
+	sb.append(DClass.string(getDClass())).append(" ");
+	sb.append(Type.string(getType())).append(" ");
 	sb.append(iteratorToString(iterator(true, false)));
 	if (nsigs > 0) {
 		sb.append(" sigs: ");

@@ -84,7 +84,7 @@ public class ChildOfAnnotationHandler extends AbstractAnnotationHandler {
 
 	private boolean matchesSuffix(ControllerMethod cm, String childName) {
 		ChildOf a = (ChildOf) cm.anno;
-		if( !a.pathSuffix().equals("") ) {
+		if (!a.pathSuffix().isEmpty()) {
 			return childName.endsWith(a.pathSuffix());
 		} else {
 			return true;

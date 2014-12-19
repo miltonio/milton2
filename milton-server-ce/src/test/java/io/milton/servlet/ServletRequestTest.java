@@ -19,7 +19,6 @@
 
 package io.milton.servlet;
 
-import io.milton.servlet.ServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 import junit.framework.TestCase;

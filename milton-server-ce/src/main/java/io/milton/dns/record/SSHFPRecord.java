@@ -6,7 +6,6 @@ import io.milton.dns.Name;
 import io.milton.dns.utils.base16;
 
 import java.io.*;
-import io.milton.dns.utils.*;
 
 /**
  * SSH Fingerprint - stores the fingerprint of an SSH host key.
@@ -74,7 +73,7 @@ rdataFromString(Tokenizer st, Name origin) throws IOException {
 
 String
 rrToString() {
-	StringBuffer sb = new StringBuffer();
+	StringBuilder sb = new StringBuilder();
 	sb.append(alg);
 	sb.append(" ");
 	sb.append(digestType);

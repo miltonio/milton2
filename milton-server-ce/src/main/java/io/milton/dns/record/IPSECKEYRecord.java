@@ -9,7 +9,6 @@ import io.milton.dns.utils.base64;
 
 import java.io.*;
 import java.net.*;
-import io.milton.dns.utils.*;
 
 /**
  * IPsec Keying Material (RFC 4025)
@@ -154,7 +153,7 @@ rdataFromString(Tokenizer st, Name origin) throws IOException {
 
 String
 rrToString() {
-	StringBuffer sb = new StringBuffer();
+	StringBuilder sb = new StringBuilder();
 	sb.append(precedence);
 	sb.append(" ");
 	sb.append(gatewayType);

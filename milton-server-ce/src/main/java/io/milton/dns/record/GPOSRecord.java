@@ -114,7 +114,7 @@ rdataFromString(Tokenizer st, Name origin) throws IOException {
 /** Convert to a String */
 String
 rrToString() {
-	StringBuffer sb = new StringBuffer();
+	StringBuilder sb = new StringBuilder();
 	sb.append(byteArrayToString(longitude, true));
 	sb.append(" ");
 	sb.append(byteArrayToString(latitude, true));

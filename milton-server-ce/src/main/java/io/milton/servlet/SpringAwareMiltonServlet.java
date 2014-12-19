@@ -82,7 +82,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  */
 public class SpringAwareMiltonServlet implements Servlet{
     
-    private Logger log = LoggerFactory.getLogger(SpringAwareMiltonServlet.class);
+    private final Logger log = LoggerFactory.getLogger(SpringAwareMiltonServlet.class);
     
     ServletConfig config;
     ApplicationContext context;

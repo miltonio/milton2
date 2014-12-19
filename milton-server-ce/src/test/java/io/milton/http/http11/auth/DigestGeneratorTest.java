@@ -18,7 +18,6 @@
  */
 package io.milton.http.http11.auth;
 
-import io.milton.http.http11.auth.DigestGenerator;
 import io.milton.http.Request.Method;
 import junit.framework.TestCase;
 

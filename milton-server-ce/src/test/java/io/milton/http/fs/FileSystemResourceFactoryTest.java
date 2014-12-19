@@ -19,7 +19,6 @@
 
 package io.milton.http.fs;
 
-import io.milton.http.fs.FileSystemResourceFactory;
 import io.milton.http.SecurityManager;
 import java.io.File;
 import junit.framework.TestCase;

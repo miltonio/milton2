@@ -165,7 +165,7 @@ public class NullSafeDateTimeConverter extends AbstractConverter {
         } else if (value instanceof Calendar) {
             date = ((Calendar) value).getTime();
         } else if (value instanceof Long) {
-            date = new Date(((Long) value).longValue());
+            date = new Date(((Long) value));
         }
 
         String result;
@@ -251,7 +251,7 @@ public class NullSafeDateTimeConverter extends AbstractConverter {
         // Handle Long
         if (value instanceof Long) {
             Long longObj = (Long) value;
-            return toDate(targetType, longObj.longValue());
+            return toDate(targetType, longObj);
         }
 
         // Convert all other types to String & handle

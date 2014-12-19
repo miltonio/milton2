@@ -192,7 +192,7 @@ findSunJVM() {
 		return false;
 	}
 
-	if (lserver_tmp.size() == 0)
+	if (lserver_tmp.isEmpty())
 		return false;
 
 	if (lserver_tmp.size() > 0) {
@@ -373,7 +373,7 @@ private void
 findWin(InputStream in) {
 	String property = "org.xbill.DNS.windows.parse.buffer";
 	final int defaultBufSize = 8 * 1024;
-	int bufSize = Integer.getInteger(property, defaultBufSize).intValue();
+	int bufSize = Integer.getInteger(property, defaultBufSize);
 	BufferedInputStream b = new BufferedInputStream(in, bufSize);
 	b.mark(bufSize);
 	findWin(b, null);

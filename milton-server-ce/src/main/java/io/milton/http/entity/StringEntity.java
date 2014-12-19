@@ -20,12 +20,11 @@
 package io.milton.http.entity;
 
 import io.milton.http.Response;
-
 import java.io.OutputStream;
 
 public class StringEntity implements Response.Entity{
 
-    private String string;
+	private final String string;
 
     public StringEntity(String string) {
         this.string = string;

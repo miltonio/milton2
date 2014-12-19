@@ -40,7 +40,7 @@ import io.milton.http.exceptions.NotAuthorizedException;
 
 public class DeleteHandler implements ExistingEntityHandler {
 
-	private Logger log = LoggerFactory.getLogger(DeleteHandler.class);
+	private final Logger log = LoggerFactory.getLogger(DeleteHandler.class);
 	private final Http11ResponseHandler responseHandler;
 	private final ResourceHandlerHelper resourceHandlerHelper;
 	private DeleteHelper deleteHelper;

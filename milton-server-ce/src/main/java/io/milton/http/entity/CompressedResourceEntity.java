@@ -32,10 +32,10 @@ public class CompressedResourceEntity implements Response.Entity {
 
     private static final Logger log = LoggerFactory.getLogger(CompressedResourceEntity.class);
 
-    private CompressedResource resource;
-    private Map<String, String> params;
-    private String contentType;
-    private String contentEncoding;
+	private final CompressedResource resource;
+	private final Map<String, String> params;
+	private final String contentType;
+	private final String contentEncoding;
 
     public CompressedResourceEntity(CompressedResource resource, Map<String, String> params, String contentType, String contentEncoding) {
         this.resource = resource;

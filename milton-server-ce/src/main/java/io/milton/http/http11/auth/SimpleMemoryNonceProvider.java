@@ -46,7 +46,7 @@ public class SimpleMemoryNonceProvider implements NonceProvider {
 
 	private static final Logger log = LoggerFactory.getLogger(SimpleMemoryNonceProvider.class);
 	private final int nonceValiditySeconds;
-	private Map<UUID, Nonce> nonces;
+	private final Map<UUID, Nonce> nonces;
 	private final ExpiredNonceRemover remover;
 	private boolean enableNonceCountChecking;
 

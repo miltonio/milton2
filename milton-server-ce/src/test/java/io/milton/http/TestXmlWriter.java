@@ -19,9 +19,8 @@
 
 package io.milton.http;
 
-import io.milton.http.XmlWriter;
-import org.apache.commons.io.output.ByteArrayOutputStream;
 import junit.framework.TestCase;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 
 public class TestXmlWriter extends TestCase {
     public TestXmlWriter() {

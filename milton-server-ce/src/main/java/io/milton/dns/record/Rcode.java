@@ -11,11 +11,9 @@ package io.milton.dns.record;
 
 public final class Rcode {
 
-private static Mnemonic rcodes = new Mnemonic("DNS Rcode",
-					      Mnemonic.CASE_UPPER);
+private static final Mnemonic rcodes = new Mnemonic("DNS Rcode", Mnemonic.CASE_UPPER);
 
-private static Mnemonic tsigrcodes = new Mnemonic("TSIG rcode",
-						  Mnemonic.CASE_UPPER);
+private static final Mnemonic tsigrcodes = new Mnemonic("TSIG rcode", Mnemonic.CASE_UPPER);
 
 /** No error */
 public static final int NOERROR		= 0;

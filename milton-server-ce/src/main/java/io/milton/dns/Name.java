@@ -225,7 +225,7 @@ public class Name implements Comparable, Serializable {
      * @throws TextParseException The name is invalid.
      */
     public Name(String s, Name origin) throws TextParseException {
-        if (s.equals("")) {
+		if (s.isEmpty()) {
             throw parseException(s, "empty name");
         } else if (s.equals("@")) {
             if (origin == null) {
@@ -605,7 +605,7 @@ public class Name implements Comparable, Serializable {
     }
 
     private String byteString(byte[] array, int pos) {
-        StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
         int len = array[pos++];
         for (int i = pos; i < pos + len; i++) {
             int b = array[i] & 0xFF;
@@ -635,7 +635,7 @@ public class Name implements Comparable, Serializable {
         } else if (labels == 1 && name[offset(0)] == 0) {
             return ".";
         }
-        StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
         for (int i = 0, pos = offset(0); i < labels; i++) {
             int len = name[pos];
             if (len > MAXLABEL) {

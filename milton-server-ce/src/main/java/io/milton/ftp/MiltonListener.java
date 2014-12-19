@@ -77,7 +77,7 @@ public class MiltonListener extends AbstractListener{
 
     boolean suspended = false;
 
-    private ExecutorService filterExecutor = new OrderedThreadPoolExecutor();
+    private final ExecutorService filterExecutor = new OrderedThreadPoolExecutor();
 
     private final FtpHandler handler;
 

@@ -23,7 +23,7 @@ import io.milton.http.Request.Method;
 import io.milton.resource.AccessControlledResource;
 import io.milton.resource.AccessControlledResource.Priviledge;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import org.slf4j.Logger;
@@ -64,7 +64,7 @@ public class AccessControlListAnnotationHandler extends AbstractAnnotationHandle
 			}
 			p = p.getParent();
 		}
-		privs = new HashSet<Priviledge>();
+		privs = EnumSet.allOf(Priviledge.class);
 		if (curUser != null) {
 			log.info("No explicit AccessControl annotation found, so defaulting to full access for logged in user");
 			privs.add(Priviledge.ALL);
@@ -73,7 +73,7 @@ public class AccessControlListAnnotationHandler extends AbstractAnnotationHandle
 	}
 
 	public Set<AccessControlledResource.Priviledge> directPrivs(Object curUser, AnnoResource res, Auth auth) {
-		Set<AccessControlledResource.Priviledge> acl = new HashSet<Priviledge>();
+		Set<AccessControlledResource.Priviledge> acl = EnumSet.allOf(Priviledge.class);;
 		Object source = res.getSource();
 		List<ControllerMethod> availMethods = getMethods(source.getClass());
 		if (availMethods.isEmpty()) {

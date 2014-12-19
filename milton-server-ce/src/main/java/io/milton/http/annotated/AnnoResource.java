@@ -146,7 +146,7 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 				log.trace("authenticate(Basic): user=" + user + " found object: " + userRes.getSource());
 			}
 			Boolean b = annoFactory.authenticateAnnotationHandler.authenticate(userRes, password);
-			if (b != null && b.booleanValue()) {
+			if (b != null && b) {
 				if (log.isTraceEnabled()) {
 					log.trace("annotated authenticate method verified credentials");
 				}
@@ -178,7 +178,7 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 		AnnoPrincipalResource userRes = annoFactory.usersAnnotationHandler.findUser(getRoot(), digestRequest.getUser());
 		if (userRes != null) {
 			Boolean b = annoFactory.authenticateAnnotationHandler.authenticate(userRes, digestRequest);
-			if (b != null && b.booleanValue()) {
+			if (b != null && b) {
 				if (log.isDebugEnabled()) {
 					log.debug("authenticate(Digest): user=" + digestRequest.getUser() + " found valid user: " + userRes.getSource());
 				}

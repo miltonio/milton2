@@ -162,7 +162,7 @@ public class MoveHandler implements ExistingEntityHandler {
 
 	private boolean canOverwrite(Request request) {
 		Boolean ow = request.getOverwriteHeader();
-		boolean bHasOverwriteHeader = (ow != null && request.getOverwriteHeader().booleanValue());
+		boolean bHasOverwriteHeader = (ow != null && request.getOverwriteHeader());
 		if (bHasOverwriteHeader) {
 			return true;
 		} else {			

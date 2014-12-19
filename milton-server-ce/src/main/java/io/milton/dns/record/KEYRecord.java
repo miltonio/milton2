@@ -3,8 +3,6 @@
 package io.milton.dns.record;
 
 import io.milton.dns.Name;
-import io.milton.dns.record.DNSSEC.Algorithm;
-import io.milton.dns.record.DNSSEC.DNSSECException;
 
 import java.io.*;
 import java.security.PublicKey;
@@ -47,8 +45,7 @@ public static class Protocol {
 	/** Any protocol */
 	public static final int ANY = 255;
 
-	private static Mnemonic protocols = new Mnemonic("KEY protocol",
-							 Mnemonic.CASE_UPPER);
+	private static final Mnemonic protocols = new Mnemonic("KEY protocol", Mnemonic.CASE_UPPER);
 
 	static {
 		protocols.setMaximum(0xFF);
@@ -188,8 +185,7 @@ public static class Flags {
 	/** Signatory value 15 */
 	public static final int SIG15 = 15;
 
-	private static Mnemonic flags = new Mnemonic("KEY flags",
-						      Mnemonic.CASE_UPPER);
+	private static final Mnemonic flags = new Mnemonic("KEY flags", Mnemonic.CASE_UPPER);
 
 	static {
 		flags.setMaximum(0xFFFF);

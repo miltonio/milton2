@@ -23,8 +23,7 @@ public static class Code {
 	/** Client Subnet, defined in draft-vandergaast-edns-client-subnet-00 */
 	public final static int CLIENT_SUBNET = 20730;
 
-	private static Mnemonic codes = new Mnemonic("EDNS Option Codes",
-						     Mnemonic.CASE_UPPER);
+	private static final Mnemonic codes = new Mnemonic("EDNS Option Codes",	Mnemonic.CASE_UPPER);
 
 	static {
 		codes.setMaximum(0xFFFF);
@@ -68,7 +67,7 @@ EDNSOption(int code) {
 
 public String 
 toString() {
-	StringBuffer sb = new StringBuffer();
+	StringBuilder sb = new StringBuilder();
 
 	sb.append("{");
 	sb.append(EDNSOption.Code.string(code));

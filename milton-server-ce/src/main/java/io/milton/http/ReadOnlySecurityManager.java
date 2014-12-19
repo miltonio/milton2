@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ReadOnlySecurityManager implements SecurityManager{
 
-    private Logger log = LoggerFactory.getLogger( ReadOnlySecurityManager.class );
+	private final Logger log = LoggerFactory.getLogger(ReadOnlySecurityManager.class);
 
     private final String realm;
 

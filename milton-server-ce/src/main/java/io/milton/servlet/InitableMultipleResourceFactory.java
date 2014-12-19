@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  */
 public class InitableMultipleResourceFactory extends MultipleResourceFactory {
 
-	private Logger log = LoggerFactory.getLogger(InitableMultipleResourceFactory.class);
+	private final Logger log = LoggerFactory.getLogger(InitableMultipleResourceFactory.class);
 
 	public InitableMultipleResourceFactory() {
 		super();

@@ -20,7 +20,6 @@
 
 package io.milton.http;
 
-import io.milton.http.AbstractRequest;
 import junit.framework.TestCase;
 
 /**

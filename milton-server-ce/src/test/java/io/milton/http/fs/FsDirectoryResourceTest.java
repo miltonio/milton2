@@ -23,7 +23,6 @@
  */
 package io.milton.http.fs;
 
-import io.milton.http.fs.FsDirectoryResource;
 import junit.framework.TestCase;
 
 /**

@@ -19,36 +19,33 @@
 
 package io.milton.http.webdav;
 
-import io.milton.http.ExistingEntityHandler;
-import io.milton.resource.Resource;
-import io.milton.http.ResourceHandlerHelper;
-import io.milton.http.HttpManager;
+import io.milton.common.ReadingException;
+import io.milton.common.WritingException;
+import io.milton.event.PropPatchEvent;
 import io.milton.http.AuthenticationService.AuthStatus;
+import io.milton.http.ExistingEntityHandler;
+import io.milton.http.HttpManager;
+import io.milton.http.Request;
+import io.milton.http.Request.Method;
+import io.milton.http.ResourceHandlerHelper;
+import io.milton.http.Response;
+import io.milton.http.Response.Status;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
-import io.milton.http.webdav.PropPatchParseResult;
+import io.milton.property.PropertyAuthoriser;
+import io.milton.property.PropertyHandler;
+import io.milton.resource.Resource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import io.milton.http.Request.Method;
-import io.milton.http.Response.Status;
-import io.milton.common.ReadingException;
-import io.milton.common.WritingException;
-import io.milton.property.PropertyHandler;
-import io.milton.property.PropertyAuthoriser;
-import io.milton.event.PropPatchEvent;
-import io.milton.http.Request;
-import io.milton.http.Response;
-import java.util.HashSet;
 import java.util.Set;
 import javax.xml.namespace.QName;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Example request (from ms office)

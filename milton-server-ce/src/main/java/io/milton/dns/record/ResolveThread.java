@@ -12,10 +12,10 @@ package io.milton.dns.record;
 
 class ResolveThread extends Thread {
 
-private Message query;
-private Object id;
-private ResolverListener listener;
-private Resolver res;
+private final Message query;
+private final Object id;
+private final ResolverListener listener;
+private final Resolver res;
 
 /** Creates a new ResolveThread */
 public

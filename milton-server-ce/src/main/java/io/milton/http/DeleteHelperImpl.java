@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DeleteHelperImpl implements DeleteHelper {
 
-	private Logger log = LoggerFactory.getLogger(DeleteHelperImpl.class);
+	private final Logger log = LoggerFactory.getLogger(DeleteHelperImpl.class);
 	private final HandlerHelper handlerHelper;
 
 	public DeleteHelperImpl(HandlerHelper handlerHelper) {
