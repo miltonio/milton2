@@ -186,7 +186,7 @@ public class SortStringType extends Type implements SortStringFeature {
 		SortStringType cloned = new SortStringType();
 		
 		if(sortString != null) {
-			cloned.setSortString(new String(sortString));
+			cloned.setSortString(sortString);
 		}
 		
 		cloned.setParameterTypeStyle(getParameterTypeStyle());

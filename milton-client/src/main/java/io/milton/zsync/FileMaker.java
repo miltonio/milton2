@@ -75,9 +75,9 @@ import org.slf4j.LoggerFactory;
 public class FileMaker {
 
     private static final Logger log = LoggerFactory.getLogger(FileMaker.class);
-    private MapMatcher mapMatcher = new MapMatcher();
-    private FileUpdater fileUpdater = new FileUpdater();
-    private FileDownloader fileDownloader = new FileDownloader();
+    private final MapMatcher mapMatcher = new MapMatcher();
+    private final FileUpdater fileUpdater = new FileUpdater();
+    private final FileDownloader fileDownloader = new FileDownloader();
 
     public FileMaker() {
     }

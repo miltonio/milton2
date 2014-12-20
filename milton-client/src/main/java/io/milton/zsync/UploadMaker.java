@@ -81,7 +81,7 @@ public class UploadMaker {
     public final File serversMetafile;
     private MetaFileReader metaFileReader;
     private MakeContext makeContext;
-    private Upload upload;
+    private final Upload upload;
 
     /**
      * Constructor that automatically creates and fills in an internal upload

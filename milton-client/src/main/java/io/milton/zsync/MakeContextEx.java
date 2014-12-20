@@ -40,10 +40,10 @@ import java.util.List;
 public class MakeContextEx extends MakeContext {
 	
 	/* An array storing a List of matches for each remote block */
-	private List<OffsetPair>[] matchMap;
+	private final List<OffsetPair>[] matchMap;
 	/* The minimum local offset of the next match */
 	private long nextOffset;
-	private int blocksize;
+	private final int blocksize;
 	
 	/**
 	 * Constructs a MakeContextEx from an already-initialized ChainingHash.
@@ -73,13 +73,11 @@ public class MakeContextEx extends MakeContext {
 		 */
 		List<OffsetPair> reverseMap = new LinkedList<OffsetPair>();
 		
-		for ( int blockIndex = 0; blockIndex < matchMap.length; blockIndex++ ) {
-			
-			if ( matchMap[blockIndex] != null ) {
-				
-				reverseMap.addAll( matchMap[blockIndex] );
-			}
-		}
+        for (List<OffsetPair> item : matchMap) {
+            if (item != null) {
+                reverseMap.addAll(item);
+            }
+        }
 		return reverseMap;
 	}
 	

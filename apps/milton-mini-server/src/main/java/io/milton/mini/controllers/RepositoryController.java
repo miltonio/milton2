@@ -16,9 +16,7 @@ import io.milton.vfs.db.Repository;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.inject.Inject;
 
 /**
@@ -28,7 +26,7 @@ import javax.inject.Inject;
 @ResourceController
 public class RepositoryController {
 
-    private static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(RepositoryController.class);
+    private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(RepositoryController.class);
 
     @Inject
     private DataSessionManager dataSessionManager;

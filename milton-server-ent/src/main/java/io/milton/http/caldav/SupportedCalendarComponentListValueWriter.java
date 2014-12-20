@@ -5,10 +5,8 @@ package io.milton.http.caldav;
 
 import io.milton.http.XmlWriter;
 import io.milton.http.XmlWriter.Element;
-import io.milton.http.values.HrefList;
 import io.milton.http.values.SupportedCalendarComponentList;
 import io.milton.http.values.ValueWriter;
-import io.milton.http.webdav.WebDavProtocol;
 import io.milton.resource.CalendarResource.ComponentType;
 import java.util.Map;
 

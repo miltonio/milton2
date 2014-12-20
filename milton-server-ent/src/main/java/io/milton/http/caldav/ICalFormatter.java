@@ -247,8 +247,8 @@ public class ICalFormatter {
         private Date finish;
         private String organiserMailto;
         private List<String> attendeeMailtos;
-        private Map<String, String> attendeeLines = new HashMap<String, String>();
-        private Map<String, String> lines = new HashMap<String, String>();
+        private final Map<String, String> attendeeLines = new HashMap<String, String>();
+        private final Map<String, String> lines = new HashMap<String, String>();
 
         public Date getStart() {
             return start;

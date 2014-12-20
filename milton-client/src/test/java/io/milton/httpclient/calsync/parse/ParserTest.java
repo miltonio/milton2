@@ -18,9 +18,7 @@
  */
 package io.milton.httpclient.calsync.parse;
 
-import io.milton.httpclient.calsync.parse.CalDavBeanPropertyMapper;
 import io.milton.httpclient.parse.PropertyAccessor;
-import java.text.ParseException;
 import junit.framework.TestCase;
 import net.fortuna.ical4j.model.*;
 

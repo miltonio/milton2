@@ -15,8 +15,6 @@
 package org.base64coder;
 
 import java.io.UnsupportedEncodingException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * A Base64 encoder/decoder.
@@ -34,7 +32,7 @@ public class Base64Coder {
 // The line separator string of the operating system.
     private static final String systemLineSeparator = System.getProperty("line.separator");
 // Mapping table from 6-bit nibbles to Base64 characters.
-    private static char[] map1 = new char[64];
+    private static final char[] map1 = new char[64];
 
     static {
         int i = 0;
@@ -51,7 +49,7 @@ public class Base64Coder {
         map1[i++] = '/';
     }
 // Mapping table from Base64 characters to 6-bit nibbles.
-    private static byte[] map2 = new byte[128];
+    private static final byte[] map2 = new byte[128];
 
     static {
         for (int i = 0; i < map2.length; i++) {

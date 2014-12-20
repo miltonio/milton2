@@ -67,7 +67,7 @@ public class FileUpdater {
     /**
      * Maximum ranges to download in the range header
      */
-    private int maxRanges = 100;
+    private final int maxRanges = 100;
 
     /**
      * Method for completing file

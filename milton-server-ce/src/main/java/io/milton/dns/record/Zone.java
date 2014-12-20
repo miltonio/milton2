@@ -27,7 +27,7 @@ public static final int SECONDARY = 2;
 private Map data;
 private Name origin;
 private Object originNode;
-private int dclass = DClass.IN;
+private final int dclass = DClass.IN;
 private RRset NS;
 private SOARecord SOA;
 private boolean hasWild;

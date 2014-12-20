@@ -16,7 +16,6 @@
  */
 package io.milton.httpclient;
 
-import io.milton.common.Path;
 import junit.framework.TestCase;
 
 /**

@@ -9,7 +9,6 @@ import io.milton.http.ResourceFactory;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.report.QualifiedReport;
-import io.milton.http.report.Report;
 import io.milton.http.report.ReportUtils;
 import io.milton.http.webdav.PropFindPropertyBuilder;
 import io.milton.http.webdav.PropFindResponse;

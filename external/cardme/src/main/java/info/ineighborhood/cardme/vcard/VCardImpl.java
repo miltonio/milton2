@@ -1808,10 +1808,10 @@ public class VCardImpl implements VCard, VCardErrorHandling, Persistable, Serial
 		}
 		
 		if(!photos.isEmpty()) {
-			for(int i = 0; i < photos.size(); i++) {
-				sb.append(photos.get(i).toString());
-				sb.append(",");
-			}
+            for (PhotoFeature photo : photos) {
+                sb.append(photo.toString());
+                sb.append(",");
+            }
 		}
 		
 		if(birthday != null) {
@@ -1820,10 +1820,10 @@ public class VCardImpl implements VCard, VCardErrorHandling, Persistable, Serial
 		}
 		
 		if(!addresses.isEmpty()) {
-			for(int i = 0; i < addresses.size(); i++) {
-				sb.append(addresses.toString());
-				sb.append(",");
-			}
+            for (AddressFeature address : addresses) {
+                sb.append(address.toString()); // DW
+                sb.append(",");
+            }
 		}
 		
 		if(!addressLabelMap.isEmpty()) {
@@ -1835,17 +1835,17 @@ public class VCardImpl implements VCard, VCardErrorHandling, Persistable, Serial
 		}
 		
 		if(!telephoneNumbers.isEmpty()) {
-			for(int i = 0; i < telephoneNumbers.size(); i++) {
-				sb.append(telephoneNumbers.get(i).toString());
-				sb.append(",");
-			}
+            for (TelephoneFeature telephoneNumber : telephoneNumbers) {
+                sb.append(telephoneNumber.toString());
+                sb.append(",");
+            }
 		}
 		
 		if(!emailAddresses.isEmpty()) {
-			for(int i = 0; i < emailAddresses.size(); i++) {
-				sb.append(emailAddresses.get(i).toString());
-				sb.append(",");
-			}
+            for (EmailFeature emailAddresse : emailAddresses) {
+                sb.append(emailAddresse.toString());
+                sb.append(",");
+            }
 		}
 		
 		if(mailer != null) {
@@ -1874,17 +1874,17 @@ public class VCardImpl implements VCard, VCardErrorHandling, Persistable, Serial
 		}
 		
 		if(!logos.isEmpty()) {
-			for(int i = 0; i < logos.size(); i++) {
-				sb.append(logos.get(i).toString());
-				sb.append(",");
-			}
+            for (LogoFeature logo : logos) {
+                sb.append(logo.toString());
+                sb.append(",");
+            }
 		}
 		
 		if(!agents.isEmpty()) {
-			for(int i = 0; i < agents.size(); i++) {
-				sb.append(agents.get(i).toString());
-				sb.append(",");
-			}
+            for (AgentFeature agent : agents) {
+                sb.append(agent.toString());
+                sb.append(",");
+            }
 		}
 		
 		if(organizations != null) {
@@ -1898,10 +1898,10 @@ public class VCardImpl implements VCard, VCardErrorHandling, Persistable, Serial
 		}
 		
 		if(!notes.isEmpty()) {
-			for(int i = 0; i < notes.size(); i++) {
-				sb.append(notes.get(i).toString());
-				sb.append(",");
-			}
+            for (NoteFeature note : notes) {
+                sb.append(note.toString());
+                sb.append(",");
+            }
 		}
 		
 		if(productId != null) {
@@ -1920,9 +1920,9 @@ public class VCardImpl implements VCard, VCardErrorHandling, Persistable, Serial
 		}
 		
 		if(!sounds.isEmpty()) {
-			for(int i = 0; i < sounds.size(); i++) {
-				sb.append(sounds.get(i).toString());
-			}
+            for (SoundFeature sound : sounds) {
+                sb.append(sound.toString());
+            }
 		}
 		
 		if(uid != null) {
@@ -1931,10 +1931,10 @@ public class VCardImpl implements VCard, VCardErrorHandling, Persistable, Serial
 		}
 		
 		if(!urls.isEmpty()) {
-			for(int i = 0; i < urls.size(); i++) {
-				sb.append(urls.get(i).toString());
-				sb.append(",");
-			}
+            for (URLFeature url : urls) {
+                sb.append(url.toString());
+                sb.append(",");
+            }
 		}
 		
 		if(version != null) {
@@ -1948,27 +1948,27 @@ public class VCardImpl implements VCard, VCardErrorHandling, Persistable, Serial
 		}
 		
 		if(!keys.isEmpty()) {
-			for(int i = 0; i < keys.size(); i++) {
-				sb.append(keys.get(i).toString());
-				sb.append(",");
-			}
+            for (KeyFeature key : keys) {
+                sb.append(key.toString());
+                sb.append(",");
+            }
 		}
 		
 		if(!extendedTypes.isEmpty()) {
-			for(int i = 0; i < extendedTypes.size(); i++) {
-				sb.append(extendedTypes.get(i).toString());
-				sb.append(",");
-			}
+            for (ExtendedFeature extendedType : extendedTypes) {
+                sb.append(extendedType.toString());
+                sb.append(",");
+            }
 		}
 		
 		sb.append(problemSeverity.toString());
 		sb.append(",");
 		
 		if(!errors.isEmpty()) {
-			for(int i = 0; i < errors.size(); i++) {
-				sb.append(errors.get(i).toString());
-				sb.append(",");
-			}
+            for (VCardError error : errors) {
+                sb.append(error.toString());
+                sb.append(",");
+            }
 		}
 		
 		sb.deleteCharAt(sb.length()-1);	//Remove last comma.
@@ -2166,14 +2166,13 @@ public class VCardImpl implements VCard, VCardErrorHandling, Persistable, Serial
 		cloned.setThrowExceptions(isThrowsExceptions);
 		if(hasErrors()) {
 			List<VCardError> errs = getErrors();
-			for(int i = 0; i < errs.size(); i++) {
-				VCardError err = errs.get(i);
-				cloned.addError(err.clone());
-			}
+            for (VCardError err : errs) {
+                cloned.addError(err.clone());
+            }
 		}
 		
 		if(id != null) {
-			cloned.setID(new String(id));
+			cloned.setID(id);
 		}
 		
 		return cloned;

@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ACLHandler implements Handler{
 
-    private Logger log = LoggerFactory.getLogger(ACLHandler.class);
+    private final Logger log = LoggerFactory.getLogger(ACLHandler.class);
 
     private final WebDavResponseHandler responseHandler;
     private final HandlerHelper handlerHelper;

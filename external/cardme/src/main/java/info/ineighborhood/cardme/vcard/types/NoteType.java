@@ -179,7 +179,7 @@ public class NoteType extends Type implements NoteFeature {
 		NoteType cloned = new NoteType();
 		
 		if(note != null) {
-			cloned.setNote(new String(note));
+			cloned.setNote(note);
 		}
 		
 		cloned.setParameterTypeStyle(getParameterTypeStyle());

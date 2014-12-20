@@ -171,7 +171,7 @@ public class FormattedNameType extends Type implements FormattedNameFeature {
 		FormattedNameType cloned = new FormattedNameType();
 		
 		if(formattedName != null) {
-			cloned.setFormattedName(new String(formattedName));
+			cloned.setFormattedName(formattedName);
 		}
 		
 		cloned.setParameterTypeStyle(getParameterTypeStyle());

@@ -4,7 +4,6 @@
 
 package io.milton.http.webdav2;
 
-import io.milton.http.webdav2.LockTokenValueWriter;
 import io.milton.http.LockInfo;
 import io.milton.http.LockTimeout;
 import io.milton.http.LockToken;

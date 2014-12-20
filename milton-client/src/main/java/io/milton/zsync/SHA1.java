@@ -55,7 +55,7 @@ import java.security.NoSuchAlgorithmException;
  */
 public class SHA1 {
 
-	private File file;
+	private final File file;
 	private FileInputStream fis;
 	private MessageDigest sha1;
 

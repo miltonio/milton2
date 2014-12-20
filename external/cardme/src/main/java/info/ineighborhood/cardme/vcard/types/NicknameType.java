@@ -235,9 +235,9 @@ public class NicknameType extends Type implements NicknameFeature {
 		NicknameType cloned = new NicknameType();
 		
 		if(!nicknames.isEmpty()) {
-			for(int i = 0; i < nicknames.size(); i++) {
-				cloned.addNickname(new String(nicknames.get(i)));
-			}
+            for (String nickname : nicknames) {
+                cloned.addNickname(nickname);
+            }
 		}
 		
 		cloned.setParameterTypeStyle(getParameterTypeStyle());

@@ -13,7 +13,6 @@ import io.milton.http.webdav.MkColHandler;
 import io.milton.http.webdav.PropFindResponse;
 import io.milton.http.webdav.PropPatchHandler;
 import io.milton.http.webdav.PropPatchParseResult;
-import io.milton.http.webdav.PropPatchRequestParser;
 import io.milton.http.webdav.PropPatchSetter;
 import io.milton.resource.MakeCalendarResource;
 import io.milton.resource.CollectionResource;

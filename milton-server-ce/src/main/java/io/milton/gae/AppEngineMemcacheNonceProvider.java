@@ -64,13 +64,13 @@ public class AppEngineMemcacheNonceProvider implements NonceProvider {
         Date now = new Date();
         Nonce n = new Nonce( id, now );
         memcache.put( n.getValue(), n, Expiration.byDeltaSeconds(nonceValiditySeconds));
-        log.info( "created nonce: " + n.getValue() );
+        log.info(String.format("created nonce: %s", n.getValue()));
         return n.getValue().toString();
     }
 
     @Override
     public NonceValidity getNonceValidity( String nonce, Long nc ) {
-        log.info( "getNonceValidity: " + nonce );
+        log.info(String.format("getNonceValidity: %s", nonce));
         UUID value = null;
         try {
             value = UUID.fromString( nonce );
@@ -92,7 +92,7 @@ public class AppEngineMemcacheNonceProvider implements NonceProvider {
                     return NonceValidity.OK;
                 } else {
                     if( enableNonceCountChecking && nc <= n.getNonceCount() ) {
-                        log.warning( "nonce-count was not greater then previous, possible replay attack. new: " + nc + " old:" + n.getNonceCount() );
+                        log.warning(String.format("nonce-count was not greater then previous, possible replay attack. new: %s old:%s", nc, n.getNonceCount()));
                         return NonceValidity.INVALID;
                     } else {
                         log.info( "nonce and nonce-count ok" );
