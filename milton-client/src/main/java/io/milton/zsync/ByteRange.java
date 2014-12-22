@@ -30,8 +30,8 @@ import java.io.InputStream;
  */
 public class ByteRange {
 
-	private Range range;
-	private InputStream dataQueue;
+	private final Range range;
+	private final InputStream dataQueue;
 	
 	/**
 	 * Constructs a ByteRange with the specified Range and InputStream. The dataQueue field

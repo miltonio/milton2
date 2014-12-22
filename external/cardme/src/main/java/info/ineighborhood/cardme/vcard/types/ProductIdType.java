@@ -186,7 +186,7 @@ public class ProductIdType extends Type implements ProductIdFeature {
 		ProductIdType cloned = new ProductIdType();
 		
 		if(productId != null) {
-			cloned.setProductId(new String(productId));
+			cloned.setProductId(productId);
 		}
 		
 		cloned.setParameterTypeStyle(getParameterTypeStyle());

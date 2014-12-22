@@ -186,7 +186,7 @@ public class MailerType extends Type implements MailerFeature {
 		MailerType cloned = new MailerType();
 		
 		if(mailer != null) {
-			cloned.setMailer(new String(mailer));
+			cloned.setMailer(mailer);
 		}
 		
 		cloned.setParameterTypeStyle(getParameterTypeStyle());

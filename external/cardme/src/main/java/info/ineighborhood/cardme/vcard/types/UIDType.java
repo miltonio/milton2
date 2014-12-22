@@ -186,7 +186,7 @@ public class UIDType extends Type implements UIDFeature {
 		UIDType cloned = new UIDType();
 		
 		if(uid != null) {
-			cloned.setUID(new String(uid));
+			cloned.setUID(uid);
 		}
 		
 		cloned.setParameterTypeStyle(getParameterTypeStyle());

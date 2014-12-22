@@ -25,8 +25,8 @@ import java.util.Map;
  * @author brad
  */
 public class HttpResult {
-    private int statusCode;
-    private Map<String,String> headers;
+    private final int statusCode;
+    private final Map<String,String> headers;
 
     public HttpResult(int statusCode, Map<String, String> headers) {
         this.statusCode = statusCode;

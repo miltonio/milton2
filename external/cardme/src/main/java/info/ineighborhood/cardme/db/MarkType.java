@@ -103,6 +103,6 @@ public enum MarkType {
 	@Override
 	public String toString()
 	{
-		return new String(type);
+		return type;
 	}
 }

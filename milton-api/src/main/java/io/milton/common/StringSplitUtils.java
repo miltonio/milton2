@@ -88,24 +88,19 @@ public class StringSplitUtils {
 
         Map map = new HashMap();
 
-        for( int i = 0; i < array.length; i++ ) {
+        for (String element : array) {
             String postRemove;
-
-            if( removeCharacters == null ) {
-                postRemove = array[i];
+            if (removeCharacters == null) {
+                postRemove = element;
             } else {
-                postRemove = replace( array[i], removeCharacters, "" );
+                postRemove = replace(element, removeCharacters, "");
             }
-
-            String[] splitThisArrayElement = split( postRemove,
-                delimiter );
-
+            String[] splitThisArrayElement = split( postRemove, delimiter );
             if( splitThisArrayElement == null ) {
                 continue;
             }
-
             map.put( splitThisArrayElement[0].trim(),
-                splitThisArrayElement[1].trim() );
+                    splitThisArrayElement[1].trim() );
         }
 
         return map;

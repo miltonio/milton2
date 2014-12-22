@@ -76,8 +76,8 @@ public class MetaFileMaker {
 	}
 	/** Default length of strong checksum (MD4) */
 	private final int STRONG_SUM_LENGTH = 16;
-	private HeaderMaker headerMaker = new HeaderMaker();
-	private Generator gen = new Generator();
+	private final HeaderMaker headerMaker = new HeaderMaker();
+	private final Generator gen = new Generator();
 
 	public MetaFileMaker() {
 	}
@@ -261,20 +261,20 @@ public class MetaFileMaker {
 		}
 		//zarucime, ze se soubor rozdeli priblize na 50000 bloku
 		long constant = fileLength / 50000;
-		for (int i = 0; i < array.length; i++) {
-			array[i][0] = (int) Math.abs(array[i][0] - constant);
-		}
+        for (int[] item : array) {
+            item[0] = (int) Math.abs(item[0] - constant);
+        }
 		int min = array[0][0];
-		for (int i = 0; i < array.length; i++) {
-			if (array[i][0] < min) {
-				min = array[i][0];
-			}
-		}
-		for (int i = 0; i < array.length; i++) {
-			if (array[i][0] == min) {
-				blocksize = array[i][1];
-			}
-		}
+        for (int[] item : array) {
+            if (item[0] < min) {
+                min = item[0];
+            }
+        }
+        for (int[] item : array) {
+            if (item[0] == min) {
+                blocksize = item[1];
+            }
+        }
 		return blocksize;
 	}
 

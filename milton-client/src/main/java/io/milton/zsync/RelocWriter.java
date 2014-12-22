@@ -41,7 +41,7 @@ import java.io.UnsupportedEncodingException;
  * @author HP
  */
 public class RelocWriter {
-	private BufferingOutputStream relocOut;
+	private final BufferingOutputStream relocOut;
 	private boolean first;
 
 	public RelocWriter(int buffersize) {

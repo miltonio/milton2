@@ -67,7 +67,7 @@ public class UploadMakerEx {
 
 	private MetaFileReader metaFileReader;
 	private MakeContextEx uploadContext;
-	private Upload upload;
+	private final Upload upload;
 	
 	/**
 	 * Constructor that initializes an Upload object and invokes methods to parse

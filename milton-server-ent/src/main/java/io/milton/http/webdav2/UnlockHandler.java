@@ -23,7 +23,7 @@ import io.milton.webdav.utils.LockUtils;
 
 public class UnlockHandler implements ExistingEntityHandler {
 
-    private Logger log = LoggerFactory.getLogger(UnlockHandler.class);
+    private final Logger log = LoggerFactory.getLogger(UnlockHandler.class);
 
     private final ResourceHandlerHelper resourceHandlerHelper;
 

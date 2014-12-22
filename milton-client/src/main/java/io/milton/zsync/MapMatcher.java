@@ -65,7 +65,7 @@ public class MapMatcher {
 	
 	private static final Logger log = LoggerFactory.getLogger(MapMatcher.class);
 	
-    private Generator gen = new Generator();	
+    private final Generator gen = new Generator();	
 	
     /**
      * Reads file and map it's data into the fileMap.

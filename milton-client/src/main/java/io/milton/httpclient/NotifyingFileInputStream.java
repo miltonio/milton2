@@ -28,12 +28,12 @@ import org.apache.commons.io.IOUtils;
 
 public class NotifyingFileInputStream extends InputStream {
 
-    private InputStream fin;
+    private final InputStream fin;
     private final InputStream wrapped;
     private final ProgressListener listener;
     private final String fileName;
     private long pos;
-    private Long totalLength;
+    private final Long totalLength;
     // the system time we last notified the progress listener
     private long timeLastNotify;
     private long bytesSinceLastNotify;

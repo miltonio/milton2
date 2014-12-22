@@ -241,8 +241,8 @@ public class PropFindResponse {
 //    
     public static class LockDiscovery {
 
-        private String owner;
-        private String token;
+        private final String owner;
+        private final String token;
 
         public LockDiscovery(String owner, String token) {
             this.owner = owner;

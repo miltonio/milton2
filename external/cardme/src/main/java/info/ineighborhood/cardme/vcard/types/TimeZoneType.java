@@ -290,7 +290,7 @@ public class TimeZoneType extends Type implements TimeZoneFeature {
 			cloned.setTimeZone(tz);
 		}
 		else if(textValue != null) {
-			cloned.setTextValue(new String(textValue));
+			cloned.setTextValue(textValue);
 		}
 		else {
 			cloned.setTextValue(null);

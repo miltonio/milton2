@@ -287,9 +287,9 @@ public class UploadReader {
             Util.close(randAccess);
         }
     }
-    private File serverCopy;
-    private File uploadedCopy;
-    private Upload uploadData;
+    private final File serverCopy;
+    private final File uploadedCopy;
+    private final Upload uploadData;
 
     /**
      * Constructor that parses the InputStream into an Upload object and
@@ -430,14 +430,14 @@ public class UploadReader {
     private static class ByteRangeParser implements Enumeration<ByteRange> {
 
         /*The dataStream portion of an Upload*/
-        private InputStream dataQueue;
+        private final InputStream dataQueue;
         /*The Range of the next ByteRange. A null value means that the next Range has not 
          *been loaded or that the end of the data section has been reached.
          */
         private Range nextRange;
         /*Whether an attempt has been made to read the next Range KV pair*/
         private boolean rangeloaded;
-        private byte[] COLON = {":".getBytes(Upload.CHARSET)[0]};
+        private final byte[] COLON = {":".getBytes(Upload.CHARSET)[0]};
 
         /**
          * Constructs the Enumeration from the specified InputStream

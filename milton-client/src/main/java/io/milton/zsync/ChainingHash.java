@@ -53,8 +53,8 @@ import java.util.Arrays;
  * @author Tomáš Hlavnička
  */
 public class ChainingHash {
-    private ArrayList<ArrayList> hashArray;
-    private int arraySize;
+    private final ArrayList<ArrayList> hashArray;
+    private final int arraySize;
     private int index;
 
     /**

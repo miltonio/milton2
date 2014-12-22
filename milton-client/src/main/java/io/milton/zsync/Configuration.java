@@ -51,7 +51,6 @@
 package io.milton.zsync;
 
 import java.io.IOException;
-import java.io.InvalidObjectException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 

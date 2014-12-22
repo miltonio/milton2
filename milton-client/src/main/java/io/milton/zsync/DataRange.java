@@ -43,8 +43,8 @@ public class DataRange {
      * switched from a byte array to a temporary file
      */
     public static final int threshold = 1024 * 1024;
-    private Range range;
-    private BufferingOutputStream data;
+    private final Range range;
+    private final BufferingOutputStream data;
 
     /**
      * Sets the range equal to the specified Range and pulls a number of bytes

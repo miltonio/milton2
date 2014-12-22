@@ -488,43 +488,43 @@ public class AddressType extends Type implements AddressFeature {
 		AddressType cloned = new AddressType();
 		
 		if(postOfficeBox != null) {
-			cloned.setPostOfficeBox(new String(postOfficeBox));
+			cloned.setPostOfficeBox(postOfficeBox);
 		}
 		
 		if(extendedAddress != null) {
-			cloned.setExtendedAddress(new String(extendedAddress));
+			cloned.setExtendedAddress(extendedAddress);
 		}
 		
 		if(streetAddress != null) {
-			cloned.setExtendedAddress(new String(streetAddress));
+			cloned.setExtendedAddress(streetAddress);
 		}
 		
 		if(locality != null) {
-			cloned.setLocality(new String(locality));
+			cloned.setLocality(locality);
 		}
 		
 		if(region != null) {
-			cloned.setRegion(new String(region));
+			cloned.setRegion(region);
 		}
 		
 		if(postalCode != null) {
-			cloned.setPostalCode(new String(postalCode));
+			cloned.setPostalCode(postalCode);
 		}
 		
 		if(countryName != null) {
-			cloned.setCountryName(new String(countryName));
+			cloned.setCountryName(countryName);
 		}
 		
 		if(!addressParameterTypes.isEmpty()) {
-			for(int i = 0; i < addressParameterTypes.size(); i++) {
-				cloned.addAddressParameterType(addressParameterTypes.get(i));
-			}
+            for (AddressParameterType addressParameterType : addressParameterTypes) {
+                cloned.addAddressParameterType(addressParameterType);
+            }
 		}
 		
 		if(!xtendedAddressParameterTypes.isEmpty()) {
-			for(int i = 0; i < xtendedAddressParameterTypes.size(); i++) {
-				cloned.addExtendedAddressParameterType(xtendedAddressParameterTypes.get(i));
-			}
+            for (XAddressParameterType xtendedAddressParameterType : xtendedAddressParameterTypes) {
+                cloned.addExtendedAddressParameterType(xtendedAddressParameterType);
+            }
 		}
 		
 		cloned.setParameterTypeStyle(getParameterTypeStyle());
