@@ -179,7 +179,7 @@ public class SpringMiltonFilter implements javax.servlet.Filter {
 				ctx = annotationCtx;
 			} catch (ClassNotFoundException e) {
 				ctx = null;
-				log.error("Unable to create a child context for Milton. Cause: {}", e.getMessage());
+				log.error("Unable to create a child context for Milton", e);
 			}
 		} else {
 			String[] contextFiles;
@@ -192,7 +192,7 @@ public class SpringMiltonFilter implements javax.servlet.Filter {
 			try {
 				ctx = new ClassPathXmlApplicationContext(contextFiles, parent);
 			} catch (BeansException e) {
-				log.error("Unable to create a child context for Milton. Cause: {}", e.getMessage());
+				log.error("Unable to create a child context for Milton", e);
 			}
 		}
 
