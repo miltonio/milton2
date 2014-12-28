@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MiltonServlet implements Servlet {
 
-    private Logger log = LoggerFactory.getLogger(MiltonServlet.class);
+    private final Logger log = LoggerFactory.getLogger(MiltonServlet.class);
     private static final ThreadLocal<HttpServletRequest> originalRequest = new ThreadLocal<HttpServletRequest>();
     private static final ThreadLocal<HttpServletResponse> originalResponse = new ThreadLocal<HttpServletResponse>();
     private static final ThreadLocal<ServletConfig> tlServletConfig = new ThreadLocal<ServletConfig>();

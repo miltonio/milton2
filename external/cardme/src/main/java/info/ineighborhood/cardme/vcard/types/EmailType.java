@@ -325,19 +325,19 @@ public class EmailType extends Type implements EmailFeature {
 		EmailType cloned = new EmailType();
 		
 		if(email != null) {
-			cloned.setEmail(new String(email));
+			cloned.setEmail(email);
 		}
 		
 		if(!emailParameterTypes.isEmpty()) {
-			for(int i = 0; i < emailParameterTypes.size(); i++) {
-				cloned.addEmailParameterType(emailParameterTypes.get(i));
-			}
+            for (EmailParameterType emailParameterType : emailParameterTypes) {
+                cloned.addEmailParameterType(emailParameterType);
+            }
 		}
 		
 		if(!xtendedEmailParameterTypes.isEmpty()) {
-			for(int i = 0; i < xtendedEmailParameterTypes.size(); i++) {
-				cloned.addExtendedEmailParameterType(xtendedEmailParameterTypes.get(i));
-			}
+            for (XEmailParameterType xtendedEmailParameterType : xtendedEmailParameterTypes) {
+                cloned.addExtendedEmailParameterType(xtendedEmailParameterType);
+            }
 		}
 		
 		cloned.setParameterTypeStyle(getParameterTypeStyle());

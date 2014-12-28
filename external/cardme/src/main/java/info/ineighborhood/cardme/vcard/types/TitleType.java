@@ -186,7 +186,7 @@ public class TitleType extends Type implements TitleFeature {
 		TitleType cloned = new TitleType();
 		
 		if(title != null) {
-			cloned.setTitle(new String(title));
+			cloned.setTitle(title);
 		}
 		
 		cloned.setParameterTypeStyle(getParameterTypeStyle());

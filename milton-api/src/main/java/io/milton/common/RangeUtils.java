@@ -40,7 +40,7 @@ public class RangeUtils {
         if (finish > -1) {
             s = "bytes " + start + "-" + finish + "/" + l;
         } else {
-            long wrotetill = totalLength == null ? 0 : totalLength.longValue() - 1;
+            long wrotetill = totalLength == null ? 0 : totalLength - 1;
             //The end position starts counting at zero. So subtract 1
             s = "bytes " + start + "-" + wrotetill + "/" + l;
         }

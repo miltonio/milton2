@@ -7,7 +7,6 @@ import io.milton.dns.utils.base64;
 
 import java.io.*;
 import java.util.*;
-import io.milton.dns.utils.*;
 
 /**
  * Transaction Key - used to compute and/or securely transport a shared
@@ -119,7 +118,7 @@ modeString() {
 /** Converts rdata to a String */
 String
 rrToString() {
-	StringBuffer sb = new StringBuffer();
+	StringBuilder sb = new StringBuilder();
 	sb.append(alg);
 	sb.append(" ");
 	if (Options.check("multiline"))

@@ -27,7 +27,6 @@ import io.milton.ldap.LdapPropertyMapper.LdapMappedProp;
 import java.io.IOException;
 import java.net.SocketException;
 import java.util.*;
-import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -147,7 +146,7 @@ public class SearchRunnable implements Runnable {
 				// computer context for iCal
 				log.info("send computer context");
 				responseHandler.sendComputerContext(currentMessageId, returningAttributes);
-			} else if (( dn.equals("")  // Outlook 2010 by default sends no DN
+			} else if ((dn.isEmpty() // Outlook 2010 by default sends no DN
 					|| Ldap.BASE_CONTEXT.equalsIgnoreCase(dn)
 					|| Ldap.OD_USER_CONTEXT.equalsIgnoreCase(dn))
 					|| Ldap.MSLIVE_BASE_CONTEXT.equals(dn)

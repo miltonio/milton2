@@ -161,7 +161,7 @@ public class FolderPanel extends javax.swing.JPanel implements Addressable, Unlo
           if( r != null ) toDelete.add( r );
       }
 
-      if( toDelete.size() == 0 ) return;
+      if( toDelete.isEmpty() ) return;
 
       ResourceUtils.doDelete( this, (int) evt.getKeyChar(), toDelete );
 }//GEN-LAST:event_tableKeyTyped

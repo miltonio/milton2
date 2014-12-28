@@ -20,19 +20,15 @@
 package io.milton.http;
 
 
-import io.milton.http.LockInfoSaxHandler;
+import io.milton.http.LockInfo.LockScope;
+import io.milton.http.LockInfo.LockType;
 import io.milton.http.webdav.PropFindSaxHandler;
 import java.util.Map;
-
+import javax.xml.namespace.QName;
 import junit.framework.TestCase;
-
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
-
-import io.milton.http.LockInfo.LockScope;
-import io.milton.http.LockInfo.LockType;
-import javax.xml.namespace.QName;
 
 public class TestSaxHandler extends TestCase {
     public void testPropFind() throws Exception{

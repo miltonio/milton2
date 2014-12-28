@@ -71,7 +71,7 @@ public class Formatter {
             return (Boolean) o;
         } else if (o instanceof Integer) {
             Integer i = (Integer) o;
-            return i.intValue() == 0;
+            return i == 0;
         } else if (o instanceof String) {
             String s = (String) o;
             s = s.toLowerCase();
@@ -362,7 +362,7 @@ public class Formatter {
         }
         Double d1 = toDouble(val1);
         Double d2 = toDouble(val2);
-        return d1.doubleValue() > d2.doubleValue();
+        return d1 > d2;
     }
 
     public boolean lt(Object val1, Object val2) {
@@ -374,7 +374,7 @@ public class Formatter {
         }
         Double d1 = toDouble(val1);
         Double d2 = toDouble(val2);
-        return d1.doubleValue() < d2.doubleValue();
+        return d1 < d2;
     }
 
     public boolean eq(Object val1, Object val2) {
@@ -386,7 +386,7 @@ public class Formatter {
         }
         Double d1 = toDouble(val1);
         Double d2 = toDouble(val2);
-        return d1.doubleValue() == d2.doubleValue();
+        return d1 == d2;
     }
 
 
@@ -557,10 +557,10 @@ public class Formatter {
     public BigDecimal toBigDecimal(Object o, int decimals) {
         if (o instanceof Integer) {
             Integer ii = (Integer) o;
-            return new BigDecimal(ii.intValue());
+            return new BigDecimal(ii);
         } else if (o instanceof Double) {
             Double dd = (Double) o;
-            return new BigDecimal(dd.doubleValue()).setScale(decimals, RoundingMode.HALF_UP);
+            return new BigDecimal(dd).setScale(decimals, RoundingMode.HALF_UP);
         } else if (o instanceof Float) {
             Float ff = (Float) o;
             return new BigDecimal(ff);

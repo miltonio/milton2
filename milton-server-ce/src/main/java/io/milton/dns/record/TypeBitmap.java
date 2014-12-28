@@ -8,7 +8,6 @@ package io.milton.dns.record;
  * @author Brian Wellington
  */
 
-import io.milton.dns.record.Tokenizer.Token;
 
 import java.io.*;
 import java.util.*;
@@ -82,15 +81,15 @@ toArray() {
 	int [] array = new int[types.size()];
 	int n = 0;
 	for (Iterator it = types.iterator(); it.hasNext(); )
-		array[n++] = ((Integer)it.next()).intValue();
+		array[n++] = ((Integer)it.next());
 	return array;
 }
 
 public String
 toString() {
-	StringBuffer sb = new StringBuffer();
+	StringBuilder sb = new StringBuilder();
 	for (Iterator it = types.iterator(); it.hasNext(); ) {
-		int t = ((Integer)it.next()).intValue();
+		int t = ((Integer)it.next());
 		sb.append(Type.string(t));
 		if (it.hasNext())
 			sb.append(' ');
@@ -100,13 +99,13 @@ toString() {
 
 private static void
 mapToWire(DNSOutput out, TreeSet map, int mapbase) {
-	int arraymax = (((Integer)map.last()).intValue()) & 0xFF;
+	int arraymax = (((Integer)map.last())) & 0xFF;
 	int arraylength = (arraymax / 8) + 1;
 	int [] array = new int[arraylength];
 	out.writeU8(mapbase);
 	out.writeU8(arraylength);
 	for (Iterator it = map.iterator(); it.hasNext(); ) {
-		int typecode = ((Integer)it.next()).intValue();
+		int typecode = ((Integer)it.next());
 		array[(typecode & 0xFF) / 8] |= (1 << ( 7 - typecode % 8));
 	}
 	for (int j = 0; j < arraylength; j++)
@@ -115,14 +114,14 @@ mapToWire(DNSOutput out, TreeSet map, int mapbase) {
 
 public void
 toWire(DNSOutput out) {
-	if (types.size() == 0)
+	if (types.isEmpty())
 		return;
 
 	int mapbase = -1;
 	TreeSet map = new TreeSet();
 
 	for (Iterator it = types.iterator(); it.hasNext(); ) {
-		int t = ((Integer)it.next()).intValue();
+		int t = ((Integer)it.next());
 		int base = t >> 8;
 		if (base != mapbase) {
 			if (map.size() > 0) {
@@ -131,7 +130,7 @@ toWire(DNSOutput out) {
 			}
 			mapbase = base;
 		}
-			map.add(new Integer(t));
+			map.add(t);
 	}
 	mapToWire(out, map, mapbase);
 }

@@ -37,7 +37,7 @@ import java.util.Map;
  */
 public class PriviledgeListValueWriter implements ValueWriter {
 
-	private static Map<Priviledge, String> priviledgeToStringMap = PriviledgeListValueWriter.initPriviledgeToStringMap();
+	private static final Map<Priviledge, String> priviledgeToStringMap = PriviledgeListValueWriter.initPriviledgeToStringMap();
 
 	private static Map<Priviledge, String> initPriviledgeToStringMap() {
 		Map<Priviledge, String> map = new EnumMap<Priviledge, String>(Priviledge.class);

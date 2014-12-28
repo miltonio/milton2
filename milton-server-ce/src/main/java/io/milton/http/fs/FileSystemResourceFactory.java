@@ -22,7 +22,6 @@ package io.milton.http.fs;
 import io.milton.common.Path;
 import io.milton.http.LockManager;
 import io.milton.http.ResourceFactory;
-import io.milton.http.fs.NullSecurityManager;
 import io.milton.resource.Resource;
 import java.io.File;
 import org.slf4j.Logger;

@@ -27,13 +27,13 @@ public static final int SECONDARY = 2;
 private Map data;
 private Name origin;
 private Object originNode;
-private int dclass = DClass.IN;
+private final int dclass = DClass.IN;
 private RRset NS;
 private SOARecord SOA;
 private boolean hasWild;
 
 class ZoneIterator implements Iterator {
-	private Iterator zentries;
+	private final Iterator zentries;
 	private RRset [] current;
 	private int count;
 	private boolean wantLastSOA;
@@ -316,7 +316,7 @@ removeRRset(Name name, int type) {
 			RRset set = (RRset) list.get(i);
 			if (set.getType() == type) {
 				list.remove(i);
-				if (list.size() == 0)
+				if (list.isEmpty())
 					data.remove(name);
 				return;
 			}
@@ -527,10 +527,10 @@ nodeToString(StringBuffer sb, Object node) {
 		RRset rrset = sets[i];
 		Iterator it = rrset.rrs();
 		while (it.hasNext())
-			sb.append(it.next() + "\n");
+			sb.append(it.next()).append("\n");
 		it = rrset.sigs();
 		while (it.hasNext())
-			sb.append(it.next() + "\n");
+			sb.append(it.next()).append("\n");
 	}
 }
 

@@ -325,19 +325,19 @@ public class TelephoneType extends Type implements TelephoneFeature {
 		TelephoneType cloned = new TelephoneType();
 		
 		if(telephone != null) {
-			cloned.setTelephone(new String(telephone));
+			cloned.setTelephone(telephone);
 		}
 		
 		if(!telephoneParameterTypes.isEmpty()) {
-			for(int i = 0; i < telephoneParameterTypes.size(); i++) {
-				cloned.addTelephoneParameterType(telephoneParameterTypes.get(i));
-			}
+            for (TelephoneParameterType telephoneParameterType : telephoneParameterTypes) {
+                cloned.addTelephoneParameterType(telephoneParameterType);
+            }
 		}
 		
 		if(!xtendedTelephoneParameterTypes.isEmpty()) {
-			for(int i = 0; i < xtendedTelephoneParameterTypes.size(); i++) {
-				cloned.addExtendedTelephoneParameterType(xtendedTelephoneParameterTypes.get(i));
-			}
+            for (XTelephoneParameterType xtendedTelephoneParameterType : xtendedTelephoneParameterTypes) {
+                cloned.addExtendedTelephoneParameterType(xtendedTelephoneParameterType);
+            }
 		}
 		
 		cloned.setParameterTypeStyle(getParameterTypeStyle());

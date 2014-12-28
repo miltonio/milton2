@@ -320,19 +320,19 @@ public class LabelType extends Type implements LabelFeature {
 		LabelType cloned = new LabelType();
 		
 		if(label != null) {
-			cloned.setLabel(new String(label));
+			cloned.setLabel(label);
 		}
 		
 		if(!labelParameterTypes.isEmpty()) {
-			for(int i = 0; i < labelParameterTypes.size(); i++) {
-				cloned.addLabelParameterType(labelParameterTypes.get(i));
-			}
+            for (LabelParameterType labelParameterType : labelParameterTypes) {
+                cloned.addLabelParameterType(labelParameterType);
+            }
 		}
 		
 		if(!xtendedLabelParameterTypes.isEmpty()) {
-			for(int i = 0; i < xtendedLabelParameterTypes.size(); i++) {
-				cloned.addExtendedLabelParameterType(xtendedLabelParameterTypes.get(i));
-			}
+            for (XLabelParameterType xtendedLabelParameterType : xtendedLabelParameterTypes) {
+                cloned.addExtendedLabelParameterType(xtendedLabelParameterType);
+            }
 		}
 		
 		cloned.setParameterTypeStyle(getParameterTypeStyle());

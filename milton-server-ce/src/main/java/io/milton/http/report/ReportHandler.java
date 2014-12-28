@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ReportHandler implements ExistingEntityHandler {
 
-	private Logger log = LoggerFactory.getLogger(ReportHandler.class);
+	private final Logger log = LoggerFactory.getLogger(ReportHandler.class);
 	private final WebDavResponseHandler responseHandler;
 	private final ResourceHandlerHelper resourceHandlerHelper;
 	private final Map<String, Report> reports;

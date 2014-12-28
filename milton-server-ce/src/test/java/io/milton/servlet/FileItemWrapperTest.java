@@ -20,7 +20,6 @@
 
 package io.milton.servlet;
 
-import io.milton.servlet.FileItemWrapper;
 import junit.framework.TestCase;
 
 public class FileItemWrapperTest extends TestCase {

@@ -380,29 +380,29 @@ public class NameType extends Type implements NameFeature {
 		NameType cloned = new NameType();
 		
 		if(familyName != null) {
-			cloned.setFamilyName(new String(familyName));
+			cloned.setFamilyName(familyName);
 		}
 		
 		if(givenName != null) {
-			cloned.setGivenName(new String(givenName));
+			cloned.setGivenName(givenName);
 		}
 		
 		if(!additionalNames.isEmpty()) {
-			for(int i = 0; i < additionalNames.size(); i++) {
-				cloned.addAdditionalName(new String(additionalNames.get(i)));
-			}
+            for (String additionalName : additionalNames) {
+                cloned.addAdditionalName(additionalName);
+            }
 		}
 		
 		if(!honorificPrefixes.isEmpty()) {
-			for(int i = 0; i < honorificPrefixes.size(); i++) {
-				cloned.addHonorificPrefix(new String(honorificPrefixes.get(i)));
-			}
+            for (String honorificPrefixe : honorificPrefixes) {
+                cloned.addHonorificPrefix(honorificPrefixe);
+            }
 		}
 		
 		if(!honorificSuffixes.isEmpty()) {
-			for(int i = 0; i < honorificSuffixes.size(); i++) {
-				cloned.addHonorificSuffix(new String(honorificSuffixes.get(i)));
-			}
+            for (String honorificSuffixe : honorificSuffixes) {
+                cloned.addHonorificSuffix(honorificSuffixe);
+            }
 		}
 		
 		cloned.setParameterTypeStyle(getParameterTypeStyle());

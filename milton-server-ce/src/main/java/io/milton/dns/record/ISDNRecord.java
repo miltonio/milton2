@@ -4,7 +4,6 @@ package io.milton.dns.record;
 
 import io.milton.dns.Name;
 import io.milton.dns.TextParseException;
-import io.milton.dns.record.Tokenizer.Token;
 
 import java.io.*;
 
@@ -97,7 +96,7 @@ rrToWire(DNSOutput out, Compression c, boolean canonical) {
 
 String
 rrToString() {
-	StringBuffer sb = new StringBuffer();
+	StringBuilder sb = new StringBuilder();
 	sb.append(byteArrayToString(address, true));
 	if (subAddress != null) {
 		sb.append(" ");

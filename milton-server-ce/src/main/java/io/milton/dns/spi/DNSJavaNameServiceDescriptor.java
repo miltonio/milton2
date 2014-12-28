@@ -17,8 +17,8 @@
 package io.milton.dns.spi;
 
 import java.lang.reflect.Proxy;
-
-import sun.net.spi.nameservice.*;
+import sun.net.spi.nameservice.NameService;
+import sun.net.spi.nameservice.NameServiceDescriptor;
 
 /**
  * The descriptor class for the dnsjava name service provider.
@@ -28,7 +28,7 @@ import sun.net.spi.nameservice.*;
  */
 public class DNSJavaNameServiceDescriptor implements NameServiceDescriptor {
 
-	private static NameService nameService;
+	private static final NameService nameService;
 
 	static {
 		ClassLoader loader = NameService.class.getClassLoader();

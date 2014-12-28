@@ -11,8 +11,7 @@ package io.milton.dns.record;
 
 public final class Flags {
 
-private static Mnemonic flags = new Mnemonic("DNS Header Flag",
-					     Mnemonic.CASE_LOWER);
+	private static final Mnemonic flags = new Mnemonic("DNS Header Flag",					     Mnemonic.CASE_LOWER);
 
 /** query/response */
 public static final byte QR		= 0;
@@ -74,9 +73,7 @@ value(String s) {
 public static boolean
 isFlag(int index) {
 	flags.check(index);
-	if ((index >= 1 && index <= 4) || (index >= 12))
-		return false;
-	return true;
+	return !((index >= 1 && index <= 4) || (index >= 12));
 }
 
 }

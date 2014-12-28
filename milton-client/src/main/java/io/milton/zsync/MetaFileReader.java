@@ -65,7 +65,7 @@ public class MetaFileReader {
 
 	private ChainingHash hashtable;
 	private int fileOffset;
-	private int blockNum;
+	private final int blockNum;
 	
 	/** Variables for header information from .zsync metafile */
 	//------------------------------

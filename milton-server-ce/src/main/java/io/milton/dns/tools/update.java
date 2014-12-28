@@ -21,7 +21,6 @@ import java.net.*;
 import java.io.*;
 import java.util.*;
 
-import io.milton.dns.*;
 
 /** @author Brian Wellington &lt;bwelling@xbill.org&gt; */
 
@@ -532,7 +531,7 @@ doAssert(Tokenizer st) throws IOException {
 	else if ((section = Section.value(field)) >= 0) {
 		int count = response.getHeader().getCount(section);
 		if (count != Integer.parseInt(expected)) {
-			value = new Integer(count).toString();
+			value = Integer.toString(count);
 			flag = false;
 		}
 	}

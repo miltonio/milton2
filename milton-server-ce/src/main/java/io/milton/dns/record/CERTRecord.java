@@ -3,11 +3,9 @@
 package io.milton.dns.record;
 
 import io.milton.dns.Name;
-import io.milton.dns.record.DNSSEC.Algorithm;
 import io.milton.dns.utils.base64;
 
 import java.io.*;
-import io.milton.dns.utils.*;
 
 /**
  * Certificate Record  - Stores a certificate associated with a name.  The
@@ -54,8 +52,7 @@ public static class CertificateType {
 	/** Certificate format defined by OID */
 	public static final int OID = 254;
 
-	private static Mnemonic types = new Mnemonic("Certificate type",
-						     Mnemonic.CASE_UPPER);
+	private static final Mnemonic types = new Mnemonic("Certificate type", Mnemonic.CASE_UPPER);
 
 	static {
 		types.setMaximum(0xFFFF);
@@ -167,7 +164,7 @@ rdataFromString(Tokenizer st, Name origin) throws IOException {
  */
 String
 rrToString() {
-	StringBuffer sb = new StringBuffer();
+	StringBuilder sb = new StringBuilder();
 	sb.append (certType);
 	sb.append (" ");
 	sb.append (keyTag);

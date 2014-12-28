@@ -24,7 +24,7 @@ public class SimpleMiltonResponse extends AbstractResponse{
     public final long started;
 
     public boolean disableClose;
-    private Map<String,String> headers = new HashMap<String, String>();
+    private final Map<String,String> headers = new HashMap<String, String>();
 
     private Status status;
 

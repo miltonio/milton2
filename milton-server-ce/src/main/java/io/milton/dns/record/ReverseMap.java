@@ -18,8 +18,8 @@ import java.net.*;
 
 public final class ReverseMap {
 
-private static Name inaddr4 = Name.fromConstantString("in-addr.arpa.");
-private static Name inaddr6 = Name.fromConstantString("ip6.arpa.");
+private static final Name inaddr4 = Name.fromConstantString("in-addr.arpa.");
+private static final Name inaddr6 = Name.fromConstantString("ip6.arpa.");
 
 /* Otherwise the class could be instantiated */
 private
@@ -37,7 +37,7 @@ fromAddress(byte [] addr) {
 		throw new IllegalArgumentException("array must contain " +
 						   "4 or 16 elements");
 
-	StringBuffer sb = new StringBuffer();
+	StringBuilder sb = new StringBuilder();
 	if (addr.length == 4) {
 		for (int i = addr.length - 1; i >= 0; i--) {
 			sb.append(addr[i] & 0xFF);

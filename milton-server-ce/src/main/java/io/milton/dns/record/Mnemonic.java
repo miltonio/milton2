@@ -13,7 +13,7 @@ import java.util.HashMap;
 
 public class Mnemonic {
 
-private static Integer cachedInts[] = new Integer[64];
+private static final Integer cachedInts[] = new Integer[64];
 
 static {
 	for (int i = 0; i < cachedInts.length; i++) {
@@ -30,10 +30,10 @@ public static final int CASE_UPPER = 2;
 /* Strings will be stored/searched for in lowercase. */
 public static final int CASE_LOWER = 3;
 
-private HashMap strings;
-private HashMap values;
-private String description;
-private int wordcase;
+private final HashMap strings;
+private final HashMap values;
+private final String description;
+private final int wordcase;
 private String prefix;
 private int max;
 private boolean numericok;
@@ -191,7 +191,7 @@ getValue(String str) {
 	str = sanitize(str);
 	Integer value = (Integer) strings.get(str);
 	if (value != null) {
-		return value.intValue();
+		return value;
 	}
 	if (prefix != null) {
 		if (str.startsWith(prefix)) {

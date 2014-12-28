@@ -28,18 +28,17 @@
 */
 package io.milton.servlet.upload;
 
-import org.apache.commons.fileupload.disk.DiskFileItem;
-
 import java.io.File;
-import java.io.OutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import org.apache.commons.fileupload.disk.DiskFileItem;
 
 public class MonitoredDiskFileItem extends DiskFileItem
 {
     private static final long serialVersionUID = 1L;
     
     private MonitoredOutputStream mos = null;
-    private OutputStreamListener listener;
+    private final OutputStreamListener listener;
 
     public MonitoredDiskFileItem(String fieldName, String contentType, boolean isFormField, String fileName, int sizeThreshold, File repository, OutputStreamListener listener)
     {

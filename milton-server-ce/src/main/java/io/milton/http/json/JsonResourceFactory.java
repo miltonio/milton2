@@ -53,7 +53,7 @@ public class JsonResourceFactory implements ResourceFactory {
 	private Long maxAgeSecsPropFind = null;
 	private static final String DAV_FOLDER = "_DAV";
 	private List<String> contentTypes = Arrays.asList("application/json", "application/x-javascript");
-	private String ajaxLoginPath = "/.login";
+	private static final String ajaxLoginPath = "/.login";
 
 	public JsonResourceFactory(ResourceFactory wrapped, EventManager eventManager, JsonPropFindHandler propFindHandler, JsonPropPatchHandler propPatchHandler) {
 		this.wrapped = wrapped;

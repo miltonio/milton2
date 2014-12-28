@@ -11,7 +11,7 @@ package io.milton.dns.record;
 
 public class DNSInput {
 
-private byte [] array;
+private final byte[] array;
 private int pos;
 private int end;
 private int saved_pos;

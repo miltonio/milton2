@@ -6,7 +6,6 @@ import io.milton.dns.Name;
 import io.milton.dns.utils.base16;
 
 import java.io.*;
-import io.milton.dns.utils.*;
 
 /**
  * DLV - contains a Delegation Lookaside Validation record, which acts
@@ -76,7 +75,7 @@ rdataFromString(Tokenizer st, Name origin) throws IOException {
  */
 String
 rrToString() {
-	StringBuffer sb = new StringBuffer();
+	StringBuilder sb = new StringBuilder();
 	sb.append(footprint);
 	sb.append(" ");
 	sb.append(alg);

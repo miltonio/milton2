@@ -21,7 +21,6 @@ package io.milton.http.webdav;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Stack;
-
 import javax.xml.namespace.QName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,17 +31,17 @@ import org.xml.sax.helpers.DefaultHandler;
 public class PropPatchSaxHandler extends DefaultHandler {
 
 	private final static Logger log = LoggerFactory.getLogger(PropPatchSaxHandler.class);
-	private Stack<String> elementPath = new Stack<String>();
+	private final Stack<String> elementPath = new Stack<String>();
 	private Map<QName, String> attributesCurrent; // will switch between the following
-	private Map<QName, String> attributesSet = new LinkedHashMap<QName, String>();
-	private Map<QName, String> attributesRemove = new LinkedHashMap<QName, String>();
+	private final Map<QName, String> attributesSet = new LinkedHashMap<QName, String>();
+	private final Map<QName, String> attributesRemove = new LinkedHashMap<QName, String>();
 	private StringBuilder sb = new StringBuilder();
 	private boolean inProp;
 
 	@Override
 	public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException {
 		if (inProp) {
-			sb.append("<" + localName + ">");
+			sb.append("<").append(localName).append(">");
 		}
 		if (elementPath.size() > 0) {
 			String elName = elementPath.peek();
@@ -90,7 +89,7 @@ public class PropPatchSaxHandler extends DefaultHandler {
 				inProp = false;
 			} else {
 				if (inProp) {
-					sb.append("</" + localName + ">");
+					sb.append("</").append(localName).append(">");
 				}
 
 				if (elementPath.peek().endsWith("set")) {

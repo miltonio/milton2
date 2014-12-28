@@ -30,7 +30,6 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-import io.milton.dns.*;
 
 /** @author Brian Wellington &lt;bwelling@xbill.org&gt; */
 
@@ -109,10 +108,10 @@ jnamed(String conffile) throws IOException, ZoneTransferException {
 
 		}
 
-		if (ports.size() == 0)
+		if (ports.isEmpty())
 			ports.add(new Integer(53));
 
-		if (addresses.size() == 0)
+		if (addresses.isEmpty())
 			addresses.add(Address.getByAddress("0.0.0.0"));
 
 		Iterator iaddr = addresses.iterator();
@@ -120,7 +119,7 @@ jnamed(String conffile) throws IOException, ZoneTransferException {
 			InetAddress addr = (InetAddress) iaddr.next();
 			Iterator iport = ports.iterator();
 			while (iport.hasNext()) {
-				int port = ((Integer)iport.next()).intValue();
+				int port = ((Integer)iport.next());
 				addUDP(addr, port);
 				addTCP(addr, port);
 				System.out.println("jnamed: listening on " +

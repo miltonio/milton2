@@ -19,7 +19,6 @@
 
 package io.milton.http.http11.auth;
 
-import io.milton.http.http11.auth.LdapSecurityManager;
 import junit.framework.TestCase;
 
 /**

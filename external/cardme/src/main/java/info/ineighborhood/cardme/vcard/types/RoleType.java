@@ -186,7 +186,7 @@ public class RoleType extends Type implements RoleFeature {
 		RoleType cloned = new RoleType();
 		
 		if(role != null) {
-			cloned.setRole(new String(role));
+			cloned.setRole(role);
 		}
 		
 		cloned.setParameterTypeStyle(getParameterTypeStyle());

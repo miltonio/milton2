@@ -213,11 +213,11 @@ public class ExtendedType extends Type implements ExtendedFeature {
 		ExtendedType cloned = new ExtendedType();
 		
 		if(extensionName != null) {
-			cloned.setExtensionName(new String(extensionName));
+			cloned.setExtensionName(extensionName);
 		}
 		
 		if(extensionData != null) {
-			cloned.setExtensionData(new String(extensionData));
+			cloned.setExtensionData(extensionData);
 		}
 		
 		cloned.setParameterTypeStyle(getParameterTypeStyle());

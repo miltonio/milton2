@@ -5,7 +5,6 @@ package io.milton.dns.record;
 import io.milton.dns.Address;
 
 import java.net.*;
-import java.util.regex.*;
 
 /**
  * The Client Subnet EDNS Option, defined in
@@ -165,7 +164,7 @@ optionToWire(DNSOutput out) {
 
 String 
 optionToString() {
-	StringBuffer sb = new StringBuffer();
+	StringBuilder sb = new StringBuilder();
 	sb.append(address.getHostAddress());
 	sb.append("/");
 	sb.append(sourceNetmask);

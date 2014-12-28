@@ -186,7 +186,7 @@ public class ClassType extends Type implements ClassFeature {
 		ClassType cloned = new ClassType();
 		
 		if(securityClass != null) {
-			cloned.setSecurityClass(new String(securityClass));
+			cloned.setSecurityClass(securityClass);
 		}
 		
 		cloned.setParameterTypeStyle(getParameterTypeStyle());

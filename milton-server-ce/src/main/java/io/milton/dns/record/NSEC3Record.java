@@ -9,7 +9,6 @@ import io.milton.dns.utils.base32;
 import java.io.*;
 import java.security.*;
 
-import io.milton.dns.utils.*;
 
 /**
  * Next SECure name 3 - this record contains the next hashed name in an
@@ -161,7 +160,7 @@ rdataFromString(Tokenizer st, Name origin) throws IOException {
 /** Converts rdata to a String */
 String
 rrToString() {
-	StringBuffer sb = new StringBuffer();
+	StringBuilder sb = new StringBuilder();
 	sb.append(hashAlg);
 	sb.append(' ');
 	sb.append(flags);

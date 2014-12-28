@@ -37,7 +37,7 @@ import java.util.List;
  */
 public class LocalFileRangeLoader implements RangeLoader {
 
-    private File file;
+    private final File file;
     private long bytesDownloaded;
 
     public LocalFileRangeLoader(File file) {

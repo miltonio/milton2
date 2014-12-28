@@ -78,8 +78,7 @@ public static class Algorithm {
 	/** Private algorithm, specified by OID */
 	public static final int PRIVATEOID = 254;
 
-	private static Mnemonic algs = new Mnemonic("DNSSEC algorithm",
-						    Mnemonic.CASE_UPPER);
+	private static final Mnemonic algs = new Mnemonic("DNSSEC algorithm", Mnemonic.CASE_UPPER);
 
 	static {
 		algs.setMaximum(0xFF);
@@ -254,7 +253,7 @@ public static class KeyMismatchException extends DNSSECException {
  * A DNSSEC verification failed because the signature has expired.
  */
 public static class SignatureExpiredException extends DNSSECException {
-	private Date when, now;
+	private final Date when, now;
 
 	SignatureExpiredException(Date when, Date now) {
 		super("signature expired");
@@ -283,7 +282,7 @@ public static class SignatureExpiredException extends DNSSECException {
  * A DNSSEC verification failed because the signature has not yet become valid.
  */
 public static class SignatureNotYetValidException extends DNSSECException {
-	private Date when, now;
+	private final Date when, now;
 
 	SignatureNotYetValidException(Date when, Date now) {
 		super("signature is not yet valid");

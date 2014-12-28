@@ -40,8 +40,8 @@ import java.io.UnsupportedEncodingException;
  * @author HP
  */
 public class ByteRangeWriter {
-	private BufferingOutputStream dataOut;
-	private byte[] copyBuffer;
+	private final BufferingOutputStream dataOut;
+	private final byte[] copyBuffer;
 	private boolean first;
 
 	public ByteRangeWriter(int buffersize) {

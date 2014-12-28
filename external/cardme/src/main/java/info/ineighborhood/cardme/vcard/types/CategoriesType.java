@@ -215,9 +215,9 @@ public class CategoriesType extends Type implements CategoriesFeature {
 		CategoriesType cloned = new CategoriesType();
 		
 		if(!categories.isEmpty()) {
-			for(int i = 0; i < categories.size(); i++) {
-				cloned.addCategory(new String(categories.get(i)));
-			}
+            for (String categorie : categories) {
+                cloned.addCategory(categorie);
+            }
 		}
 		
 		cloned.setParameterTypeStyle(getParameterTypeStyle());

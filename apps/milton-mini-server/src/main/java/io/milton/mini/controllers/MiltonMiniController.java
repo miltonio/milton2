@@ -395,7 +395,7 @@ public class MiltonMiniController implements InitListener {
         }
                         
         public String getName() {
-            return "name";
+            return "name"; // DW
         }
     }    
 

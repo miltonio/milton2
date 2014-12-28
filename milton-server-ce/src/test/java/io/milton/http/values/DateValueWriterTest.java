@@ -19,11 +19,8 @@
 
 package io.milton.http.values;
 
-import io.milton.http.values.DateValueWriter;
-import io.milton.http.XmlWriter;
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.Map;
 import junit.framework.TestCase;
 
 /**

@@ -38,8 +38,8 @@ public class BufferingGetableResourceEntity extends GetableResourceEntity {
 
     private static final Logger log = LoggerFactory.getLogger(BufferingGetableResourceEntity.class);
 
-    private Long contentLength;
-    private int maxMemorySize;
+	private final Long contentLength;
+	private final int maxMemorySize;
 
     public BufferingGetableResourceEntity(GetableResource resource,
                                           Map<String, String> params,

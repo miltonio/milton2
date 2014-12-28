@@ -202,9 +202,9 @@ public class OrganizationType extends Type implements OrganizationFeature {
 		OrganizationType cloned = new OrganizationType();
 		
 		if(!organizations.isEmpty()) {
-			for(int i = 0; i < organizations.size(); i++) {
-				cloned.addOrganization(new String(organizations.get(i)));
-			}
+            for (String organization : organizations) {
+                cloned.addOrganization(organization);
+            }
 		}
 		
 		cloned.setParameterTypeStyle(getParameterTypeStyle());

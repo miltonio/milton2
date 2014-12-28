@@ -199,7 +199,7 @@ public class FileUtils {
     }
 
     public static String stripExtension(String nm) {
-        if (nm.indexOf(".") >= 0) {
+        if (nm.contains(".")) {
             String[] arr = nm.split("[.]");
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < arr.length - 1; i++) {

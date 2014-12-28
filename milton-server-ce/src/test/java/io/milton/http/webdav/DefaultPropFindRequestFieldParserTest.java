@@ -19,8 +19,6 @@
 
 package io.milton.http.webdav;
 
-import io.milton.http.webdav.DefaultPropFindRequestFieldParser;
-import io.milton.http.webdav.PropertiesRequest;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Set;

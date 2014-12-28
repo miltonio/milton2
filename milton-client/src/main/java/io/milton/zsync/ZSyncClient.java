@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 public class ZSyncClient implements FileSyncer{
 
     private static final Logger log = LoggerFactory.getLogger(ZSyncClient.class);
-    private TransferService transferService;
+    private final TransferService transferService;
     private final FileMaker fileMaker;
     private int blocksize = 256;
 

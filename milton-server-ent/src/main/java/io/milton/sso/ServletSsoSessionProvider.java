@@ -6,7 +6,6 @@
 
 package io.milton.sso;
 
-import io.milton.sso.SsoSessionProvider;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.servlet.http.HttpSession;

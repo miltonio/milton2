@@ -3,13 +3,11 @@ package io.milton.dns.record;
 
 import io.milton.dns.Name;
 import io.milton.dns.TextParseException;
-import io.milton.dns.record.Tokenizer.Token;
 import io.milton.dns.utils.base16;
 
 import java.io.*;
 import java.text.*;
 import java.util.*;
-import io.milton.dns.utils.*;
 
 /**
  * A generic DNS resource record. The specific record types extend this class. A
@@ -296,7 +294,7 @@ public abstract class Record implements Cloneable, Comparable, Serializable {
      * Converts a Record into a String representation
      */
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
         sb.append(name);
         if (sb.length() < 8) {
             sb.append("\t");
@@ -317,7 +315,7 @@ public abstract class Record implements Cloneable, Comparable, Serializable {
         }
         sb.append(Type.string(type));
         String rdata = rrToString();
-        if (!rdata.equals("")) {
+		if (!rdata.isEmpty()) {
             sb.append("\t");
             sb.append(rdata);
         }
@@ -397,7 +395,7 @@ public abstract class Record implements Cloneable, Comparable, Serializable {
      * Converts a byte array into a String.
      */
     protected static String byteArrayToString(byte[] array, boolean quote) {
-        StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
         if (quote) {
             sb.append('"');
         }
@@ -423,7 +421,7 @@ public abstract class Record implements Cloneable, Comparable, Serializable {
      * Converts a byte array into the unknown RR format.
      */
     protected static String unknownToString(byte[] data) {
-        StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
         sb.append("\\# ");
         sb.append(data.length);
         sb.append(" ");

@@ -3,12 +3,10 @@
 package io.milton.dns.record;
 
 import io.milton.dns.Name;
-import io.milton.dns.record.DNSSEC.Algorithm;
 import io.milton.dns.utils.base64;
 
 import java.io.*;
 import java.util.*;
-import io.milton.dns.utils.*;
 
 /**
  * The base class for SIG/RRSIG records, which have identical formats 
@@ -87,7 +85,7 @@ rdataFromString(Tokenizer st, Name origin) throws IOException {
 /** Converts the RRSIG/SIG Record to a String */
 String
 rrToString() {
-	StringBuffer sb = new StringBuffer();
+	StringBuilder sb = new StringBuilder();
 	sb.append (Type.string(covered));
 	sb.append (" ");
 	sb.append (alg);

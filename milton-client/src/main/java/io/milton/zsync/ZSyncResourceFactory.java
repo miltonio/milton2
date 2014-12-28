@@ -61,9 +61,9 @@ public class ZSyncResourceFactory implements ResourceFactory {
     private static final Logger log = LoggerFactory.getLogger(ZSyncResourceFactory.class);
     private String suffix = ".zsync";
     private final ResourceFactory wrapped;
-    private MetaFileMaker metaFileMaker;
-    private int defaultBlockSize = 512;
-    private int maxMemorySize = 100000;
+    private final MetaFileMaker metaFileMaker;
+    private final int defaultBlockSize = 512;
+    private final int maxMemorySize = 100000;
 
     public ZSyncResourceFactory(ResourceFactory wrapped) {
         this.wrapped = wrapped;

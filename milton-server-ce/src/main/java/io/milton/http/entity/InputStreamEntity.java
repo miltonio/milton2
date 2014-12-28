@@ -34,7 +34,7 @@ public class InputStreamEntity implements Response.Entity {
 
     private static final Logger log = LoggerFactory.getLogger(InputStreamEntity.class);
 
-    private InputStream inputStream;
+	private final InputStream inputStream;
 
     public InputStreamEntity(InputStream inputStream) {
         this.inputStream = inputStream;
