@@ -121,6 +121,13 @@ public interface Request {
 
     Map<String, String> getHeaders();
 
+    /**
+     * equivalent to Servlet Request getRemoteHost
+     * 
+     * Returns the fully qualified name of the client or the last proxy that sent the request.
+     * 
+     * @return 
+     */
     String getFromAddress();
 
     String getLockTokenHeader();

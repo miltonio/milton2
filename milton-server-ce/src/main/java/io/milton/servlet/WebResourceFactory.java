@@ -46,6 +46,7 @@ public class WebResourceFactory implements ResourceFactory, Initable {
 	private static final Logger log = LoggerFactory.getLogger(WebResourceFactory.class);
 
 	private Config config;
+	private File fileHome;
 	private String basePath = "WEB-INF/static";
 	private final Date modDate = new Date();
 
@@ -56,6 +57,12 @@ public class WebResourceFactory implements ResourceFactory, Initable {
 		this.config = config;
 	}
 
+	public WebResourceFactory(File fileHome) {
+		this.config = null;
+		this.fileHome = fileHome;
+		log.info("init fileHome={}", fileHome.getAbsoluteFile());
+	}	
+	
 	@Override
 	public void init(Config config, HttpManager manager) {
 		this.config = config;
@@ -75,13 +82,20 @@ public class WebResourceFactory implements ResourceFactory, Initable {
 		String path = stripContext(url);
 		path = basePath + path;
 		path = path.trim();
-		String realPath = config.getServletContext().getRealPath(path);
+		String realPath;
+		if (config != null) {
+			realPath = config.getServletContext().getRealPath(path);
+		} else {
+			realPath = fileHome.getAbsolutePath() + path;
+		}
 		if (realPath != null) {
-			file = new File(path);
+			file = new File(realPath);			
 		} else {
 			file = null;
 		}
-		if (file == null || !file.exists()) {
+		
+		
+		if ( config != null && ( file == null || !file.exists())) {
 			URL resource;
 			try {
 				resource = config.getServletContext().getResource(path);
@@ -116,6 +130,9 @@ public class WebResourceFactory implements ResourceFactory, Initable {
 	}
 
 	private String stripContext(String url) {
+		if (config == null) {
+			return url;
+		}
 		String contextName = config.getServletContext().getServletContextName();
 		if (contextName == null || contextName.isEmpty() || config.getServletContext().getServletContextName().equals("/")) {
 			return url;

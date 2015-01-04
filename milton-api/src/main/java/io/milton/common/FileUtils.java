@@ -185,6 +185,9 @@ public class FileUtils {
     }
 
     public static String getExtension(String nm) {
+        if( nm == null ) {
+            return null;
+        }
         try {
             int pos = nm.lastIndexOf(".");
             if (pos > -1) {
