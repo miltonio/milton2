@@ -14,10 +14,9 @@
     <description>Milton Enterprise: Supports DAV level 2 and above, including Caldav and Carddav. Available on AGPL or commercial licenses</description>
     <licenses>
         <license>
-            <name>Affero GPL3</name>
-            <url>http://www.gnu.org/licenses/agpl.html</url>
+            <name>McEvoy Software Ltd</name>
+            <url>http://milton.io/about/license/index.html</url>
             <distribution>repo</distribution>
-            <comments>The GNU Affero General Public License is a free, copyleft license for software and other kinds of works, specifically designed to ensure cooperation with the community in the case of network server software.</comments>
         </license>
     </licenses>	    
     <dependencies>
