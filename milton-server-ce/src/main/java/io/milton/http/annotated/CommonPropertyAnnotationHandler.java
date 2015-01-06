@@ -18,12 +18,17 @@
  */
 package io.milton.http.annotated;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  *
  * @author brad
  */
 public class CommonPropertyAnnotationHandler<T> extends AbstractAnnotationHandler {
 
+	private static final Logger log = LoggerFactory.getLogger(CommonPropertyAnnotationHandler.class);
+	
 	private T defaultValue;
 	protected final String[] propertyNames;
 
@@ -39,24 +44,29 @@ public class CommonPropertyAnnotationHandler<T> extends AbstractAnnotationHandle
 
 	public T get(AnnoResource res) {
 		Object source = res.getSource();
+		log.trace("get.1: source type={}", source.getClass());		
 		try {
 			ControllerMethod cm = getBestMethod(source.getClass(), null, null, Object.class);
 			if (cm != null) {
+				log.trace("get.2: found method={}", cm.method.getName());		
 				T val = (T) invoke(cm, res);
 				return val;
 			} else {
 				// look for an annotation on the source itself
 				java.lang.reflect.Method m = annoResourceFactory.findMethodForAnno(source.getClass(), annoClass);
 				if (m != null && m.getParameterTypes().length ==0 ) {
+					log.trace("get.2: found method on source={}", m.getName());		
 					T val = (T) m.invoke(source);
 					return val;
 				}
 				for (String propName : propertyNames) {
 					Object s = attemptToReadProperty(source, propName);
 					if (s != null) {
+						log.trace("get.3: found value from source property={}", propName);
 						return (T) s;
 					}
 				}
+				log.trace("get.4: couldnt get a value from annotated methods or properties, so look for a default value");
 				return deriveDefaultValue(source);
 			}
 		} catch (Exception e) {
