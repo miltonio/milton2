@@ -52,21 +52,22 @@ public class CommonPropertyAnnotationHandler<T> extends AbstractAnnotationHandle
 				T val = (T) invoke(cm, res);
 				return val;
 			} else {
+				log.trace("get.3: couldnt find annotated controllere method, look for method on the source object");
 				// look for an annotation on the source itself
 				java.lang.reflect.Method m = annoResourceFactory.findMethodForAnno(source.getClass(), annoClass);
 				if (m != null && m.getParameterTypes().length ==0 ) {
-					log.trace("get.2: found method on source={}", m.getName());		
+					log.trace("get.4: found method on source={}", m.getName());		
 					T val = (T) m.invoke(source);
 					return val;
 				}
 				for (String propName : propertyNames) {
 					Object s = attemptToReadProperty(source, propName);
 					if (s != null) {
-						log.trace("get.3: found value from source property={}", propName);
+						log.trace("get.5: found value from source property={}", propName);
 						return (T) s;
 					}
 				}
-				log.trace("get.4: couldnt get a value from annotated methods or properties, so look for a default value");
+				log.trace("get.6: couldnt get a value from annotated methods or properties, so look for a default value");
 				return deriveDefaultValue(source);
 			}
 		} catch (Exception e) {
