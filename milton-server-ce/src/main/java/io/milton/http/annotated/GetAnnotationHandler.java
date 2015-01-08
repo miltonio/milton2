@@ -60,8 +60,9 @@ public class GetAnnotationHandler extends AbstractAnnotationHandler {
 		}
 		log.trace("execute GET method: " + cm.method.getName());
 		try {
-			Object[] args = annoResourceFactory.buildInvokeArgs(resource, cm.method, range, params, contentType, out);
-			Object result = cm.method.invoke(cm.controller, args);
+			//Object[] args = annoResourceFactory.buildInvokeArgs(resource, cm.method, range, params, contentType, out);
+			//Object result = cm.method.invoke(cm.controller, args);
+			Object result = invoke(cm, resource, range, params, contentType, out);
 			if (result != null) {
 				log.trace("method returned a value, so write it to output");
 				if (result instanceof String) {
