@@ -95,4 +95,14 @@ public class TCalendarResource extends TFolderResource implements CalendarResour
         return SupportedCalendarComponentList.asList(ComponentType.VEVENT, ComponentType.VTODO);
     }
 
+    @Override
+    public String getCalendarOrder() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void setCalendarOrder(String value) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

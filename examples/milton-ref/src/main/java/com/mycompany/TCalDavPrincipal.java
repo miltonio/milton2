@@ -188,15 +188,6 @@ public class TCalDavPrincipal extends TFolderResource implements CalDavPrincipal
     }
 
     @Override
-    public String getDropBoxUrl() {
-        if (dropBox != null) {
-            return dropBox.getHref();
-        } else {
-            return null;
-        }
-    }
-
-    @Override
     public PrincipleId getIdenitifer() {
         return principleId;
     }
@@ -324,6 +315,21 @@ public class TCalDavPrincipal extends TFolderResource implements CalDavPrincipal
     @Override
     public SupportedCalendarComponentList getSupportedComponentSet() {
         return null; // probably should not implement CalendarResource ... ?
+    }
+
+    @Override
+    public String getCalendarUserType() {
+        return null; // todo
+    }
+
+    @Override
+    public String getCalendarOrder() {
+        return null;
+    }
+
+    @Override
+    public void setCalendarOrder(String value) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     
