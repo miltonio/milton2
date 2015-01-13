@@ -105,6 +105,10 @@ public class PutHandler implements Handler {
 		Resource existingResource = manager.getResourceFactory().getResource(host, urlToCreateOrUpdate);
 		StorageErrorReason storageErr = null;
 		if (existingResource != null) {
+			if (!handlerHelper.checkAuthorisation(manager, existingResource, request)) {
+				responseHandler.respondUnauthorised(existingResource, response, request);
+				return;
+			}
 			//Make sure the parent collection is not locked by someone else
 			if (handlerHelper.isLockedOut(request, existingResource)) {
 				log.warn("resource is locked, but not by the current user");
@@ -131,19 +135,19 @@ public class PutHandler implements Handler {
 				log.warn("parent exists but is not a collection resource: " + path.getParent());
 			}
 		} else {
-			if (!matchHelper.checkIfMatch(null, request)) {				
+			if (!matchHelper.checkIfMatch(null, request)) {
 				// Special case: we will get a PUT on a calendar to create a resource with an etag check match
 				// when no resource exists, when a user accepts a calendar invitation from lightning
 				// So have a special case here that says to allow if the parent is a calendar
 				Resource parent = manager.getResourceFactory().getResource(host, path.getParent().toString());
-				if( parent instanceof CalendarResource) {
+				if (parent instanceof CalendarResource) {
 					//  https://bugzilla.mozilla.org/show_bug.cgi?id=540398
 					log.info("if-match comparison failed on null resource, but parent is a calendar, so allow to proceed");
 				} else {
 					log.info("if-match comparison failed on null resource, aborting PUT request");
 					responseHandler.respondPreconditionFailed(request, response, existingResource);
 					return;
-				}				
+				}
 			}
 			if (matchHelper.checkIfNoneMatch(null, request)) {
 				log.info("if-none-match comparison failed on null resource, aborting PUT request");
@@ -152,6 +156,10 @@ public class PutHandler implements Handler {
 			}
 
 			CollectionResource parentCol = putHelper.findNearestParent(manager, host, path);
+			if (!handlerHelper.checkAuthorisation(manager, parentCol, request)) {
+				responseHandler.respondUnauthorised(parentCol, response, request);
+				return;
+			}
 			storageErr = handlerHelper.checkStorageOnAdd(request, parentCol, path.getParent(), host);
 		}
 
@@ -212,10 +220,6 @@ public class PutHandler implements Handler {
 	}
 
 	private void processCreate(HttpManager manager, Request request, Response response, PutableResource folder, String newName) throws ConflictException, BadRequestException, NotAuthorizedException {
-		if (!handlerHelper.checkAuthorisation(manager, folder, request)) {
-			responseHandler.respondUnauthorised(folder, response, request);
-			return;
-		}
 
 		LogUtils.debug(log, "process: putting to: ", folder.getName());
 		try {
@@ -272,7 +276,7 @@ public class PutHandler implements Handler {
 				if (!handlerHelper.checkAuthorisation(manager, mkcol, request)) {
 					throw new NotAuthorizedException(mkcol);
 				}
-				log.info( "autocreating new folder: " + path.getName());
+				log.info("autocreating new folder: " + path.getName());
 				CollectionResource newCol = mkcol.createCollection(path.getName());
 				manager.getEventManager().fireEvent(new NewFolderEvent(newCol));
 				return newCol;

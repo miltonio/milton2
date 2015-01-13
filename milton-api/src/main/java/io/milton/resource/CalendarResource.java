@@ -32,7 +32,8 @@ public interface CalendarResource extends CalendarCollection, PropFindableResour
         VEVENT,
         VTODO,
         VTIMEZONE,
-        VFREEBUSY
+        VFREEBUSY,
+        VJOURNAL
     }
     
     String getCalendarDescription();

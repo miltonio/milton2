@@ -156,6 +156,7 @@ public class AnnoPrincipalResource extends AnnoCollectionResource implements Dis
 
 	@Override
 	public SupportedCalendarComponentListsSet getSupportedComponentSets() {
+		log.trace("getSupportedComponentSets");
 		return annoFactory.supportedComponentSets.get(this);
 	}
 
