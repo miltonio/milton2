@@ -53,29 +53,38 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
- * Loads the spring context either from a spring configuration XML file or a spring @Configuration class.
+ * Loads the spring context either from a spring configuration XML file or a
+ * spring @Configuration class.
  *
- * <p>Use {@code contextConfigClass} to define the @Configuration class or {@code contextConfigLocation}
- * to define the Spring XML configuration file. If any of them is defined, {@link SpringMiltonFilter} will
- * try to load a file named applicationContext.xml from the classpath.
+ * <p>
+ * Use {@code contextConfigClass} to define the @Configuration class or
+ * {@code contextConfigLocation} to define the Spring XML configuration file. If
+ * any of them is defined, {@link SpringMiltonFilter} will try to load a file
+ * named applicationContext.xml from the classpath.
  * <br>If it still fails, only the parent context will be considered.
- * 
- * <p>This filter then gets the bean named milton.http.manager and uses that for
+ *
+ * <p>
+ * This filter then gets the bean named milton.http.manager and uses that for
  * Milton processing.
  *
- * <p>The milton.http.manager bean can either be a {@link HttpManager} or it can be a
- * {@link HttpManagerBuilder}, in which case a {@link HttpManager} is constructed from it
+ * <p>
+ * The milton.http.manager bean can either be a {@link HttpManager} or it can be
+ * a {@link HttpManagerBuilder}, in which case a {@link HttpManager} is
+ * constructed from it
  *
- * <p>Requests with a path which begins with one of the exclude paths will not be
+ * <p>
+ * Requests with a path which begins with one of the exclude paths will not be
  * processed by Milton. Instead, for these requests, the filter chain will be
  * invoked so the request can be serviced by JSP or a servlet, etc
  *
- * <p>This uses an init parameter called {@code milton.exclude.paths}, which should be a
- * comma separated list of paths to ignore. For example:
- * 
+ * <p>
+ * This uses an init parameter called {@code milton.exclude.paths}, which should
+ * be a comma separated list of paths to ignore. For example:
+ *
  * <pre>/static,/images,/login.jsp</pre>
  *
- * <p>This allows non-Milton resources to be accessed, while still mapping all URLs
+ * <p>
+ * This allows non-Milton resources to be accessed, while still mapping all URLs
  * to Milton
  *
  * @author bradm
@@ -103,10 +112,13 @@ public class SpringMiltonFilter implements javax.servlet.Filter {
 
 		servletContext = fc.getServletContext();
 
-		String sExcludePaths = fc.getInitParameter("milton.exclude.paths");
-		log.info("init: exclude paths: " + sExcludePaths);
-		excludeMiltonPaths = sExcludePaths.split(",");
-
+		String sExcludePaths = fc.getInitParameter(EXCLUDE_PATHS_SYSPROP);		
+		if (sExcludePaths != null) {
+			log.info("init: exclude paths: " + sExcludePaths);
+			excludeMiltonPaths = sExcludePaths.split(",");
+		} else {
+			log.info("init: exclude paths property has not been set in filter init param " + EXCLUDE_PATHS_SYSPROP);
+		}
 
 		Object milton = context.getBean("milton.http.manager");
 		if (milton instanceof HttpManager) {
@@ -125,7 +137,6 @@ public class SpringMiltonFilter implements javax.servlet.Filter {
 		}
 
 		// init mail server
-
 		if (context.containsBean("milton.mail.server")) {
 			log.info("init mailserver...");
 			Object oMailServer = context.getBean("milton.mail.server");
@@ -142,6 +153,7 @@ public class SpringMiltonFilter implements javax.servlet.Filter {
 		}
 		log.info("Finished init");
 	}
+	private static final String EXCLUDE_PATHS_SYSPROP = "milton.exclude.paths";
 
 	@SuppressWarnings("resource")
 	protected void initSpringApplicationContext(FilterConfig fc) {
@@ -206,16 +218,18 @@ public class SpringMiltonFilter implements javax.servlet.Filter {
 	}
 
 	@Override
-	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain fc) throws IOException, ServletException {		
-		if (req instanceof HttpServletRequest) {			
+	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain fc) throws IOException, ServletException {
+		if (req instanceof HttpServletRequest) {
 			HttpServletRequest hsr = (HttpServletRequest) req;
 			String url = hsr.getRequestURI();
 			// Allow certain paths to be excluded from Milton, these might be other servlets, for example
-			for (String s : excludeMiltonPaths) {
-				if (url.startsWith(s)) {
-					log.trace("doFilter: is excluded path");
-					fc.doFilter(req, resp);
-					return;
+			if (excludeMiltonPaths != null) {
+				for (String s : excludeMiltonPaths) {
+					if (url.startsWith(s)) {
+						log.trace("doFilter: is excluded path");
+						fc.doFilter(req, resp);
+						return;
+					}
 				}
 			}
 			log.trace("doFilter: begin milton processing");
