@@ -68,6 +68,16 @@ public class GrizzlyMiltonRequest extends  AbstractRequest {
         this.wrapped = wrapped;
     }
 
+	@Override
+	public String getHostHeader() {
+		String s = getRequestHeader(Header.HOST);
+		if( s == null ) {
+			s = "";
+		}
+		return s;
+	}
+	
+	
     @Override
     public String getRequestHeader(Header header) {
         return wrapped.getHeader(header.code);
