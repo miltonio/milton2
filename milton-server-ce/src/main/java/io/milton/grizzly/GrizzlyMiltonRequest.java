@@ -271,6 +271,10 @@ public class GrizzlyMiltonRequest extends  AbstractRequest {
 		if( StringUtils.isNotBlank(forewardFor)) {
 			return forewardFor;
 		}
+		forewardFor = wrapped.getHeader("x-forwarded-for");
+		if( StringUtils.isNotBlank(forewardFor)) {
+			return forewardFor;
+		}		
         return wrapped.getRemoteAddr();
     }
     
