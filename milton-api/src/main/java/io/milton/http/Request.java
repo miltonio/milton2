@@ -294,7 +294,8 @@ public interface Request {
     List<Cookie> getCookies();
 
     /**
-     * Returns the IP of the remote client
+     * Returns the IP of the remote client. This attempts to find the originating
+     * client, ie not the last proxy, by using X-Forwarded-For etc
      *
      * @return
      */
