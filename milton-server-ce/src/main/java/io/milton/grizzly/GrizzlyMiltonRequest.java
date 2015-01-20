@@ -23,6 +23,7 @@ import java.util.Map;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.RequestContext;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.lang.StringUtils;
 import org.glassfish.grizzly.http.server.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -236,8 +237,17 @@ public class GrizzlyMiltonRequest extends  AbstractRequest {
         return list;
     }
 
+	/**
+	 * Returns X-Forwarded-For if present
+	 * 
+	 * @return 
+	 */
     @Override
     public String getRemoteAddr() {
+		String forewardFor = wrapped.getHeader("X-Forwarded-For");
+		if( StringUtils.isNotBlank(forewardFor)) {
+			return forewardFor;
+		}
         return wrapped.getRemoteAddr();
     }
     
