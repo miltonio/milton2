@@ -145,8 +145,8 @@ public class DefaultPropPatchParserTest extends TestCase {
         assertEquals("1001", fieldsToSet.get(calendarOrder));
         assertEquals(timezone, fieldsToSet.get(calendarTimezone));
         assertEquals("Untitled", fieldsToSet.get(displayName));
-        assertEquals("<opaque></opaque>", fieldsToSet.get(transparency));
-        assertEquals("<comp name=\"VEVENT\"></comp>", fieldsToSet.get(supportedComponentSet));
+        assertEquals("<opaque/>", fieldsToSet.get(transparency));
+        assertEquals("<comp name=\"VEVENT\"/>", fieldsToSet.get(supportedComponentSet));
 
         Set<QName> fieldsToRemove = result.getFieldsToRemove();
         assertEquals(0, fieldsToRemove.size());

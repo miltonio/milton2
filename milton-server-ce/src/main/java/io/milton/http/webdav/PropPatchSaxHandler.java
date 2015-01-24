@@ -243,7 +243,14 @@ public class PropPatchSaxHandler extends DefaultHandler
 		@Override
 		public void endSelf(QName name) throws SAXException
 		{
-			value.append("</").append(name.getLocalPart()).append(">");
+			if(value.charAt(value.length() - 1) == '>')
+			{
+				value.insert(value.length() - 1, '/');
+			}
+			else
+			{
+				value.append("</").append(name.getLocalPart()).append(">");
+			}
 		}
 
 		@Override
