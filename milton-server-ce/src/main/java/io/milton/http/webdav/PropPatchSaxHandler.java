@@ -97,7 +97,7 @@ public class PropPatchSaxHandler extends DefaultHandler
 		{
 		}
 
-		private static StateHandler Ignore = new StateHandler()
+		public static StateHandler Ignore = new StateHandler()
 		{
 			@Override
 			public StateHandler startChild(QName name, Attributes attributes) throws SAXException
