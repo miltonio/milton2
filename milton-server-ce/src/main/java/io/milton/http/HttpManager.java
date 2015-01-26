@@ -50,12 +50,12 @@ public class HttpManager {
 
 	private static final ThreadLocal<Request> tlRequest = new ThreadLocal<Request>();
 	private static final ThreadLocal<Response> tlResponse = new ThreadLocal<Response>();
-	private static final Map<Thread,RequestInfo> mapOfRequestsByThread = new ConcurrentHashMap<Thread, RequestInfo>();
+	private static final Map<Thread, RequestInfo> mapOfRequestsByThread = new ConcurrentHashMap<Thread, RequestInfo>();
 
 	public static RequestInfo getRequestDataForThread(Thread th) {
 		return mapOfRequestsByThread.get(th);
 	}
-	
+
 	public static String decodeUrl(String s) {
 		return Utils.decodePath(s);
 	}
@@ -129,11 +129,16 @@ public class HttpManager {
 	}
 
 	public void process(Request request, Response response) {
-		if( request == null ) {
-			throw new RuntimeException("request is null");					
+		if (request == null) {
+			throw new RuntimeException("request is null");
 		}
+		String host = request.getHostHeader();
+		if (host == null) {
+			host = "";
+		}
+
 		if (log.isInfoEnabled()) {
-			log.info(request.getMethod() + " :: " + request.getAbsoluteUrl() + " start");
+			log.info(request.getMethod() + " :: " + host + "//" + request.getAbsolutePath() + " start");
 		}
 
 		try {
@@ -147,14 +152,16 @@ public class HttpManager {
 			} catch (NotAuthorizedException ex) {
 				responseHandler.respondUnauthorised(null, response, request);
 			}
-			
+
 			FilterChain chain = new FilterChain(this);
 			long tm = System.currentTimeMillis();
 			chain.process(request, response);
 			try {
 				tm = System.currentTimeMillis() - tm;
-				log.info(request.getMethod() + " :: " + request.getAbsoluteUrl() + " finished " + tm + "ms, Status:" + response.getStatus() + ", Length:" + response.getContentLength() );
-				fireResponseEvent(request, response, tm);				
+				if (log.isInfoEnabled()) {
+					log.info(request.getMethod() + " :: " + host + "//" + request.getAbsolutePath() + " finished " + tm + "ms, Status:" + response.getStatus() + ", Length:" + response.getContentLength());
+				}
+				fireResponseEvent(request, response, tm);
 			} catch (ConflictException ex) {
 				log.warn("exception thrown from event handler after response is complete", ex);
 			} catch (BadRequestException ex) {
@@ -289,8 +296,9 @@ public class HttpManager {
 	public EntityTransport getEntityTransport() {
 		return entityTransport;
 	}
-	
+
 	public class RequestInfo {
+
 		private final Method method;
 		private final String url;
 		private final Date started;
@@ -312,7 +320,7 @@ public class HttpManager {
 		public String getUrl() {
 			return url;
 		}
-		
+
 		public long getDurationMillis() {
 			return System.currentTimeMillis() - started.getTime();
 		}
