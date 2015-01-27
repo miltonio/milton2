@@ -89,7 +89,7 @@ public class GrizzlyMiltonResponse extends AbstractResponse {
 		try {
 			r.getOutputStream().close();
 			log.info("Closed outputstream after sendError");
-		} catch (IOException e) {
+		} catch (Throwable e) {
 			log.warn("Failed to close outputstream after sendError");
 		}
     }
