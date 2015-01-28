@@ -60,10 +60,10 @@ public abstract class AbstractMultiGetReport implements QualifiedReport {
         List<PropFindResponse> respProps = new ArrayList<PropFindResponse>();
 
         for (String href : hrefs) {
-            String decodedHref = HttpManager.decodeUrl(href);
-            if(!decodedHref.startsWith("/")) {
-                decodedHref = Utils.suffixSlash(path) + decodedHref;
+            if(!href.startsWith("/")) {
+                href = Utils.suffixSlash(path) + href;
             }
+            String decodedHref = HttpManager.decodeUrl(href);
             Resource r = resourceFactory.getResource(host, decodedHref);
             if (r != null) {
                 if (r instanceof PropFindableResource) {
