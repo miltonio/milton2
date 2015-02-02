@@ -56,10 +56,10 @@ public class Path implements Serializable {
             char c = s.charAt( i );
             switch( c ) {
                 case '/':
-                    if( sb == null ) {
+                    if( i == 0 ) {
                         parent = root;
                     } else {
-                        if( sb.length() > 0 ) {
+                        if( sb != null && sb.length() > 0 ) {
                             String ss = sb.toString();
                             if( parent != null ) parent = parent.child( ss );
                             else parent = new Path( null, ss );
@@ -75,12 +75,10 @@ public class Path implements Serializable {
                     sb.append( c );
             }
         }
-        if( sb != null ) {
-            if( sb.length() > 0 ) {
-                String ss = sb.toString();
-                if( parent != null ) parent = parent.child( ss );
-                else parent = new Path( null, ss );
-            }
+        if( sb != null && sb.length() > 0 ) {
+            String ss = sb.toString();
+            if( parent != null ) parent = parent.child( ss );
+            else parent = new Path( null, ss );
         }
 
         return parent;
@@ -121,7 +119,7 @@ public class Path implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return - the first part of the path. ie a/b/c returns a
      */
     public String getFirst() {

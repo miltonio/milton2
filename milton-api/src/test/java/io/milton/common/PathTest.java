@@ -26,7 +26,7 @@ import junit.framework.TestCase;
  * @author brad
  */
 public class PathTest extends TestCase {
-    
+
     public PathTest(String testName) {
         super(testName);
     }
@@ -69,5 +69,10 @@ public class PathTest extends TestCase {
 
         Path path = Path.path("b/c");
         assertEquals(true,path.isRelative());
+    }
+
+    public void testDoubleSlash() {
+        Path p = Path.path("/a//b/c");
+        assertEquals("/a/b/c", p.toString());
     }
 }
