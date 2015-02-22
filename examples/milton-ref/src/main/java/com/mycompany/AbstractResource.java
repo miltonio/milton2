@@ -24,6 +24,7 @@ import io.milton.http.Request.Method;
 import io.milton.http.http11.auth.DigestGenerator;
 import io.milton.http.http11.auth.DigestResponse;
 import io.milton.resource.DigestResource;
+import io.milton.resource.OAuth2Resource;
 import io.milton.resource.ReportableResource;
 import io.milton.resource.Resource;
 import java.util.Date;
@@ -34,7 +35,7 @@ import java.util.UUID;
  *
  * @author alex
  */
-public class AbstractResource implements Resource, ReportableResource, DigestResource {
+public class AbstractResource implements Resource, ReportableResource, DigestResource, OAuth2Resource {
 
     private static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(AbstractResource.class);
     protected UUID id;
@@ -143,4 +144,74 @@ public class AbstractResource implements Resource, ReportableResource, DigestRes
     public boolean isDigestAllowed() {
         return true;
     }
+
+    private String OAuth2Location;
+    private String OAuth2ClientId;
+    private String OAuth2RedirectURI;
+    private String OAuth2ClientSecret;
+    private int OAuth2Step;
+    private String OAuth2PermissionResponse;
+
+    @Override
+    public String getOAuth2ClientSecret() {
+        return OAuth2ClientSecret;
+    }
+
+    public void setOAuth2ClientSecret(String OAuth2ClientSecret) {
+        this.OAuth2ClientSecret = OAuth2ClientSecret;
+    }
+
+    @Override
+    public String getOAuth2Location() {
+        return OAuth2Location;
+    }
+
+    public void setOAuth2Location(String OAuth2Location) {
+        this.OAuth2Location = OAuth2Location;
+    }
+
+    @Override
+    public String getOAuth2ClientId() {
+        return OAuth2ClientId;
+    }
+
+    public void setOAuth2ClientId(String OAuth2ClientId) {
+        this.OAuth2ClientId = OAuth2ClientId;
+    }
+
+    @Override
+    public String getOAuth2RedirectURI() {
+        return OAuth2RedirectURI;
+    }
+
+    public void setOAuth2RedirectURI(String OAuth2RedirectURI) {
+        this.OAuth2RedirectURI = OAuth2RedirectURI;
+    }
+
+    public void setOAuth2Step(int OAuth2Step) {
+        this.OAuth2Step = OAuth2Step;
+    }
+
+    public void setOAuth2PermissionResponse(String OAuth2PermissionResponse) {
+        this.OAuth2PermissionResponse = OAuth2PermissionResponse;
+    }
+
+    @Override
+    public int getOAuth2Step() {
+        return OAuth2Step;
+    }
+
+    @Override
+    public String getOAuth2PermissionResponse() {
+        return OAuth2PermissionResponse;
+    }
+
+    @Override
+    public boolean isOAuth2Authorized() {
+
+        //TODO  
+        //verify the authorization code which retrieved from the OAuth2.0 Server
+        return false;
+    }
+
 }

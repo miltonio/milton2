@@ -68,6 +68,7 @@ import io.milton.http.http11.auth.LoginResponseHandler;
 import io.milton.http.http11.auth.LoginResponseHandler.LoginPageTypeHandler;
 import io.milton.http.http11.auth.Nonce;
 import io.milton.http.http11.auth.NonceProvider;
+import io.milton.http.http11.auth.OAuth2AuthenticationHandler;
 import io.milton.http.http11.auth.SimpleMemoryNonceProvider;
 import io.milton.http.json.JsonPropFindHandler;
 import io.milton.http.json.JsonPropPatchHandler;
@@ -147,6 +148,7 @@ import org.slf4j.LoggerFactory;
  * milton end up with different implementations of the same concern. For
  * example, PropFind and PropPatch could end up using different property sources
  * </p>
+ *
  * @author brad
  */
 public class HttpManagerBuilder {
@@ -241,6 +243,10 @@ public class HttpManagerBuilder {
 	private boolean useLongLivedCookies = true;
 	private boolean enableQuota = false;
 
+	private OAuth2AuthenticationHandler oAuth2Handler;
+
+	private boolean enableOAuth2 = false;
+
 	protected io.milton.http.SecurityManager securityManager() {
 		if (securityManager == null) {
 			if (mapOfNameAndPasswords == null) {
@@ -298,7 +304,7 @@ public class HttpManagerBuilder {
 			mainResourceFactory = fsResourceFactory;
 			log.info("Using file system with root directory: {}", rootDir.getAbsolutePath());
 		}
-		if( mainResourceFactory instanceof AnnotationResourceFactory ) {
+		if (mainResourceFactory instanceof AnnotationResourceFactory) {
 			AnnotationResourceFactory arf = (AnnotationResourceFactory) mainResourceFactory;
 			log.info("Set AnnotationResourceFactory context path to: {}", contextPath);
 			arf.setContextPath(contextPath);
@@ -333,6 +339,17 @@ public class HttpManagerBuilder {
 				if (digestHandler != null) {
 					authenticationHandlers.add(digestHandler);
 				}
+
+				if (oAuth2Handler == null) {
+					if (enableOAuth2) {
+
+						oAuth2Handler = new OAuth2AuthenticationHandler(nonceProvider);
+					}
+				}
+				if (oAuth2Handler != null) {
+					authenticationHandlers.add(oAuth2Handler);
+				}
+
 				if (formAuthenticationHandler == null) {
 					if (enableFormAuth) {
 						formAuthenticationHandler = new FormAuthenticationHandler();
@@ -397,17 +414,17 @@ public class HttpManagerBuilder {
 				log.info("Reading cookie signing keys from: {}", fKeys.getAbsolutePath());
 				FileUtils.readLines(fKeys, cookieSigningKeys);
 				log.info("Loaded Keys: {}", cookieSigningKeys.size());
-				if( cookieSigningKeys.isEmpty()) {
+				if (cookieSigningKeys.isEmpty()) {
 					UUID newKey = UUID.randomUUID();
 					cookieSigningKeys.add(newKey.toString());
-					FileUtils.writeLines(fKeys, cookieSigningKeys);					
+					FileUtils.writeLines(fKeys, cookieSigningKeys);
 				}
 
 				// Remove any blank lines
 				Iterator<String> it = cookieSigningKeys.iterator();
-				while( it.hasNext() ) {
+				while (it.hasNext()) {
 					String s = it.next();
-					if( StringUtils.isBlank(s) ) {
+					if (StringUtils.isBlank(s)) {
 						it.remove();
 					}
 				}
@@ -616,8 +633,8 @@ public class HttpManagerBuilder {
 			DefaultPropFindRequestFieldParser defaultFieldParse = new DefaultPropFindRequestFieldParser();
 			this.propFindRequestFieldParser = new MsPropFindRequestFieldParser(defaultFieldParse); // use MS decorator for windows support				
 		}
-		if( quotaDataAccessor == null ) {
-			if( enableQuota ) {
+		if (quotaDataAccessor == null) {
+			if (enableQuota) {
 				quotaDataAccessor = new DefaultQuotaDataAccessor();
 			}
 		}
@@ -1047,6 +1064,22 @@ public class HttpManagerBuilder {
 		this.digestHandler = digestHandler;
 	}
 
+	public OAuth2AuthenticationHandler getOAuth2Handler() {
+		return oAuth2Handler;
+	}
+
+	public void setOAuth2Handler(OAuth2AuthenticationHandler oAuth2Handler) {
+		this.oAuth2Handler = oAuth2Handler;
+	}
+
+	public boolean isEnableOAuth2() {
+		return enableOAuth2;
+	}
+
+	public void setEnableOAuth2(boolean enableOAuth2) {
+		this.enableOAuth2 = enableOAuth2;
+	}
+
 	public FormAuthenticationHandler getFormAuthenticationHandler() {
 		return formAuthenticationHandler;
 	}
@@ -1123,10 +1156,10 @@ public class HttpManagerBuilder {
 
 	/**
 	 * Used to set context path on certain implementations of ResourceFactory
-	 * 
+	 *
 	 * Alias for fsContentPath
-	 * 
-	 * @return 
+	 *
+	 * @return
 	 */
 	public String getContextPath() {
 		return contextPath;
@@ -1136,8 +1169,6 @@ public class HttpManagerBuilder {
 		this.contextPath = contextPath;
 	}
 
-	
-	
 	public UserAgentHelper getUserAgentHelper() {
 		return userAgentHelper;
 	}
@@ -1375,8 +1406,8 @@ public class HttpManagerBuilder {
 	/**
 	 * If quota is enabled, then extension properties to report quota
 	 * information are available.
-	 * 
-	 * @return 
+	 *
+	 * @return
 	 */
 	public boolean isEnableQuota() {
 		return enableQuota;
@@ -1385,8 +1416,6 @@ public class HttpManagerBuilder {
 	public void setEnableQuota(boolean enableQuota) {
 		this.enableQuota = enableQuota;
 	}
-	
-	
 
 	/**
 	 * Default max-age to use for certain resource types which can use a default
@@ -1438,7 +1467,7 @@ public class HttpManagerBuilder {
 	public void setCookieSigningKeys(List<String> cookieSigningKeys) {
 		this.cookieSigningKeys = cookieSigningKeys;
 	}
-	
+
 	public void setUseLongLivedCookies(boolean useLongLivedCookies) {
 		this.useLongLivedCookies = useLongLivedCookies;
 	}
@@ -1446,11 +1475,12 @@ public class HttpManagerBuilder {
 	/**
 	 * If true signed cookies for authentication will be long-lived, as defined
 	 * in CookieAuthenticationHandler.SECONDS_PER_YEAR
-	 * @return 
+	 *
+	 * @return
 	 */
 	public boolean isUseLongLivedCookies() {
 		return useLongLivedCookies;
-	}	
+	}
 
 	/**
 	 * If present is assumed to be a text file containing lines, where each line
