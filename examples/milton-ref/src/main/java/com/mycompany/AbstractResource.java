@@ -150,6 +150,8 @@ public class AbstractResource implements Resource, ReportableResource, DigestRes
     private String OAuth2RedirectURI;
     private String OAuth2ClientSecret;
     private int OAuth2Step;
+    private String tokenLocation;
+    private String userProfileLocation;
     private String OAuth2PermissionResponse;
 
     @Override
@@ -212,6 +214,24 @@ public class AbstractResource implements Resource, ReportableResource, DigestRes
         //TODO  
         //verify the authorization code which retrieved from the OAuth2.0 Server
         return false;
+    }
+
+    @Override
+    public String getOAuth2TokenLocation() {
+        return tokenLocation;
+    }
+
+    public void setOAuth2TokenLocation(String tokenLocation) {
+        this.tokenLocation = tokenLocation;
+    }
+
+    public void setOAuth2UserProfileLocation(String userProfileLocation) {
+        this.userProfileLocation = userProfileLocation;
+    }
+
+    @Override
+    public String getOAuth2UserProfileLocation() {
+        return this.userProfileLocation;
     }
 
 }

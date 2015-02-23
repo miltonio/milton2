@@ -36,7 +36,7 @@ public class OAuth2TokenResponse extends OAuthAccessTokenResponse {
 	public void setOAuth2URL(String OAuth2URL) {
 		this.OAuth2URL = OAuth2URL;
 	}
-	
+
 	@Override
 	public String getAccessToken() {
 		return getParam(OAuth.OAUTH_ACCESS_TOKEN);

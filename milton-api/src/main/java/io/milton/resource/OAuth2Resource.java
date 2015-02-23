@@ -37,6 +37,10 @@ public interface OAuth2Resource extends Resource {
 
     String getOAuth2RedirectURI();
 
+    String getOAuth2TokenLocation();
+
+    String getOAuth2UserProfileLocation();
+
     boolean isOAuth2Authorized();
 
 }

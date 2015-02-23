@@ -38,6 +38,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -137,20 +138,25 @@ public class TFolderResource extends TResource implements PutableResource, MakeC
 
     private void doOAth2(PrintWriter pw) throws OAuthSystemException, MalformedURLException {
         super.setOAuth2ClientId("131804060198305");
+
         super.setOAuth2Location("https://graph.facebook.com/oauth/authorize");
         super.setOAuth2RedirectURI("http://localhost:8080/");
         super.setOAuth2Step(OAuth2Resource.GRANT_PERMISSION);
 
+        super.setOAuth2ClientSecret("3acb294b071c9aec86d60ae3daf32a93");
+        super.setOAuth2TokenLocation("https://graph.facebook.com/oauth/access_token");
+
+        super.setOAuth2UserProfileLocation("https://graph.facebook.com/me");
+
         OAuth2Helper oAuth2Helper = new OAuth2Helper(null);
         Object obj = oAuth2Helper.checkOAuth2URL(this);
         log.info("-----oAuth2Helper.checkOAuth2URL------" + obj);
-        if (obj instanceof OAuth2TokenResponse) {
-            String strTemp = ((OAuth2TokenResponse) obj).getOAuth2URL();
+        if (obj instanceof URL) {
+            String strTemp = ((URL) obj).toString();
             log.info("OAuth2TokenResponse, OAuth2URL={}" + strTemp);
             if (strTemp != null) {
-
                 pw.print("<ul>");
-                pw.print("<li><a href='" + strTemp + "'>" + "Authorize(CODE)" + "</a></li>");
+                pw.print("<li><a href='" + strTemp + "'>" + "Authorize(facebook)" + "</a></li>");
                 pw.print("</ul>");
             }
 

@@ -15,21 +15,17 @@
  */
 package io.milton.http.http11.auth;
 
+import io.milton.http.Auth;
 import io.milton.http.AuthenticationHandler;
 import io.milton.http.OAuth2TokenResponse;
+import io.milton.http.OAuth2TokenUser;
 import io.milton.http.Request;
 import io.milton.resource.OAuth2Resource;
 import io.milton.resource.Resource;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
-import org.apache.oltu.oauth2.client.OAuthClient;
-import org.apache.oltu.oauth2.client.URLConnectionClient;
-import org.apache.oltu.oauth2.client.request.OAuthClientRequest;
+import org.apache.commons.lang.StringUtils;
+import org.apache.oltu.oauth2.client.response.OAuthResourceResponse;
 import org.apache.oltu.oauth2.common.OAuth;
-import org.apache.oltu.oauth2.common.exception.OAuthProblemException;
-import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
-import org.apache.oltu.oauth2.common.message.types.GrantType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,25 +47,48 @@ public class OAuth2AuthenticationHandler implements AuthenticationHandler {
 	@Override
 	public Object authenticate(Resource resource, Request request) {
 
-		log.info("OAuth2AuthenticationHandler start..." + resource);
+		log.info("\n\n............OAuth2AuthenticationHandler start........." + resource);
+
+		if (request == null) {
+			return null;
+		}
+
+		Auth auth = request.getAuthorization();
+		String realm = auth.getRealm();
+		Object o = auth.getTag();
+		log.trace("auth.getTag{}" + o + " realm{}" + realm + " user{}" + auth.getUser());
+
+		if (o instanceof OAuth2TokenUser) {
+			log.info("signed {}:" + o);
+			// return null;// TODO for testing
+		}
 
 		try {
 			if (resource instanceof OAuth2Resource) {
 				OAuth2Resource oAuth2Resource = (OAuth2Resource) resource;
-				log.info("This is a OAuth2Resource, and processing the oAuth step: " + oAuth2Resource.getOAuth2Step());
+				log.info("This is a OAuth2Resource{} " + oAuth2Resource);
 
 				String oAuth2Code = request.getParams().get(OAuth.OAUTH_CODE);
-				log.info("authenticate(), oAuth2Code{}" + oAuth2Code);
+				String oAuth2Error = request.getParams().get("error");
+				log.info("authenticate(), error{}" + oAuth2Error + " oAuth2Code{}" + oAuth2Code);
 
-				// Sept 1, Build OAuth2 End User Authorization Request URL For Getting a Access Permission
-				if (oAuth2Resource.getOAuth2Step() == OAuth2Resource.GRANT_PERMISSION) {
+				if (StringUtils.isNotBlank(oAuth2Code) && StringUtils.isBlank(oAuth2Error)) {
+					// Step :Obtain the access token
+					OAuth2TokenResponse oAuth2Response
+							= this.oAuth2Helper.obtainAuth2Token(oAuth2Resource, oAuth2Code);
+					log.info("This is a OAuth2TokenResponse{} " + oAuth2Response);
 
-					return this.oAuth2Helper.checkOAuth2URL(oAuth2Resource);
-				}
+					if (oAuth2Response != null) {
+						// Step : Get the profile.
+						OAuthResourceResponse resourceResponse
+								= this.oAuth2Helper.getOAuth2Profile(oAuth2Response, oAuth2Resource);
+						log.info("This is a OAuthResourceResponse{} " + resourceResponse);
 
-				// Sept 2, After Got The Authorization Code(a Access Permission), then Granting the Access Token.
-				if (oAuth2Resource.getOAuth2Step() == OAuth2Resource.OBTAIN_TOKEN) {
-					return this.oAuth2Helper.obtainAuth2Token(oAuth2Resource);
+						if (resourceResponse != null) {
+							// Step : Get the user info.
+							return this.oAuth2Helper.getOAuth2UserInfo(resourceResponse, oAuth2Response, oAuth2Code);
+						}
+					}
 				}
 			}
 		} catch (Exception ex) {
