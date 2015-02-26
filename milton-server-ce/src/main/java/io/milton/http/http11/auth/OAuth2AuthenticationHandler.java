@@ -54,14 +54,14 @@ public class OAuth2AuthenticationHandler implements AuthenticationHandler {
 		}
 
 		Auth auth = request.getAuthorization();
-		String realm = auth.getRealm();
-		Object o = auth.getTag();
-		log.trace("auth.getTag{}" + o + " realm{}" + realm + " user{}" + auth.getUser());
+		//String realm = auth.getRealm();
+		//Object o = auth.getTag();
+		//log.trace("auth.getTag{}" + o + " realm{}" + realm + " user{}" + auth.getUser());
 
-		if (o instanceof OAuth2TokenUser) {
-			log.info("signed {}:" + o);
+		//if (o instanceof OAuth2TokenUser) {
+			//log.info("signed {}:" + o);
 			// return null;// TODO for testing
-		}
+		//}
 
 		try {
 			if (resource instanceof OAuth2Resource) {
