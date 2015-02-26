@@ -59,10 +59,9 @@ public class OAuth2AuthenticationHandler implements AuthenticationHandler {
 		//log.trace("auth.getTag{}" + o + " realm{}" + realm + " user{}" + auth.getUser());
 
 		//if (o instanceof OAuth2TokenUser) {
-			//log.info("signed {}:" + o);
-			// return null;// TODO for testing
+		//log.info("signed {}:" + o);
+		// return null;// TODO for testing
 		//}
-
 		try {
 			if (resource instanceof OAuth2Resource) {
 				OAuth2Resource oAuth2Resource = (OAuth2Resource) resource;
@@ -86,7 +85,12 @@ public class OAuth2AuthenticationHandler implements AuthenticationHandler {
 
 						if (resourceResponse != null) {
 							// Step : Get the user info.
-							return this.oAuth2Helper.getOAuth2UserInfo(resourceResponse, oAuth2Response, oAuth2Code);
+
+							OAuth2TokenUser oAuth2TokenUser = this.oAuth2Helper.getOAuth2UserInfo(resourceResponse, oAuth2Response, oAuth2Code);
+
+							oAuth2Resource.setOAuth2TokenUser(oAuth2TokenUser);
+
+							return oAuth2TokenUser;
 						}
 					}
 				}

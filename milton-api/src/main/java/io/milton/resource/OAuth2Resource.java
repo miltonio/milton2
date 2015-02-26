@@ -21,11 +21,11 @@ package io.milton.resource;
  */
 public interface OAuth2Resource extends Resource {
 
-    static final int DEFAULT_STEP = -1;
-    static final int GRANT_PERMISSION = 1;
-    static final int OBTAIN_TOKEN = 2;
+//    static final int DEFAULT_STEP = -1;
+//    static final int GRANT_PERMISSION = 1;
+//    static final int OBTAIN_TOKEN = 2;
 
-    int getOAuth2Step();
+//    int getOAuth2Step();
 
     String getOAuth2PermissionResponse();
 
@@ -40,6 +40,10 @@ public interface OAuth2Resource extends Resource {
     String getOAuth2TokenLocation();
 
     String getOAuth2UserProfileLocation();
+
+    void setOAuth2TokenUser(Object obj);
+
+    Object getOAuth2TokenUser();
 
     boolean isOAuth2Authorized();
 

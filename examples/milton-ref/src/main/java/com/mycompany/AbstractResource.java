@@ -19,6 +19,7 @@
 package com.mycompany;
 
 import io.milton.http.Auth;
+import io.milton.http.OAuth2TokenUser;
 import io.milton.http.Request;
 import io.milton.http.Request.Method;
 import io.milton.http.http11.auth.DigestGenerator;
@@ -149,10 +150,11 @@ public class AbstractResource implements Resource, ReportableResource, DigestRes
     private String OAuth2ClientId;
     private String OAuth2RedirectURI;
     private String OAuth2ClientSecret;
-    private int OAuth2Step;
+
     private String tokenLocation;
     private String userProfileLocation;
     private String OAuth2PermissionResponse;
+    private OAuth2TokenUser oAuth2TokenUser;
 
     @Override
     public String getOAuth2ClientSecret() {
@@ -190,18 +192,18 @@ public class AbstractResource implements Resource, ReportableResource, DigestRes
         this.OAuth2RedirectURI = OAuth2RedirectURI;
     }
 
-    public void setOAuth2Step(int OAuth2Step) {
-        this.OAuth2Step = OAuth2Step;
-    }
+//    public void setOAuth2Step(int OAuth2Step) {
+//        this.OAuth2Step = OAuth2Step;
+//    }
 
     public void setOAuth2PermissionResponse(String OAuth2PermissionResponse) {
         this.OAuth2PermissionResponse = OAuth2PermissionResponse;
     }
 
-    @Override
-    public int getOAuth2Step() {
-        return OAuth2Step;
-    }
+//    @Override
+//    public int getOAuth2Step() {
+//        return OAuth2Step;
+//    }
 
     @Override
     public String getOAuth2PermissionResponse() {
@@ -232,6 +234,18 @@ public class AbstractResource implements Resource, ReportableResource, DigestRes
     @Override
     public String getOAuth2UserProfileLocation() {
         return this.userProfileLocation;
+    }
+
+    @Override
+    public void setOAuth2TokenUser(Object obj) {
+        if (obj instanceof OAuth2TokenUser) {
+            this.oAuth2TokenUser = (OAuth2TokenUser) obj;
+        }
+    }
+
+    @Override
+    public Object getOAuth2TokenUser() {
+        return this.oAuth2TokenUser;
     }
 
 }

@@ -20,6 +20,7 @@ package com.mycompany;
 
 import io.milton.common.StreamUtils;
 import io.milton.http.OAuth2TokenResponse;
+import io.milton.http.OAuth2TokenUser;
 import io.milton.http.Range;
 import io.milton.http.Request;
 import io.milton.http.annotated.CommonResource;
@@ -141,12 +142,22 @@ public class TFolderResource extends TResource implements PutableResource, MakeC
 
         super.setOAuth2Location("https://graph.facebook.com/oauth/authorize");
         super.setOAuth2RedirectURI("http://localhost:8080/");
-        super.setOAuth2Step(OAuth2Resource.GRANT_PERMISSION);
+//        super.setOAuth2Step(OAuth2Resource.GRANT_PERMISSION);
 
         super.setOAuth2ClientSecret("3acb294b071c9aec86d60ae3daf32a93");
         super.setOAuth2TokenLocation("https://graph.facebook.com/oauth/access_token");
 
         super.setOAuth2UserProfileLocation("https://graph.facebook.com/me");
+
+        Object objTokenUser = super.getOAuth2TokenUser();
+
+        String oAuth2TokenUserStr = "";
+        if (objTokenUser instanceof OAuth2TokenUser) {
+            OAuth2TokenUser oAuth2TokenUser = (OAuth2TokenUser) objTokenUser;
+
+            oAuth2TokenUserStr = "oAuth2TokenUserID:" + oAuth2TokenUser.getUserID();
+            log.info("-----oAuth2TokenUser------" + oAuth2TokenUserStr);
+        }
 
         OAuth2Helper oAuth2Helper = new OAuth2Helper(null);
         Object obj = oAuth2Helper.checkOAuth2URL(this);
@@ -156,7 +167,7 @@ public class TFolderResource extends TResource implements PutableResource, MakeC
             log.info("OAuth2TokenResponse, OAuth2URL={}" + strTemp);
             if (strTemp != null) {
                 pw.print("<ul>");
-                pw.print("<li><a href='" + strTemp + "'>" + "Authorize(facebook)" + "</a></li>");
+                pw.print("<li><a href='" + strTemp + "'>" + "Authorize(facebook)" + oAuth2TokenUserStr + "</a></li>");
                 pw.print("</ul>");
             }
 
