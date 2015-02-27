@@ -200,30 +200,41 @@
 		</dependency>
 		
 		<!-- Only required if using the grizzly adapters -->
-        <dependency>
-            <groupId>org.glassfish.grizzly</groupId>
-            <artifactId>grizzly-framework</artifactId>
-            <version>2.3.14</version>
+		<dependency>
+			<groupId>org.glassfish.grizzly</groupId>
+			<artifactId>grizzly-framework</artifactId>
+			<version>2.3.14</version>
 			<optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.grizzly</groupId>
-            <artifactId>grizzly-http-server</artifactId>
-            <version>2.3.14</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.grizzly</groupId>
+			<artifactId>grizzly-http-server</artifactId>
+			<version>2.3.14</version>
 			<optional>true</optional>
-        </dependency>        
-        <dependency>
-            <groupId>org.glassfish.grizzly</groupId>
-            <artifactId>grizzly-http-servlet</artifactId>
-            <version>2.3.14</version>
+		</dependency>        
+		<dependency>
+			<groupId>org.glassfish.grizzly</groupId>
+			<artifactId>grizzly-http-servlet</artifactId>
+			<version>2.3.14</version>
 			<optional>true</optional>
-        </dependency>        
-        <dependency>
-            <groupId>org.glassfish.grizzly</groupId>
-            <artifactId>tls-sni</artifactId>
-            <version>2.3.14</version>
+		</dependency>        
+		<dependency>
+			<groupId>org.glassfish.grizzly</groupId>
+			<artifactId>tls-sni</artifactId>
+			<version>2.3.14</version>
 			<optional>true</optional>
-        </dependency>		
+		</dependency>
+		<dependency>
+			<groupId>org.apache.oltu.oauth2</groupId>
+			<artifactId>org.apache.oltu.oauth2.client</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.oltu.oauth2</groupId>
+			<artifactId>org.apache.oltu.oauth2.common</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		
 	</dependencies>
 	<repositories>
 		<repository>  

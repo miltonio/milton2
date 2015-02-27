@@ -103,7 +103,8 @@ public class AuthenticationService {
 				Object loginToken = h.authenticate(resource, request);
 				if (loginToken == null) {
 					log.warn("authentication failed by AuthenticationHandler:" + h.getClass());
-					return new AuthStatus(auth, true);
+					//return new AuthStatus(auth, true);
+					continue;
 				} else {
 					if (log.isTraceEnabled()) {
 						log.trace("authentication passed by: " + h.getClass());

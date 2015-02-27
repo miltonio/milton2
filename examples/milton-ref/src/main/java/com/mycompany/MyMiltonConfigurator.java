@@ -40,18 +40,19 @@ public class MyMiltonConfigurator extends DefaultMiltonConfigurator {
 
     @Override
     protected void build() {
-        
+
         builder.setEnableCompression(false);
-        
+        builder.setEnableOAuth2(true);
+
         super.build();
-        
+
         resourceFactory = (TResourceFactory) builder.getMainResourceFactory(); // get our resource factory from the builder
         userFactory = new TLdapUserFactory(resourceFactory);
         LdapTransactionManager transactionManager = new NullLdapTransactionManager();
         ldapServer = new LdapServer(transactionManager, userFactory, builder.getWebDavProtocol(), builder.getPropFindPropertyBuilder());
         ldapServer.setPort(8369);
         ldapServer.start();
-        
+
         mailResourceFactory = new TMailResourceFactory(resourceFactory);
         MailServerBuilder msb = new MailServerBuilder();
         msb.setSmtpPort(2525);
@@ -59,8 +60,7 @@ public class MyMiltonConfigurator extends DefaultMiltonConfigurator {
         msb.setMailResourceFactory(mailResourceFactory);
         mailServer = msb.build();
         mailServer.start();
-        
-        
+
     }
 
     @Override

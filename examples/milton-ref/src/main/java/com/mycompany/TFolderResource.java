@@ -19,27 +19,36 @@
 package com.mycompany;
 
 import io.milton.common.StreamUtils;
+import io.milton.http.OAuth2TokenResponse;
+import io.milton.http.OAuth2TokenUser;
 import io.milton.http.Range;
 import io.milton.http.Request;
 import io.milton.http.annotated.CommonResource;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
+import io.milton.http.http11.auth.OAuth2Helper;
 import io.milton.resource.CollectionResource;
 import io.milton.resource.MakeCalendarResource;
 import io.milton.resource.MakeCollectionableResource;
+import io.milton.resource.OAuth2Resource;
 import io.milton.resource.PutableResource;
 import io.milton.resource.Resource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
 
 public class TFolderResource extends TResource implements PutableResource, MakeCollectionableResource, MakeCalendarResource {
 
@@ -112,15 +121,58 @@ public class TFolderResource extends TResource implements PutableResource, MakeC
     }
 
     @Override
-    public void sendContent(OutputStream out, Range range, Map<String, String> params, String contentType) throws IOException, NotAuthorizedException, BadRequestException {
+    public void sendContent(OutputStream out, Range range, Map<String, String> params, String contentType) throws IOException, NotAuthorizedException, BadRequestException, MalformedURLException {
         PrintWriter pw = new PrintWriter(out);
         pw.print("<html><body>");
         pw.print("<h1>" + this.getName() + "</h1>");
         pw.print("<p>" + this.getClass().getCanonicalName() + "</p>");
         doBody(pw);
+        try {
+            doOAth2(pw);
+        } catch (OAuthSystemException ex) {
+            Logger.getLogger(TFolderResource.class.getName()).log(Level.SEVERE, null, ex);
+        }
         pw.print("</body>");
         pw.print("</html>");
         pw.flush();
+    }
+
+    private void doOAth2(PrintWriter pw) throws OAuthSystemException, MalformedURLException {
+        super.setOAuth2ClientId("131804060198305");
+
+        super.setOAuth2Location("https://graph.facebook.com/oauth/authorize");
+        super.setOAuth2RedirectURI("http://localhost:8080/");
+//        super.setOAuth2Step(OAuth2Resource.GRANT_PERMISSION);
+
+        super.setOAuth2ClientSecret("3acb294b071c9aec86d60ae3daf32a93");
+        super.setOAuth2TokenLocation("https://graph.facebook.com/oauth/access_token");
+
+        super.setOAuth2UserProfileLocation("https://graph.facebook.com/me");
+
+        Object objTokenUser = super.getOAuth2TokenUser();
+
+        String oAuth2TokenUserStr = "";
+        if (objTokenUser instanceof OAuth2TokenUser) {
+            OAuth2TokenUser oAuth2TokenUser = (OAuth2TokenUser) objTokenUser;
+
+            oAuth2TokenUserStr = "oAuth2TokenUserID:" + oAuth2TokenUser.getUserID();
+            log.info("-----oAuth2TokenUser------" + oAuth2TokenUserStr);
+        }
+
+        OAuth2Helper oAuth2Helper = new OAuth2Helper(null);
+        Object obj = oAuth2Helper.checkOAuth2URL(this);
+        log.info("-----oAuth2Helper.checkOAuth2URL------" + obj);
+        if (obj instanceof URL) {
+            String strTemp = ((URL) obj).toString();
+            log.info("OAuth2TokenResponse, OAuth2URL={}" + strTemp);
+            if (strTemp != null) {
+                pw.print("<ul>");
+                pw.print("<li><a href='" + strTemp + "'>" + "Authorize(facebook)" + oAuth2TokenUserStr + "</a></li>");
+                pw.print("</ul>");
+            }
+
+        }
+
     }
 
     protected void doBody(PrintWriter pw) {
@@ -143,12 +195,12 @@ public class TFolderResource extends TResource implements PutableResource, MakeC
 
     public String getCTag() {
         Date d = getMostRecentModDate();
-        if( d == null ) {
+        if (d == null) {
             System.out.println("No ctag");
             return "000";
         } else {
-            
-            String s = d.getTime() + "t";                    
+
+            String s = d.getTime() + "t";
             System.out.println("ctag=" + s);
             return s;
         }
