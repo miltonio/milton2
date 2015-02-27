@@ -54,7 +54,11 @@ public class TResourceFactory implements ResourceFactory {
         addUser(users, "userC", "password", "userC@somewhere.com", "ACME", "555 1131");
     }
 
-    private static void addUser(TFolderResource users, String name, String password, String email, String org, String phone) {
+    public static TCalDavPrincipal getUser(String name) {
+        return (TCalDavPrincipal) users.child(name);
+    }
+    
+    public static TCalDavPrincipal addUser(TFolderResource users, String name, String password, String email, String org, String phone) {
         TCalDavPrincipal user = new TCalDavPrincipal(users, name, password, null, null, null);
         user.setGivenName("joe");
         user.setSurName("blogs" + users.children.size());
@@ -73,12 +77,14 @@ public class TResourceFactory implements ResourceFactory {
         TFolderResource addressBooks = new TFolderResource(user, "abs");
         user.setAddressBookHome(addressBooks);
         TAddressBookResource addressBook1 = new TAddressBookResource(addressBooks, "addressbook");
-        System.out.println("created address book: " + addressBook1.getHref());
+        //System.out.println("created address book: " + addressBook1.getHref());
         addContact(addressBook1, "ed@blah.com", "ed", "ward", "111 222 333", "contact1.vcf");
         addContact(addressBook1, "sam@blah.com", "sam", "smith", "111 222 444", "contact2.vcf");
         addContact(addressBook1, "john@blah.com", "john", "long", "111 222 555", "contact3.vcf");
 
         user.setCalendarHome(calendars);
+        
+        return user;
     }
 
     private static void addContact(TAddressBookResource ab, String email, String givenName, String surName, String phone, String filename) {

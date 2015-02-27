@@ -18,7 +18,6 @@ package io.milton.http.http11.auth;
 import io.milton.http.Auth;
 import io.milton.http.AuthenticationHandler;
 import io.milton.http.OAuth2TokenResponse;
-import io.milton.http.OAuth2TokenUser;
 import io.milton.http.Request;
 import io.milton.resource.OAuth2Resource;
 import io.milton.resource.Resource;
@@ -79,18 +78,20 @@ public class OAuth2AuthenticationHandler implements AuthenticationHandler {
 
 					if (oAuth2Response != null) {
 						// Step : Get the profile.
-						OAuthResourceResponse resourceResponse
-								= this.oAuth2Helper.getOAuth2Profile(oAuth2Response, oAuth2Resource);
+						OAuthResourceResponse resourceResponse = this.oAuth2Helper.getOAuth2Profile(oAuth2Response, oAuth2Resource);
 						log.info("This is a OAuthResourceResponse{} " + resourceResponse);
 
 						if (resourceResponse != null) {
 							// Step : Get the user info.
+							OAuth2Resource.OAuth2ProfileDetails oAuth2TokenUser = this.oAuth2Helper.getOAuth2UserInfo(resourceResponse, oAuth2Response, oAuth2Code);
+							if (oAuth2TokenUser != null) {
+								log.info("oauth2 login {}", oAuth2TokenUser);
+								return oAuth2Resource.onAuthenticated(oAuth2TokenUser);
+							} else {
+								log.warn("Failed to convert oauth2 response to profile");
+								return null;
+							}
 
-							OAuth2TokenUser oAuth2TokenUser = this.oAuth2Helper.getOAuth2UserInfo(resourceResponse, oAuth2Response, oAuth2Code);
-
-							oAuth2Resource.setOAuth2TokenUser(oAuth2TokenUser);
-
-							return oAuth2TokenUser;
 						}
 					}
 				}
@@ -104,7 +105,13 @@ public class OAuth2AuthenticationHandler implements AuthenticationHandler {
 	@Override
 	public boolean supports(Resource r, Request request) {
 		log.trace("supports");
-		return (r != null) && (r instanceof OAuth2Resource);
+		if (request != null) {
+			String oAuth2Code = request.getParams().get(OAuth.OAUTH_CODE);
+			return (r instanceof OAuth2Resource) && StringUtils.isNotBlank(oAuth2Code);
+		} else {
+			return false;
+		}
+
 	}
 
 	@Override

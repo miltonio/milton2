@@ -19,19 +19,19 @@
 package com.mycompany;
 
 import io.milton.common.StreamUtils;
-import io.milton.http.OAuth2TokenResponse;
-import io.milton.http.OAuth2TokenUser;
+import io.milton.http.Auth;
+import io.milton.http.HttpManager;
 import io.milton.http.Range;
 import io.milton.http.Request;
-import io.milton.http.annotated.CommonResource;
+import io.milton.http.Request.Method;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.http11.auth.OAuth2Helper;
+import io.milton.principal.CalDavPrincipal;
 import io.milton.resource.CollectionResource;
 import io.milton.resource.MakeCalendarResource;
 import io.milton.resource.MakeCollectionableResource;
-import io.milton.resource.OAuth2Resource;
 import io.milton.resource.PutableResource;
 import io.milton.resource.Resource;
 import java.io.IOException;
@@ -58,7 +58,7 @@ public class TFolderResource extends TResource implements PutableResource, MakeC
     public TFolderResource(TFolderResource parent, String name) {
         super(parent, name);
         log.debug("created new folder: " + name);
-    }
+    } 
 
     @Override
     protected Object clone(TFolderResource newParent, String newName) {
@@ -122,9 +122,17 @@ public class TFolderResource extends TResource implements PutableResource, MakeC
 
     @Override
     public void sendContent(OutputStream out, Range range, Map<String, String> params, String contentType) throws IOException, NotAuthorizedException, BadRequestException, MalformedURLException {
+        // HEY EVERYONE
+        // This is just a really simple dumb example of generating content - 
+        // you CAN use JSPs and templates and stuff!!
         PrintWriter pw = new PrintWriter(out);
         pw.print("<html><body>");
         pw.print("<h1>" + this.getName() + "</h1>");
+        Request req = HttpManager.request();
+        if( req != null && req.getAuthorization() != null && req.getAuthorization().getTag() != null ) {
+            CalDavPrincipal p = (CalDavPrincipal) req.getAuthorization().getTag();
+            pw.print("<h2>Logged in as:" + p.getName() + "</h2>");
+        }
         pw.print("<p>" + this.getClass().getCanonicalName() + "</p>");
         doBody(pw);
         try {
@@ -149,16 +157,6 @@ public class TFolderResource extends TResource implements PutableResource, MakeC
 
         super.setOAuth2UserProfileLocation("https://graph.facebook.com/me");
 
-        Object objTokenUser = super.getOAuth2TokenUser();
-
-        String oAuth2TokenUserStr = "";
-        if (objTokenUser instanceof OAuth2TokenUser) {
-            OAuth2TokenUser oAuth2TokenUser = (OAuth2TokenUser) objTokenUser;
-
-            oAuth2TokenUserStr = "oAuth2TokenUserID:" + oAuth2TokenUser.getUserID();
-            log.info("-----oAuth2TokenUser------" + oAuth2TokenUserStr);
-        }
-
         OAuth2Helper oAuth2Helper = new OAuth2Helper(null);
         Object obj = oAuth2Helper.checkOAuth2URL(this);
         log.info("-----oAuth2Helper.checkOAuth2URL------" + obj);
@@ -167,7 +165,7 @@ public class TFolderResource extends TResource implements PutableResource, MakeC
             log.info("OAuth2TokenResponse, OAuth2URL={}" + strTemp);
             if (strTemp != null) {
                 pw.print("<ul>");
-                pw.print("<li><a href='" + strTemp + "'>" + "Authorize(facebook)" + oAuth2TokenUserStr + "</a></li>");
+                pw.print("<li><a href='" + strTemp + "'>" + "Authorize(facebook)</a></li>");
                 pw.print("</ul>");
             }
 
@@ -228,4 +226,15 @@ public class TFolderResource extends TResource implements PutableResource, MakeC
         TCalendarResource cal = new TCalendarResource(this, newName);
         return cal;
     }
+
+    @Override
+    public boolean authorise(Request request, Request.Method method, Auth auth) {
+        // allow GET to the root folder
+        if( parent == null && request.getMethod().equals(Method.GET) ) {
+            return true;
+        }
+        return super.authorise(request, method, auth); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    
 }

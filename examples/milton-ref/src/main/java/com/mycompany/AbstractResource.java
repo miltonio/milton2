@@ -19,7 +19,6 @@
 package com.mycompany;
 
 import io.milton.http.Auth;
-import io.milton.http.OAuth2TokenUser;
 import io.milton.http.Request;
 import io.milton.http.Request.Method;
 import io.milton.http.http11.auth.DigestGenerator;
@@ -29,6 +28,7 @@ import io.milton.resource.OAuth2Resource;
 import io.milton.resource.ReportableResource;
 import io.milton.resource.Resource;
 import java.util.Date;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -154,7 +154,7 @@ public class AbstractResource implements Resource, ReportableResource, DigestRes
     private String tokenLocation;
     private String userProfileLocation;
     private String OAuth2PermissionResponse;
-    private OAuth2TokenUser oAuth2TokenUser;
+    private OAuth2ProfileDetails oauthProfile;
 
     @Override
     public String getOAuth2ClientSecret() {
@@ -237,15 +237,35 @@ public class AbstractResource implements Resource, ReportableResource, DigestRes
     }
 
     @Override
-    public void setOAuth2TokenUser(Object obj) {
-        if (obj instanceof OAuth2TokenUser) {
-            this.oAuth2TokenUser = (OAuth2TokenUser) obj;
+    public Object onAuthenticated(OAuth2ProfileDetails profile) {
+        this.oauthProfile = profile;
+        String profileId = getFirstOf(profile.getDetails(), "username", "user_id", "id");
+        if( profileId != null ) {
+            TCalDavPrincipal user = TResourceFactory.getUser(profileId);
+            if( user == null ) {
+                log.warn("Registering new user " + profileId);
+                user = TResourceFactory.addUser(TResourceFactory.principals, profileId, null, name, "Anyorg", ""); 
+            }
+            return user;
+        } else {
+            log.warn("Could not get a userid from the response");
+            return null;
         }
     }
+   
 
     @Override
     public Object getOAuth2TokenUser() {
-        return this.oAuth2TokenUser;
+        return this.oauthProfile;
     }
 
+    private String getFirstOf(Map map, String ... names) {
+        for( String s : names ) {
+            Object o = map.get(s);
+            if( o != null ) {
+                return o.toString();
+            }
+        }
+        return null;
+    }
 }

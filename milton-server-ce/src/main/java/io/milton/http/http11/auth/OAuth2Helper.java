@@ -16,8 +16,8 @@
 package io.milton.http.http11.auth;
 
 import io.milton.http.OAuth2TokenResponse;
-import io.milton.http.OAuth2TokenUser;
 import io.milton.resource.OAuth2Resource;
+import io.milton.resource.OAuth2Resource.OAuth2ProfileDetails;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
@@ -125,8 +125,7 @@ public class OAuth2Helper {
 		return oAuthClient.resource(bearerClientRequest, OAuth.HttpMethod.GET, OAuthResourceResponse.class);
 	}
 
-	//
-	public OAuth2TokenUser getOAuth2UserInfo(OAuthResourceResponse resourceResponse, OAuth2TokenResponse tokenResponse, String oAuth2Code) {
+	public OAuth2ProfileDetails getOAuth2UserInfo(OAuthResourceResponse resourceResponse, OAuth2TokenResponse tokenResponse, String oAuth2Code) {
 		log.trace(" getOAuth2UserId start..." + resourceResponse);
 		if (resourceResponse == null) {
 			return null;
@@ -139,17 +138,18 @@ public class OAuth2Helper {
 		String userID = (String) responseMap.get("id");
 		String userName = (String) responseMap.get("username");
 
-		OAuth2TokenUser user = new OAuth2TokenUser();
+		OAuth2ProfileDetails user = new OAuth2ProfileDetails();
 		user.setCode(oAuth2Code);
-		user.setUserID(userID);
-		user.setUserName(userName);
 		user.setAccessToken(tokenResponse.getAccessToken());
+		user.setDetails(responseMap);
 
-		log.trace(" userID{}" + userID);
-		log.trace(" userName{}" + userName);
-		log.trace(" oAuth2Code{}" + oAuth2Code);
-		log.trace(" AccessToken{}" + user.getAccessToken());
-		log.trace("\n\n");
+		if (log.isTraceEnabled()) {
+			log.trace(" userID{}" + userID);
+			log.trace(" userName{}" + userName);
+			log.trace(" oAuth2Code{}" + oAuth2Code);
+			log.trace(" AccessToken{}" + user.getAccessToken());
+			log.trace("\n\n");
+		}
 
 		return user;
 	}

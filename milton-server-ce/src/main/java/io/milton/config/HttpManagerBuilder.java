@@ -378,6 +378,10 @@ public class HttpManagerBuilder {
 								cookieDelegateHandlers.add(formAuthenticationHandler);
 								authenticationHandlers.remove(formAuthenticationHandler);
 							}
+							if( oAuth2Handler != null ) {
+								cookieDelegateHandlers.add(oAuth2Handler);
+								authenticationHandlers.remove(oAuth2Handler);								
+							}
 						}
 						initCookieSigningKeys();
 						cookieAuthenticationHandler = new CookieAuthenticationHandler(nonceProvider, cookieDelegateHandlers, mainResourceFactory, cookieSigningKeys);
