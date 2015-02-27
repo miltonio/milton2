@@ -22,93 +22,246 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Stack;
 import javax.xml.namespace.QName;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-public class PropPatchSaxHandler extends DefaultHandler {
-
+public class PropPatchSaxHandler extends DefaultHandler
+{
 	private final static Logger log = LoggerFactory.getLogger(PropPatchSaxHandler.class);
-	private final Stack<String> elementPath = new Stack<String>();
-	private Map<QName, String> attributesCurrent; // will switch between the following
+	private final static QName SET = new QName(WebDavProtocol.DAV_URI, "set");
+	private final static QName REMOVE = new QName(WebDavProtocol.DAV_URI, "remove");
+	private final static QName PROP = new QName(WebDavProtocol.DAV_URI, "prop");
+	private final Stack<StateHandler> handlers = new Stack<StateHandler>();
 	private final Map<QName, String> attributesSet = new LinkedHashMap<QName, String>();
 	private final Map<QName, String> attributesRemove = new LinkedHashMap<QName, String>();
-	private StringBuilder sb = new StringBuilder();
-	private boolean inProp;
 
 	@Override
-	public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException {
-		if (inProp) {
-			sb.append("<").append(localName).append(">");
-		}
-		if (elementPath.size() > 0) {
-			String elName = elementPath.peek();
-			if (attributesCurrent != null) {
-				if (elName.endsWith("prop")) {
-					inProp = true;
-				}
-			} else {
-				if (elName.endsWith("set")) {
-					attributesCurrent = attributesSet;
-				} else if (elName.endsWith("remove")) {
-					attributesCurrent = attributesRemove;
-				}
-			}
-
-		}
-		elementPath.push(localName);
+	public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException
+	{
+		QName qname = new QName(uri, localName);
+		StateHandler handler;
+		if (!handlers.isEmpty())
+			handler = handlers.peek().startChild(qname, attributes);
+		else
+			handler = new Root(attributesSet, attributesRemove);
+		handlers.push(handler);
 		super.startElement(uri, localName, name, attributes);
 	}
 
 	@Override
-	public void characters(char[] ch, int start, int length) throws SAXException {
-		if (inProp) {
-			sb.append(ch, start, length);
-		}
+	public void characters(char[] ch, int start, int length) throws SAXException
+	{
+		handlers.peek().characters(ch, start, length);
 	}
 
 	@Override
-	public void endElement(String uri, String localName, String name) throws SAXException {
-		elementPath.pop();
-		if (elementPath.size() > 0) {
-			if (elementPath.peek().endsWith("prop")) {
-				if (sb != null) {
-					String s = sb.toString().trim();
-					QName qname = new QName(uri, localName);
-					if (attributesCurrent != null) {
-						// will usually have this because of the set or remove element
-						attributesCurrent.put(qname, s);
-					} else {
-						// but for mkcalendar there's no set or remove element so default to set attributes
-						attributesSet.put(qname, s);
-					}
-				}
-				sb = new StringBuilder();
-				inProp = false;
-			} else {
-				if (inProp) {
-					sb.append("</").append(localName).append(">");
-				}
-
-				if (elementPath.peek().endsWith("set")) {
-					attributesCurrent = null;
-				} else if (elementPath.peek().endsWith("remove")) {
-					attributesCurrent = null;
-				}
-			}
-
-		}
-
+	public void endElement(String uri, String localName, String name) throws SAXException
+	{
+		QName qname = new QName(uri, localName);
+		StateHandler handler = handlers.pop();
+		handler.endSelf(qname);
 		super.endElement(uri, localName, name);
 	}
 
-	public Map<QName, String> getAttributesToSet() {
+	public Map<QName, String> getAttributesToSet()
+	{
 		return attributesSet;
 	}
 
-	public Map<QName, String> getAttributesToRemove() {
+	public Map<QName, String> getAttributesToRemove()
+	{
 		return attributesRemove;
+	}
+
+	/**
+	 * Abstract class to handle SAX events for the various states
+	 * that we expect to encounter while parsing a PROPATCH XML
+	 * document.
+	 */
+	private static abstract class StateHandler
+	{
+		public abstract StateHandler startChild(QName name, Attributes attributes)
+				throws SAXException;
+
+		public void endSelf(QName name)
+				throws SAXException
+		{
+		}
+
+		public void characters(char[] ch, int start, int length)
+				throws SAXException
+		{
+		}
+
+		public static StateHandler Ignore = new StateHandler()
+		{
+			@Override
+			public StateHandler startChild(QName name, Attributes attributes) throws SAXException
+			{
+				return this;
+			}
+		};
+	}
+
+	/**
+	 * State handler for the root element of a PROPPATCH request. This
+	 * expects to get either a "set" or "remove" element and ignores
+	 * any other content.
+	 */
+	private static class Root extends StateHandler
+	{
+		private final Map<QName, String> set;
+		private final Map<QName, String> remove;
+
+		private Root(Map<QName, String> set, Map<QName, String> remove)
+		{
+			this.set = set;
+			this.remove = remove;
+		}
+
+		@Override
+		public StateHandler startChild(QName name, Attributes attributes) throws SAXException
+		{
+			if (name.equals(SET))
+				return new Op(set);
+			if (name.equals(REMOVE))
+				return new Op(remove);
+			return StateHandler.Ignore;
+		}
+	}
+
+	/**
+	 * State handler for a "set" or "remove" child or a PROPPATCH request.
+	 * This expects to get a "prop" as a child element and ignores all
+	 * others.
+	 */
+	private static class Op extends StateHandler
+	{
+		private final Map<QName, String> values;
+
+		private Op(Map<QName, String> values)
+		{
+			this.values = values;
+		}
+
+		@Override
+		public StateHandler startChild(QName name, Attributes attributes) throws SAXException
+		{
+			if (name.equals(PROP))
+				return new Prop(values);
+			return StateHandler.Ignore;
+		}
+	}
+
+	/**
+	 * State handler for the "prop" element beneath a "set" or "remove" in
+	 * a PROPPATCH request. It treats children as individual attributes
+	 * to be recorded in it's value map.
+	 */
+	private static class Prop extends StateHandler
+	{
+		private final Map<QName, String> values;
+
+		private Prop(Map<QName, String> values)
+		{
+			this.values = values;
+		}
+
+		@Override
+		public StateHandler startChild(QName name, Attributes attributes) throws SAXException
+		{
+			return new Attribute(values);
+		}
+	}
+
+	/**
+	 * Attribute to be set or removed in a PROPPATCH request. It's content
+	 *  and any child elements will be stringified and added to either the
+	 *  set or remove attribute maps.
+	 */
+	private static class Attribute extends StateHandler
+	{
+		private final Map<QName, String> values;
+		private final Content content = new Content();
+
+		private Attribute(Map<QName, String> values)
+		{
+			this.values = values;
+		}
+
+		@Override
+		public StateHandler startChild(QName name, Attributes attributes) throws SAXException
+		{
+			content.startChild(name, attributes);
+			return content;
+		}
+
+		@Override
+		public void endSelf(QName name) throws SAXException
+		{
+			values.put(name, content.getValue().trim());
+		}
+
+		@Override
+		public void characters(char[] ch, int start, int length) throws SAXException
+		{
+			content.characters(ch, start, length);
+		}
+	}
+
+	/**
+	 * Attribute content. All character data and sub-elements are
+	 *  appended to a string buffer.
+	 */
+	private static class Content extends StateHandler
+	{
+		private final StringBuilder value = new StringBuilder();
+
+		@Override
+		public StateHandler startChild(QName name, Attributes attributes) throws SAXException
+		{
+			value.append("<").append(name.getLocalPart());
+			if(attributes != null)
+			{
+				for(int i = 0; i < attributes.getLength(); i++)
+				{
+					value.append(" ");
+					value.append(attributes.getLocalName(i));
+					value.append("=\"");
+					value.append(attributes.getValue(i));
+					value.append("\"");
+				}
+			}
+			value.append(">");
+			return this;
+		}
+
+		@Override
+		public void endSelf(QName name) throws SAXException
+		{
+			if(value.charAt(value.length() - 1) == '>')
+			{
+				value.insert(value.length() - 1, '/');
+			}
+			else
+			{
+				value.append("</").append(name.getLocalPart()).append(">");
+			}
+		}
+
+		@Override
+		public void characters(char[] ch, int start, int length) throws SAXException
+		{
+			value.append(new String(ch, start, length));
+		}
+
+		public String getValue()
+		{
+			return value.toString();
+		}
 	}
 }
