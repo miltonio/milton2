@@ -107,18 +107,30 @@ public class SyncCollectionReport implements Report {
         } else {
             throw new BadRequestException(r, String.format("Unsupported DAV:sync-level: \"%s\", must be either \"1\" or \"infinite\".", syncLevel));
         }
-  
-        Element syncToken = ReportUtils.find(doc.getRootElement(), "sync-token", NS_DAV);
-      
+
+        URI syncToken = null;
+        Element syncTokenElm = ReportUtils.find(doc.getRootElement(), "sync-token", NS_DAV);
+        if (syncTokenElm != null)
+        {
+            String syncTokenText = syncTokenElm.getText();
+            if (syncTokenText != null && !syncTokenText.isEmpty())
+            {
+                try
+                {
+                    syncToken = new URI(syncTokenText);
+                }
+                catch (URISyntaxException e)
+                {
+                    throw new BadRequestException(r, "sync-token must be a valid URI.");
+                }
+            }
+        }
+
         String parentHref = HttpManager.request().getAbsolutePath();
         parentHref = Utils.suffixSlash(parentHref);
         List<PropFindResponse> respProps = new ArrayList<PropFindResponse>();
-        try {
-            findResources(syncCollectionResource, doc, new URI(syncToken.getText()), lv, parentHref, respProps);
-        } catch (URISyntaxException e) {
-            throw new BadRequestException(r, "sync-token must be a valid URI.");
-        }
-  
+        findResources(syncCollectionResource, doc, syncToken, lv, parentHref, respProps);
+
         final URI nextSyncToken = syncCollectionResource.getSyncToken();
         /*
           <A:sync-collection xmlns:A="DAV:">
