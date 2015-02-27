@@ -5,6 +5,7 @@
 
 package io.milton.http.report;
 
+import io.milton.common.Utils;
 import io.milton.http.HttpManager;
 import io.milton.http.ResourceFactory;
 import io.milton.http.exceptions.BadRequestException;
@@ -59,6 +60,9 @@ public abstract class AbstractMultiGetReport implements QualifiedReport {
         List<PropFindResponse> respProps = new ArrayList<PropFindResponse>();
 
         for (String href : hrefs) {
+            if(!href.startsWith("/")) {
+                href = Utils.suffixSlash(path) + href;
+            }
             String decodedHref = HttpManager.decodeUrl(href);
             Resource r = resourceFactory.getResource(host, decodedHref);
             if (r != null) {
