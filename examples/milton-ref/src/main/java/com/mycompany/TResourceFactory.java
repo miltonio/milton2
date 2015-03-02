@@ -24,6 +24,7 @@ import io.milton.http.values.HrefList;
 import io.milton.resource.OAuth2Provider;
 import io.milton.resource.OAuth2ProviderBean;
 import io.milton.resource.Resource;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -58,9 +59,19 @@ public class TResourceFactory implements ResourceFactory {
         addUser(users, "userB", "password", "userB@somewhere.com", "ACME", "555 1121");
         addUser(users, "userC", "password", "userC@somewhere.com", "ACME", "555 1131");
 
-        OAuth2Provider p = new OAuth2ProviderBean("fb", "https://graph.facebook.com/oauth/authorize", "131804060198305", "3acb294b071c9aec86d60ae3daf32a93", "http://localhost:8080/", "https://graph.facebook.com/oauth/access_token", "https://graph.facebook.com/me");
+        List<String> fbScopes = Arrays.asList("email");
+        
+        OAuth2Provider p = new OAuth2ProviderBean("fb", 
+                "https://graph.facebook.com/oauth/authorize", 
+                "131804060198305",
+                "3acb294b071c9aec86d60ae3daf32a93", 
+                "http://localhost:8080/", 
+                "https://graph.facebook.com/oauth/access_token", 
+                "https://graph.facebook.com/me", 
+                fbScopes);
         mapOfOauthProviders.put("fb", p);
         
+        List<String> googleScopes = Arrays.asList("email");
         p = new OAuth2ProviderBean(
                 "google",   // our internal ID
                 "https://accounts.google.com/o/oauth2/auth",  // authorisation url
@@ -68,7 +79,8 @@ public class TResourceFactory implements ResourceFactory {
                 "8GCs-I-LLqxi8UkTQ0qHbYAv", // client secret
                 "http://localhost:8080/", // return url
                 "https://www.googleapis.com/oauth2/v3/token", // URL to call to get an access token from an access code
-                "https://www.googleapis.com/plus/v1/people/me" // URL to call to get profile information
+                "https://www.googleapis.com/plus/v1/people/me", // URL to call to get profile information
+                googleScopes
         );
         mapOfOauthProviders.put("google", p);
     }

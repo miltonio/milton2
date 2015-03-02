@@ -19,16 +19,14 @@ import io.milton.common.Utils;
 import io.milton.http.OAuth2TokenResponse;
 import io.milton.resource.OAuth2Resource.OAuth2ProfileDetails;
 import io.milton.resource.OAuth2Provider;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.Map;
-import java.util.logging.Level;
 import org.apache.oltu.oauth2.client.OAuthClient;
 import org.apache.oltu.oauth2.client.URLConnectionClient;
 import org.apache.oltu.oauth2.client.request.OAuthBearerClientRequest;
 import org.apache.oltu.oauth2.client.request.OAuthClientRequest;
+import org.apache.oltu.oauth2.client.response.OAuthJSONAccessTokenResponse;
 import org.apache.oltu.oauth2.client.response.OAuthResourceResponse;
 import org.apache.oltu.oauth2.common.OAuth;
 import org.apache.oltu.oauth2.common.exception.OAuthProblemException;
@@ -51,13 +49,14 @@ public class OAuth2Helper {
 		log.trace("getOAuth2URL {}", provider);
 
 		String oAuth2Location = provider.getAuthLocation();
-		String oAuth2ClientId = provider.getClientId();
-		
+		String oAuth2ClientId = provider.getClientId(); 
+		String scopes = Utils.toCsv(provider.getPermissionScopes());
 		try {
 			OAuthClientRequest oAuthRequest = OAuthClientRequest
 					.authorizationLocation(oAuth2Location)
 					.setClientId(oAuth2ClientId)
 					.setResponseType("code")
+					.setScope(scopes)
 					.setState(provider.getProviderId())
 					.setRedirectURI(provider.getRedirectURI())
 					.buildQueryMessage();
@@ -78,25 +77,27 @@ public class OAuth2Helper {
 	}
 
 	// Sept 2, After Got The Authorization Code(a Access Permission), then Granting the Access Token.
-	public OAuth2TokenResponse obtainAuth2Token(OAuth2Provider provider, String oAuth2Code) throws OAuthSystemException, OAuthProblemException {
-		log.trace("obtainAuth2Token start..." + provider);
+	public OAuth2TokenResponse obtainAuth2Token(OAuth2Provider provider, String accessCode) throws OAuthSystemException, OAuthProblemException {
+		log.trace("obtainAuth2Token code={}, provider={}", accessCode, provider);
 
 		String oAuth2ClientId = provider.getClientId();
 		String oAuth2TokenLocation = provider.getTokenLocation();
 		String oAuth2ClientSecret = provider.getClientSecret();
 		String oAuth2RedirectURI = provider.getRedirectURI();
-
+			
 		OAuthClientRequest oAuthRequest = OAuthClientRequest
 				.tokenLocation(oAuth2TokenLocation)
 				.setGrantType(GrantType.AUTHORIZATION_CODE)
 				.setRedirectURI(oAuth2RedirectURI)
-				.setCode(oAuth2Code)
+				.setCode(accessCode)
 				.setClientId(oAuth2ClientId)
-				.setClientSecret(oAuth2ClientSecret)
+				.setClientSecret(oAuth2ClientSecret)				
 				.buildBodyMessage();
 
 		OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());
-		OAuth2TokenResponse oAuth2Response = oAuthClient.accessToken(oAuthRequest, OAuth2TokenResponse.class);
+
+		//OAuth2TokenResponse oAuth2Response = oAuthClient.accessToken(oAuthRequest, OAuth2TokenResponse.class);
+		OAuth2TokenResponse oAuth2Response = oAuthClient.accessToken(oAuthRequest, OAuthJSONAccessTokenResponse.class);
 
 		return oAuth2Response;
 	}
@@ -148,5 +149,4 @@ public class OAuth2Helper {
 
 		return user;
 	}
-
 }

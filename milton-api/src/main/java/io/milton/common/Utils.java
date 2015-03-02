@@ -30,9 +30,9 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
 
 public class Utils {
     
@@ -284,8 +284,9 @@ public class Utils {
      * Convert the list of strings to a comma separated string
      *
      * @param list
+     * @return - a comma seperated list of values
      */
-    public static String toCsv(List<String> list) {
+    public static String toCsv(Collection<String> list) {
         if( list == null || list.isEmpty()) {
             return null;
         }
@@ -372,5 +373,5 @@ public class Utils {
         sDest = destUri.getPath();
         Dest dest = new Dest(destUri.getHost(), sDest);
         return dest;
-    }
+    }   
 }

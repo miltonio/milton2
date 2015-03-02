@@ -15,6 +15,8 @@
  */
 package io.milton.resource;
 
+import java.util.Collection;
+
 /**
  *
  * @author brad
@@ -52,5 +54,13 @@ public interface OAuth2Provider {
     String getTokenLocation();
 
     String getProfileLocation();
+    
+    /**
+     * Returns a list of named permission scopes, such as "email", "profile", etc,
+     * which determine what this client is permitted to do
+     * 
+     * @return 
+     */
+    Collection<String> getPermissionScopes();
     
 }

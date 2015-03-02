@@ -15,6 +15,8 @@
  */
 package io.milton.resource;
 
+import java.util.Collection;
+
 /**
  *
  * @author brad
@@ -28,8 +30,9 @@ public class OAuth2ProviderBean implements OAuth2Provider {
     private final String redirectUri;
     private final String tokenLocation;
     private final String profileLocation;
+    private final Collection scopes;
 
-    public OAuth2ProviderBean(String providerId, String location, String clientId, String clientSecret, String redirectUri, String tokenLocation, String profileLocation) {
+    public OAuth2ProviderBean(String providerId, String location, String clientId, String clientSecret, String redirectUri, String tokenLocation, String profileLocation, Collection scopes) {
         this.providerId = providerId;
         this.location = location;
         this.clientId = clientId;
@@ -37,6 +40,7 @@ public class OAuth2ProviderBean implements OAuth2Provider {
         this.redirectUri = redirectUri;
         this.tokenLocation = tokenLocation;
         this.profileLocation = profileLocation;
+        this.scopes = scopes;
     }
     
     
@@ -76,4 +80,9 @@ public class OAuth2ProviderBean implements OAuth2Provider {
     public String getProviderId() {
         return providerId;
     }       
+
+    @Override
+    public Collection<String> getPermissionScopes() {
+        return scopes;
+    }
 }
