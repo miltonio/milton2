@@ -17,8 +17,11 @@ package io.milton.http;
 
 import org.apache.oltu.oauth2.client.response.OAuthAccessTokenResponse;
 import org.apache.oltu.oauth2.common.OAuth;
+import org.apache.oltu.oauth2.common.error.OAuthError;
+import org.apache.oltu.oauth2.common.exception.OAuthProblemException;
 import org.apache.oltu.oauth2.common.token.BasicOAuthToken;
 import org.apache.oltu.oauth2.common.token.OAuthToken;
+import org.apache.oltu.oauth2.common.utils.JSONUtils;
 import org.apache.oltu.oauth2.common.utils.OAuthUtils;
 
 /**
@@ -64,9 +67,18 @@ public class OAuth2TokenResponse extends OAuthAccessTokenResponse {
 	}
 
 	@Override
-	protected void setBody(String body) {
-		this.body = body;
-		parameters = OAuthUtils.decodeForm(body);
+	protected void setBody(String body) throws OAuthProblemException {
+		this.body = body.trim();
+		if (isJson()) {
+			try {
+				parameters = JSONUtils.parseJSON(body);
+			} catch (Throwable e) {
+				throw OAuthProblemException.error(OAuthError.CodeResponse.UNSUPPORTED_RESPONSE_TYPE, "Invalid response! Response body is not " + OAuth.ContentType.JSON + " encoded");
+			}
+
+		} else {
+			parameters = OAuthUtils.decodeForm(body);
+		}
 	}
 
 	@Override
@@ -77,6 +89,10 @@ public class OAuth2TokenResponse extends OAuthAccessTokenResponse {
 	@Override
 	protected void setResponseCode(int code) {
 		this.responseCode = code;
+	}
+
+	private boolean isJson() {
+		return body != null && body.startsWith("{");
 	}
 
 }

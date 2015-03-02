@@ -101,7 +101,22 @@ public class AbstractResource implements Resource, ReportableResource, DigestRes
             log.warn("user not found: " + digestRequest.getUser() + " - try 'userA'");
         }
         return null;
+    }
 
+    @Override
+    public Object authenticate(OAuth2ProfileDetails profile) {
+        String profileId = getFirstOf(profile.getDetails(), "username", "user_id", "id");
+        if (profileId != null) {
+            TCalDavPrincipal user = TResourceFactory.getUser(profileId);
+            if (user == null) {
+                log.warn("Registering new user " + profileId);
+                user = TResourceFactory.addUser(TResourceFactory.principals, profileId, null, name, "Anyorg", "");
+            }
+            return user;
+        } else {
+            log.warn("Could not get a userid from the response");
+            return null;
+        }
     }
 
     @Override
@@ -150,29 +165,12 @@ public class AbstractResource implements Resource, ReportableResource, DigestRes
     @Override
     public Map<String, OAuth2Provider> getOAuth2Providers() {
         return TResourceFactory.mapOfOauthProviders;
-    }    
-    
-
-    @Override
-    public Object authenticate(OAuth2ProfileDetails profile) {
-        String profileId = getFirstOf(profile.getDetails(), "username", "user_id", "id");
-        if( profileId != null ) {
-            TCalDavPrincipal user = TResourceFactory.getUser(profileId);
-            if( user == null ) {
-                log.warn("Registering new user " + profileId);
-                user = TResourceFactory.addUser(TResourceFactory.principals, profileId, null, name, "Anyorg", ""); 
-            }
-            return user;
-        } else {
-            log.warn("Could not get a userid from the response");
-            return null;
-        }
     }
-   
-    private String getFirstOf(Map map, String ... names) {
-        for( String s : names ) {
+
+    private String getFirstOf(Map map, String... names) {
+        for (String s : names) {
             Object o = map.get(s);
-            if( o != null ) {
+            if (o != null) {
                 return o.toString();
             }
         }

@@ -26,6 +26,7 @@ import org.apache.oltu.oauth2.client.OAuthClient;
 import org.apache.oltu.oauth2.client.URLConnectionClient;
 import org.apache.oltu.oauth2.client.request.OAuthBearerClientRequest;
 import org.apache.oltu.oauth2.client.request.OAuthClientRequest;
+import org.apache.oltu.oauth2.client.response.OAuthAccessTokenResponse;
 import org.apache.oltu.oauth2.client.response.OAuthJSONAccessTokenResponse;
 import org.apache.oltu.oauth2.client.response.OAuthResourceResponse;
 import org.apache.oltu.oauth2.common.OAuth;
@@ -44,12 +45,11 @@ public class OAuth2Helper {
 
 	private static final Logger log = LoggerFactory.getLogger(OAuth2Helper.class);
 
-	
 	public static URL getOAuth2URL(OAuth2Provider provider) {
 		log.trace("getOAuth2URL {}", provider);
 
 		String oAuth2Location = provider.getAuthLocation();
-		String oAuth2ClientId = provider.getClientId(); 
+		String oAuth2ClientId = provider.getClientId();
 		String scopes = Utils.toCsv(provider.getPermissionScopes());
 		try {
 			OAuthClientRequest oAuthRequest = OAuthClientRequest
@@ -77,36 +77,38 @@ public class OAuth2Helper {
 	}
 
 	// Sept 2, After Got The Authorization Code(a Access Permission), then Granting the Access Token.
-	public OAuth2TokenResponse obtainAuth2Token(OAuth2Provider provider, String accessCode) throws OAuthSystemException, OAuthProblemException {
+	public OAuthAccessTokenResponse obtainAuth2Token(OAuth2Provider provider, String accessCode) throws OAuthSystemException, OAuthProblemException {
 		log.trace("obtainAuth2Token code={}, provider={}", accessCode, provider);
 
 		String oAuth2ClientId = provider.getClientId();
 		String oAuth2TokenLocation = provider.getTokenLocation();
 		String oAuth2ClientSecret = provider.getClientSecret();
 		String oAuth2RedirectURI = provider.getRedirectURI();
-			
+
 		OAuthClientRequest oAuthRequest = OAuthClientRequest
 				.tokenLocation(oAuth2TokenLocation)
 				.setGrantType(GrantType.AUTHORIZATION_CODE)
 				.setRedirectURI(oAuth2RedirectURI)
 				.setCode(accessCode)
 				.setClientId(oAuth2ClientId)
-				.setClientSecret(oAuth2ClientSecret)				
+				.setClientSecret(oAuth2ClientSecret)
 				.buildBodyMessage();
 
 		OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());
 
 		// This works for facebook
-		OAuth2TokenResponse oAuth2Response = oAuthClient.accessToken(oAuthRequest, OAuth2TokenResponse.class);
-		
-		// This might work for google
-		//OAuth2TokenResponse oAuth2Response = oAuthClient.accessToken(oAuthRequest, OAuthJSONAccessTokenResponse.class);
+		OAuthAccessTokenResponse oAuth2Response2 = oAuthClient.accessToken(oAuthRequest, OAuth2TokenResponse.class);
+		//return oAuth2Response;
 
-		return oAuth2Response;
+		// This might work for google
+		OAuthJSONAccessTokenResponse o;
+		//OAuthAccessTokenResponse oAuth2Response2 = oAuthClient.accessToken(oAuthRequest, OAuth2TokenResponse.class);
+		return oAuth2Response2;
+
 	}
 
 	// Sept 3, GET the profile of the user.
-	public OAuthResourceResponse getOAuth2Profile(OAuth2TokenResponse oAuth2Response, OAuth2Provider provider)
+	public OAuthResourceResponse getOAuth2Profile(OAuthAccessTokenResponse oAuth2Response, OAuth2Provider provider)
 			throws OAuthSystemException, OAuthProblemException {
 
 		log.trace("getOAuth2Profile start {}", oAuth2Response);
@@ -124,7 +126,7 @@ public class OAuth2Helper {
 		return oAuthClient.resource(bearerClientRequest, OAuth.HttpMethod.GET, OAuthResourceResponse.class);
 	}
 
-	public OAuth2ProfileDetails getOAuth2UserInfo(OAuthResourceResponse resourceResponse, OAuth2TokenResponse tokenResponse, String oAuth2Code) {
+	public OAuth2ProfileDetails getOAuth2UserInfo(OAuthResourceResponse resourceResponse, OAuthAccessTokenResponse tokenResponse, String oAuth2Code) {
 		log.trace(" getOAuth2UserId start..." + resourceResponse);
 		if (resourceResponse == null) {
 			return null;

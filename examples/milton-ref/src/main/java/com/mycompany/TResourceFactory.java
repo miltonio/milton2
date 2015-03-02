@@ -71,7 +71,7 @@ public class TResourceFactory implements ResourceFactory {
                 fbScopes);
         mapOfOauthProviders.put("fb", p);
         
-        List<String> googleScopes = Arrays.asList("email");
+        List<String> googleScopes = Arrays.asList( "profile");
         p = new OAuth2ProviderBean(
                 "google",   // our internal ID
                 "https://accounts.google.com/o/oauth2/auth",  // authorisation url

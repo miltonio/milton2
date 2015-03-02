@@ -17,13 +17,13 @@ package io.milton.http.http11.auth;
 
 import io.milton.http.Auth;
 import io.milton.http.AuthenticationHandler;
-import io.milton.http.OAuth2TokenResponse;
 import io.milton.http.Request;
 import io.milton.resource.OAuth2Provider;
 import io.milton.resource.OAuth2Resource;
 import io.milton.resource.Resource;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
+import org.apache.oltu.oauth2.client.response.OAuthAccessTokenResponse;
 import org.apache.oltu.oauth2.client.response.OAuthResourceResponse;
 import org.apache.oltu.oauth2.common.OAuth;
 import org.slf4j.Logger;
@@ -84,7 +84,7 @@ public class OAuth2AuthenticationHandler implements AuthenticationHandler {
 						return null;
 					}
 					// Step :Obtain the access token
-					OAuth2TokenResponse oAuth2Response = this.oAuth2Helper.obtainAuth2Token(prov, oAuth2Code);
+					OAuthAccessTokenResponse oAuth2Response = this.oAuth2Helper.obtainAuth2Token(prov, oAuth2Code);
 					log.info("This is a OAuth2TokenResponse{} " + oAuth2Response);
 
 					if (oAuth2Response != null) {
@@ -93,7 +93,7 @@ public class OAuth2AuthenticationHandler implements AuthenticationHandler {
 						log.info("This is a OAuthResourceResponse{} " + resourceResponse);
 
 						if (resourceResponse != null) {
-							// Step : Get the user info.
+							// Step : Get the user info. 
 							OAuth2Resource.OAuth2ProfileDetails oAuth2TokenUser = this.oAuth2Helper.getOAuth2UserInfo(resourceResponse, oAuth2Response, oAuth2Code);
 							if (oAuth2TokenUser != null) {
 								log.info("oauth2 login {}", oAuth2TokenUser);
