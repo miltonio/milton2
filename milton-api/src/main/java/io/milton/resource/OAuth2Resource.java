@@ -23,37 +23,21 @@ import java.util.Map;
  */
 public interface OAuth2Resource extends Resource {
 
-//    static final int DEFAULT_STEP = -1;
-//    static final int GRANT_PERMISSION = 1;
-//    static final int OBTAIN_TOKEN = 2;
-//    int getOAuth2Step();
-    String getOAuth2PermissionResponse();
-
-    String getOAuth2Location();
-
-    String getOAuth2ClientId();
-
-    String getOAuth2ClientSecret();
-
-    String getOAuth2RedirectURI();
-
-    String getOAuth2TokenLocation();
-
-    String getOAuth2UserProfileLocation();
-
     /**
      * Called when an oauth2 login has been authenticated, with details received
-     * from the remote server. The method should return an application specific object
-     * representing the user. Or return null to reject the authentication.
-     * 
-     * @param profile - the details about the current user as provided by the remote authentication server
-     * @return an object which represents the current principal, or null to reject the login
-     */    
-    Object onAuthenticated(OAuth2ProfileDetails profile);
+     * from the remote server. The method should return an application specific
+     * object representing the user. Or return null to reject the
+     * authentication.
+     *
+     * @param profile - the details about the current user as provided by the
+     * remote authentication server
+     * @return an object which represents the current principal, or null to
+     * reject the login
+     */
+    Object authenticate(OAuth2ProfileDetails profile);
 
-    Object getOAuth2TokenUser();
-
-    boolean isOAuth2Authorized();
+    Map<String,OAuth2Provider> getOAuth2Providers();
+    
 
     /**
      * This contains the information about the authenticated profile
@@ -63,7 +47,7 @@ public interface OAuth2Resource extends Resource {
         private String tokenLocation;
         private String accessToken;
         private String code;
-        
+
         private Map details;
 
         public String getCode() {
@@ -73,7 +57,7 @@ public interface OAuth2Resource extends Resource {
         public void setCode(String code) {
             this.code = code;
         }
-        
+
         public String getTokenLocation() {
             return tokenLocation;
         }
@@ -97,7 +81,7 @@ public interface OAuth2Resource extends Resource {
         public void setDetails(Map details) {
             this.details = details;
         }
-       
+
     }
 
 }

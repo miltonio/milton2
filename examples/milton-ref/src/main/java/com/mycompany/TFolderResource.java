@@ -32,6 +32,7 @@ import io.milton.principal.CalDavPrincipal;
 import io.milton.resource.CollectionResource;
 import io.milton.resource.MakeCalendarResource;
 import io.milton.resource.MakeCollectionableResource;
+import io.milton.resource.OAuth2Provider;
 import io.milton.resource.PutableResource;
 import io.milton.resource.Resource;
 import java.io.IOException;
@@ -39,16 +40,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
 
 public class TFolderResource extends TResource implements PutableResource, MakeCollectionableResource, MakeCalendarResource {
 
@@ -58,7 +55,7 @@ public class TFolderResource extends TResource implements PutableResource, MakeC
     public TFolderResource(TFolderResource parent, String name) {
         super(parent, name);
         log.debug("created new folder: " + name);
-    } 
+    }
 
     @Override
     protected Object clone(TFolderResource newParent, String newName) {
@@ -129,48 +126,27 @@ public class TFolderResource extends TResource implements PutableResource, MakeC
         pw.print("<html><body>");
         pw.print("<h1>" + this.getName() + "</h1>");
         Request req = HttpManager.request();
-        if( req != null && req.getAuthorization() != null && req.getAuthorization().getTag() != null ) {
-            CalDavPrincipal p = (CalDavPrincipal) req.getAuthorization().getTag();
-            pw.print("<h2>Logged in as:" + p.getName() + "</h2>");
-        }
         pw.print("<p>" + this.getClass().getCanonicalName() + "</p>");
-        doBody(pw);
-        try {
-            doOAth2(pw);
-        } catch (OAuthSystemException ex) {
-            Logger.getLogger(TFolderResource.class.getName()).log(Level.SEVERE, null, ex);
+        CalDavPrincipal curUser = null;
+        if (HttpManager.request().getAuthorization() != null) {
+            curUser = (CalDavPrincipal) HttpManager.request().getAuthorization().getTag();
         }
+        if (curUser == null) {
+            generateOAuthLoginLinks(pw);
+        } else {
+            pw.print("<h2>Logged in as: " + curUser.getName() + "</h2>");
+        }
+        doBody(pw);
         pw.print("</body>");
         pw.print("</html>");
         pw.flush();
     }
 
-    private void doOAth2(PrintWriter pw) throws OAuthSystemException, MalformedURLException {
-        super.setOAuth2ClientId("131804060198305");
-
-        super.setOAuth2Location("https://graph.facebook.com/oauth/authorize");
-        super.setOAuth2RedirectURI("http://localhost:8080/");
-//        super.setOAuth2Step(OAuth2Resource.GRANT_PERMISSION);
-
-        super.setOAuth2ClientSecret("3acb294b071c9aec86d60ae3daf32a93");
-        super.setOAuth2TokenLocation("https://graph.facebook.com/oauth/access_token");
-
-        super.setOAuth2UserProfileLocation("https://graph.facebook.com/me");
-
-        OAuth2Helper oAuth2Helper = new OAuth2Helper(null);
-        Object obj = oAuth2Helper.checkOAuth2URL(this);
-        log.info("-----oAuth2Helper.checkOAuth2URL------" + obj);
-        if (obj instanceof URL) {
-            String strTemp = ((URL) obj).toString();
-            log.info("OAuth2TokenResponse, OAuth2URL={}" + strTemp);
-            if (strTemp != null) {
-                pw.print("<ul>");
-                pw.print("<li><a href='" + strTemp + "'>" + "Authorize(facebook)</a></li>");
-                pw.print("</ul>");
-            }
-
+    private void generateOAuthLoginLinks(PrintWriter pw) {
+        for (OAuth2Provider prov : getOAuth2Providers().values()) {
+            String url = OAuth2Helper.getOAuth2URL(prov).toString();
+            pw.print("<li><a href='" + url + "'>Login with OAuth2 on " + prov.getProviderId() +"</a></li>");
         }
-
     }
 
     protected void doBody(PrintWriter pw) {
@@ -230,11 +206,14 @@ public class TFolderResource extends TResource implements PutableResource, MakeC
     @Override
     public boolean authorise(Request request, Request.Method method, Auth auth) {
         // allow GET to the root folder
-        if( parent == null && request.getMethod().equals(Method.GET) ) {
+        if (parent == null && request.getMethod().equals(Method.GET)) {
             return true;
         }
         return super.authorise(request, method, auth); //To change body of generated methods, choose Tools | Templates.
     }
-    
-    
+
+    @Override
+    public Long getMaxAgeSeconds(Auth auth) {
+        return null; // prevent caching of GET responses for web ui
+    }    
 }

@@ -24,6 +24,7 @@ import io.milton.http.Request.Method;
 import io.milton.http.http11.auth.DigestGenerator;
 import io.milton.http.http11.auth.DigestResponse;
 import io.milton.resource.DigestResource;
+import io.milton.resource.OAuth2Provider;
 import io.milton.resource.OAuth2Resource;
 import io.milton.resource.ReportableResource;
 import io.milton.resource.Resource;
@@ -146,99 +147,14 @@ public class AbstractResource implements Resource, ReportableResource, DigestRes
         return true;
     }
 
-    private String OAuth2Location;
-    private String OAuth2ClientId;
-    private String OAuth2RedirectURI;
-    private String OAuth2ClientSecret;
-
-    private String tokenLocation;
-    private String userProfileLocation;
-    private String OAuth2PermissionResponse;
-    private OAuth2ProfileDetails oauthProfile;
+    @Override
+    public Map<String, OAuth2Provider> getOAuth2Providers() {
+        return TResourceFactory.mapOfOauthProviders;
+    }    
+    
 
     @Override
-    public String getOAuth2ClientSecret() {
-        return OAuth2ClientSecret;
-    }
-
-    public void setOAuth2ClientSecret(String OAuth2ClientSecret) {
-        this.OAuth2ClientSecret = OAuth2ClientSecret;
-    }
-
-    @Override
-    public String getOAuth2Location() {
-        return OAuth2Location;
-    }
-
-    public void setOAuth2Location(String OAuth2Location) {
-        this.OAuth2Location = OAuth2Location;
-    }
-
-    @Override
-    public String getOAuth2ClientId() {
-        return OAuth2ClientId;
-    }
-
-    public void setOAuth2ClientId(String OAuth2ClientId) {
-        this.OAuth2ClientId = OAuth2ClientId;
-    }
-
-    @Override
-    public String getOAuth2RedirectURI() {
-        return OAuth2RedirectURI;
-    }
-
-    public void setOAuth2RedirectURI(String OAuth2RedirectURI) {
-        this.OAuth2RedirectURI = OAuth2RedirectURI;
-    }
-
-//    public void setOAuth2Step(int OAuth2Step) {
-//        this.OAuth2Step = OAuth2Step;
-//    }
-
-    public void setOAuth2PermissionResponse(String OAuth2PermissionResponse) {
-        this.OAuth2PermissionResponse = OAuth2PermissionResponse;
-    }
-
-//    @Override
-//    public int getOAuth2Step() {
-//        return OAuth2Step;
-//    }
-
-    @Override
-    public String getOAuth2PermissionResponse() {
-        return OAuth2PermissionResponse;
-    }
-
-    @Override
-    public boolean isOAuth2Authorized() {
-
-        //TODO  
-        //verify the authorization code which retrieved from the OAuth2.0 Server
-        return false;
-    }
-
-    @Override
-    public String getOAuth2TokenLocation() {
-        return tokenLocation;
-    }
-
-    public void setOAuth2TokenLocation(String tokenLocation) {
-        this.tokenLocation = tokenLocation;
-    }
-
-    public void setOAuth2UserProfileLocation(String userProfileLocation) {
-        this.userProfileLocation = userProfileLocation;
-    }
-
-    @Override
-    public String getOAuth2UserProfileLocation() {
-        return this.userProfileLocation;
-    }
-
-    @Override
-    public Object onAuthenticated(OAuth2ProfileDetails profile) {
-        this.oauthProfile = profile;
+    public Object authenticate(OAuth2ProfileDetails profile) {
         String profileId = getFirstOf(profile.getDetails(), "username", "user_id", "id");
         if( profileId != null ) {
             TCalDavPrincipal user = TResourceFactory.getUser(profileId);
@@ -253,12 +169,6 @@ public class AbstractResource implements Resource, ReportableResource, DigestRes
         }
     }
    
-
-    @Override
-    public Object getOAuth2TokenUser() {
-        return this.oauthProfile;
-    }
-
     private String getFirstOf(Map map, String ... names) {
         for( String s : names ) {
             Object o = map.get(s);

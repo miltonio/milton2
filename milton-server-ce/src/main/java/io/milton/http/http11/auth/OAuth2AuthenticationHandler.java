@@ -19,6 +19,7 @@ import io.milton.http.Auth;
 import io.milton.http.AuthenticationHandler;
 import io.milton.http.OAuth2TokenResponse;
 import io.milton.http.Request;
+import io.milton.resource.OAuth2Provider;
 import io.milton.resource.OAuth2Resource;
 import io.milton.resource.Resource;
 import java.util.List;
@@ -71,14 +72,24 @@ public class OAuth2AuthenticationHandler implements AuthenticationHandler {
 				log.info("authenticate(), error{}" + oAuth2Error + " oAuth2Code{}" + oAuth2Code);
 
 				if (StringUtils.isNotBlank(oAuth2Code) && StringUtils.isBlank(oAuth2Error)) {
+					// Find the provider, by looking for the provider id we put intop the redirect uri
+					String provId = request.getParams().get(OAuth.OAUTH_STATE);
+					if (StringUtils.isBlank(provId)) {
+						log.warn("Could not authenticate oauth2 response because there is no provider ID parameter in the state parameter");
+						return null;
+					}
+					OAuth2Provider prov = oAuth2Resource.getOAuth2Providers().get(provId);
+					if (prov == null) {
+						log.warn("Could not authenticate oauth2 response because couldnt find provider: " + provId);
+						return null;
+					}
 					// Step :Obtain the access token
-					OAuth2TokenResponse oAuth2Response
-							= this.oAuth2Helper.obtainAuth2Token(oAuth2Resource, oAuth2Code);
+					OAuth2TokenResponse oAuth2Response = this.oAuth2Helper.obtainAuth2Token(prov, oAuth2Code);
 					log.info("This is a OAuth2TokenResponse{} " + oAuth2Response);
 
 					if (oAuth2Response != null) {
 						// Step : Get the profile.
-						OAuthResourceResponse resourceResponse = this.oAuth2Helper.getOAuth2Profile(oAuth2Response, oAuth2Resource);
+						OAuthResourceResponse resourceResponse = this.oAuth2Helper.getOAuth2Profile(oAuth2Response, prov);
 						log.info("This is a OAuthResourceResponse{} " + resourceResponse);
 
 						if (resourceResponse != null) {
@@ -86,7 +97,7 @@ public class OAuth2AuthenticationHandler implements AuthenticationHandler {
 							OAuth2Resource.OAuth2ProfileDetails oAuth2TokenUser = this.oAuth2Helper.getOAuth2UserInfo(resourceResponse, oAuth2Response, oAuth2Code);
 							if (oAuth2TokenUser != null) {
 								log.info("oauth2 login {}", oAuth2TokenUser);
-								return oAuth2Resource.onAuthenticated(oAuth2TokenUser);
+								return oAuth2Resource.authenticate(oAuth2TokenUser);
 							} else {
 								log.warn("Failed to convert oauth2 response to profile");
 								return null;

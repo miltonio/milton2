@@ -15,13 +15,16 @@
  */
 package io.milton.http.http11.auth;
 
+import io.milton.common.Utils;
 import io.milton.http.OAuth2TokenResponse;
-import io.milton.resource.OAuth2Resource;
 import io.milton.resource.OAuth2Resource.OAuth2ProfileDetails;
+import io.milton.resource.OAuth2Provider;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Map;
-import org.apache.commons.lang.StringUtils;
+import java.util.logging.Level;
 import org.apache.oltu.oauth2.client.OAuthClient;
 import org.apache.oltu.oauth2.client.URLConnectionClient;
 import org.apache.oltu.oauth2.client.request.OAuthBearerClientRequest;
@@ -43,46 +46,45 @@ public class OAuth2Helper {
 
 	private static final Logger log = LoggerFactory.getLogger(OAuth2Helper.class);
 
+	
+	public static URL getOAuth2URL(OAuth2Provider provider) {
+		log.trace("getOAuth2URL {}", provider);
+
+		String oAuth2Location = provider.getAuthLocation();
+		String oAuth2ClientId = provider.getClientId();
+		
+		try {
+			OAuthClientRequest oAuthRequest = OAuthClientRequest
+					.authorizationLocation(oAuth2Location)
+					.setClientId(oAuth2ClientId)
+					.setResponseType("code")
+					.setState(provider.getProviderId())
+					.setRedirectURI(provider.getRedirectURI())
+					.buildQueryMessage();
+
+			return new URL(oAuthRequest.getLocationUri());
+		} catch (OAuthSystemException oAuthSystemException) {
+			throw new RuntimeException(oAuthSystemException);
+		} catch (MalformedURLException malformedURLException) {
+			throw new RuntimeException(malformedURLException);
+		}
+
+	}
+
 	private final NonceProvider nonceProvider;
 
 	public OAuth2Helper(NonceProvider nonceProvider) {
 		this.nonceProvider = nonceProvider;
 	}
 
-	// Sept 1, Build OAuth2 End User Authorization Request URL For Getting a Access Permission
-	public URL checkOAuth2URL(OAuth2Resource oAuth2Resource) throws OAuthSystemException, MalformedURLException {
-		log.trace("checkOAuth2URL start..." + oAuth2Resource);
-		if (!(oAuth2Resource != null && oAuth2Resource instanceof OAuth2Resource)) {
-			return null;
-		}
-
-		String oAuth2Location = oAuth2Resource.getOAuth2Location();
-		String oAuth2ClientId = oAuth2Resource.getOAuth2ClientId();
-		String oAuth2RedirectURI = oAuth2Resource.getOAuth2RedirectURI();
-
-		OAuthClientRequest oAuthRequest = OAuthClientRequest
-				.authorizationLocation(oAuth2Location)
-				.setClientId(oAuth2ClientId)
-				//.setResponseType("code") // TODO......
-				.setRedirectURI(oAuth2RedirectURI)
-				.buildQueryMessage();
-
-		URL urlTemp = new URL(oAuthRequest.getLocationUri());
-
-		return urlTemp;
-	}
-
 	// Sept 2, After Got The Authorization Code(a Access Permission), then Granting the Access Token.
-	public OAuth2TokenResponse obtainAuth2Token(OAuth2Resource oAuth2Resource, String oAuth2Code) throws OAuthSystemException, OAuthProblemException {
-		log.trace("obtainAuth2Token start..." + oAuth2Resource);
-		if (!(oAuth2Resource != null && oAuth2Resource instanceof OAuth2Resource)) {
-			return null;
-		}
+	public OAuth2TokenResponse obtainAuth2Token(OAuth2Provider provider, String oAuth2Code) throws OAuthSystemException, OAuthProblemException {
+		log.trace("obtainAuth2Token start..." + provider);
 
-		String oAuth2ClientId = oAuth2Resource.getOAuth2ClientId();
-		String oAuth2TokenLocation = oAuth2Resource.getOAuth2TokenLocation();
-		String oAuth2ClientSecret = oAuth2Resource.getOAuth2ClientSecret();
-		String oAuth2RedirectURI = oAuth2Resource.getOAuth2RedirectURI();
+		String oAuth2ClientId = provider.getClientId();
+		String oAuth2TokenLocation = provider.getTokenLocation();
+		String oAuth2ClientSecret = provider.getClientSecret();
+		String oAuth2RedirectURI = provider.getRedirectURI();
 
 		OAuthClientRequest oAuthRequest = OAuthClientRequest
 				.tokenLocation(oAuth2TokenLocation)
@@ -100,20 +102,13 @@ public class OAuth2Helper {
 	}
 
 	// Sept 3, GET the profile of the user.
-	public OAuthResourceResponse getOAuth2Profile(OAuth2TokenResponse oAuth2Response, OAuth2Resource oAuth2Resource)
+	public OAuthResourceResponse getOAuth2Profile(OAuth2TokenResponse oAuth2Response, OAuth2Provider provider)
 			throws OAuthSystemException, OAuthProblemException {
 
-		log.trace(" getOAuth2Profile start..." + oAuth2Response);
-		if (oAuth2Response == null || oAuth2Resource == null) {
-			return null;
-		}
+		log.trace("getOAuth2Profile start {}", oAuth2Response);
 
 		String accessToken = oAuth2Response.getAccessToken();
-		String userProfileLocation = oAuth2Resource.getOAuth2UserProfileLocation();
-
-		if (StringUtils.isBlank(accessToken) || StringUtils.isBlank(userProfileLocation)) {
-			return null;
-		}
+		String userProfileLocation = provider.getProfileLocation();
 
 		OAuthClientRequest bearerClientRequest
 				= new OAuthBearerClientRequest(userProfileLocation)
