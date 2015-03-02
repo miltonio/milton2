@@ -96,8 +96,11 @@ public class OAuth2Helper {
 
 		OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());
 
-		//OAuth2TokenResponse oAuth2Response = oAuthClient.accessToken(oAuthRequest, OAuth2TokenResponse.class);
-		OAuth2TokenResponse oAuth2Response = oAuthClient.accessToken(oAuthRequest, OAuthJSONAccessTokenResponse.class);
+		// This works for facebook
+		OAuth2TokenResponse oAuth2Response = oAuthClient.accessToken(oAuthRequest, OAuth2TokenResponse.class);
+		
+		// This might work for google
+		//OAuth2TokenResponse oAuth2Response = oAuthClient.accessToken(oAuthRequest, OAuthJSONAccessTokenResponse.class);
 
 		return oAuth2Response;
 	}
