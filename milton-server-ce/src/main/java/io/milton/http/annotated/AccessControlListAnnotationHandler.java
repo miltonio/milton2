@@ -64,7 +64,10 @@ public class AccessControlListAnnotationHandler extends AbstractAnnotationHandle
 			}
 			p = p.getParent();
 		}
-		privs = EnumSet.allOf(Priviledge.class);
+		// BM: this shouldnt be here. We do want to grant all privs at this point, because nothing 
+		// explicit was found, but only if there is a current user. And privs should use Priviledge.ALL
+		// rather then allOf(..) because we want to use the more concise, unexpanded, priviledge set
+		//privs = EnumSet.allOf(Priviledge.class);
 		if (curUser != null) {
 			log.info("No explicit AccessControl annotation found, so defaulting to full access for logged in user");
 			privs.add(Priviledge.ALL);
