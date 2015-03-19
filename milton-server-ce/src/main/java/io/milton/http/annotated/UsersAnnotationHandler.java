@@ -44,21 +44,6 @@ public class UsersAnnotationHandler extends AbstractAnnotationHandler {
 				}
 			}
 
-			// iterate over each root collection, looking for objects which have
-			// a @Users annotation on their ChildOf or ChildrenOf methods
-			for (Resource col : root.getChildren()) {
-				if (col instanceof AnnoCollectionResource) {
-					AnnoCollectionResource acr = (AnnoCollectionResource) col;
-					availMethods = getMethods(acr.getSource().getClass());
-					if (!availMethods.isEmpty()) {
-						Resource r = acr.child(name);
-						if (r instanceof AnnoPrincipalResource) {
-							AnnoPrincipalResource apr = (AnnoPrincipalResource) r;
-							return apr;
-						}
-					}
-				}
-			}
 		} catch (NotAuthorizedException e) {
 			throw new RuntimeException(e);
 		} catch (BadRequestException e) {
