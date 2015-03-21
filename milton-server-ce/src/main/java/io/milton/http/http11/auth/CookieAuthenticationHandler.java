@@ -61,10 +61,10 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 	@Override
 	public boolean supports(Resource r, Request request) {
 		// find the authId, if any, from the request
-		String userUrl = getUserUrl(request);
 
 		// check for a logout command, if so logout
 		if (isLogout(request)) {
+			String userUrl = getUserUrl(request);
 			log.info("Is LogOut request, clear cookie");
 			if (userUrl != null && userUrl.length() > 0) {
 				clearCookieValue(HttpManager.response());
@@ -79,7 +79,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 			}
 		}
 
-		// We will support it if there is either a auth id request param
+		String userUrl = getUserUrl(request);
 		if (userUrl != null) {
 			return true;
 		} else {
