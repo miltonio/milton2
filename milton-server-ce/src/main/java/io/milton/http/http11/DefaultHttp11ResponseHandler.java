@@ -216,7 +216,7 @@ public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Buff
 				fn = -1;
 			}
 		} else {
-			if (cl != null && cl > range.getFinish()) {
+			if (cl != null && cl < range.getFinish()) {
 				fn = cl - 1;
 			} else {
 				fn = range.getFinish();
