@@ -218,6 +218,9 @@ public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Buff
 		} else {
 			if (cl != null && cl < range.getFinish()) {
 				fn = cl - 1;
+			} else if (cl == null) {
+				log.warn("Couldnt calculate range end position because the resource is not reporting a content length, and no end position was requested by the client: " + resource.getName() + " - " + resource.getClass());
+				fn = -1;
 			} else {
 				fn = range.getFinish();
 			}
