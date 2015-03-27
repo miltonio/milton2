@@ -49,6 +49,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Bufferable {
+
 	private static final Logger log = LoggerFactory.getLogger(DefaultHttp11ResponseHandler.class);
 	private static final String miltonVerson;
 
@@ -68,7 +69,7 @@ public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Buff
 		never,
 		whenNeeded
 	}
-	
+
 	private final AuthenticationService authenticationService;
 	private final ETagGenerator eTagGenerator;
 	private final ContentGenerator contentGenerator;
@@ -215,7 +216,11 @@ public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Buff
 				fn = -1;
 			}
 		} else {
-			fn = range.getFinish();
+			if (cl != null && cl > range.getFinish()) {
+				fn = cl - 1;
+			} else {
+				fn = range.getFinish();
+			}
 		}
 		response.setContentRangeHeader(st, fn, cl);
 		long contentLength = fn - st + 1;
@@ -232,8 +237,6 @@ public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Buff
 		response.setContentLengthHeader(contentLength);
 		response.setEntity(new GetableResourceEntity(resource, range, params, null));
 	}
-
-	
 
 	/**
 	 * Send a partial content response with multiple ranges
@@ -508,5 +511,5 @@ public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Buff
 
 	public void setMultipartBoundary(String multipartBoundary) {
 		this.multipartBoundary = multipartBoundary;
-	}		
+	}
 }
