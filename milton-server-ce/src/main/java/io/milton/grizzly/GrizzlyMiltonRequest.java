@@ -134,7 +134,7 @@ public class GrizzlyMiltonRequest extends  AbstractRequest {
 
     @Override
     public String getAbsoluteUrl() {
-        return wrapped.getRequestURI();
+        return wrapped.getRequestURL().toString();
     }
 
     @Override

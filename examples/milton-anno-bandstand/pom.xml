@@ -11,7 +11,7 @@
     </description>
     <properties>
         <milton.version>2.6.5.1</milton.version>
-    </properties>
+    </properties>    
     <build>
         <plugins>
             <plugin>
