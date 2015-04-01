@@ -4,7 +4,7 @@
     <parent>
         <groupId>io.milton</groupId>
         <artifactId>milton</artifactId>
-        <version>2.6.5.0</version>
+        <version>2.6.5.1</version>
     </parent>
     <artifactId>milton-mail-api</artifactId>
     <packaging>jar</packaging>
@@ -15,7 +15,7 @@
             <distribution>repo</distribution>
             <comments>Permissive, business friendly license.</comments>
         </license>
-    </licenses>	    
+    </licenses>
     <dependencies>
         <dependency>
             <groupId>javax.mail</groupId>
@@ -29,7 +29,7 @@
             <artifactId>milton-api</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
+
         <dependency>
             <scope>test</scope>
             <groupId>org.slf4j</groupId>

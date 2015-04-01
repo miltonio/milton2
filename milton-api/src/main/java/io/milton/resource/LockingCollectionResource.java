@@ -22,8 +22,6 @@ package io.milton.resource;
 import io.milton.http.LockInfo;
 import io.milton.http.LockTimeout;
 import io.milton.http.LockToken;
-import io.milton.resource.CollectionResource;
-import io.milton.resource.LockableResource;
 import io.milton.http.exceptions.NotAuthorizedException;
 
 /**

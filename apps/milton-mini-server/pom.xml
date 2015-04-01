@@ -9,9 +9,9 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <milton.version>2.6.5.0</milton.version>
+        <milton.version>2.6.5.1</milton.version>
     </properties>
-    
+
     <distributionManagement>
         <repository>
             <id>ettrema-repo</id>
@@ -23,13 +23,13 @@
             <url>http://milton.io/maven/</url>
         </snapshotRepository>
     </distributionManagement>
-    
+
     <repositories>
         <repository>
             <id>milton-repo</id>
             <url>http://milton.io/maven/</url>
-        </repository>       
-    </repositories>     
+        </repository>
+    </repositories>
 
     <build>
         <plugins>
@@ -41,7 +41,7 @@
                     <source>1.7</source>
                     <target>1.7</target>
                 </configuration>
-            </plugin>                     
+            </plugin>
         </plugins>
     </build>
 
@@ -50,24 +50,24 @@
             <groupId>jstl</groupId>
             <artifactId>jstl</artifactId>
             <version>1.2</version>
-        </dependency>                    
+        </dependency>
         <dependency>
             <groupId>io.milton</groupId>
             <artifactId>bootstrap</artifactId>
             <version>1.0.0</version>
             <type>war</type>
-        </dependency>    
+        </dependency>
         <dependency>
             <groupId>io.milton</groupId>
             <artifactId>alertify.js</artifactId>
             <version>0.3.10</version>
             <type>war</type>
-        </dependency>                    
+        </dependency>
         <dependency>
             <groupId>org.mnode.ical4j</groupId>
             <artifactId>ical4j</artifactId>
             <version>1.0.5.2</version>
-        </dependency>        
+        </dependency>
         <!-- For connection pooling, see http://jolbox.com/index.html?page=http://jolbox.com/benchmarks.html  -->
         <dependency>
             <groupId>com.jolbox</groupId>
@@ -79,7 +79,7 @@
                     <groupId>org.slf4j</groupId>
                 </exclusion>
             </exclusions>
-        </dependency>          
+        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
@@ -95,7 +95,7 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>1.7.5</version>
-        </dependency>  
+        </dependency>
         <dependency>
             <groupId>io.milton</groupId>
             <artifactId>milton-server-ce</artifactId>
@@ -106,12 +106,12 @@
                     <groupId>org.slf4j</groupId>
                 </exclusion>
             </exclusions>
-        </dependency>                
+        </dependency>
         <dependency>
             <groupId>io.milton</groupId>
             <artifactId>milton-server-ent</artifactId>
             <version>${milton.version}</version>
-        </dependency>  
+        </dependency>
         <dependency>
             <groupId>io.milton</groupId>
             <artifactId>milton-cloud-vfs</artifactId>
@@ -125,10 +125,10 @@
                     <artifactId>slf4j-api</artifactId>
                     <groupId>org.slf4j</groupId>
                 </exclusion>
-            </exclusions>            
+            </exclusions>
         </dependency>
-        
-        
+
+
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-orm</artifactId>
@@ -138,8 +138,8 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
             <version>3.2.5.RELEASE</version>
-        </dependency>            
-      
+        </dependency>
+
         <dependency>
             <groupId>net.sf.ehcache</groupId>
             <artifactId>ehcache-core</artifactId>
@@ -157,7 +157,7 @@
             <artifactId>hibernate-ehcache</artifactId>
             <version>4.2.8.Final</version>
         </dependency>
-        
+
         <dependency>
             <groupId>net.sf.json-lib</groupId>
             <artifactId>json-lib</artifactId>
@@ -171,20 +171,20 @@
             <type>jar</type>
         </dependency>
     </dependencies>
-    
-    <profiles>        		
-                     
+
+    <profiles>
+
         <profile>
-            <id>run-jetty</id>   
+            <id>run-jetty</id>
             <dependencies>
                 <dependency>
                     <groupId>com.h2database</groupId>
                     <artifactId>h2</artifactId>
                     <version>1.2.144</version>
-                </dependency>                
-            </dependencies>             
-            <build>                              
-                <plugins>                                      
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
                     <plugin>
                         <groupId>org.mortbay.jetty</groupId>
                         <artifactId>jetty-maven-plugin</artifactId>
@@ -197,7 +197,7 @@
                                     <goal>stop</goal>
                                 </goals>
                             </execution>
-                            
+
                             <execution>
                                 <id>run</id>
                                 <phase>compile</phase>
@@ -205,13 +205,13 @@
                                     <goal>run</goal>
                                 </goals>
                             </execution>
-                        </executions>                           
+                        </executions>
                         <configuration>
                             <useTestClasspath>true</useTestClasspath>
                             <webAppConfig>
                                 <contextPath>/</contextPath>
                             </webAppConfig>
-                    
+
                             <connectors>
                                 <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
                                     <!--<port>8085</port>-->
@@ -222,9 +222,9 @@
                             <stopKey>stop</stopKey>
                             <stopPort>8089</stopPort>
                         </configuration>
-                    </plugin>  
+                    </plugin>
                 </plugins>
-            </build>         
-        </profile>                                                      
-    </profiles>       
+            </build>
+        </profile>
+    </profiles>
 </project>

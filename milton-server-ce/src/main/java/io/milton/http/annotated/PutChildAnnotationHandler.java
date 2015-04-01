@@ -19,7 +19,6 @@ import io.milton.http.Request.Method;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
-import java.io.IOException;
 
 import java.io.InputStream;
 

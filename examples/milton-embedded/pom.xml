@@ -4,23 +4,23 @@
     <parent>
         <groupId>io.milton</groupId>
         <artifactId>milton</artifactId>
-        <version>2.6.5.0</version>
+        <version>2.6.5.1</version>
     </parent>
     <groupId>io.milton</groupId>
     <artifactId>milton-example-embedded</artifactId>
     <packaging>war</packaging>
     <description>Shows how to use Milton from an embedded jetty container
     </description>
-    
+
     <properties>
         <jetty.version>8.1.5.v20120716</jetty.version>
-    </properties>	
-    
-    <profiles>        
+    </properties>
+
+    <profiles>
         <profile>
-            <id>run-embedded-jetty</id>                
-            <build>              
-                <plugins>                                      
+            <id>run-embedded-jetty</id>
+            <build>
+                <plugins>
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
@@ -36,13 +36,13 @@
                         <configuration>
                             <mainClass>com.mycompany.Main</mainClass>
                         </configuration>
-                    </plugin>                                        					
+                    </plugin>
                 </plugins>
-            </build>         
-        </profile>                                                      
-    </profiles>    
-    
-	
+            </build>
+        </profile>
+    </profiles>
+
+
     <dependencies>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -64,7 +64,7 @@
             <artifactId>commons-collections</artifactId>
             <version>3.2.1</version>
         </dependency>
-		
+
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-server</artifactId>
@@ -84,7 +84,7 @@
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-servlets</artifactId>
             <version>${jetty.version}</version>
-        </dependency>		
+        </dependency>
 
     </dependencies>
 </project>

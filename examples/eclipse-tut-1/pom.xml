@@ -12,7 +12,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <milton.version>2.6.5.0</milton.version>
+        <milton.version>2.6.5.1</milton.version>
     </properties>
 
     <build>
@@ -32,7 +32,7 @@
                     <stopKey>stop</stopKey>
                     <stopPort>8089</stopPort>
                 </configuration>
-            </plugin>            
+            </plugin>
         </plugins>
     </build>
 
@@ -40,8 +40,8 @@
         <repository>
             <id>milton-repo</id>
             <url>http://milton.io/maven/</url>
-        </repository>       
-    </repositories>     
+        </repository>
+    </repositories>
 
     <dependencies>
         <dependency>
@@ -53,6 +53,6 @@
             <groupId>io.milton</groupId>
             <artifactId>milton-server-ce</artifactId>
             <version>${milton.version}</version>
-        </dependency>     
+        </dependency>
     </dependencies>
 </project>
