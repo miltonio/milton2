@@ -6,7 +6,7 @@
     <version>1.0.0</version>
     <packaging>war</packaging>
     <name>Annotations Example - Bandstand App</name>
-    <description>A complete db driven web application which shows how to 
+    <description>A complete db driven web application which shows how to
         use milton annotations in a "sort of" real life app.
     </description>
     <properties>
@@ -22,7 +22,7 @@
                     <webAppConfig>
                         <contextPath>/</contextPath>
                     </webAppConfig>
-                    
+
                     <connectors>
                         <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
                             <!--<port>8085</port>-->
@@ -33,7 +33,7 @@
                     <stopKey>stop</stopKey>
                     <stopPort>8089</stopPort>
                 </configuration>
-            </plugin>            
+            </plugin>
         </plugins>
     </build>
     <repositories>
@@ -52,8 +52,8 @@
         <repository>
             <id>ettrema-repo</id>
             <url>http://milton.io/maven/</url>
-        </repository>       
-    </repositories>     
+        </repository>
+    </repositories>
     <dependencies>
         <!--
         <dependency>
@@ -61,13 +61,13 @@
             <artifactId>bootstrap</artifactId>
             <version>1.0.0</version>
             <type>war</type>
-        </dependency>            
+        </dependency>
         -->
         <dependency>
             <groupId>org.mnode.ical4j</groupId>
             <artifactId>ical4j</artifactId>
             <version>1.0.2</version>
-        </dependency>        
+        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
@@ -103,7 +103,7 @@
             <artifactId>h2</artifactId>
             <version>1.2.144</version>
         </dependency>
-        
+
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-annotations</artifactId>
@@ -120,13 +120,13 @@
             <version>3.5.6-Final</version>
         </dependency>
 
-                
+
         <dependency>
             <groupId>javax.persistence</groupId>
             <artifactId>persistence-api</artifactId>
             <version>1.0</version>
         </dependency>
-                
+
         <dependency>
             <groupId>javax.sql</groupId>
             <artifactId>jdbc-stdext</artifactId>
@@ -142,13 +142,13 @@
             <groupId>dom4j</groupId>
             <artifactId>dom4j</artifactId>
             <version>1.6.1</version>
-        </dependency>       
+        </dependency>
         <!-- For connection pooling, see http://jolbox.com/index.html?page=http://jolbox.com/benchmarks.html  -->
         <dependency>
             <groupId>com.jolbox</groupId>
             <artifactId>bonecp-provider</artifactId>
             <version>0.7.1.RELEASE</version>
-        </dependency>     
+        </dependency>
         <dependency>
             <groupId>net.sf.ehcache</groupId>
             <artifactId>ehcache-core</artifactId>

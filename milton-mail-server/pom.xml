@@ -15,7 +15,7 @@
             <distribution>repo</distribution>
             <comments>Permissive, business friendly license.</comments>
         </license>
-    </licenses>	     
+    </licenses>
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -31,14 +31,14 @@
             <groupId>org.subethamail</groupId>
             <artifactId>subethasmtp-smtp</artifactId>
             <version>1.2</version>
-        </dependency>         
+        </dependency>
                 <!-- mvn install:install-file -DgroupId=org.masukomi -DartifactId=aspirin-core -Dversion=1.0 -Dpackaging=jar -Dfile=/path/to/file -->
         <dependency>
             <groupId>io.milton</groupId>
             <artifactId>aspirin</artifactId>
             <version>0.10.03.03</version>
-        </dependency>		
-<!--		
+        </dependency>
+<!--
 		<dependency>
 			<groupId>org.apache.james</groupId>
 			<artifactId>apache-james-mailbox-api</artifactId>

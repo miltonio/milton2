@@ -9,7 +9,7 @@
     <groupId>io.milton</groupId>
     <artifactId>milton-api</artifactId>
     <packaging>jar</packaging>
-    <name>milton-api</name>	
+    <name>milton-api</name>
     <licenses>
         <license>
             <name>Apache2</name>
@@ -17,8 +17,8 @@
             <distribution>repo</distribution>
             <comments>Permissive, business friendly license.</comments>
         </license>
-    </licenses>	    
-    <dependencies>		
+    </licenses>
+    <dependencies>
         <dependency>
             <groupId>org.jdom</groupId>
             <artifactId>jdom</artifactId>
@@ -57,7 +57,7 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>1.7.5</version>
-        </dependency>                
+        </dependency>
     </dependencies>
 </project>
 

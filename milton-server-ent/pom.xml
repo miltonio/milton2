@@ -18,7 +18,7 @@
             <url>http://milton.io/about/license/index.html</url>
             <distribution>repo</distribution>
         </license>
-    </licenses>	    
+    </licenses>
     <dependencies>
         <dependency>
             <groupId>io.milton</groupId>
@@ -52,7 +52,7 @@
             <groupId>org.mnode.ical4j</groupId>
             <artifactId>ical4j</artifactId>
             <version>1.0.4</version>
-        </dependency>        
+        </dependency>
     </dependencies>
 
     <!--

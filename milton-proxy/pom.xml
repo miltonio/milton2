@@ -17,7 +17,7 @@
             <distribution>repo</distribution>
             <comments>Permissive, business friendly license.</comments>
         </license>
-    </licenses>	     
+    </licenses>
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -28,7 +28,7 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>milton-client</artifactId>
             <version>${project.version}</version>
-        </dependency>     
+        </dependency>
     </dependencies>
 </project>
 

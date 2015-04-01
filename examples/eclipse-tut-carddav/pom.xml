@@ -36,7 +36,7 @@
                     <stopKey>stop</stopKey>
                     <stopPort>8089</stopPort>
                 </configuration>
-            </plugin>            
+            </plugin>
         </plugins>
     </build>
 
@@ -45,7 +45,7 @@
             <groupId>net.sourceforge.cardme</groupId>
             <artifactId>cardme</artifactId>
             <version>0.3.6.03</version>
-        </dependency>        
+        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
@@ -55,6 +55,6 @@
             <groupId>io.milton</groupId>
             <artifactId>milton-server-ent</artifactId>
             <version>${milton.version}</version>
-        </dependency>    
+        </dependency>
     </dependencies>
 </project>

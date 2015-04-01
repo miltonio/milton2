@@ -15,7 +15,7 @@
             <distribution>repo</distribution>
             <comments>Permissive, business friendly license.</comments>
         </license>
-    </licenses>	    
+    </licenses>
     <dependencies>
         <dependency>
             <groupId>javax.mail</groupId>
@@ -29,7 +29,7 @@
             <artifactId>milton-api</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
+
         <dependency>
             <scope>test</scope>
             <groupId>org.slf4j</groupId>

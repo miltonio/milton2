@@ -30,7 +30,7 @@
                     <stopKey>stop</stopKey>
                     <stopPort>8089</stopPort>
                 </configuration>
-            </plugin>            
+            </plugin>
         </plugins>
     </build>
     <dependencies>

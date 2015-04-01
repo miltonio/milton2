@@ -30,7 +30,7 @@
                     <stopKey>stop</stopKey>
                     <stopPort>8089</stopPort>
                 </configuration>
-            </plugin>            
+            </plugin>
         </plugins>
     </build>
 
@@ -38,8 +38,8 @@
         <repository>
             <id>ettrema-repo</id>
             <url>http://milton.io/maven/</url>
-        </repository>       
-    </repositories>     
+        </repository>
+    </repositories>
 
 
     <dependencies>
@@ -52,6 +52,6 @@
             <groupId>io.milton</groupId>
             <artifactId>milton-server-ce</artifactId>
             <version>${milton.version}</version>
-        </dependency>     
+        </dependency>
     </dependencies>
 </project>
