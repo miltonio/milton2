@@ -24,6 +24,7 @@ import io.milton.resource.AccessControlledResource;
 import io.milton.resource.AccessControlledResource.Priviledge;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.slf4j.Logger;
@@ -64,7 +65,7 @@ public class AccessControlListAnnotationHandler extends AbstractAnnotationHandle
 			}
 			p = p.getParent();
 		}
-		// BM: this shouldnt be here. We do want to grant all privs at this point, because nothing 
+		// BM: this shouldnt be here. We do want to grant all privs at this point, because nothing
 		// explicit was found, but only if there is a current user. And privs should use Priviledge.ALL
 		// rather then allOf(..) because we want to use the more concise, unexpanded, priviledge set
 		//privs = EnumSet.allOf(Priviledge.class);
@@ -76,7 +77,7 @@ public class AccessControlListAnnotationHandler extends AbstractAnnotationHandle
 	}
 
 	public Set<AccessControlledResource.Priviledge> directPrivs(Object curUser, AnnoResource res, Auth auth) {
-		Set<AccessControlledResource.Priviledge> acl = EnumSet.allOf(Priviledge.class);;
+		Set<AccessControlledResource.Priviledge> acl =  EnumSet.noneOf(AccessControlledResource.Priviledge.class);
 		Object source = res.getSource();
 		List<ControllerMethod> availMethods = getMethods(source.getClass());
 		if (availMethods.isEmpty()) {
