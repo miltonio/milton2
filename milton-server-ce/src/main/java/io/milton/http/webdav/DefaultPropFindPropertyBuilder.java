@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.milton.http.webdav;
 
 import io.milton.resource.CollectionResource;
@@ -39,17 +38,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class performs the main part of PROPFIND processing, which is given
- * a field request (either named fields or an allprop request) and a target
- * resource, iterate over that resource and its children (depending on the
- * depth header) and list a list of PropFindResponse objects.
+ * This class performs the main part of PROPFIND processing, which is given a
+ * field request (either named fields or an allprop request) and a target
+ * resource, iterate over that resource and its children (depending on the depth
+ * header) and list a list of PropFindResponse objects.
  *
  * These PropFindResponse objects contain typed values for all of the known
  * fields, and a set of unknown fields. These will be used to build the xml
  * which is ultimately sent back to the client.
  *
- * This class uses a list of PropertySource's, where each PropertySource represents
- * some mechanism to read properties from a resource.
+ * This class uses a list of PropertySource's, where each PropertySource
+ * represents some mechanism to read properties from a resource.
  *
  * @author brad
  */
@@ -60,21 +59,23 @@ public class DefaultPropFindPropertyBuilder implements PropFindPropertyBuilder {
 
 	/**
 	 *
-	 * @param propertySources - the list of property sources used to read properties
-	 * from resources
+	 * @param propertySources - the list of property sources used to read
+	 * properties from resources
 	 */
 	public DefaultPropFindPropertyBuilder(List<PropertySource> propertySources) {
-		this.propertySources = propertySources;		
+		this.propertySources = propertySources;
 	}
 
 	/**
-	 * Construct a list of PropFindResponse for the given resource, using
-	 * the PropertySource's injected into this class.
+	 * Construct a list of PropFindResponse for the given resource, using the
+	 * PropertySource's injected into this class.
 	 *
 	 *
 	 * @param pfr - the resource to interrogate
-	 * @param depth - the depth header. 0 means only look at the given resource. 1 is to include children
-	 * @param parseResult - contains the list of fields, or a true boolean indicating all properties
+	 * @param depth - the depth header. 0 means only look at the given resource.
+	 * 1 is to include children
+	 * @param parseResult - contains the list of fields, or a true boolean
+	 * indicating all properties
 	 * @param url - the URL of the given resource - MUST be correctly encoded
 	 * @return
 	 */
@@ -88,7 +89,7 @@ public class DefaultPropFindPropertyBuilder implements PropFindPropertyBuilder {
 	}
 
 	@Override
-	public ValueAndType getProperty(QName field, Resource resource) throws NotAuthorizedException, BadRequestException {		
+	public ValueAndType getProperty(QName field, Resource resource) throws NotAuthorizedException, BadRequestException {
 		for (PropertySource source : propertySources) {
 			PropertyMetaData meta = source.getPropertyMetaData(field, resource);
 			if (meta != null && !meta.isUnknown()) {
@@ -141,7 +142,7 @@ public class DefaultPropFindPropertyBuilder implements PropFindPropertyBuilder {
 						try {
 							val = source.getProperty(field, resource);
 							LogUtils.trace(log, "processResource: got value", val, "from source", source.getClass());
-							if( val == null ) {
+							if (val == null) {
 								knownProperties.put(field, new ValueAndType(val, meta.getValueType())); // null, but we still need type information to write it so use meta
 							} else {
 								knownProperties.put(field, new ValueAndType(val, val.getClass())); // non-null, so use more robust class info
@@ -180,16 +181,18 @@ public class DefaultPropFindPropertyBuilder implements PropFindPropertyBuilder {
 		if (requestedDepth > currentDepth && resource instanceof CollectionResource) {
 			CollectionResource col = (CollectionResource) resource;
 			List<? extends Resource> list = col.getChildren();
-			list = new ArrayList<Resource>(list);
-			for (Resource child : list) {
-				if (child instanceof PropFindableResource) {
-					String childName = child.getName();
-					if (childName == null) {
-						log.warn("null name for resource of type: " + child.getClass() + " in folder: " + href + " WILL NOT be returned in PROPFIND response!!");
-					} else {
-						String childHref = href + Utils.percentEncode(childName);
-						// Note that the new collection href, is just the current href
-						processResource(responses, (PropFindableResource) child, parseResult, childHref, requestedDepth, currentDepth + 1, href);
+			if (list != null) {
+				list = new ArrayList<Resource>(list);
+				for (Resource child : list) {
+					if (child instanceof PropFindableResource) {
+						String childName = child.getName();
+						if (childName == null) {
+							log.warn("null name for resource of type: " + child.getClass() + " in folder: " + href + " WILL NOT be returned in PROPFIND response!!");
+						} else {
+							String childHref = href + Utils.percentEncode(childName);
+							// Note that the new collection href, is just the current href
+							processResource(responses, (PropFindableResource) child, parseResult, childHref, requestedDepth, currentDepth + 1, href);
+						}
 					}
 				}
 			}
@@ -220,9 +223,9 @@ public class DefaultPropFindPropertyBuilder implements PropFindPropertyBuilder {
 	 * Requested URL *should* never contain an ampersand because its a reserved
 	 * character. However windows 7 does send unencoded ampersands in requests,
 	 * but expects them to be encoded in responses.
-	 * 
+	 *
 	 * @param url
-	 * @return 
+	 * @return
 	 */
 	public static String fixUrlForWindows(String url) {
 		//return url;
