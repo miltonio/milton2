@@ -34,13 +34,16 @@ public class UsersAnnotationHandler extends AbstractAnnotationHandler {
 	}
 
 	public AnnoPrincipalResource findUser(AnnoCollectionResource root, String name) {
+
 		try {
-			List<ControllerMethod> availMethods = getMethods(root.getSource().getClass());
-			if (!availMethods.isEmpty()) {
-				Resource r = root.child(name);
-				if (r instanceof AnnoPrincipalResource) {
-					AnnoPrincipalResource apr = (AnnoPrincipalResource) r;
-					return apr;
+			for (AnnoCollectionResource userHome : findUsersCollections(root)) {
+				List<ControllerMethod> availMethods = getMethods(userHome.getSource().getClass());
+				if (!availMethods.isEmpty()) {
+					Resource r = userHome.child(name);
+					if (r instanceof AnnoPrincipalResource) {
+						AnnoPrincipalResource apr = (AnnoPrincipalResource) r;
+						return apr;
+					}
 				}
 			}
 
