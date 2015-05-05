@@ -89,6 +89,8 @@ public class UserManagerAdapter implements UserManager {
             String user = upa.getUsername();
             String password = upa.getPassword();
 			UserMetadata metadata = upa.getUserMetadata();
+			String hostAddress = metadata.getInetAddress().getHostAddress();
+			
             log.debug( "authenticate: " + user );
             NameAndAuthority naa = NameAndAuthority.parse( user );
             if( naa.domain == null ) {
