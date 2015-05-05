@@ -30,6 +30,7 @@ import org.apache.ftpserver.ftplet.User;
 import org.apache.ftpserver.ftplet.UserManager;
 import org.apache.ftpserver.usermanager.AnonymousAuthentication;
 import org.apache.ftpserver.usermanager.UsernamePasswordAuthentication;
+import org.apache.ftpserver.usermanager.impl.UserMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,6 +88,7 @@ public class UserManagerAdapter implements UserManager {
             UsernamePasswordAuthentication upa = (UsernamePasswordAuthentication) authentication;
             String user = upa.getUsername();
             String password = upa.getPassword();
+			UserMetadata metadata = upa.getUserMetadata();
             log.debug( "authenticate: " + user );
             NameAndAuthority naa = NameAndAuthority.parse( user );
             if( naa.domain == null ) {
