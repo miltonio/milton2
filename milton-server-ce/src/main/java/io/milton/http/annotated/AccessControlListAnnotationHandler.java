@@ -71,6 +71,7 @@ public class AccessControlListAnnotationHandler extends AbstractAnnotationHandle
 		//privs = EnumSet.allOf(Priviledge.class);
 		if (curUser != null) {
 			log.info("No explicit AccessControl annotation found, so defaulting to full access for logged in user");
+			privs = new HashSet<Priviledge>();
 			privs.add(Priviledge.ALL);
 		}
 		return privs;
