@@ -41,6 +41,7 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import net.sf.json.JSON;
@@ -75,6 +76,7 @@ public class PutJsonResource extends JsonResource implements PostableResource {
 	private final PutableResource wrapped;
 	private final String href;
 	private List<NewFile> newFiles;
+	private String errorMessage;
 
 	public PutJsonResource(PutableResource putableResource, String href, EventManager eventManager) {
 		super(putableResource, Request.Method.PUT.code, null);
@@ -97,45 +99,56 @@ public class PutJsonResource extends JsonResource implements PostableResource {
 
 		newFiles = new ArrayList<NewFile>();
 
-		if (parameters.containsKey("content")) {
-			String name = parameters.get("name");
-			String content = parameters.get("content");
-			String contentType = parameters.get("Content-Type");
-			byte[] arr = toArray(content);
-			ByteArrayInputStream in = new ByteArrayInputStream(arr);
-			long length = arr.length;
-			NewFile nf = new NewFile();
-			nf.setOriginalName(name);
-			nf.setContentType(contentType);
-			nf.setLength(length);
-			newFiles.add(nf);
-			
-			processFile(name, in, length, contentType, nf);
-		}
+		try {
+			if (parameters.containsKey("content")) {
+				String name = parameters.get("name");
+				String content = parameters.get("content");
+				String contentType = parameters.get("Content-Type");
+				byte[] arr = toArray(content);
+				ByteArrayInputStream in = new ByteArrayInputStream(arr);
+				long length = arr.length;
+				NewFile nf = new NewFile();
+				nf.setOriginalName(name);
+				nf.setContentType(contentType);
+				nf.setLength(length);
+				newFiles.add(nf);
 
-		for (FileItem file : files.values()) {
-			NewFile nf = new NewFile();
-			String ua = HttpManager.request().getUserAgentHeader();
-			String f = Utils.truncateFileName(ua, file.getName());
-			nf.setOriginalName(f);
-			nf.setContentType(file.getContentType());
-			nf.setLength(file.getSize());
-			newFiles.add(nf);
-			String newName = getName(f, parameters);
-			
-			log.info("creating resource: " + newName + " size: " + file.getSize());
-			InputStream in = null;
-			try {
-				in = file.getInputStream();
-				processFile(newName, in, file.getSize(), file.getContentType(), nf);
-			} finally {
-				FileUtils.close(in);
+				processFile(name, in, length, contentType, nf);
 			}
+
+			for (FileItem file : files.values()) {
+				NewFile nf = new NewFile();
+				String ua = HttpManager.request().getUserAgentHeader();
+				String f = Utils.truncateFileName(ua, file.getName());
+				nf.setOriginalName(f);
+				nf.setContentType(file.getContentType());
+				nf.setLength(file.getSize());
+				newFiles.add(nf);
+				String newName = getName(f, parameters);
+
+				log.info("creating resource: " + newName + " size: " + file.getSize());
+				InputStream in = null;
+				try {
+					in = file.getInputStream();
+					processFile(newName, in, file.getSize(), file.getContentType(), nf);
+				} finally {
+					FileUtils.close(in);
+				}
+			}
+			log.trace("completed all POST processing");
+		} catch (BadRequestException e) {
+			log.warn("BadRequestException", e);
+			errorMessage = "Bad Request: " + e.getReason();
+		} catch (NotAuthorizedException e) {
+			log.warn("NotAuthorizedException", e);
+			errorMessage = "Not authorised: " + e.getMessage();
+		} catch (ConflictException e) {
+			log.warn("ConflictException", e);
+			errorMessage = "Conflict: " + e.getMessage();
 		}
-		log.trace("completed all POST processing");
 		return null;
 	}
-	
+
 	private byte[] toArray(String s) {
 		try {
 			return s.getBytes("UTF-8");
@@ -144,7 +157,7 @@ public class PutJsonResource extends JsonResource implements PostableResource {
 		}
 	}
 
-	private void processFile(String newName, InputStream in, Long length, String contentType, NewFile nf) {
+	private void processFile(String newName, InputStream in, Long length, String contentType, NewFile nf) throws BadRequestException, NotAuthorizedException, ConflictException {
 		Resource newResource;
 
 		try {
@@ -176,12 +189,6 @@ public class PutJsonResource extends JsonResource implements PostableResource {
 			}
 			String newHref = buildNewHref(href, newResource.getName());
 			nf.setHref(newHref);
-		} catch (NotAuthorizedException ex) {
-			throw new RuntimeException(ex);
-		} catch (BadRequestException ex) {
-			throw new RuntimeException(ex);
-		} catch (ConflictException ex) {
-			throw new RuntimeException(ex);
 		} catch (IOException ex) {
 			throw new RuntimeException("Exception creating resource", ex);
 		} finally {
@@ -203,17 +210,24 @@ public class PutJsonResource extends JsonResource implements PostableResource {
 		JsonConfig cfg = new JsonConfig();
 		cfg.setIgnoreTransientFields(true);
 		cfg.setCycleDetectionStrategy(CycleDetectionStrategy.LENIENT);
-
-		NewFile[] arr;
-		if (newFiles != null) {
-			arr = new NewFile[newFiles.size()];
-			newFiles.toArray(arr);
-		} else {
-			arr = new NewFile[0];
-		}
 		Writer writer = new PrintWriter(out);
-		JSON json = JSONSerializer.toJSON(arr, cfg);
-		json.write(writer);
+		if (errorMessage != null) {
+			Map map = new HashMap();
+			map.put("error", errorMessage);
+			JSON json = JSONSerializer.toJSON(map, cfg);
+			json.write(writer);
+
+		} else {
+			NewFile[] arr;
+			if (newFiles != null) {
+				arr = new NewFile[newFiles.size()];
+				newFiles.toArray(arr);
+			} else {
+				arr = new NewFile[0];
+			}
+			JSON json = JSONSerializer.toJSON(arr, cfg);
+			json.write(writer);
+		}
 		writer.flush();
 	}
 
