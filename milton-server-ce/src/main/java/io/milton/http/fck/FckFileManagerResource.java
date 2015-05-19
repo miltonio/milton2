@@ -46,14 +46,17 @@ public class FckFileManagerResource extends FckCommon implements GetableResource
     private static final Logger log = LoggerFactory.getLogger( FckFileManagerResource.class );
     public final static Path URL = Path.path( "/fck_connector.html" );
     //public final static Path URL = Path.path("/editor/filemanager/browser/default/connectors/ettrema/connector.html");
-    public final static String UPLOAD_RESPONSE_TEMPLATE_NORMAL = ""
-        + "<script type=\"text/javascript\">\n"
-        + "window.parent.frames['frmUpload'].OnUploadCompleted([code],'[name]') ;\n"
-        + "</script>\n";
-    public final static String UPLOAD_RESPONSE_TEMPLATE = ""
-        + "<script type='text/javascript'>\n"
-        + "    window.parent.OnUploadCompleted( '[code]', '[msg]' ) ;\n"
-        + "</script>\n";
+
+	public final static String UPLOAD_RESPONSE_TEMPLATE = "<script type=\"text/javascript\">window.parent.CKEDITOR.tools.callFunction( [func], \"[name]\" );</script>";
+
+//    public final static String UPLOAD_RESPONSE_TEMPLATE_NORMAL = ""
+//        + "<script type=\"text/javascript\">\n"
+//        + "window.parent.frames['frmUpload'].OnUploadCompleted([code],'[name]') ;\n"
+//        + "</script>\n";
+//    public final static String UPLOAD_RESPONSE_TEMPLATE = ""
+//        + "<script type='text/javascript'>\n"
+//        + "    window.parent.OnUploadCompleted( '[code]', '[msg]' ) ;\n"
+//        + "</script>\n";
     private FckPostParams uploadParams;
 
     public FckFileManagerResource( CollectionResource folder ) {
@@ -76,12 +79,10 @@ public class FckFileManagerResource extends FckCommon implements GetableResource
     public void sendContent( OutputStream out, Range range, Map<String, String> params, String contentType ) throws IOException, NotAuthorizedException, BadRequestException {
         log.debug( "sendContent" );
         if( uploadParams != null ) {
-            String s;
-            if( uploadParams.code == 0 ) {
-                s = UPLOAD_RESPONSE_TEMPLATE_NORMAL;
-            } else {
-                s = UPLOAD_RESPONSE_TEMPLATE;
-            }
+            String s = UPLOAD_RESPONSE_TEMPLATE;
+
+			s = s.replace( "[func]", params.get("CKEditorFuncNum") );
+
             s = s.replace( "[code]", uploadParams.code + "" );
             if( uploadParams.message == null ) {
                 uploadParams.message = "";
@@ -154,7 +155,7 @@ public class FckFileManagerResource extends FckCommon implements GetableResource
             }
             if( target == null ) {
                 log.warn( "No PutableResource with that path: " + sFolder );
-                throw new ConflictException( target );
+                throw new BadRequestException( "Path not found: " + sFolder );
             }
             try {
                 if( command.equals( "GetFolders" ) ) {
