@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.milton.http;
 
 import io.milton.resource.GetableResource;
@@ -88,20 +87,20 @@ public class CompressingResponseHandler extends AbstractWrappingResponseHandler 
 			String contentType = r.getContentType(acceptableContentTypes);
 
 			// Experimental support for already compressed content...
-			String acceptableEncodings = request.getAcceptEncodingHeader();			
+			String acceptableEncodings = request.getAcceptEncodingHeader();
 			if (r instanceof CompressedResource) {
 				CompressedResource compressedResource = (CompressedResource) r;
 				String acceptableEncoding = compressedResource.getSupportedEncoding(acceptableEncodings);
 				if (acceptableEncoding != null) {
-                    response.setContentTypeHeader(contentType);
-                    cacheControlHelper.setCacheControl(r, response, request.getAuthorization());
-                    Long contentLength = compressedResource.getCompressedContentLength(acceptableEncoding);
-                    response.setContentLengthHeader(contentLength);
-                    response.setContentEncodingHeader(Response.ContentEncoding.GZIP);
-                    response.setVaryHeader("Accept-Encoding");
-                    response.setEntity(new CompressedResourceEntity(
-                       compressedResource, params, contentType, acceptableEncoding
-                    ));
+					response.setContentTypeHeader(contentType);
+					cacheControlHelper.setCacheControl(r, response, request.getAuthorization());
+					Long contentLength = compressedResource.getCompressedContentLength(acceptableEncoding);
+					response.setContentLengthHeader(contentLength);
+					response.setContentEncodingHeader(Response.ContentEncoding.GZIP);
+					response.setVaryHeader("Accept-Encoding");
+					response.setEntity(new CompressedResourceEntity(
+							compressedResource, params, contentType, acceptableEncoding
+					));
 					return;
 				}
 			}
@@ -121,11 +120,11 @@ public class CompressingResponseHandler extends AbstractWrappingResponseHandler 
 				} catch (NotFoundException e) {
 					tempOut.deleteTempFileIfExists();
 					throw e;
-				} catch (IOException ex) {	
+				} catch (IOException ex) {
 					tempOut.deleteTempFileIfExists();
 					throw new RuntimeException(ex);
 				} finally {
-					FileUtils.close(tempOut);					
+					FileUtils.close(tempOut);
 				}
 
 				log.trace("respondContent-compressed: " + resource.getClass());
@@ -136,7 +135,7 @@ public class CompressingResponseHandler extends AbstractWrappingResponseHandler 
 				response.setContentLengthHeader(contentLength);
 				response.setContentTypeHeader(contentType);
 				cacheControlHelper.setCacheControl(r, response, request.getAuthorization());
-                response.setEntity(new InputStreamEntity(tempOut.getInputStream()));
+				response.setEntity(new InputStreamEntity(tempOut.getInputStream()));
 			} else {
 				log.trace("respondContent: not compressable");
 				// We really should set this header, but it causes IE to not cache files (eg images)
@@ -149,13 +148,15 @@ public class CompressingResponseHandler extends AbstractWrappingResponseHandler 
 	}
 
 	protected void setRespondContentCommonHeaders(Response response, Resource resource, Response.Status status, Auth auth) {
-		response.setStatus(status);
 		response.setDateHeader(new Date());
-		String etag = wrapped.generateEtag(resource);
-		if (etag != null) {
-			response.setEtag(etag);
+		if (response.getStatus() == null || response.getStatus().code == 200) { // if status is not set (normal case) or is defaulted to 200 (often the case) set it
+			response.setStatus(status);
+			String etag = wrapped.generateEtag(resource);
+			if (etag != null) {
+				response.setEtag(etag);
+			}
+			DefaultHttp11ResponseHandler.setModifiedDate(response, resource, auth);
 		}
-		DefaultHttp11ResponseHandler.setModifiedDate(response, resource, auth);
 	}
 
 	private boolean canCompress(GetableResource r, String contentType, String acceptableEncodings) {
