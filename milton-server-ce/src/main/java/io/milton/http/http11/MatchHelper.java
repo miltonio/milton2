@@ -21,6 +21,8 @@ import io.milton.resource.Resource;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +34,7 @@ import org.slf4j.LoggerFactory;
 public class MatchHelper {
 
 	private static final Logger log = LoggerFactory.getLogger(MatchHelper.class);
-	
+
 	private final ETagGenerator eTagGenerator;
 
 	public MatchHelper(ETagGenerator eTagGenerator) {
@@ -54,6 +56,34 @@ public class MatchHelper {
 	 * @return
 	 */
 	public boolean checkIfMatch(Resource r, Request req) {
+		if (_checkIfMatch(r, req)) {
+			// fail
+			return false;
+		}
+		// also check If header
+		String value = req.getIfHeader();
+		if (value == null) {
+			// no if header, return true so processing continues
+			return true;
+		}
+		Pattern pattern = Pattern.compile(".*\\[\"(.*)\"\\]\\)$");
+		Matcher m = pattern.matcher(value);
+		if (!m.matches()) {
+			// If header doesn't have etag
+			return true;
+		}
+		String etag = m.group(1);
+		return checkIfMatch(r, etag);
+	}
+
+	/**
+	 * The original checkIfMatch method ..
+	 *
+	 * @param r
+	 * @param req
+	 * @return
+	 */
+	private boolean _checkIfMatch(Resource r, Request req) {
 		String h = req.getIfMatchHeader();
 		if (h == null || h.length() == 0) {
 			return true; // no if-match header, return true so processing continues
@@ -76,6 +106,25 @@ public class MatchHelper {
 		return false; // a if-match header was sent, but a matching tag is not present, so return false
 	}
 
+
+
+	private boolean checkIfMatch(Resource r, String requestedEtag) {
+		if (r == null) {
+			return false; // etag given, but no resource. Definitely not a match
+		}
+		String currentEtag = eTagGenerator.generateEtag(r);
+		if (currentEtag == null || currentEtag.length() == 0) {
+			return false; // no etag on the resource, but an etag was given in header, so fail
+		}
+		requestedEtag = cleanUp(requestedEtag);
+		//System.out.println("checkIfMatch: compare: " + requestedEtag + " = " + currentEtag);
+		if (requestedEtag.equals(currentEtag) || requestedEtag.equals("*")) {
+			return true; // found a matching tag, return true to continue
+		}
+		System.out.println("checkIfMatch: did not find matching etag");
+		return false; // a if-match header was sent, but a matching tag is not present, so return false
+	}
+
 	/**
 	 * Returns true if none of the given etags match those given in the
 	 * if-none-match header
@@ -94,7 +143,7 @@ public class MatchHelper {
 		}
 		if (h.equals("*")) {
 			boolean b = (r != null);
-			if (r != null ) {
+			if (r != null) {
 				log.warn("if-none-match header is star, and a resource exists, so check has failed: resource name={}", r.getName());
 				return true;
 			}
@@ -107,7 +156,7 @@ public class MatchHelper {
 		}
 		List<String> etags = splitToList(h);
 		for (String requestedEtag : etags) {
-			if (requestedEtag.equals(currentEtag)) {				
+			if (requestedEtag.equals(currentEtag)) {
 				return true;
 			}
 		}
@@ -157,9 +206,9 @@ public class MatchHelper {
 
 	/**
 	 * Some user agents encode the quotes we send them in the etag
-	 * 
+	 *
 	 * @param s
-	 * @return 
+	 * @return
 	 */
 	private String cleanUp(String s) {
 		s = s.replace("&quot;", "");
