@@ -53,14 +53,22 @@ public class MatchHelper {
 	 *
 	 * @param r
 	 * @param req
-	 * @return
+	 * @return - true means resource is not modified
 	 */
 	public boolean checkIfMatch(Resource r, Request req) {
-		if (_checkIfMatch(r, req)) {
-			// fail
+		if( r == null ) {
+			String h = req.getIfMatchHeader();
+			if( h == null ) {
+				return true;
+			}
 			return false;
 		}
-		// also check If header
+		Boolean result = _checkIfMatch(r, req);
+		if (result != null) {
+			// got a result, so use it
+			return result;
+		}
+		// No opinion from if-match header, so also check If header
 		String value = req.getIfHeader();
 		if (value == null) {
 			// no if header, return true so processing continues
@@ -69,7 +77,7 @@ public class MatchHelper {
 		Pattern pattern = Pattern.compile(".*\\[\"(.*)\"\\]\\)$");
 		Matcher m = pattern.matcher(value);
 		if (!m.matches()) {
-			// If header doesn't have etag
+			// If header doesn't contain an etag, so nothing to check, all good..
 			return true;
 		}
 		String etag = m.group(1);
@@ -83,10 +91,10 @@ public class MatchHelper {
 	 * @param req
 	 * @return
 	 */
-	private boolean _checkIfMatch(Resource r, Request req) {
+	private Boolean _checkIfMatch(Resource r, Request req) {
 		String h = req.getIfMatchHeader();
 		if (h == null || h.length() == 0) {
-			return true; // no if-match header, return true so processing continues
+			return null; // no if-match header, return true so processing continues
 		}
 		if (r == null) {
 			return false; // etag given, but no resource. Definitely not a match
@@ -121,7 +129,6 @@ public class MatchHelper {
 		if (requestedEtag.equals(currentEtag) || requestedEtag.equals("*")) {
 			return true; // found a matching tag, return true to continue
 		}
-		System.out.println("checkIfMatch: did not find matching etag");
 		return false; // a if-match header was sent, but a matching tag is not present, so return false
 	}
 

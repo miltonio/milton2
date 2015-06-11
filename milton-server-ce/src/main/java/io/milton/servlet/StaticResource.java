@@ -45,25 +45,25 @@ import org.apache.commons.io.IOUtils;
  * @author brad
  */
 public class StaticResource implements GetableResource {
-	
+
 	private final File file;
-	
+
 	public StaticResource(File file) {
 		if (file.isDirectory()) {
 			throw new IllegalArgumentException("Static resource must be a file, this is a directory: " + file.getAbsolutePath());
 		}
 		this.file = file;
 	}
-	
+
 	@Override
 	public String getUniqueId() {
 		return file.getName() + "_ " + file.lastModified();
 	}
-	
+
 	public int compareTo(Resource res) {
 		return this.getName().compareTo(res.getName());
 	}
-	
+
 	@Override
 	public void sendContent(OutputStream out, Range range, Map<String, String> params, String contentType) throws IOException {
 		FileInputStream fis = null;
@@ -77,57 +77,58 @@ public class StaticResource implements GetableResource {
 			IOUtils.closeQuietly(fis);
 		}
 	}
-	
+
 	@Override
 	public String getName() {
 		return file.getName();
 	}
-	
+
 	@Override
 	public Object authenticate(String user, String password) {
 		return "ok";
 	}
-	
+
 	@Override
 	public boolean authorise(Request request, Request.Method method, Auth auth) {
 		return true;
 	}
-	
+
 	@Override
 	public String getRealm() {
 		return "milton.io"; // will never be used because authorise is always true
 	}
-	
+
 	@Override
 	public Date getModifiedDate() {
 		Date dt = new Date(file.lastModified());
 //        log.debug("static resource modified: " + dt);
 		return dt;
 	}
-	
+
 	@Override
 	public Long getContentLength() {
 		return file.length();
 	}
-	
+
 	@Override
 	public String getContentType(String preferredList) {
 		String mime = ContentTypeUtils.findContentTypes(getName());
 		String s = ContentTypeUtils.findAcceptableContentType(mime, preferredList);
 		return s;
 	}
-	
+
 	@Override
 	public String checkRedirect(Request request) {
 		return null;
 	}
-	
+
 	@Override
 	public Long getMaxAgeSeconds(Auth auth) {
-		Long ll = 315360000l; // immutable
+		//Long ll = 315360000l; // immutable
+		Long ll = 25920000l; // 1 year
 		return ll;
 	}
-	
+
 	public LockToken getLockToken() {
 		return null;
 	}

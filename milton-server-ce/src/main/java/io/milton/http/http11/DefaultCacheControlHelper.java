@@ -46,6 +46,9 @@ public class DefaultCacheControlHelper implements CacheControlHelper {
                 response.setCacheControlPrivateMaxAgeHeader( delta );
                 //response.setCacheControlMaxAgeHeader(delta);
             } else {
+//				long l = System.currentTimeMillis() + (delta*1000);
+//				Date expiryDate = new Date(l);
+//				response.setExpiresHeader(expiryDate);
                 response.setCacheControlMaxAgeHeader( delta );
             }
             // Disable, might be interfering with IE.. ?

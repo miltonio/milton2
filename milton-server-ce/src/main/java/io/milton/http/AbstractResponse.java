@@ -90,7 +90,7 @@ public abstract class AbstractResponse implements Response {
 	@Override
     public void setCacheControlMaxAgeHeader(Long delta) {
         if (delta != null) {
-            setResponseHeader(Header.CACHE_CONTROL, CacheControlResponse.MAX_AGE.code + "=" + delta);
+            setResponseHeader(Header.CACHE_CONTROL, "public, " + CacheControlResponse.MAX_AGE.code + "=" + delta);
         } else {
             setResponseHeader(Header.CACHE_CONTROL, CacheControlResponse.NO_CACHE.code);
         }
@@ -144,8 +144,8 @@ public abstract class AbstractResponse implements Response {
 		setResponseHeader(Header.ACCEPT_RANGES , s);
 	}
 
-	
-	
+
+
 	@Override
     public void setAllowHeader(List<String> methodsAllowed) {
         if (methodsAllowed == null || methodsAllowed.isEmpty()) {
@@ -187,8 +187,8 @@ public abstract class AbstractResponse implements Response {
 	public void setAccessControlAllowOrigin(String s) {
 		setResponseHeader(Header.ACCESS_CONTROL_ALLOW_ORIGIN, s);
 	}
-	
-	
+
+
 
     @Override
     public void setEntity(Entity entity) {

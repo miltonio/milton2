@@ -18,6 +18,7 @@ package io.milton.http.http11;
 
 import io.milton.http.Request;
 import io.milton.resource.Resource;
+import static junit.framework.Assert.assertFalse;
 import junit.framework.TestCase;
 
 import static org.easymock.classextension.EasyMock.*;
@@ -66,12 +67,23 @@ public class MatchHelperTest extends TestCase {
 	public void testCheckIfMatch_DoesMatch_Star_NullResource() {
 		expect(request.getIfMatchHeader()).andReturn("*");
 		replay(resource, request);
+
 		boolean result = matchHelper.checkIfMatch(null, request);
 		verify(resource, request);
 		assertFalse(result);
 	}
-	
-	
+
+	public void testCheckIfMatch_DoesMatch_NoHeader_NullResource() {
+		expect(request.getIfMatchHeader()).andReturn(null);
+		replay(resource, request);
+
+		boolean result = matchHelper.checkIfMatch(null, request);
+		verify(resource, request);
+		assertTrue(result); // all good, continue
+	}
+
+
+
 	public void testCheckIfMatch_DoesMatch_MultiValues() {
 		expect(resource.getUniqueId()).andReturn("X");
 		expect(request.getIfMatchHeader()).andReturn("X, Y");
@@ -92,6 +104,7 @@ public class MatchHelperTest extends TestCase {
 
 	public void testCheckIfMatch_NullRequest() {
 		expect(request.getIfMatchHeader()).andReturn(null);
+		expect(request.getIfHeader()).andReturn(null);
 		replay(request);
 		boolean result = matchHelper.checkIfMatch(resource, request);
 		verify(request);
@@ -107,7 +120,7 @@ public class MatchHelperTest extends TestCase {
 		assertFalse(result);
 	}
 
-//********	
+//********
 	public void testCheckIfNoneMatch_DoesNotMatch_SingleValue() {
 		expect(resource.getUniqueId()).andReturn("X");
 		expect(request.getIfNoneMatchHeader()).andReturn("Y");
@@ -173,16 +186,16 @@ public class MatchHelperTest extends TestCase {
 		verify(resource, request);
 		assertFalse(result);
 	}
-	
-	
-	public void test_CheckIfRange_NoHeader() {	
+
+
+	public void test_CheckIfRange_NoHeader() {
 		expect(request.getIfRangeHeader() ).andReturn(null);
 		replay(resource, request);
 		boolean result = matchHelper.checkIfRange(resource, request);
 		verify(resource, request);
 		assertTrue(result);
-	}	
-	
+	}
+
 	public void test_CheckIfRange_Matches() {
 		expect(resource.getUniqueId()).andReturn("X");
 		expect(request.getIfRangeHeader() ).andReturn("X");
@@ -190,8 +203,8 @@ public class MatchHelperTest extends TestCase {
 		boolean result = matchHelper.checkIfRange(resource, request);
 		verify(resource, request);
 		assertTrue(result);
-	}		
-	
+	}
+
 	public void test_CheckIfRange_NotMatches() {
 		expect(resource.getUniqueId()).andReturn("X");
 		expect(request.getIfRangeHeader() ).andReturn("Y");
@@ -199,5 +212,5 @@ public class MatchHelperTest extends TestCase {
 		boolean result = matchHelper.checkIfRange(resource, request);
 		verify(resource, request);
 		assertFalse(result);
-	}		
+	}
 }
