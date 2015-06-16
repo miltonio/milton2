@@ -124,13 +124,13 @@ public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Buff
 		} else {
 			Auth auth = request.getAuthorization();
 			if (auth == null || auth.getTag() == null) {
-				log.info("respondUnauthorised: no authenticated user, so return staus: " + Response.Status.SC_UNAUTHORIZED);
+				log.info("respondUnauthorised: no authenticated user, so return status: " + Response.Status.SC_UNAUTHORIZED);
 				response.setStatus(Response.Status.SC_UNAUTHORIZED);
 				List<String> challenges = authenticationService.getChallenges(resource, request);
 				response.setAuthenticateHeader(challenges);
 
 			} else {
-				log.info("respondUnauthorised: request has an authenticated user, so return staus: " + Response.Status.SC_FORBIDDEN);
+				log.info("respondUnauthorised: request has an authenticated user, so return status: " + Response.Status.SC_FORBIDDEN);
 				response.setStatus(Response.Status.SC_FORBIDDEN);
 
 			}
