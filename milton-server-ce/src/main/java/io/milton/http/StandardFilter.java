@@ -21,6 +21,7 @@ package io.milton.http;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
+import io.milton.http.exceptions.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,6 +64,9 @@ public class StandardFilter implements Filter {
 		} catch (NotAuthorizedException ex) {
 			log.warn("NotAuthorizedException", ex);
 			manager.getResponseHandler().respondUnauthorised(ex.getResource(), response, request);
+		} catch (NotFoundException ex) {
+			log.warn("NotFoundException", ex);
+			manager.getResponseHandler().respondNotFound(response, request);
 		} catch (Throwable e) {
 			if (log.isDebugEnabled()) {
 				e.printStackTrace();
