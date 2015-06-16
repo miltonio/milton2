@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.milton.ftp;
 
 import java.io.IOException;
@@ -35,6 +34,7 @@ import org.apache.ftpserver.FtpServerConfigurationException;
 import org.apache.ftpserver.impl.FtpHandler;
 import org.apache.ftpserver.impl.FtpIoSession;
 import org.apache.ftpserver.impl.FtpServerContext;
+import org.apache.ftpserver.ipfilter.IpFilter;
 import org.apache.ftpserver.listener.Listener;
 import org.apache.ftpserver.listener.ListenerFactory;
 import org.apache.ftpserver.listener.nio.AbstractListener;
@@ -62,233 +62,274 @@ import org.slf4j.LoggerFactory;
 /**
  * This class is copied from org.apache.ftpserver.impl.DefaultFtpHandler
  *
- * The only change is that this takes a FtpHandler in its constructor
- * which is what gets hooked up to Mina. This allows a custom FtpHandler
+ * The only change is that this takes a FtpHandler in its constructor which is
+ * what gets hooked up to Mina. This allows a custom FtpHandler
  *
  * @author brad
  */
-public class MiltonListener extends AbstractListener{
+public class MiltonListener extends AbstractListener {
 
-    private final Logger LOG = LoggerFactory.getLogger(NioListener.class);
+	private final Logger LOG = LoggerFactory.getLogger(NioListener.class);
 
-    private SocketAcceptor acceptor;
+	private SocketAcceptor acceptor;
 
-    private InetSocketAddress address;
+	private InetSocketAddress address;
 
-    boolean suspended = false;
+	boolean suspended = false;
 
-    private final ExecutorService filterExecutor = new OrderedThreadPoolExecutor();
+	private final ExecutorService filterExecutor = new OrderedThreadPoolExecutor();
 
-    private final FtpHandler handler;
+	private final FtpHandler handler;
 
-    private FtpServerContext context;
+	private FtpServerContext context;
 
-    /**
-     * Constructor for internal use, do not use directly. Instead use {@link ListenerFactory}
-     */
-    public MiltonListener(String serverAddress, int port,
-            boolean implicitSsl,
-            SslConfiguration sslConfiguration,
-            DataConnectionConfiguration dataConnectionConfig,
-            int idleTimeout, List<InetAddress> blockedAddresses, List<Subnet> blockedSubnets,FtpHandler handler) {
-        super(serverAddress, port, implicitSsl, sslConfiguration, dataConnectionConfig,
-                idleTimeout, blockedAddresses, blockedSubnets);
-        this.handler = handler;
+	/**
+	 * Constructor for internal use, do not use directly. Instead use
+	 * {@link ListenerFactory}
+	 *
+	 * @param serverAddress
+	 * @param port
+	 * @param implicitSsl
+	 * @param sslConfiguration
+	 * @param dataConnectionConfig
+	 * @param idleTimeout
+	 * @param blockedAddresses
+	 * @param blockedSubnets
+	 * @param handler
+	 * @deprecated
+	 */
+	public MiltonListener(String serverAddress, int port,
+			boolean implicitSsl,
+			SslConfiguration sslConfiguration,
+			DataConnectionConfiguration dataConnectionConfig,
+			int idleTimeout, List<InetAddress> blockedAddresses, List<Subnet> blockedSubnets, FtpHandler handler) {
+		super(serverAddress, port, implicitSsl, sslConfiguration, dataConnectionConfig,
+				idleTimeout, blockedAddresses, blockedSubnets);
+		this.handler = handler;
 
-        updateBlacklistFilter();
-    }
+		updateBlacklistFilter();
+	}
 
-    private void updateBlacklistFilter() {
-        if (acceptor != null) {
-            BlacklistFilter filter = (BlacklistFilter) acceptor
-                    .getFilterChain().get("ipFilter");
+	/**
+	 * Constructor for internal use, do not use directly. Instead use
+	 * {@link ListenerFactory}
+	 *
+	 * @param serverAddress
+	 * @param port
+	 * @param implicitSsl
+	 * @param sslConfiguration
+	 * @param dataConnectionConfig
+	 * @param idleTimeout
+	 * @param ipFilter
+	 * @param handler
+	 *
+	 */
+	public MiltonListener(String serverAddress, int port, boolean implicitSsl,
+			SslConfiguration sslConfiguration, DataConnectionConfiguration dataConnectionConfig,
+			int idleTimeout, IpFilter ipFilter, FtpHandler handler) {
+		super(serverAddress, port, implicitSsl, sslConfiguration, dataConnectionConfig, idleTimeout, ipFilter);
+		this.handler = handler;
 
-            if (filter != null) {
-                if (getBlockedAddresses() != null) {
-                    filter.setBlacklist(getBlockedAddresses());
-                } else if (getBlockedSubnets() != null) {
-                    filter.setSubnetBlacklist(getBlockedSubnets());
-                } else {
-                    // an empty list clears the blocked addresses
-                    filter.setSubnetBlacklist(new ArrayList<Subnet>());
-                }
+		updateBlacklistFilter();
+	}
 
-            }
-        }
-    }
+	private void updateBlacklistFilter() {
+		if (acceptor != null) {
+			BlacklistFilter filter = (BlacklistFilter) acceptor
+					.getFilterChain().get("ipFilter");
 
-    /**
-     * @see Listener#start(FtpServerContext)
-     */
-    public synchronized void start(FtpServerContext context) {
-        try {
+			if (filter != null) {
+				if (getBlockedAddresses() != null) {
+					filter.setBlacklist(getBlockedAddresses());
+				} else if (getBlockedSubnets() != null) {
+					filter.setSubnetBlacklist(getBlockedSubnets());
+				} else {
+					// an empty list clears the blocked addresses
+					filter.setSubnetBlacklist(new ArrayList<Subnet>());
+				}
 
-            this.context = context;
+			}
+		}
+	}
 
-            acceptor = new NioSocketAcceptor(Runtime.getRuntime()
-                    .availableProcessors());
+	/**
+	 * @param context
+	 * @see Listener#start(FtpServerContext)
+	 */
+	@Override
+	public synchronized void start(FtpServerContext context) {
+		try {
 
-            if (getServerAddress() != null) {
-                address = new InetSocketAddress(getServerAddress(), getPort());
-            } else {
-                address = new InetSocketAddress(getPort());
-            }
+			this.context = context;
 
-            acceptor.setReuseAddress(true);
-            acceptor.getSessionConfig().setReadBufferSize(2048);
-            acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE,
-                    getIdleTimeout());
-            // Decrease the default receiver buffer size
-            ((SocketSessionConfig) acceptor.getSessionConfig())
-                    .setReceiveBufferSize(512);
+			acceptor = new NioSocketAcceptor(Runtime.getRuntime()
+					.availableProcessors());
 
-            MdcInjectionFilter mdcFilter = new MdcInjectionFilter();
+			if (getServerAddress() != null) {
+				address = new InetSocketAddress(getServerAddress(), getPort());
+			} else {
+				address = new InetSocketAddress(getPort());
+			}
 
-            acceptor.getFilterChain().addLast("mdcFilter", mdcFilter);
+			acceptor.setReuseAddress(true);
+			acceptor.getSessionConfig().setReadBufferSize(2048);
+			acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE,
+					getIdleTimeout());
+			// Decrease the default receiver buffer size
+			((SocketSessionConfig) acceptor.getSessionConfig())
+					.setReceiveBufferSize(512);
 
-            // add and update the blacklist filter
-            acceptor.getFilterChain().addLast("ipFilter", new BlacklistFilter());
-            updateBlacklistFilter();
+			MdcInjectionFilter mdcFilter = new MdcInjectionFilter();
 
-            acceptor.getFilterChain().addLast("threadPool",
-                    new ExecutorFilter(filterExecutor));
-            acceptor.getFilterChain().addLast("codec",
-                    new ProtocolCodecFilter(new FtpServerProtocolCodecFactory()));
-            acceptor.getFilterChain().addLast("mdcFilter2", mdcFilter);
-            acceptor.getFilterChain().addLast("logger", new FtpLoggingFilter());
+			acceptor.getFilterChain().addLast("mdcFilter", mdcFilter);
 
-            if (isImplicitSsl()) {
-                SslConfiguration ssl = getSslConfiguration();
-                SslFilter sslFilter;
-                try {
-                    sslFilter = new SslFilter(ssl.getSSLContext());
-                } catch (GeneralSecurityException e) {
-                    throw new FtpServerConfigurationException("SSL could not be initialized, check configuration");
-                }
+			// add and update the blacklist filter
+			acceptor.getFilterChain().addLast("ipFilter", new BlacklistFilter());
+			updateBlacklistFilter();
 
-                if (ssl.getClientAuth() == ClientAuth.NEED) {
-                    sslFilter.setNeedClientAuth(true);
-                } else if (ssl.getClientAuth() == ClientAuth.WANT) {
-                    sslFilter.setWantClientAuth(true);
-                }
+			acceptor.getFilterChain().addLast("threadPool",
+					new ExecutorFilter(filterExecutor));
+			acceptor.getFilterChain().addLast("codec",
+					new ProtocolCodecFilter(new FtpServerProtocolCodecFactory()));
+			acceptor.getFilterChain().addLast("mdcFilter2", mdcFilter);
+			acceptor.getFilterChain().addLast("logger", new FtpLoggingFilter());
 
-                if (ssl.getEnabledCipherSuites() != null) {
-                    sslFilter.setEnabledCipherSuites(ssl.getEnabledCipherSuites());
-                }
+			if (isImplicitSsl()) {
+				SslConfiguration ssl = getSslConfiguration();
+				SslFilter sslFilter;
+				try {
+					sslFilter = new SslFilter(ssl.getSSLContext());
+				} catch (GeneralSecurityException e) {
+					throw new FtpServerConfigurationException("SSL could not be initialized, check configuration");
+				}
 
-                acceptor.getFilterChain().addFirst("sslFilter", sslFilter);
-            }
+				if (ssl.getClientAuth() == ClientAuth.NEED) {
+					sslFilter.setNeedClientAuth(true);
+				} else if (ssl.getClientAuth() == ClientAuth.WANT) {
+					sslFilter.setWantClientAuth(true);
+				}
 
-            handler.init(context, this);
+				if (ssl.getEnabledCipherSuites() != null) {
+					sslFilter.setEnabledCipherSuites(ssl.getEnabledCipherSuites());
+				}
+
+				acceptor.getFilterChain().addFirst("sslFilter", sslFilter);
+			}
+
+			handler.init(context, this);
 
             //////////////////////////////////////////
-
             // Here's the hack. Instead of instantiating a defaultftphandler
-            // we use the one supplied in the constructor
+			// we use the one supplied in the constructor
+			//////////////////////////////////////////
+			acceptor.setHandler(new FtpHandlerAdapter(context, handler));
 
-            //////////////////////////////////////////
-            acceptor.setHandler(new FtpHandlerAdapter(context, handler));
+			try {
+				acceptor.bind(address);
+			} catch (IOException e) {
+				throw new FtpServerConfigurationException("Failed to bind to address " + address + ", check configuration", e);
+			}
 
-            try {
-                acceptor.bind(address);
-            } catch (IOException e) {
-                throw new FtpServerConfigurationException("Failed to bind to address " + address + ", check configuration", e);
-            }
+			updatePort();
 
-            updatePort();
+		} catch (RuntimeException e) {
+			// clean up if we fail to start
+			stop();
 
-        } catch(RuntimeException e) {
-            // clean up if we fail to start
-            stop();
+			throw e;
+		}
+	}
 
-            throw e;
-        }
-    }
+	private void updatePort() {
+		// update the port to the real port bound by the listener
+		setPort(acceptor.getLocalAddress().getPort());
+	}
 
-    private void updatePort() {
-        // update the port to the real port bound by the listener
-        setPort(acceptor.getLocalAddress().getPort());
-    }
+	/**
+	 * @see Listener#stop()
+	 */
+	@Override
+	public synchronized void stop() {
+		// close server socket
+		if (acceptor != null) {
+			acceptor.unbind();
+			acceptor.dispose();
+			acceptor = null;
+		}
 
-    /**
-     * @see Listener#stop()
-     */
-    public synchronized void stop() {
-        // close server socket
-        if (acceptor != null) {
-            acceptor.unbind();
-            acceptor.dispose();
-            acceptor = null;
-        }
+		if (filterExecutor != null) {
+			filterExecutor.shutdown();
+			try {
+				filterExecutor.awaitTermination(5000, TimeUnit.MILLISECONDS);
+			} catch (InterruptedException e) {
+			} finally {
+				// TODO: how to handle?
+			}
+		}
 
-        if (filterExecutor != null) {
-            filterExecutor.shutdown();
-            try {
-                filterExecutor.awaitTermination(5000, TimeUnit.MILLISECONDS);
-            } catch (InterruptedException e) {
-            } finally {
-                // TODO: how to handle?
-            }
-        }
+		context = null;
+	}
 
-        context = null;
-    }
+	/**
+	 * @return @see Listener#isStopped()
+	 */
+	@Override
+	public boolean isStopped() {
+		return acceptor == null;
+	}
 
-    /**
-     * @see Listener#isStopped()
-     */
-    public boolean isStopped() {
-        return acceptor == null;
-    }
+	/**
+	 * @return @see Listener#isSuspended()
+	 */
+	@Override
+	public boolean isSuspended() {
+		return suspended;
 
-    /**
-     * @see Listener#isSuspended()
-     */
-    public boolean isSuspended() {
-        return suspended;
+	}
 
-    }
+	/**
+	 * @see Listener#resume()
+	 */
+	@Override
+	public synchronized void resume() {
+		if (acceptor != null && suspended) {
+			try {
+				LOG.debug("Resuming listener");
+				acceptor.bind(address);
+				LOG.debug("Listener resumed");
 
-    /**
-     * @see Listener#resume()
-     */
-    public synchronized void resume() {
-        if (acceptor != null && suspended) {
-            try {
-                LOG.debug("Resuming listener");
-                acceptor.bind(address);
-                LOG.debug("Listener resumed");
+				updatePort();
+			} catch (IOException e) {
+				LOG.error("Failed to resume listener", e);
+			}
+		}
+	}
 
-                updatePort();
-            } catch (IOException e) {
-                LOG.error("Failed to resume listener", e);
-            }
-        }
-    }
+	/**
+	 * @see Listener#suspend()
+	 */
+	@Override
+	public synchronized void suspend() {
+		if (acceptor != null && !suspended) {
+			LOG.debug("Suspending listener");
+			acceptor.unbind();
 
-    /**
-     * @see Listener#suspend()
-     */
-    public synchronized void suspend() {
-        if (acceptor != null && !suspended) {
-            LOG.debug("Suspending listener");
-            acceptor.unbind();
+			suspended = true;
+			LOG.debug("Listener suspended");
+		}
+	}
 
-            suspended = true;
-            LOG.debug("Listener suspended");
-        }
-    }
+	/**
+	 * @return @see Listener#getActiveSessions()
+	 */
+	@Override
+	public synchronized Set<FtpIoSession> getActiveSessions() {
+		Map<Long, IoSession> sessions = acceptor.getManagedSessions();
 
-    /**
-     * @see Listener#getActiveSessions()
-     */
-    public synchronized Set<FtpIoSession> getActiveSessions() {
-        Map<Long, IoSession> sessions = acceptor.getManagedSessions();
-
-        Set<FtpIoSession> ftpSessions = new HashSet<FtpIoSession>();
-        for (IoSession session : sessions.values()) {
-            ftpSessions.add(new FtpIoSession(session, context));
-        }
-        return ftpSessions;
-    }
+		Set<FtpIoSession> ftpSessions = new HashSet<FtpIoSession>();
+		for (IoSession session : sessions.values()) {
+			ftpSessions.add(new FtpIoSession(session, context));
+		}
+		return ftpSessions;
+	}
 }
