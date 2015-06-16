@@ -38,35 +38,29 @@ public class MiltonFtplet implements Ftplet{
 
     private static final Logger log = LoggerFactory.getLogger( MiltonFtplet.class );
 
-	@Override
     public void init( FtpletContext ftpletContext ) throws FtpException {
         log.debug( "init");
     }
 
-	@Override
     public void destroy() {
         log.debug( "destroy");
     }
 
-	@Override
     public FtpletResult beforeCommand( FtpSession ftpSession, FtpRequest ftpRequest ) throws FtpException, IOException {
         log.debug( "beforeCommand");
         return FtpletResult.DEFAULT;
     }
 
-	@Override
     public FtpletResult afterCommand( FtpSession ftpSession, FtpRequest ftpRequest, FtpReply ftpReply ) throws FtpException, IOException {
         log.debug( "afterCommand");
         return FtpletResult.DEFAULT;
     }
 
-	@Override
     public FtpletResult onConnect( FtpSession ftpSession ) throws FtpException, IOException {
         log.debug( "onConnect");
         return FtpletResult.DEFAULT;
     }
 
-	@Override
     public FtpletResult onDisconnect( FtpSession ftpSession ) throws FtpException, IOException {
         log.debug( "onDisconnect");
         return FtpletResult.DEFAULT;
