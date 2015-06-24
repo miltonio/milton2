@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-ackage io.milton.ldap;
+package io.milton.ldap;
 
 import io.milton.http.webdav.PropFindPropertyBuilder;
 import io.milton.http.webdav.WebDavProtocol;

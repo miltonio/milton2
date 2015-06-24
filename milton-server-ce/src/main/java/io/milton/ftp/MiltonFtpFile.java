@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-ackage io.milton.ftp;
+package io.milton.ftp;
 
 import io.milton.common.BufferingOutputStream;
 import io.milton.common.Path;
