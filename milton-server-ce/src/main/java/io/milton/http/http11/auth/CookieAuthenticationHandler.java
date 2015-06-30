@@ -36,6 +36,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 	private String userUrlAttName = "userUrl";
 	private boolean useLongLivedCookies = true;
 	private final List<String> keys;
+	private String keepLoggedInParamName = "keepLoggedIn";
 
 	public CookieAuthenticationHandler(NonceProvider nonceProvider, List<AuthenticationHandler> handlers, ResourceFactory principalResourceFactory, List<String> keys) {
 		this.nonceProvider = nonceProvider;
@@ -203,7 +204,15 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 
 		Response response = HttpManager.response();
 		String signing = getUrlSigningHash(userUrl, request);
-		setCookieValues(response, userUrl, signing);
+		String sKeepLoggedIn = request.getParams().get(keepLoggedInParamName);
+		boolean keepLoggedIn;
+		if( sKeepLoggedIn != null ) {
+			keepLoggedIn = sKeepLoggedIn.equalsIgnoreCase("true");
+		} else {
+			keepLoggedIn = true; // default
+		}
+
+		setCookieValues(response, userUrl, signing, keepLoggedIn);
 		request.getAttributes().put(userUrlAttName, userUrl);
 	}
 
@@ -328,7 +337,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 			log.warn("Invalid cookie signing format, no semi-colon: " + signing + " Should be in form - nonce:hmac");
 			return false;
 		}
-		String host = getDomain(request);		
+		String host = getDomain(request);
 		String nonce = signing.substring(0, pos);
 		String hmac = signing.substring(pos + 1);
 		String message = nonce + ":" + userUrl + ":" + host;
@@ -339,7 +348,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 			log.trace("Message:" + message);
 			log.trace("Key:" + key);
 			log.trace("Hash:" + expectedHmac);
-			log.trace("Given Signing:" + signing);			
+			log.trace("Given Signing:" + signing);
 		}
 		boolean ok = expectedHmac.equals(hmac);
 		if (!ok) {
@@ -392,11 +401,11 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 		String host = getDomain(request);
 		return getUrlSigningHash(userUrl, request, host);
 	}
-	
+
 	public String getUrlSigningHash(String userUrl, Request request, String host) {
 		String nonce = nonceProvider.createNonce(request);
 		String message = nonce + ":" + userUrl + ":" + host;
-		String key = keys.get(keys.size() - 1); // Use the last key for new cookies		
+		String key = keys.get(keys.size() - 1); // Use the last key for new cookies
 		String hash = HmacUtils.calcShaHash(message, key);
 		String signing = nonce + ":" + hash;
 		if(log.isTraceEnabled()) {
@@ -408,14 +417,14 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 		return signing;
 	}
 
-	private void setCookieValues(Response response, String userUrl, String hash) {
+	private void setCookieValues(Response response, String userUrl, String hash, boolean keepLoggedIn) {
 		log.trace("setCookieValues");
 		BeanCookie c = new BeanCookie(cookieUserUrlValue);
 		String encodedUserUrl = encodeUserUrl(userUrl);
 		c.setValue(encodedUserUrl);
 		c.setPath("/");
 		c.setVersion(1);
-		if (useLongLivedCookies) {
+		if (keepLoggedIn && useLongLivedCookies) {
 			c.setExpiry(SECONDS_PER_YEAR);
 		}
 		response.setCookie(c);
@@ -425,7 +434,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 		c.setHttpOnly(true); // http only so not accessible from JS. Helps prevent XSS attacks
 		c.setVersion(1);
 		c.setPath("/");
-		if (useLongLivedCookies) {
+		if (keepLoggedIn && useLongLivedCookies) {
 			c.setExpiry(SECONDS_PER_YEAR);
 		}
 		response.setCookie(c);
@@ -484,6 +493,6 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 	public boolean isUseLongLivedCookies() {
 		return useLongLivedCookies;
 	}
-	
-	
+
+
 }
