@@ -221,7 +221,10 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 
 		Response response = HttpManager.response();
 		String signing = getUrlSigningHash(userUrl, request);
-		String sKeepLoggedIn = request.getParams().get(keepLoggedInParamName);
+		String sKeepLoggedIn = null;
+		if( request.getParams() != null ) {
+			sKeepLoggedIn = request.getParams().get(keepLoggedInParamName);
+		}
 		boolean keepLoggedIn;
 		if( sKeepLoggedIn != null ) {
 			keepLoggedIn = sKeepLoggedIn.equalsIgnoreCase("true");
