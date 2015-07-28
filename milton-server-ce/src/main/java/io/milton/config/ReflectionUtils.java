@@ -50,7 +50,8 @@ public class ReflectionUtils {
 
 		ClassLoader cld = Thread.currentThread().getContextClassLoader();
 
-		if (packageURL.getProtocol().equals("jar")) {
+		String packageProtocol = packageURL.getProtocol();
+		if (packageProtocol.equalsIgnoreCase("jar") || packageProtocol.equalsIgnoreCase("zip")) {
 			String jarFileName;
 			JarFile jf;
 			Enumeration<JarEntry> jarEntries;
@@ -58,7 +59,7 @@ public class ReflectionUtils {
 
 			// build jar file name, then loop through zipped entries
 			jarFileName = URLDecoder.decode(packageURL.getFile(), "UTF-8");
-			jarFileName = jarFileName.substring(5, jarFileName.indexOf("!"));
+			jarFileName = jarFileName.substring(0, jarFileName.indexOf("!"));
 			jf = new JarFile(jarFileName);
 			jarEntries = jf.entries();
 			while (jarEntries.hasMoreElements()) {
