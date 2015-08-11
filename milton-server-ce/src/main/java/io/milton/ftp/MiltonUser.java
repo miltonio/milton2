@@ -42,14 +42,17 @@ public class MiltonUser implements User {
         this.domain = domain;
     }
 
+	@Override
     public String getName() {
         return name;
     }
 
+	@Override
     public String getPassword() {
         throw new UnsupportedOperationException( "Not supported yet." );
     }
 
+	@Override
     public List<Authority> getAuthorities() {
         return null;
     }
@@ -66,29 +69,34 @@ public class MiltonUser implements User {
     /**
      * {@inheritDoc}
      */
+	@Override
     public List<Authority> getAuthorities( Class<? extends Authority> clazz ) {
         return null;
     }
 
     /**
      * Note that real authorisation is done by MiltonFtpFile
-     * 
+     *
      * @param request
      * @return
      */
+	@Override
     public AuthorizationRequest authorize( AuthorizationRequest request ) {
         log.debug( "authorize: " + request.getClass() );
         return request;
     }
 
+	@Override
     public int getMaxIdleTime() {
         return 3600;
     }
 
+	@Override
     public boolean getEnabled() {
         return true;
     }
 
+	@Override
     public String getHomeDirectory() {
         return "/";
     }

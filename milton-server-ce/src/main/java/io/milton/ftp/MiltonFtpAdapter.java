@@ -38,11 +38,11 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Adapts a milton resource factory into an FTP file system, which allows integration
- * with Apache FTP. ie with this class a milton data source can be accessed by 
+ * with Apache FTP. ie with this class a milton data source can be accessed by
  * webdav and FTP simultaneously.
- * 
+ *
  * Implements the Service interface from Berry to allow starting or stopping.
- * 
+ *
  * The default behaviour is to start the FTP server as part of object construction
  *
  * @author bradm
@@ -82,7 +82,7 @@ public class MiltonFtpAdapter implements FileSystemFactory, Service {
 
     /**
      * Creates and starts the FTP server on the given port
-     * 
+     *
      * @param wrapped
      * @param userManager
      * @param port
@@ -123,7 +123,7 @@ public class MiltonFtpAdapter implements FileSystemFactory, Service {
 
         serverFactory.setUserManager( userManager );
         server = serverFactory.createServer();
-        if( autoStart ) {            
+        if( autoStart ) {
             start();
         } else {
             log.info("autoStart is false, so not starting FTP server just yet..");
@@ -151,7 +151,7 @@ public class MiltonFtpAdapter implements FileSystemFactory, Service {
         } catch (BadRequestException ex) {
             throw new FtpException(ex);
         }
-        return new MiltonFsView( Path.root, (CollectionResource) root, resourceFactory, (MiltonUser) user );
+        return new MiltonFsView( Path.root, mu.domain, resourceFactory, (MiltonUser) user );
     }
 
     @Override

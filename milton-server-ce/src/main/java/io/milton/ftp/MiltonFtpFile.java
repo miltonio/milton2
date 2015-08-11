@@ -70,26 +70,33 @@ public class MiltonFtpFile implements FtpFile {
         this.user = user;
     }
 
+	@Override
     public String getAbsolutePath() {
-        return path.toString();
+        String s = path.toString();
+		return s;
     }
 
+	@Override
     public String getName() {
         return r.getName();
     }
 
+	@Override
     public boolean isHidden() {
         return false;
     }
 
+	@Override
     public boolean isDirectory() {
         return ( r instanceof CollectionResource );
     }
 
+	@Override
     public boolean isFile() {
         return !isDirectory();
     }
 
+	@Override
     public boolean doesExist() {
         return r != null;
     }
@@ -144,18 +151,22 @@ public class MiltonFtpFile implements FtpFile {
         return b;
     }
 
+	@Override
     public String getOwnerName() {
         return "anyone";
     }
 
+	@Override
     public String getGroupName() {
         return "anygroup";
     }
 
+	@Override
     public int getLinkCount() {
         return 0;
     }
 
+	@Override
     public long getLastModified() {
         if( r.getModifiedDate() != null ) {
             return r.getModifiedDate().getTime();
@@ -164,21 +175,24 @@ public class MiltonFtpFile implements FtpFile {
         }
     }
 
+	@Override
     public boolean setLastModified( long time ) {
         return false;
     }
 
+	@Override
     public long getSize() {
         if( r instanceof GetableResource ) {
             GetableResource gr = (GetableResource) r;
             Long ll = gr.getContentLength();
             if( ll == null ) return 0;
-            return ll.longValue();
+            return ll;
         } else {
             return 0;
         }
     }
 
+	@Override
     public boolean mkdir() {
         log.debug( "mkdir: " + this.path );
         if( parent != null ) {
