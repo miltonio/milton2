@@ -283,7 +283,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 				if (verifyHash(userUrl, request)) {
 					return userUrl;
 				} else {
-					log.error("Invalid userUrl hash, possible attempted hacking attempt. userUrl=" + userUrl);
+					log.info("Invalid userUrl hash, possible attempted hacking attempt. userUrl=" + userUrl);
 				}
 			}
 		}
