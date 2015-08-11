@@ -32,10 +32,10 @@ import org.slf4j.LoggerFactory;
  *
  * @author brad
  */
-public class GrizzlyMiltonRequest extends  AbstractRequest {
-    
+public class GrizzlyMiltonRequest extends  AbstractRequest  {
+
     private static final Logger log = LoggerFactory.getLogger(GrizzlyMiltonRequest.class);
-    
+
     private static final Map<Response.ContentType, String> contentTypes = new EnumMap<Response.ContentType, String>(Response.ContentType.class);
     private static final Map<String, Response.ContentType> typeContents = new HashMap<String, Response.ContentType>();
 
@@ -46,8 +46,8 @@ public class GrizzlyMiltonRequest extends  AbstractRequest {
         for (Response.ContentType key : contentTypes.keySet()) {
             typeContents.put(contentTypes.get(key), key);
         }
-    }    
-    
+    }
+
 	public static BeanCookie toBeanCookie(org.glassfish.grizzly.http.Cookie c) {
 		BeanCookie bc = new BeanCookie(c.getName());
 		bc.setDomain(c.getDomain());
@@ -58,9 +58,9 @@ public class GrizzlyMiltonRequest extends  AbstractRequest {
 		bc.setValue(c.getValue());
 		bc.setVersion(c.getVersion());
 		return bc;
-	}	
-	    
-    
+	}
+
+
     private final Request wrapped;
     private Auth auth;
     private Map<String, String> mapOfHeaders;
@@ -77,8 +77,8 @@ public class GrizzlyMiltonRequest extends  AbstractRequest {
 		}
 		return s;
 	}
-	
-	
+
+
     @Override
     public String getRequestHeader(Header header) {
         return wrapped.getHeader(header.code);
@@ -141,8 +141,8 @@ public class GrizzlyMiltonRequest extends  AbstractRequest {
     public String getAbsolutePath() {
         return wrapped.getRequestURI();
     }
-    
-    
+
+
 
     @Override
     public InputStream getInputStream() throws IOException {
@@ -187,7 +187,7 @@ public class GrizzlyMiltonRequest extends  AbstractRequest {
                     if (item.isFormField()) {
                         params.put(item.getFieldName(), item.getString());
                     } else {
-                        // See http://jira.ettrema.com:8080/browse/MIL-118 - ServletRequest#parseRequestParameters overwrites multiple file uploads when using input type="file" multiple="multiple"                        
+                        // See http://jira.ettrema.com:8080/browse/MIL-118 - ServletRequest#parseRequestParameters overwrites multiple file uploads when using input type="file" multiple="multiple"
                         String itemKey = item.getFieldName();
                         if (files.containsKey(itemKey)) {
                             int count = 1;
@@ -213,7 +213,7 @@ public class GrizzlyMiltonRequest extends  AbstractRequest {
 							sb.deleteCharAt(sb.length()-1); // remove last comma
 						}
 						params.put(nm, sb.toString());
-					}					
+					}
                 }
             }
         } catch (FileUploadException ex) {
@@ -249,8 +249,8 @@ public class GrizzlyMiltonRequest extends  AbstractRequest {
 
 	/**
 	 * Returns X-Forwarded-For if present
-	 * 
-	 * @return 
+	 *
+	 * @return
 	 */
     @Override
     public String getRemoteAddr() {
@@ -266,7 +266,7 @@ public class GrizzlyMiltonRequest extends  AbstractRequest {
 //        $ipaddress = getenv('HTTP_FORWARDED');
 //    else if(getenv('REMOTE_ADDR'))
 //        $ipaddress = getenv('REMOTE_ADDR');
-		
+
 		String forewardFor = wrapped.getHeader("X-Forwarded-For");
 		if( StringUtils.isNotBlank(forewardFor)) {
 			return forewardFor;
@@ -274,10 +274,10 @@ public class GrizzlyMiltonRequest extends  AbstractRequest {
 		forewardFor = wrapped.getHeader("x-forwarded-for");
 		if( StringUtils.isNotBlank(forewardFor)) {
 			return forewardFor;
-		}		
+		}
         return wrapped.getRemoteAddr();
     }
-    
+
 
     private void parseQueryString(Map<String, String> map) {
         String qs = wrapped.getQueryString();
@@ -306,12 +306,12 @@ public class GrizzlyMiltonRequest extends  AbstractRequest {
             map.put(key, val);
         }
     }
-    
+
     protected boolean isMultiPart() {
         Response.ContentType ct = getRequestContentType();
         return (Response.ContentType.MULTIPART.equals(ct));
-    }    
-    
+    }
+
     protected Response.ContentType getRequestContentType() {
         String s = wrapped.getContentType();
         log.trace("request content type", s);
@@ -322,5 +322,5 @@ public class GrizzlyMiltonRequest extends  AbstractRequest {
             return Response.ContentType.MULTIPART;
         }
         return typeContents.get(s);
-    }    
+    }
 }
