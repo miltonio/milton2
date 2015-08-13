@@ -77,6 +77,10 @@ public abstract class Context implements Contextual {
     }    
     
     /** Place o into context, keying by the given id
+     * @param <T>
+     * @param id
+     * @param o
+     * @return 
      */
     public <T> Registration<T> put( String id, T o ) {
         return put( id, o, null );
