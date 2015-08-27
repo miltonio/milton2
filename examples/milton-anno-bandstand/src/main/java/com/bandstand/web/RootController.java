@@ -14,11 +14,15 @@
  */
 package com.bandstand.web;
 
+import com.bandstand.domain.Musician;
+import io.milton.annotations.AccessControlList;
 import io.milton.annotations.Get;
 import io.milton.annotations.ResourceController;
 import io.milton.annotations.Root;
 import io.milton.common.ModelAndView;
+import io.milton.resource.AccessControlledResource;
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 /**
  *
@@ -26,24 +30,29 @@ import java.io.UnsupportedEncodingException;
  */
 @ResourceController
 public class RootController {
-    
+
     @Root
     public RootController getRoot() {
         return this;
     }
-         
+
     @Get
     public ModelAndView renderHomePage(RootController root) throws UnsupportedEncodingException {
-        //return "<html>\n<body><h1>hello world</h1></body></html>".getBytes("UTF-8");        
-        return new ModelAndView("controller", this, "homePage"); 
+        //return "<html>\n<body><h1>hello world</h1></body></html>".getBytes("UTF-8");
+        return new ModelAndView("controller", this, "homePage");
     }
-    
+
     /**
      * Required for the name of the root resource
-     * 
-     * @return 
+     *
+     * @return
      */
     public String getName() {
         return "";
+    }
+
+    @AccessControlList
+    public List<AccessControlledResource.Priviledge> getMusicianPrivs(RootController target, Musician currentUser) {
+        return AccessControlledResource.READ_CONTENT;
     }
 }
