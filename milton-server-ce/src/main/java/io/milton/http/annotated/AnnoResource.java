@@ -212,7 +212,7 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 		}
 
 
-		
+
 		// only check ACL if current user is null (ie guest) or the current user is an AnnoPrincipal
 		if ( !annoFactory.accessControlListAnnotationHandler.getControllerMethods().isEmpty()) {
 			if (acl == null) {
@@ -225,6 +225,9 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 				}
 
 				acl = annoFactory.accessControlListAnnotationHandler.availablePrivs(oUser, this, auth);
+				if( acl == null ) {
+					log.info("authorise: got a null access control list");
+				}
 			}
 			AccessControlledResource.Priviledge requiredPriv = annoFactory.accessControlListAnnotationHandler.requiredPriv(this, method, request);
 			boolean allows;
@@ -438,8 +441,8 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 	public void setDisplayName(String s) {
 		annoFactory.displayNameSetterAnnotationHandler.executeWrite(this, s);
 	}
-	
-	
+
+
 
 	@Override
 	public LockResult lock(LockTimeout timeout, LockInfo lockInfo) throws NotAuthorizedException, PreConditionFailedException, LockedException {
@@ -520,6 +523,6 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 		}
 		return null;
 	}
-	
-	
+
+
 }
