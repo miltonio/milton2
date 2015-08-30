@@ -121,11 +121,12 @@ public class AnnoPrincipalResource extends AnnoCollectionResource implements Dis
 	public HrefList getDirectoryGateway() {
 		try {
 			HrefList list = new HrefList();
-			// add all addressbooks as gateways
+			// add all addressbooks which have the 
 			for (Resource r : getChildren()) {
 				if (r instanceof AnnoCollectionResource) {
 					AnnoCollectionResource col = (AnnoCollectionResource) r;
-					if (annoFactory.addressBooksAnnotationHandler.hasAddressBooks(col.getSource())) {
+					Boolean isDirectoryGateway = annoFactory.directoryGatewayAnnotationHandler.get(col);
+					if ( isDirectoryGateway != null && isDirectoryGateway ) {
 						list.add(col.getHref());
 					}
 				}
