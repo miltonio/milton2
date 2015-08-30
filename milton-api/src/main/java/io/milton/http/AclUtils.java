@@ -29,19 +29,22 @@ import java.util.Set;
  * @author brad
  */
 public class AclUtils {
-    
+
     /**
-     * Recurisve function which checks the given collection of priviledges, 
+     * Recurisve function which checks the given collection of priviledges,
      * and checks inside the contains property of those priviledges
-     * 
+     *
      * Returns true if the required priviledge is directly present in the collection
      * or is implied
-     * 
+     *
      * @param required
      * @param privs
-     * @return 
+     * @return
      */
     public static boolean containsPriviledge(AccessControlledResource.Priviledge required, Iterable<AccessControlledResource.Priviledge> privs) {
+        if( privs == null ) {
+            return false;
+        }
         for (AccessControlledResource.Priviledge p : privs) {
             if (p.equals(required)) {
                 return true;
@@ -51,18 +54,18 @@ public class AclUtils {
             }
         }
         return false;
-    }      
-    
+    }
+
     public static Set<AccessControlledResource.Priviledge> asSet(AccessControlledResource.Priviledge ... privs) {
         Set<AccessControlledResource.Priviledge> set = new HashSet<AccessControlledResource.Priviledge>(privs.length);
         set.addAll(Arrays.asList(privs));
         return set;
     }
-    
+
     /**
-     * Return a set containing all privs in the given collection, and also all priviledges 
+     * Return a set containing all privs in the given collection, and also all priviledges
      * implies by those, and so on recursively
-     * 
+     *
      * @param privs
      * @return - a set containiing all priviledges, direct or implied, by the given collection
      */
@@ -71,7 +74,7 @@ public class AclUtils {
         _expand(privs, set);
         return set;
     }
-    
+
     private static void _expand(Iterable<AccessControlledResource.Priviledge> privs, Set<AccessControlledResource.Priviledge> output) {
         if( privs == null ) {
             return ;
@@ -80,6 +83,6 @@ public class AclUtils {
             output.add(p);
             _expand(p.contains, output);
         }
-        
+
     }
 }
