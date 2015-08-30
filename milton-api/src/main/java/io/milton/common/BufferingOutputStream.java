@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.milton.common;
 
 import java.io.BufferedInputStream;
@@ -31,14 +30,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory; 
+import org.slf4j.LoggerFactory;
 
 /**
  * An output stream which will buffer data, initially using memory up to
  * maxMemorySize, and then overflowing to a temporary file.
  *
- * To use this class you will write to it, and then close it, and then
- * call getInputStream to read the data.
+ * To use this class you will write to it, and then close it, and then call
+ * getInputStream to read the data.
  *
  * The temporary file, if it was created, will be deleted when the inputstream
  * is closed.
@@ -47,7 +46,7 @@ import org.slf4j.LoggerFactory;
  */
 public class BufferingOutputStream extends OutputStream {
 
-    private static Logger log = LoggerFactory.getLogger( BufferingOutputStream.class );
+    private static Logger log = LoggerFactory.getLogger(BufferingOutputStream.class);
     private ByteArrayOutputStream tempMemoryBuffer = new ByteArrayOutputStream();
     private int maxMemorySize;
     private File tempFile;
@@ -57,78 +56,83 @@ public class BufferingOutputStream extends OutputStream {
     private long size;
     private boolean closed;
 
-    public BufferingOutputStream( int maxMemorySize ) {
+    public BufferingOutputStream(int maxMemorySize) {
         this.maxMemorySize = maxMemorySize;
     }
 
     public InputStream getInputStream() {
-        if( !closed )
-            throw new IllegalStateException( "this output stream is not yet closed" );
-        if( tempMemoryBuffer == null ) {
+        if (!closed) {
+            throw new IllegalStateException("this output stream is not yet closed");
+        }
+        if (tempMemoryBuffer == null) {
             FileDeletingInputStream fin;
             try {
-                fin = new FileDeletingInputStream( tempFile );
-            } catch( FileNotFoundException ex ) {
-                throw new RuntimeException( tempFile.getAbsolutePath(), ex );
+                fin = new FileDeletingInputStream(tempFile);
+            } catch (FileNotFoundException ex) {
+                throw new RuntimeException(tempFile.getAbsolutePath(), ex);
             }
-            BufferedInputStream bufIn = new BufferedInputStream( fin );
+            BufferedInputStream bufIn = new BufferedInputStream(fin);
             return bufIn;
         } else {
-            return new ByteArrayInputStream( tempMemoryBuffer.toByteArray() );
+            return new ByteArrayInputStream(tempMemoryBuffer.toByteArray());
         }
     }
 
     @Override
-    public void write( byte[] b ) throws IOException {
+    public void write(byte[] b) throws IOException {
         size += b.length;
-        if( tempMemoryBuffer != null ) {
-            tempMemoryBuffer.write( b );
+        if (tempMemoryBuffer != null) {
+            tempMemoryBuffer.write(b);
         } else {
-            bufOut.write( b );
+            bufOut.write(b);
         }
         checkSize();
     }
 
     @Override
-    public void write( int b ) throws IOException {
+    public void write(int b) throws IOException {
         size++;
-        if( tempMemoryBuffer != null ) {
-            tempMemoryBuffer.write( b );
+        if (tempMemoryBuffer != null) {
+            tempMemoryBuffer.write(b);
         } else {
-            bufOut.write( b );
+            bufOut.write(b);
         }
         checkSize();
     }
 
     @Override
-    public void write( byte[] b, int off, int len ) throws IOException {
+    public void write(byte[] b, int off, int len) throws IOException {
         size += len;
-        if( tempMemoryBuffer != null ) {
-            tempMemoryBuffer.write( b, off, len );
+        if (tempMemoryBuffer != null) {
+            tempMemoryBuffer.write(b, off, len);
         } else {
-            bufOut.write( b, off, len );
+            bufOut.write(b, off, len);
         }
         checkSize();
     }
 
     private void checkSize() throws IOException {
-        if( log.isTraceEnabled() ) {
-            log.trace( "checkSize: " + size );
+        if (log.isTraceEnabled()) {
+            log.trace("checkSize: " + size);
         }
-        if( tempMemoryBuffer == null ) return;
+        if (tempMemoryBuffer == null) {
+            return;
+        }
 
-        if( tempMemoryBuffer.size() < maxMemorySize ) return;
+        if (tempMemoryBuffer.size() < maxMemorySize) {
+            return;
+        }
 
-        tempFile = File.createTempFile( "" + System.currentTimeMillis(), ".buffer" );
-        fout = new FileOutputStream( tempFile );
-        bufOut = new BufferedOutputStream( fout );
-        bufOut.write( tempMemoryBuffer.toByteArray() );
+        tempFile = File.createTempFile("" + System.currentTimeMillis(), ".buffer");
+        fout = new FileOutputStream(tempFile);
+        bufOut = new BufferedOutputStream(fout);
+        bufOut.write(tempMemoryBuffer.toByteArray());
         tempMemoryBuffer = null;
     }
 
     @Override
     public void flush() throws IOException {
-        if( tempMemoryBuffer != null ) {
+        if (tempMemoryBuffer != null) {
             tempMemoryBuffer.flush();
         } else {
             bufOut.flush();
@@ -138,15 +142,17 @@ public class BufferingOutputStream extends OutputStream {
 
     @Override
     public void close() throws IOException {
-        if( tempMemoryBuffer != null ) {
-            tempMemoryBuffer.close();
-        } else {
-            bufOut.close();
-            fout.close();
-        }
-        closed = true;
-        if( runnable != null ) {
-            runnable.run();
+        if (!closed) {
+            closed = true;
+            if (tempMemoryBuffer != null) {
+                tempMemoryBuffer.close();
+            } else {
+                bufOut.close();
+                fout.close();
+            }            
+            if (runnable != null) {
+                runnable.run();
+            }
         }
     }
 
@@ -162,7 +168,7 @@ public class BufferingOutputStream extends OutputStream {
         return tempMemoryBuffer;
     }
 
-    public void setOnClose( Runnable r ) {
+    public void setOnClose(Runnable r) {
         this.runnable = r;
     }
 
@@ -177,7 +183,7 @@ public class BufferingOutputStream extends OutputStream {
 
     /**
      * Gets the data currently held in memory
-     * 
+     *
      * @return
      */
     public byte[] getInMemoryData() {
@@ -190,27 +196,23 @@ public class BufferingOutputStream extends OutputStream {
 //        deleteTempFileIfExists();
 //        super.finalize();
 //    }
-
-    
-
-    
     /**
-     *  If this is called before the inputstream is used, then the inputstream 
-     * will fail to open (because it needs the file!!) 
-     * So should only use in exception handlers
+     * If this is called before the inputstream is used, then the inputstream
+     * will fail to open (because it needs the file!!) So should only use in
+     * exception handlers
      */
     public void deleteTempFileIfExists() {
-        if( bufOut != null ) {
+        if (bufOut != null) {
             IOUtils.closeQuietly(bufOut);
         }
-        if( fout != null ) {
+        if (fout != null) {
             IOUtils.closeQuietly(fout);
         }
 
-        if( tempFile != null && tempFile.exists() ) {
-            log.error( "temporary file was not deleted. Was close called on the inputstream? Will attempt to delete" );
-            if( !tempFile.delete() ) {
-                log.error( "Still couldnt delete temporary file: " + tempFile.getAbsolutePath() );
+        if (tempFile != null && tempFile.exists()) {
+            log.error("temporary file was not deleted. Was close called on the inputstream? Will attempt to delete");
+            if (!tempFile.delete()) {
+                log.error("Still couldnt delete temporary file: " + tempFile.getAbsolutePath());
             }
         }
 
