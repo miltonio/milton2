@@ -74,3 +74,10 @@ milton-mail-server/.settings/org.eclipse.wst.common.project.facet.core.xml
 milton-server-ce/.settings/org.eclipse.wst.common.project.facet.core.xml
 
 milton-server-ent/.settings/org.eclipse.wst.common.project.facet.core.xml
+
+*.iml
+.idea/
+*.ipr
+*.iws
+/out/
+.idea_modules/
