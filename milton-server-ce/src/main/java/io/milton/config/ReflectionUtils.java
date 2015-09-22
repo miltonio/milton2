@@ -16,6 +16,9 @@
  */
 package io.milton.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -25,8 +28,6 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -38,75 +39,78 @@ public class ReflectionUtils {
 
 	public static List<Class> getClassNamesFromPackage(String packageName) throws IOException, ClassNotFoundException {
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-		URL packageURL;
 		ArrayList<Class> classes = new ArrayList<Class>();
 
 		String packagePath = packageName.replace(".", "/");
-		packageURL = classLoader.getResource(packagePath);
-		if (log.isTraceEnabled()) {
-			log.trace("Finding classes for package: '" + packageName + "'. packageUrl: " + packageURL);
-		}
-		if (packageURL == null) {
-			log.warn("getClassNamesFromPackage: No package could be found: " + packagePath + " from classloader: " + classLoader);
-			return classes;
-		}
+		Enumeration<URL> packageResources = classLoader.getResources(packagePath);
+		while (packageResources.hasMoreElements()) {
+			URL packageURL = packageResources.nextElement();
 
-		ClassLoader cld = Thread.currentThread().getContextClassLoader();
-
-		String packageProtocol = packageURL.getProtocol();
-		if (packageProtocol.equalsIgnoreCase("jar") || packageProtocol.equalsIgnoreCase("zip")) {
-			String jarFileName;
-			JarFile jf;
-			Enumeration<JarEntry> jarEntries;
-			String entryName;
-
-			// build jar file name, then loop through zipped entries
-			jarFileName = URLDecoder.decode(packageURL.getFile(), "UTF-8");
-			jarFileName = jarFileName.substring(0, jarFileName.indexOf("!"));
-			jf = new JarFile(jarFileName);
-			jarEntries = jf.entries();
 			if (log.isTraceEnabled()) {
-				log.trace("Loading classes from JAR: url: " + packageURL + ", jarFileName: " + jarFileName);
+				log.trace("Finding classes for package: '" + packageName + "'. packageUrl: " + packageURL);
 			}
-			int filesCountInJar = 0;
-			while (jarEntries.hasMoreElements()) {
-				entryName = jarEntries.nextElement().getName();
-				if (entryName.startsWith(packagePath) && entryName.length() > packagePath.length() + 5) {
-					if (entryName.endsWith(".class")) {
-						//entryName = entryName.substring(packageName.length()+1, entryName.lastIndexOf('.'));
-						String className = entryName.replace("/", ".");
-						className = className.substring(0, className.length() - 6);
-						Class c = cld.loadClass(className);
-						classes.add(c);
-					}
-				}
-				++filesCountInJar;
-			}
-			jf.close();
-			if (log.isTraceEnabled()) {
-				log.trace("Files count in " + packageURL + ": " + filesCountInJar + ", count of class files in package " + packagePath + ":" + classes.size());
+			if (packageURL == null) {
+				log.warn("getClassNamesFromPackage: No package could be found: " + packagePath + " from classloader: " + classLoader);
+				return classes;
 			}
 
-			// loop through files in classpath
-		} else {
-			String f = URLDecoder.decode(packageURL.getFile(), "UTF-8");
-			File directory = new File(f);
-			String[] files = directory.list();
-			if (files != null && files.length > 0) {
+			ClassLoader cld = Thread.currentThread().getContextClassLoader();
+
+			String packageProtocol = packageURL.getProtocol();
+			if (packageProtocol.equalsIgnoreCase("jar") || packageProtocol.equalsIgnoreCase("zip")) {
+				String jarFileName;
+				JarFile jf;
+				Enumeration<JarEntry> jarEntries;
+				String entryName;
+
+				// build jar file name, then loop through zipped entries
+				jarFileName = URLDecoder.decode(packageURL.getFile(), "UTF-8");
+				jarFileName = jarFileName.substring(0, jarFileName.indexOf("!"));
+				jf = new JarFile(jarFileName);
+				jarEntries = jf.entries();
 				if (log.isTraceEnabled()) {
-					log.trace("Loading classes from directory: " + directory.getAbsolutePath() + " files=" + files.length);
+					log.trace("Loading classes from JAR: url: " + packageURL + ", jarFileName: " + jarFileName);
+				}
+				int filesCountInJar = 0;
+				while (jarEntries.hasMoreElements()) {
+					entryName = jarEntries.nextElement().getName();
+					if (entryName.startsWith(packagePath) && entryName.length() > packagePath.length() + 5) {
+						if (entryName.endsWith(".class")) {
+							//entryName = entryName.substring(packageName.length()+1, entryName.lastIndexOf('.'));
+							String className = entryName.replace("/", ".");
+							className = className.substring(0, className.length() - 6);
+							Class c = cld.loadClass(className);
+							classes.add(c);
+						}
+					}
+					++filesCountInJar;
+				}
+				jf.close();
+				if (log.isTraceEnabled()) {
+					log.trace("Files count in " + packageURL + ": " + filesCountInJar + ", count of class files in package " + packagePath + ":" + classes.size());
 				}
 
-				for (int i = 0; i < files.length; i++) {
-					if (files[i].endsWith(".class")) {
-						String className = packageName + '.' + files[i].substring(0, files[i].length() - 6);
-						Class c = cld.loadClass(className);
-						classes.add(c);
-					}
-				}
+				// loop through files in classpath
 			} else {
-				log.info("No files found in package: " + packageName + " with physical path=" + directory.getAbsolutePath());
+				String f = URLDecoder.decode(packageURL.getFile(), "UTF-8");
+				File directory = new File(f);
+				String[] files = directory.list();
+				if (files != null && files.length > 0) {
+					if (log.isTraceEnabled()) {
+						log.trace("Loading classes from directory: " + directory.getAbsolutePath() + " files=" + files.length);
+					}
+					for (String file : files) {
+						if (file.endsWith(".class")) {
+							String className = packageName + '.' + file.substring(0, file.length() - 6);
+							Class c = cld.loadClass(className);
+							classes.add(c);
+						}
+					}
+				} else {
+					log.info("No files found in package: " + packageName + " with physical path=" + directory.getAbsolutePath());
+				}
 			}
+
 		}
 		return classes;
 	}
