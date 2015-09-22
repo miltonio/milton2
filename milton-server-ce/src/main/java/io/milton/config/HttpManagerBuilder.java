@@ -109,9 +109,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -1543,18 +1545,46 @@ public class HttpManagerBuilder {
 					}
 					if (controllerPackagesToScan != null) {
 						log.info("Scan for controller classes: {}", controllerPackagesToScan);
+						if(log.isTraceEnabled()){
+							log.trace("Searching for classes with annotation: " + ResourceController.class + "(annotation class loader: " + ResourceController.class.getClassLoader() + ")");
+						}
+						Set<ClassLoader> classesClassloaders = new HashSet<ClassLoader>();
+						classesClassloaders.add(ResourceController.class.getClassLoader());
 						for (String packageName : controllerPackagesToScan.split(",")) {
 							packageName = packageName.trim();
 							log.info("init annotations controllers from package: {}", packageName);
 							List<Class> classes = ReflectionUtils.getClassNamesFromPackage(packageName);
 							for (Class c : classes) {
+								if(log.isTraceEnabled()){
+									log.trace("Class: " + c + " with annotations: " + java.util.Arrays.asList(c.getAnnotations()) + ", classloader: " + c.getClassLoader());
+									classesClassloaders.add(c.getClassLoader());
+								}
 								Annotation a = c.getAnnotation(ResourceController.class);
 								if (a != null) {
+									if(log.isTraceEnabled()){
+										log.trace("Adding controller with class " + c);
+									}
 									Object controller = createObject(c);
 									controllers.add(controller);
+								}else{
+									if(log.isTraceEnabled()) {
+										log.trace("No " + ResourceController.class + " in " + c + ", skipping");
+									}
 								}
 							}
 						}
+						if(log.isTraceEnabled()){
+							for(ClassLoader cl: classesClassloaders){
+								ClassLoader cur = cl;
+								StringBuilder toOut = new StringBuilder("Classloader hierarchy:");
+								while(cur != null){
+									toOut.append("\n   id:" + System.identityHashCode(cur) + ", class:" + cur.getClass() + ": " + cur);
+									cur = cur.getParent();
+								}
+								log.trace(toOut.toString());
+							}
+						}
+
 					}
 					if (controllerClassNames != null) {
 						log.info("Initialise controller classes: {}", controllerClassNames);

@@ -43,6 +43,9 @@ public class ReflectionUtils {
 
 		String packagePath = packageName.replace(".", "/");
 		packageURL = classLoader.getResource(packagePath);
+		if (log.isTraceEnabled()) {
+			log.trace("Finding classes for package: '" + packageName + "'. packageUrl: " + packageURL);
+		}
 		if (packageURL == null) {
 			log.warn("getClassNamesFromPackage: No package could be found: " + packagePath + " from classloader: " + classLoader);
 			return classes;
@@ -62,6 +65,10 @@ public class ReflectionUtils {
 			jarFileName = jarFileName.substring(0, jarFileName.indexOf("!"));
 			jf = new JarFile(jarFileName);
 			jarEntries = jf.entries();
+			if (log.isTraceEnabled()) {
+				log.trace("Loading classes from JAR: url: " + packageURL + ", jarFileName: " + jarFileName);
+			}
+			int filesCountInJar = 0;
 			while (jarEntries.hasMoreElements()) {
 				entryName = jarEntries.nextElement().getName();
 				if (entryName.startsWith(packagePath) && entryName.length() > packagePath.length() + 5) {
@@ -73,8 +80,12 @@ public class ReflectionUtils {
 						classes.add(c);
 					}
 				}
+				++filesCountInJar;
 			}
 			jf.close();
+			if (log.isTraceEnabled()) {
+				log.trace("Files count in " + packageURL + ": " + filesCountInJar + ", count of class files in package " + packagePath + ":" + classes.size());
+			}
 
 			// loop through files in classpath
 		} else {
