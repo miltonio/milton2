@@ -73,6 +73,9 @@ public class MiltonFtpFile implements FtpFile {
 	@Override
     public String getAbsolutePath() {
         String s = path.toString();
+		if( s.length() == 0) {
+			s = "/"; // root
+		}
 		return s;
     }
 
