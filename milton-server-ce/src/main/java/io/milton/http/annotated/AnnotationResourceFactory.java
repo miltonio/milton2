@@ -37,6 +37,7 @@ import io.milton.annotations.ContentType;
 import io.milton.annotations.Copy;
 import io.milton.annotations.CreatedDate;
 import io.milton.annotations.Delete;
+import io.milton.annotations.DirectoryGateway;
 import io.milton.annotations.Email;
 import io.milton.annotations.FreeBusyQuery;
 import io.milton.annotations.Get;
@@ -154,6 +155,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	FreeBusyQueryAnnotationHandler freeBusyQueryAnnotationHandler = new FreeBusyQueryAnnotationHandler(this);
 	CalendarInvitationsAnnotationHandler calendarInvitationsAnnotationHandler = new CalendarInvitationsAnnotationHandler(this);
 	CalendarInvitationsCTagAnnotationHandler calendarInvitationsCTagAnnotationHandler = new CalendarInvitationsCTagAnnotationHandler(this);
+	CommonPropertyAnnotationHandler<Boolean> directoryGatewayAnnotationHandler = new CommonPropertyAnnotationHandler(DirectoryGateway.class, this, "directoryGateway");
 
 	public AnnotationResourceFactory() {
 
