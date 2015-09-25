@@ -53,7 +53,7 @@ public class DefaultPropFindRequestFieldParser implements PropFindRequestFieldPa
 	@Override
     public PropertiesRequest getRequestedFields( InputStream in ) {
 		final Set<QName> set = new LinkedHashSet<QName>();
-        try {            
+        try {
             ByteArrayOutputStream bout = new ByteArrayOutputStream();
             StreamUtils.readTo( in, bout, false, true );
             byte[] arr = bout.toByteArray();
@@ -61,6 +61,9 @@ public class DefaultPropFindRequestFieldParser implements PropFindRequestFieldPa
                 ByteArrayInputStream bin = new ByteArrayInputStream( arr );
                 XMLReader reader = XMLReaderFactory.createXMLReader();
 				reader.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+				// https://www.owasp.org/index.php/XML_External_Entity_%28XXE%29_Processing
+				reader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+				reader.setFeature("http://xml.org/sax/features/external-general-entities", false);
                 PropFindSaxHandler handler = new PropFindSaxHandler();
                 reader.setContentHandler( handler );
                 try {
@@ -77,7 +80,7 @@ public class DefaultPropFindRequestFieldParser implements PropFindRequestFieldPa
                     log.warn( "exception parsing request body", e );
                     // ignore
                 }
-            }            
+            }
         } catch( Exception ex ) {
 			// There's a report of an exception being thrown here by IT Hit Webdav client
 			// Perhaps we can just log the error and return an empty set. Usually this
