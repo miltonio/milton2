@@ -48,6 +48,8 @@ public class LockInfoSaxHandler extends DefaultHandler {
 		InputStream in = request.getInputStream();
 
 		XMLReader reader = XMLReaderFactory.createXMLReader();
+		reader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);   // redundant? may be removed if it causes problems
+		reader.setFeature("http://xml.org/sax/features/external-general-entities", false);
 		reader.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
 
 		LockInfoSaxHandler handler = new LockInfoSaxHandler();
