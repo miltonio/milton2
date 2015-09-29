@@ -35,9 +35,9 @@ import java.util.Date;
 import java.util.Iterator;
 
 public class Utils {
-    
+
     public static final Charset UTF8 = Charset.forName("UTF-8");
-    
+
     private final static char[] hexDigits = {
         '0', '1', '2', '3', '4', '5', '6', '7',
         '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
@@ -287,7 +287,11 @@ public class Utils {
      * @return - a comma seperated list of values
      */
     public static String toCsv(Collection<String> list) {
-        if( list == null || list.isEmpty()) {
+        return toCsv(list, true);
+    }
+
+    public static String toCsv(Collection<String> list, boolean addSpace) {
+        if (list == null || list.isEmpty()) {
             return null;
         }
         String res = "";
@@ -295,7 +299,11 @@ public class Utils {
         while (it.hasNext()) {
             res += it.next();
             if (it.hasNext()) {
-                res += ", ";
+                if (addSpace) {
+                    res += ", ";
+                } else {
+                    res += ",";
+                }
             }
         }
         return res;
@@ -373,5 +381,5 @@ public class Utils {
         sDest = destUri.getPath();
         Dest dest = new Dest(destUri.getHost(), sDest);
         return dest;
-    }   
+    }
 }
