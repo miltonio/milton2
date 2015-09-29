@@ -36,8 +36,7 @@ public interface OAuth2Resource extends Resource {
      */
     Object authenticate(OAuth2ProfileDetails profile);
 
-    Map<String,OAuth2Provider> getOAuth2Providers();
-    
+    Map<String, OAuth2Provider> getOAuth2Providers();
 
     /**
      * This contains the information about the authenticated profile
@@ -45,6 +44,7 @@ public interface OAuth2Resource extends Resource {
     public static class OAuth2ProfileDetails {
 
         private String tokenLocation;
+        private String providerId;
         private String accessToken;
         private String code;
 
@@ -64,6 +64,14 @@ public interface OAuth2Resource extends Resource {
 
         public void setTokenLocation(String tokenLocation) {
             this.tokenLocation = tokenLocation;
+        }
+
+        public String getProviderId() {
+            return providerId;
+        }
+
+        public void setProviderId(String providerId) {
+            this.providerId = providerId;
         }
 
         public String getAccessToken() {
