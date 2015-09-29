@@ -94,7 +94,7 @@ public class OAuth2AuthenticationHandler implements AuthenticationHandler {
 
 						if (resourceResponse != null) {
 							// Step : Get the user info. 
-							OAuth2Resource.OAuth2ProfileDetails oAuth2TokenUser = this.oAuth2Helper.getOAuth2UserInfo(resourceResponse, oAuth2Response, oAuth2Code);
+							OAuth2Resource.OAuth2ProfileDetails oAuth2TokenUser = this.oAuth2Helper.getOAuth2UserInfo(resourceResponse, oAuth2Response, prov, oAuth2Code);
 							if (oAuth2TokenUser != null) {
 								log.info("oauth2 login {}", oAuth2TokenUser);
 								return oAuth2Resource.authenticate(oAuth2TokenUser);

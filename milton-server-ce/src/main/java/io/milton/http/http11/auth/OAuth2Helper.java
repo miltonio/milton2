@@ -17,6 +17,7 @@ package io.milton.http.http11.auth;
 
 import io.milton.common.Utils;
 import io.milton.http.OAuth2TokenResponse;
+import io.milton.http.exceptions.BadRequestException;
 import io.milton.resource.OAuth2Resource.OAuth2ProfileDetails;
 import io.milton.resource.OAuth2Provider;
 import java.net.MalformedURLException;
@@ -126,7 +127,7 @@ public class OAuth2Helper {
 		return oAuthClient.resource(bearerClientRequest, OAuth.HttpMethod.GET, OAuthResourceResponse.class);
 	}
 
-	public OAuth2ProfileDetails getOAuth2UserInfo(OAuthResourceResponse resourceResponse, OAuthAccessTokenResponse tokenResponse, String oAuth2Code) {
+	public OAuth2ProfileDetails getOAuth2UserInfo(OAuthResourceResponse resourceResponse, OAuthAccessTokenResponse tokenResponse, OAuth2Provider prov, String oAuth2Code) throws BadRequestException {
 		log.trace(" getOAuth2UserId start..." + resourceResponse);
 		if (resourceResponse == null) {
 			return null;
@@ -138,11 +139,28 @@ public class OAuth2Helper {
 		Map responseMap = JSONUtils.parseJSON(resourceResponseBody);
 		String userID = (String) responseMap.get("id");
 		String userName = (String) responseMap.get("username");
+		String message = (String) responseMap.get("message");
+		Integer status = -1;
+		Object errCode = responseMap.get("status");
+		if (errCode instanceof Integer) {
+			status = (Integer) errCode;
+		} else if (errCode instanceof String) {
+			status = Integer.valueOf((String) errCode);
+		}
+
+		if (status >= 400) {
+			throw new BadRequestException(message);
+		}
 
 		OAuth2ProfileDetails user = new OAuth2ProfileDetails();
 		user.setCode(oAuth2Code);
 		user.setAccessToken(tokenResponse.getAccessToken());
 		user.setDetails(responseMap);
+
+		if (prov != null) {
+			user.setTokenLocation(prov.getTokenLocation());
+			user.setProviderId(prov.getProviderId());
+		}
 
 		if (log.isTraceEnabled()) {
 			log.trace(" userID{}" + userID);
