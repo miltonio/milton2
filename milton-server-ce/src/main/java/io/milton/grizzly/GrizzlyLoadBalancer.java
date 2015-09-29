@@ -176,8 +176,8 @@ public class GrizzlyLoadBalancer {
 	}
 
 	private void forwardToCluster(Request request, Response response) {
-		AsyncHttpClient c = new AsyncHttpClient();
-		c.prepareGet(null)
+//		AsyncHttpClient c = new AsyncHttpClient();
+//		c.prepareGet(null)
 	}
 
 	private int getPropertyOrDefaultInt(String propSuffix, int defaultVal) {
@@ -205,7 +205,8 @@ public class GrizzlyLoadBalancer {
 	public class ExtAsyncHttpClient extends AsyncHttpClient {
 
 		protected BoundRequestBuilder requestBuilder(String method, String url) {
-			return new BoundRequestBuilder( method, config.isDisableUrlEncodingForBoundedRequests()).setUrl(url).setSignatureCalculator(signatureCalculator);
+			//return new BoundRequestBuilder( method, config.isDisableUrlEncodingForBoundedRequests()).setUrl(url).setSignatureCalculator(signatureCalculator);
+			return null;
 		}
 	}
 }
