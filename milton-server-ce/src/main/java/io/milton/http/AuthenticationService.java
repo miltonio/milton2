@@ -98,7 +98,7 @@ public class AuthenticationService {
 				log.trace(" - " + h);
 			}
 		}
-		Object lastUser = null;
+
 		for (AuthenticationHandler h : authenticationHandlers) {
 			if (h.supports(resource, request)) {
 				Object loginToken = h.authenticate(resource, request);
