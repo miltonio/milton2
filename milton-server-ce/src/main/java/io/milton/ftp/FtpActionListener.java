@@ -16,16 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.milton.ftp;
 
-import java.util.concurrent.Callable;
+import org.apache.ftpserver.impl.FtpIoSession;
 
 /**
  *
  * @author brad
  */
 public interface FtpActionListener {
-    void onAction(Runnable r);
-    <V> V onAction(Callable<V> c);
+
+	void onAction(final FtpIoSession session, final org.apache.ftpserver.ftplet.FtpRequest request, Runnable r);
 }

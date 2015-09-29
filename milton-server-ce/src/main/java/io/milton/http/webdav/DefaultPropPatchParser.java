@@ -69,6 +69,10 @@ public class DefaultPropPatchParser implements PropPatchRequestParser {
             ByteArrayInputStream bin = new ByteArrayInputStream( arr );
             XMLReader reader = XMLReaderFactory.createXMLReader();
 			reader.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+			// https://www.owasp.org/index.php/XML_External_Entity_%28XXE%29_Processing
+			reader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+			reader.setFeature("http://xml.org/sax/features/external-general-entities", false);
+
             PropPatchSaxHandler handler = new PropPatchSaxHandler();
             reader.setContentHandler( handler );
             reader.parse( new InputSource( bin ) );

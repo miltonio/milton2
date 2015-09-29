@@ -23,17 +23,12 @@ import io.milton.http.ResourceFactory;
 import io.milton.mail.MailServer;
 import io.milton.mail.MailServerBuilder;
 import java.io.IOException;
-import org.glassfish.grizzly.Connection;
-import org.glassfish.grizzly.PortRange;
+import java.security.Security;
+import org.apache.commons.lang.StringUtils;
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.HttpServer;
-import org.glassfish.grizzly.http.server.NetworkListener;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
-import org.glassfish.grizzly.sni.SNIConfig;
-import org.glassfish.grizzly.sni.SNIFilter;
-import org.glassfish.grizzly.sni.SNIServerConfigResolver;
-import org.glassfish.grizzly.ssl.SSLContextConfigurator;
 import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,6 +75,8 @@ public class GrizzlyServer {
 	private StaticApplicationContext parent;
 	private HttpManager httpManager;
 	private MailServer mailServer;
+	private MiltonSNIService kademiSNIService;
+	private boolean running;
 
 	public GrizzlyServer() {
 
@@ -93,98 +90,82 @@ public class GrizzlyServer {
 		start(httpPort, null);
 	}
 
-	public void start(int httpPort, Integer sslPort) throws IOException {
+	public boolean  start(int httpPort, Integer sslPort) throws IOException {
 
-		ConfigurableApplicationContext ctx = initSpringApplicationContext();
+        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
 
-		Object milton = ctx.getBean("milton.http.manager");
-		if (milton instanceof HttpManager) {
-			this.httpManager = (HttpManager) milton;
-		} else if (milton instanceof HttpManagerBuilder) {
-			HttpManagerBuilder builder = (HttpManagerBuilder) milton;
-			ResourceFactory rf = builder.getMainResourceFactory();
-			this.httpManager = builder.buildHttpManager();
-		}
+        ConfigurableApplicationContext ctx = initSpringApplicationContext();
+        if (ctx == null) {
+            log.warn("Failed to initialise spring");
+            return false;
+        }
 
-		if (parent.containsBean("milton.mail.server")) {
-			log.info("init mailserver...");
-			Object oMailServer = parent.getBean("milton.mail.server");
-			if (oMailServer instanceof MailServer) {
-				mailServer = (MailServer) oMailServer;
-			} else if (oMailServer instanceof MailServerBuilder) {
-				MailServerBuilder builder = (MailServerBuilder) oMailServer;
-				mailServer = builder.build();
-			} else {
-				throw new RuntimeException("Unsupported type: " + oMailServer.getClass() + " expected " + MailServer.class + " or " + MailServerBuilder.class);
-			}
-			log.info("starting mailserver");
-			mailServer.start();
-		}
-		log.info("Finished init");
+        Object milton = ctx.getBean("milton.http.manager");
+        if (milton instanceof HttpManager) {
+            this.httpManager = (HttpManager) milton;
+        } else if (milton instanceof HttpManagerBuilder) {
+            HttpManagerBuilder builder = (HttpManagerBuilder) milton;
+            ResourceFactory rf = builder.getMainResourceFactory();
+            this.httpManager = builder.buildHttpManager();
+        }
 
-		SSLContextConfigurator serverSslContext = new SSLContextConfigurator();
-		String keystorePath = "target/keystore-kademi";
-		String password = "password8";
-		serverSslContext.setKeyStoreFile(keystorePath);
-		serverSslContext.setKeyStorePass(password);
-		serverSslContext.setTrustStoreFile(keystorePath);
-		serverSslContext.setTrustStorePass(password);
-		serverSslContext.setSecurityProtocol("TLSv1.2");
+        if (parent.containsBean("milton.mail.server")) {
+            log.info("init mailserver...");
+            Object oMailServer = parent.getBean("milton.mail.server");
+            if (oMailServer instanceof MailServer) {
+                mailServer = (MailServer) oMailServer;
+            } else if (oMailServer instanceof MailServerBuilder) {
+                MailServerBuilder builder = (MailServerBuilder) oMailServer;
+                mailServer = builder.build();
+            } else {
+                throw new RuntimeException("Unsupported type: " + oMailServer.getClass() + " expected " + MailServer.class + " or " + MailServerBuilder.class);
+            }
+            log.info("starting mailserver");
+            mailServer.start();
+        }
+        log.info("Finished init");
 
-		SSLContextConfigurator clientSslContext = new SSLContextConfigurator();
-		clientSslContext.setKeyStoreFile(keystorePath);
-		clientSslContext.setKeyStorePass(password);
-		clientSslContext.setTrustStoreFile(keystorePath);
-		clientSslContext.setTrustStorePass(password);
-		clientSslContext.setSecurityProtocol("TLSv1.2");
+        String host = getPropertyOrDefault("host", null);
 
-		httpServer = HttpServer.createSimpleServer(null, httpPort);
-		{
-			if (sslPort != null) {
-				SSLEngineConfigurator ssle = new SSLEngineConfigurator(serverSslContext);
-				NetworkListener listener = new NetworkListener("ssl", NetworkListener.DEFAULT_NETWORK_HOST, new PortRange(sslPort));
-				listener.setSSLEngineConfig(ssle);
-				listener.setSecure(true);
-				httpServer.addListener(listener);
-			}
-		}
+        int port = getPropertyOrDefaultInt("port", 8080);
 
-		httpServer.getServerConfiguration().addHttpHandler(
-				new HttpHandler() {
-					@Override
-					public void service(Request request, Response response) throws Exception {
-						log.info("service");
-						GrizzlyMiltonRequest req = new GrizzlyMiltonRequest(request);
-						GrizzlyMiltonResponse resp = new GrizzlyMiltonResponse(response);
-						httpManager.process(req, resp);
-					}
-				},
-				"/");
+        int secureHttpPort = getPropertyOrDefaultInt(MiltonSNIService.SYS_SECURE_PORT, MiltonSNIService.SECURE_PORT);
 
-		if (sslPort != null) {
-			// TODO: expose SNI config
-			SSLEngineConfigurator serverEngineConfig = new SSLEngineConfigurator(serverSslContext);
+        if (host == null) {
+            httpServer = HttpServer.createSimpleServer(null, port);
+        } else {
+            httpServer = HttpServer.createSimpleServer(null, host, port);
+        }
 
-			SSLEngineConfigurator clientEngineConfig = new SSLEngineConfigurator(clientSslContext);
+        {   // Start the Kademi SNI SSL service
+			MiltonSNICertificateStore store = null; // TODO: allow injection
+            MiltonSNICertificateManager sniCerManager = new MiltonSNICertificateManager(ctx, store);
+            SSLEngineConfigurator sniConfig = sniCerManager.createEngineConfigurator();
+            this.kademiSNIService = new MiltonSNIService(secureHttpPort, sniConfig);
 
-			SNIFilter sniFilter = new SNIFilter(serverEngineConfig, clientEngineConfig);
+            this.kademiSNIService.startOn(httpServer);
+        }
 
-			sniFilter.setServerSSLConfigResolver(new SNIServerConfigResolver() {
+        httpServer.getServerConfiguration().addHttpHandler(
+                new HttpHandler() {
+                    @Override
+                    public void service(Request request, Response response) throws Exception {
+                        log.trace("service");
+                        GrizzlyMiltonRequest req = new GrizzlyMiltonRequest(request);
+                        GrizzlyMiltonResponse resp = new GrizzlyMiltonResponse(response);
+                        String p = req.getAbsolutePath();
+                        long tm = System.currentTimeMillis();
+                        httpManager.process(req, resp);
+                        tm = System.currentTimeMillis() - tm;
+                        // todo
+                    }
+                },
+                "/");
 
-				@Override
-				public SNIConfig resolve(Connection connection, String hostname) {
-					System.out.println("resolve sni " + hostname);
-					SSLEngineConfigurator sslEngineConfig = null; //host2SSLConfigMap.get(hostname);
+        httpServer.start();
 
-				// if sslEngineConfig is null - default server-side configuration,
-					// which was passed in the SNIFilter constructor, will be used.
-					return SNIConfig.newServerConfig(sslEngineConfig);
-				}
-			});
-		}
-
-		httpServer.start();
-
+        running = true;
+        return true;
 	}
 
 	@SuppressWarnings("resource")
@@ -204,4 +185,27 @@ public class GrizzlyServer {
 		return ctx;
 
 	}
+
+
+    private int getPropertyOrDefaultInt(String propSuffix, int defaultVal) {
+        String name = "kademi." + propSuffix;
+        String s = System.getProperty(name);
+        if (StringUtils.isNotBlank(s)) {
+            log.info("Using System property: " + name + " = " + s);
+            return Integer.parseInt(s);
+        }
+        log.info("Using default value " + defaultVal + " for property " + name);
+        return defaultVal;
+    }
+
+    public static String getPropertyOrDefault(String propSuffix, String defaultVal) {
+        String name = "kademi." + propSuffix;
+        String s = System.getProperty(name);
+        if (StringUtils.isNotBlank(s)) {
+            log.info("Using System property: " + name + " = " + s);
+            return s;
+        }
+        log.info("Using default value " + defaultVal + " for property " + name);
+        return defaultVal;
+    }
 }
