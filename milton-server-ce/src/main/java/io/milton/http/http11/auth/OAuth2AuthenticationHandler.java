@@ -116,7 +116,7 @@ public class OAuth2AuthenticationHandler implements AuthenticationHandler {
 	@Override
 	public boolean supports(Resource r, Request request) {
 		log.trace("supports");
-		if (request != null) {
+		if (request != null && request.getParams() != null) {
 			String oAuth2Code = request.getParams().get(OAuth.OAUTH_CODE);
 			return (r instanceof OAuth2Resource) && StringUtils.isNotBlank(oAuth2Code);
 		} else {
