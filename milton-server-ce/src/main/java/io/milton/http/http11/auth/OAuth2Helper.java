@@ -50,7 +50,7 @@ public class OAuth2Helper {
 
 		String oAuth2Location = provider.getAuthLocation();
 		String oAuth2ClientId = provider.getClientId();
-		String scopes = Utils.toCsv(provider.getPermissionScopes());
+		String scopes = Utils.toCsv(provider.getPermissionScopes(), false);
 		try {
 			OAuthClientRequest oAuthRequest = OAuthClientRequest
 					.authorizationLocation(oAuth2Location)
