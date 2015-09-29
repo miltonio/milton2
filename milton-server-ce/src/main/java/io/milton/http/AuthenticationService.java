@@ -56,7 +56,7 @@ public class AuthenticationService {
 	 * authenticate method.
 	 *
 	 * Returns null if no handlers support the request
-	 * 
+	 *
 	 * Caches results so can be called multiple times in one request without
 	 * performacne overhead
 	 *
@@ -67,23 +67,23 @@ public class AuthenticationService {
 	 * whether the login succeeded
 	 */
 	public AuthStatus authenticate(Resource resource, Request request) {
-		
-		if( request.getAttributes().containsKey(ATT_AUTH_STATUS) ) {
+
+		if (request.getAttributes().containsKey(ATT_AUTH_STATUS)) {
 			return (AuthStatus) request.getAttributes().get(ATT_AUTH_STATUS);
 		}
-		
+
 		// This is to prevent recursive calls into authenticate, which can happen
 		// when resource location tries to do authentication
-		if( request.getAttributes().containsKey(ATT_AUTH_CALLED) ) {
+		if (request.getAttributes().containsKey(ATT_AUTH_CALLED)) {
 			return null;
 		}
 		request.getAttributes().put(ATT_AUTH_CALLED, Boolean.TRUE);
-		
+
 		AuthStatus authStatus = _authenticate(resource, request);
 		request.getAttributes().put(ATT_AUTH_STATUS, authStatus); // maybe null
 		return authStatus;
 	}
-	
+
 	private AuthStatus _authenticate(Resource resource, Request request) {
 		log.trace("authenticate");
 		Auth auth = request.getAuthorization();
@@ -92,12 +92,13 @@ public class AuthenticationService {
 			log.trace("request is pre-authenticated");
 			return new AuthStatus(auth, false);
 		}
-		if(log.isTraceEnabled()) {
+		if (log.isTraceEnabled()) {
 			log.trace("Checking authentication with auth handlers: " + authenticationHandlers.size());
-			for( AuthenticationHandler h : authenticationHandlers) {
+			for (AuthenticationHandler h : authenticationHandlers) {
 				log.trace(" - " + h);
 			}
 		}
+		Object lastUser = null;
 		for (AuthenticationHandler h : authenticationHandlers) {
 			if (h.supports(resource, request)) {
 				Object loginToken = h.authenticate(resource, request);
@@ -114,13 +115,17 @@ public class AuthenticationService {
 					}
 					auth.setTag(loginToken);
 				}
-				return new AuthStatus(auth, false);
 			} else {
 				if (log.isTraceEnabled()) {
 					log.trace("handler does not support this resource and request. handler: " + h.getClass() + " resource: " + resource.getClass());
 				}
 			}
 		}
+
+		if (auth != null) {
+			return new AuthStatus(auth, false);
+		}
+
 		log.trace("authentication did not locate a user, because no handler accepted the request");
 		return null;
 	}
@@ -185,8 +190,7 @@ public class AuthenticationService {
 		}
 
 		// external authentication requires redirecting the user's browser to another
-		// site and displaying a login form. 
-
+		// site and displaying a login form.
 		// This can only be done if the resource
 		// being requested is a webpage. This means that it is Getable and that it
 		// has a content type of html
@@ -218,13 +222,13 @@ public class AuthenticationService {
 	/**
 	 * Determine if there are any credentials present. Note this does not check
 	 * if the provided credentials are valid, only if they are available
-	 * 
+	 *
 	 * @param request
-	 * @return 
+	 * @return
 	 */
 	public boolean authenticateDetailsPresent(Request request) {
-		for( AuthenticationHandler h : authenticationHandlers) {
-			if( h.credentialsPresent(request)) {
+		for (AuthenticationHandler h : authenticationHandlers) {
+			if (h.credentialsPresent(request)) {
 				return true;
 			}
 		}

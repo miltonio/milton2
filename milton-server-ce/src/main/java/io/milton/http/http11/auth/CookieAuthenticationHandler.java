@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.milton.http.http11.auth;
 
 import io.milton.common.Utils;
@@ -24,6 +23,7 @@ import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.principal.DiscretePrincipal;
 import io.milton.resource.Resource;
+import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,12 +89,16 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 			}
 		}
 
+		List<AuthenticationHandler> supportingHandlers = new ArrayList<AuthenticationHandler>();
 		for (AuthenticationHandler hnd : handlers) {
 			if (hnd.supports(r, request)) {
 				log.info("Found child handler who supports this request {}", hnd);
-				request.getAttributes().put(HANDLER_ATT_NAME, hnd);
-				return true;
+				supportingHandlers.add(hnd);
 			}
+		}
+		if (!supportingHandlers.isEmpty()) {
+			request.getAttributes().put(HANDLER_ATT_NAME, supportingHandlers);
+			return true;
 		}
 
 		String userUrl = getUserUrl(request);
@@ -109,33 +113,37 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 	public Object authenticate(Resource resource, Request request) {
 		// If there is a delegating handler which supports the request then we MUST use it
 		// This would have been selected in the supports method
-		AuthenticationHandler delegateHandler = (AuthenticationHandler) request.getAttributes().get(HANDLER_ATT_NAME);
-		if (delegateHandler != null) {
-			if (log.isTraceEnabled()) {
-				log.trace("authenticate: use delegateHandler: " + delegateHandler);
-			}
-			Object tag = delegateHandler.authenticate(resource, request);
-			if (tag != null) {
-				if (tag instanceof DiscretePrincipal) {
-					DiscretePrincipal p = (DiscretePrincipal) tag;
-					setLoginCookies(p, request);
-					log.trace("authenticate: authentication passed by delegated handler, persisted userUrl to cookie");
-				} else {
-					log.warn("authenticate: auth.tag is not an instance of " + DiscretePrincipal.class + ", is: " + tag.getClass() + " so is not compatible with cookie authentication");
-					// If form auth returned a non principal object then there is no way to
-					// persist the authentication state, so subsequent requests will fail. To prevent
-					// this we disable form auth and reject the login, this will result in a Basic/Digest
-					// authentication challenge
-					if (delegateHandler instanceof FormAuthenticationHandler) {
-						LoginResponseHandler.setDisableHtmlResponse(request);
-						return null;
-					}
+		List<AuthenticationHandler> supportingHandlers = (List<AuthenticationHandler>) request.getAttributes().get(HANDLER_ATT_NAME);
+		if (supportingHandlers != null && !supportingHandlers.isEmpty()) {
+			DiscretePrincipal lastUser = null;
+			for (AuthenticationHandler delegateHandler  : supportingHandlers) {
+				if (log.isTraceEnabled()) {
+					log.trace("authenticate: use delegateHandler: " + delegateHandler);
 				}
-				return tag;
-			} else {
-				log.info("Login failed by delegated handler: " + delegateHandler.getClass());
-				return null;
+				Object tag = delegateHandler.authenticate(resource, request);
+				if (tag != null) {
+					if (tag instanceof DiscretePrincipal) {
+						lastUser = (DiscretePrincipal) tag;
+						setLoginCookies(lastUser, request);
+						log.trace("authenticate: authentication passed by delegated handler, persisted userUrl to cookie");
+					} else {
+						log.warn("authenticate: auth.tag is not an instance of " + DiscretePrincipal.class + ", is: " + tag.getClass() + " so is not compatible with cookie authentication");
+					// If form auth returned a non principal object then there is no way to
+						// persist the authentication state, so subsequent requests will fail. To prevent
+						// this we disable form auth and reject the login, this will result in a Basic/Digest
+						// authentication challenge
+						if (delegateHandler instanceof FormAuthenticationHandler) {
+							LoginResponseHandler.setDisableHtmlResponse(request);
+							return null;
+						}
+					}
+					return tag;
+				} else {
+					log.info("Login failed by delegated handler: " + delegateHandler.getClass());
+					return null;
+				}
 			}
+			return lastUser;
 		} else {
 			log.trace("no delegating handler");
 			// No delegating handler means that we expect either to get a previous login token
@@ -222,11 +230,11 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 		Response response = HttpManager.response();
 		String signing = getUrlSigningHash(userUrl, request);
 		String sKeepLoggedIn = null;
-		if( request.getParams() != null ) {
+		if (request.getParams() != null) {
 			sKeepLoggedIn = request.getParams().get(keepLoggedInParamName);
 		}
 		boolean keepLoggedIn;
-		if( sKeepLoggedIn != null ) {
+		if (sKeepLoggedIn != null) {
 			keepLoggedIn = sKeepLoggedIn.equalsIgnoreCase("true");
 		} else {
 			keepLoggedIn = true; // default
@@ -364,7 +372,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 
 		// Check that the hmac is a valid signature
 		String expectedHmac = HmacUtils.calcShaHash(message, key);
-		if( log.isTraceEnabled()) {
+		if (log.isTraceEnabled()) {
 			log.trace("Message:" + message);
 			log.trace("Key:" + key);
 			log.trace("Hash:" + expectedHmac);
@@ -401,7 +409,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 		if (host.contains(":")) {
 			host = host.substring(0, host.indexOf(":"));
 		}
-		if( host == null ) {
+		if (host == null) {
 			host = "nohost";
 		}
 		return host;
@@ -428,7 +436,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 		String key = keys.get(keys.size() - 1); // Use the last key for new cookies
 		String hash = HmacUtils.calcShaHash(message, key);
 		String signing = nonce + ":" + hash;
-		if(log.isTraceEnabled()) {
+		if (log.isTraceEnabled()) {
 			log.trace("Message:" + message);
 			log.trace("Key:" + key);
 			log.trace("Hash:" + hash);
@@ -513,6 +521,5 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 	public boolean isUseLongLivedCookies() {
 		return useLongLivedCookies;
 	}
-
 
 }
