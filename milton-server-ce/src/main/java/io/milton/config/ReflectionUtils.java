@@ -65,7 +65,7 @@ public class ReflectionUtils {
 
 				// build jar file name, then loop through zipped entries
 				jarFileName = URLDecoder.decode(packageURL.getFile(), "UTF-8");
-				jarFileName = jarFileName.substring(0, jarFileName.indexOf("!"));
+				jarFileName = jarFileName.substring(5, jarFileName.indexOf("!")); // put this back, causes problem scanning jars
 				jf = new JarFile(jarFileName);
 				jarEntries = jf.entries();
 				if (log.isTraceEnabled()) {
