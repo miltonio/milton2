@@ -38,12 +38,29 @@ public class OAuth2AuthenticationHandler implements AuthenticationHandler {
 	private static final Logger log = LoggerFactory.getLogger(OAuth2AuthenticationHandler.class);
 	private final NonceProvider nonceProvider;
 	private final OAuth2Helper oAuth2Helper;
+	private final AuthenticationHandler wrapped;
 
-	public OAuth2AuthenticationHandler(NonceProvider nonceProvider) {
+	public OAuth2AuthenticationHandler(NonceProvider nonceProvider, AuthenticationHandler wrapped) {
 		this.nonceProvider = nonceProvider;
 		this.oAuth2Helper = new OAuth2Helper(nonceProvider);
+		this.wrapped = wrapped;
 	}
 
+	@Override
+	public boolean supports(Resource r, Request request) {
+		log.trace("supports");
+		if (request != null && request.getParams() != null) {
+			String oAuth2Code = request.getParams().get(OAuth.OAUTH_CODE);
+			return (r instanceof OAuth2Resource) && StringUtils.isNotBlank(oAuth2Code);
+		} else {
+			if( wrapped != null ) {
+				return wrapped.supports(r, request);
+			} else {
+				return false;
+			}
+		}
+	}	
+	
 	@Override
 	public Object authenticate(Resource resource, Request request) {
 
@@ -53,15 +70,13 @@ public class OAuth2AuthenticationHandler implements AuthenticationHandler {
 			return null;
 		}
 
-		Auth auth = request.getAuthorization();
-		//String realm = auth.getRealm();
-		//Object o = auth.getTag();
-		//log.trace("auth.getTag{}" + o + " realm{}" + realm + " user{}" + auth.getUser());
-
-		//if (o instanceof OAuth2TokenUser) {
-		//log.info("signed {}:" + o);
-		// return null;// TODO for testing
-		//}
+		// First attempt to authenticate with the wrapped handler. If that returns
+		// an authenticated user, and oauth creds are present we will connect them
+		// If there is no otherwise authenticated user, then attempt to authenticate with
+		// oauth creds
+		
+		Object localUser = wrapped.authenticate(resource, request);
+		
 		try {
 			if (resource instanceof OAuth2Resource) {
 				OAuth2Resource oAuth2Resource = (OAuth2Resource) resource;
@@ -97,7 +112,7 @@ public class OAuth2AuthenticationHandler implements AuthenticationHandler {
 							OAuth2Resource.OAuth2ProfileDetails oAuth2TokenUser = this.oAuth2Helper.getOAuth2UserInfo(resourceResponse, oAuth2Response, prov, oAuth2Code);
 							if (oAuth2TokenUser != null) {
 								log.info("oauth2 login {}", oAuth2TokenUser);
-								return oAuth2Resource.authenticate(oAuth2TokenUser);
+								return oAuth2Resource.findFederatedUser(oAuth2TokenUser);
 							} else {
 								log.warn("Failed to convert oauth2 response to profile");
 								return null;
@@ -111,18 +126,6 @@ public class OAuth2AuthenticationHandler implements AuthenticationHandler {
 			throw new RuntimeException("OAuth2 Authentication Handler error. ", ex);
 		}
 		return null;
-	}
-
-	@Override
-	public boolean supports(Resource r, Request request) {
-		log.trace("supports");
-		if (request != null && request.getParams() != null) {
-			String oAuth2Code = request.getParams().get(OAuth.OAUTH_CODE);
-			return (r instanceof OAuth2Resource) && StringUtils.isNotBlank(oAuth2Code);
-		} else {
-			return false;
-		}
-
 	}
 
 	@Override

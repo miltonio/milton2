@@ -24,17 +24,25 @@ import java.util.Map;
 public interface OAuth2Resource extends Resource {
 
     /**
-     * Called when an oauth2 login has been authenticated, with details received
+     * Called when an oauth2 login response has been received, with details received
      * from the remote server. The method should return an application specific
-     * object representing the user. Or return null to reject the
-     * authentication.
+     * object representing the user if one exists OR if the application chooses to create one. 
+     * 
+     * Or return null to indicate that this resource cannot authenticate the request. In that
+     * case the AuthenticationService may continue looking for other authentication providers 
+     * which are able to authenticate the request.
+     * 
+     * A typical workflow is that an OAuth response will be received, the current user
+     * will be authenticated from the CookieAuthenticationHandler, and the application
+     * will then choose to link the oauth credentials to the current user. Subsequently
+     * the user is then able to authenticat with oauth.
      *
      * @param profile - the details about the current user as provided by the
      * remote authentication server
      * @return an object which represents the current principal, or null to
      * reject the login
      */
-    Object authenticate(OAuth2ProfileDetails profile);
+    Object findFederatedUser(OAuth2ProfileDetails profile);
 
     Map<String, OAuth2Provider> getOAuth2Providers();
 
