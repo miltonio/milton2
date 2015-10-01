@@ -342,6 +342,15 @@ public class HttpManagerBuilder {
 					authenticationHandlers.add(digestHandler);
 				}
 
+				if (oAuth2Handler == null) {
+					if (enableOAuth2) {
+
+						oAuth2Handler = new OAuth2AuthenticationHandler(nonceProvider);
+					}
+				}
+				if (oAuth2Handler != null) {
+					authenticationHandlers.add(oAuth2Handler);
+				}
 
 				if (formAuthenticationHandler == null) {
 					if (enableFormAuth) {
@@ -382,17 +391,7 @@ public class HttpManagerBuilder {
 						authenticationHandlers.add(cookieAuthenticationHandler);
 					}
 				}
-
-				if (oAuth2Handler == null) {
-					if (enableOAuth2) {
-						List<AuthenticationHandler> oauthDelegates = new ArrayList<AuthenticationHandler>(authenticationHandlers);
-						oAuth2Handler = new OAuth2AuthenticationHandler(nonceProvider,oauthDelegates);
-						authenticationHandlers.clear();
-						authenticationHandlers.add(oAuth2Handler);
 					}
-				}
-
-			}
 			authenticationService = new AuthenticationService(authenticationHandlers);
 			rootContext.put(authenticationService);
 			if (cookieAuthenticationHandler != null) {
@@ -1045,6 +1044,14 @@ public class HttpManagerBuilder {
 
 	public void setBasicHandler(BasicAuthHandler basicHandler) {
 		this.basicHandler = basicHandler;
+	}
+
+	public OAuth2AuthenticationHandler getoAuth2Handler() {
+		return oAuth2Handler;
+	}
+
+	public void setoAuth2Handler(OAuth2AuthenticationHandler oAuth2Handler) {
+		this.oAuth2Handler = oAuth2Handler;
 	}
 
 	public CookieAuthenticationHandler getCookieAuthenticationHandler() {

@@ -107,6 +107,7 @@ public class AbstractResource implements Resource, ReportableResource, DigestRes
     public Object authenticate(OAuth2ProfileDetails profile) {
         String profileId = getFirstOf(profile.getDetails(), "username", "user_id", "id");
         if (profileId != null) {
+
             TCalDavPrincipal user = TResourceFactory.getUser(profileId);
             if (user == null) {
                 log.warn("Registering new user " + profileId);
@@ -176,4 +177,5 @@ public class AbstractResource implements Resource, ReportableResource, DigestRes
         }
         return null;
     }
+
 }
