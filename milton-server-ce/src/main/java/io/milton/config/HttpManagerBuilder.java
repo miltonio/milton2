@@ -342,15 +342,6 @@ public class HttpManagerBuilder {
 					authenticationHandlers.add(digestHandler);
 				}
 
-				if (oAuth2Handler == null) {
-					if (enableOAuth2) {
-
-						oAuth2Handler = new OAuth2AuthenticationHandler(nonceProvider);
-					}
-				}
-				if (oAuth2Handler != null) {
-					authenticationHandlers.add(oAuth2Handler);
-				}
 
 				if (formAuthenticationHandler == null) {
 					if (enableFormAuth) {
@@ -382,7 +373,7 @@ public class HttpManagerBuilder {
 							}
 							if( oAuth2Handler != null ) {
 								cookieDelegateHandlers.add(oAuth2Handler);
-								authenticationHandlers.remove(oAuth2Handler);								
+								authenticationHandlers.remove(oAuth2Handler);
 							}
 						}
 						initCookieSigningKeys();
@@ -391,6 +382,16 @@ public class HttpManagerBuilder {
 						authenticationHandlers.add(cookieAuthenticationHandler);
 					}
 				}
+
+				if (oAuth2Handler == null) {
+					if (enableOAuth2) {
+						List<AuthenticationHandler> oauthDelegates = new ArrayList<AuthenticationHandler>(authenticationHandlers);
+						oAuth2Handler = new OAuth2AuthenticationHandler(nonceProvider,oauthDelegates);
+						authenticationHandlers.clear();
+						authenticationHandlers.add(oAuth2Handler);
+					}
+				}
+
 			}
 			authenticationService = new AuthenticationService(authenticationHandlers);
 			rootContext.put(authenticationService);
@@ -637,7 +638,7 @@ public class HttpManagerBuilder {
 		}
 		if (propFindRequestFieldParser == null) {
 			DefaultPropFindRequestFieldParser defaultFieldParse = new DefaultPropFindRequestFieldParser();
-			this.propFindRequestFieldParser = new MsPropFindRequestFieldParser(defaultFieldParse); // use MS decorator for windows support				
+			this.propFindRequestFieldParser = new MsPropFindRequestFieldParser(defaultFieldParse); // use MS decorator for windows support
 		}
 		if (quotaDataAccessor == null) {
 			if (enableQuota) {
@@ -652,7 +653,7 @@ public class HttpManagerBuilder {
 	protected PropFindRequestFieldParser propFindRequestFieldParser() {
 		if (propFindRequestFieldParser == null) {
 			DefaultPropFindRequestFieldParser defaultFieldParse = new DefaultPropFindRequestFieldParser();
-			this.propFindRequestFieldParser = new MsPropFindRequestFieldParser(defaultFieldParse); // use MS decorator for windows support				
+			this.propFindRequestFieldParser = new MsPropFindRequestFieldParser(defaultFieldParse); // use MS decorator for windows support
 		}
 		return propFindRequestFieldParser;
 	}
