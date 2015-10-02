@@ -382,7 +382,7 @@ public class HttpManagerBuilder {
 							}
 							if( oAuth2Handler != null ) {
 								cookieDelegateHandlers.add(oAuth2Handler);
-								authenticationHandlers.remove(oAuth2Handler);								
+								authenticationHandlers.remove(oAuth2Handler);
 							}
 						}
 						initCookieSigningKeys();
@@ -391,7 +391,7 @@ public class HttpManagerBuilder {
 						authenticationHandlers.add(cookieAuthenticationHandler);
 					}
 				}
-			}
+					}
 			authenticationService = new AuthenticationService(authenticationHandlers);
 			rootContext.put(authenticationService);
 			if (cookieAuthenticationHandler != null) {
@@ -637,7 +637,7 @@ public class HttpManagerBuilder {
 		}
 		if (propFindRequestFieldParser == null) {
 			DefaultPropFindRequestFieldParser defaultFieldParse = new DefaultPropFindRequestFieldParser();
-			this.propFindRequestFieldParser = new MsPropFindRequestFieldParser(defaultFieldParse); // use MS decorator for windows support				
+			this.propFindRequestFieldParser = new MsPropFindRequestFieldParser(defaultFieldParse); // use MS decorator for windows support
 		}
 		if (quotaDataAccessor == null) {
 			if (enableQuota) {
@@ -652,7 +652,7 @@ public class HttpManagerBuilder {
 	protected PropFindRequestFieldParser propFindRequestFieldParser() {
 		if (propFindRequestFieldParser == null) {
 			DefaultPropFindRequestFieldParser defaultFieldParse = new DefaultPropFindRequestFieldParser();
-			this.propFindRequestFieldParser = new MsPropFindRequestFieldParser(defaultFieldParse); // use MS decorator for windows support				
+			this.propFindRequestFieldParser = new MsPropFindRequestFieldParser(defaultFieldParse); // use MS decorator for windows support
 		}
 		return propFindRequestFieldParser;
 	}
@@ -1044,6 +1044,14 @@ public class HttpManagerBuilder {
 
 	public void setBasicHandler(BasicAuthHandler basicHandler) {
 		this.basicHandler = basicHandler;
+	}
+
+	public OAuth2AuthenticationHandler getoAuth2Handler() {
+		return oAuth2Handler;
+	}
+
+	public void setoAuth2Handler(OAuth2AuthenticationHandler oAuth2Handler) {
+		this.oAuth2Handler = oAuth2Handler;
 	}
 
 	public CookieAuthenticationHandler getCookieAuthenticationHandler() {
