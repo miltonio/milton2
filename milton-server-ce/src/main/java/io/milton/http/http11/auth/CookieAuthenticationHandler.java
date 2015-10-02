@@ -140,7 +140,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 					return tag;
 				} else {
 					log.info("Login failed by delegated handler: " + delegateHandler.getClass());
-					return null;
+//					return null;
 				}
 			}
 			return lastUser;
