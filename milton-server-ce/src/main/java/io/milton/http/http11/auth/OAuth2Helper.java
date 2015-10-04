@@ -18,6 +18,7 @@ package io.milton.http.http11.auth;
 import io.milton.common.Utils;
 import io.milton.http.OAuth2TokenResponse;
 import io.milton.http.exceptions.BadRequestException;
+import io.milton.http.values.Pair;
 import io.milton.resource.OAuth2Resource.OAuth2ProfileDetails;
 import io.milton.resource.OAuth2Provider;
 import java.net.MalformedURLException;
@@ -35,6 +36,7 @@ import org.apache.oltu.oauth2.common.exception.OAuthProblemException;
 import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
 import org.apache.oltu.oauth2.common.message.types.GrantType;
 import org.apache.oltu.oauth2.common.utils.JSONUtils;
+import org.bouncycastle.util.encoders.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,19 +48,20 @@ public class OAuth2Helper {
 
 	private static final Logger log = LoggerFactory.getLogger(OAuth2Helper.class);
 
-	public static URL getOAuth2URL(OAuth2Provider provider) {
+	public static URL getOAuth2URL(OAuth2Provider provider, String returnUrl) {
 		log.trace("getOAuth2URL {}", provider);
 
 		String oAuth2Location = provider.getAuthLocation();
 		String oAuth2ClientId = provider.getClientId();
 		String scopes = Utils.toCsv(provider.getPermissionScopes(), false);
 		try {
+			String state = toState(provider.getProviderId(), returnUrl);
 			OAuthClientRequest oAuthRequest = OAuthClientRequest
 					.authorizationLocation(oAuth2Location)
 					.setClientId(oAuth2ClientId)
 					.setResponseType("code")
 					.setScope(scopes)
-					.setState(provider.getProviderId())
+					.setState(state)
 					.setRedirectURI(provider.getRedirectURI())
 					.buildQueryMessage();
 
@@ -69,6 +72,32 @@ public class OAuth2Helper {
 			throw new RuntimeException(malformedURLException);
 		}
 
+	}
+
+	private static String toState(String providerId, String returnUrl) {
+		StringBuilder sb = new StringBuilder(providerId);
+		if (returnUrl != null) {
+			sb.append("||");
+			sb.append(returnUrl);
+		}
+		byte[] arr = Base64.encode(sb.toString().getBytes());
+		String encoded = new String(arr);
+		return encoded;
+	}
+
+	public static Pair<String, String> parseState(String encoded) {
+		String decoded = new String(Base64.decode(encoded));
+		int i = decoded.indexOf("||");
+		String p;
+		String r;
+		if (i > 0) {
+			p = decoded.substring(0, i);
+			r = decoded.substring(i + 2);
+		} else {
+			p = decoded;
+			r = null;
+		}
+		return new Pair<String, String>(p, r);
 	}
 
 	private final NonceProvider nonceProvider;
@@ -127,7 +156,7 @@ public class OAuth2Helper {
 		return oAuthClient.resource(bearerClientRequest, OAuth.HttpMethod.GET, OAuthResourceResponse.class);
 	}
 
-	public OAuth2ProfileDetails getOAuth2UserInfo(OAuthResourceResponse resourceResponse, OAuthAccessTokenResponse tokenResponse, OAuth2Provider prov, String oAuth2Code) throws BadRequestException {
+	public OAuth2ProfileDetails getOAuth2UserInfo(OAuthResourceResponse resourceResponse, OAuthAccessTokenResponse tokenResponse, OAuth2Provider prov, String oAuth2Code, String returnUrl) throws BadRequestException {
 		log.trace(" getOAuth2UserId start..." + resourceResponse);
 		if (resourceResponse == null) {
 			return null;
@@ -156,6 +185,7 @@ public class OAuth2Helper {
 		user.setCode(oAuth2Code);
 		user.setAccessToken(tokenResponse.getAccessToken());
 		user.setDetails(responseMap);
+		user.setReturnUrl(returnUrl);
 
 		if (prov != null) {
 			user.setTokenLocation(prov.getTokenLocation());

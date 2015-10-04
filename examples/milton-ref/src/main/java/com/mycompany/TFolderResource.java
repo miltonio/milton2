@@ -120,7 +120,7 @@ public class TFolderResource extends TResource implements PutableResource, MakeC
     @Override
     public void sendContent(OutputStream out, Range range, Map<String, String> params, String contentType) throws IOException, NotAuthorizedException, BadRequestException, MalformedURLException {
         // HEY EVERYONE
-        // This is just a really simple dumb example of generating content - 
+        // This is just a really simple dumb example of generating content -
         // you CAN use JSPs and templates and stuff!!
         PrintWriter pw = new PrintWriter(out);
         pw.print("<html><body>");
@@ -144,7 +144,7 @@ public class TFolderResource extends TResource implements PutableResource, MakeC
 
     private void generateOAuthLoginLinks(PrintWriter pw) {
         for (OAuth2Provider prov : getOAuth2Providers().values()) {
-            String url = OAuth2Helper.getOAuth2URL(prov).toString();
+            String url = OAuth2Helper.getOAuth2URL(prov, null).toString();
             pw.print("<li><a href='" + url + "'>Login with OAuth2 on " + prov.getProviderId() +"</a></li>");
         }
     }
@@ -215,5 +215,5 @@ public class TFolderResource extends TResource implements PutableResource, MakeC
     @Override
     public Long getMaxAgeSeconds(Auth auth) {
         return null; // prevent caching of GET responses for web ui
-    }    
+    }
 }

@@ -56,6 +56,7 @@ public interface OAuth2Resource extends Resource {
         private String providerId;
         private String accessToken;
         private String code;
+        private String returnUrl; // this is the local page to redirect to after authentication
 
         private Map details;
 
@@ -99,6 +100,13 @@ public interface OAuth2Resource extends Resource {
             this.details = details;
         }
 
+        public String getReturnUrl() {
+            return returnUrl;
+        }
+
+        public void setReturnUrl(String returnUrl) {
+            this.returnUrl = returnUrl;
+        }
     }
 
 }
