@@ -17,6 +17,7 @@ package io.milton.http.http11.auth;
 
 import io.milton.common.Utils;
 import io.milton.http.OAuth2TokenResponse;
+import io.milton.http.Request;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.values.Pair;
 import io.milton.resource.OAuth2Resource.OAuth2ProfileDetails;
@@ -156,7 +157,7 @@ public class OAuth2Helper {
 		return oAuthClient.resource(bearerClientRequest, OAuth.HttpMethod.GET, OAuthResourceResponse.class);
 	}
 
-	public OAuth2ProfileDetails getOAuth2UserInfo(OAuthResourceResponse resourceResponse, OAuthAccessTokenResponse tokenResponse, OAuth2Provider prov, String oAuth2Code, String returnUrl) throws BadRequestException {
+	public OAuth2ProfileDetails getOAuth2UserInfo(Request request, OAuthResourceResponse resourceResponse, OAuthAccessTokenResponse tokenResponse, OAuth2Provider prov, String oAuth2Code, String returnUrl) throws BadRequestException {
 		log.trace(" getOAuth2UserId start..." + resourceResponse);
 		if (resourceResponse == null) {
 			return null;
@@ -165,7 +166,10 @@ public class OAuth2Helper {
 		String resourceResponseBody = resourceResponse.getBody();
 		log.trace(" OAuthResourceResponse, body{}" + resourceResponseBody);
 
+		request.getAttributes().put(OAuth2AuthenticationHandler.REQ_ATT_OAUTH_JSON, resourceResponseBody);
+
 		Map responseMap = JSONUtils.parseJSON(resourceResponseBody);
+
 		String userID = (String) responseMap.get("id");
 		String userName = (String) responseMap.get("username");
 		String message = (String) responseMap.get("message");
