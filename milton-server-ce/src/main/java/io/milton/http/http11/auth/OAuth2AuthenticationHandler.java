@@ -42,6 +42,7 @@ public class OAuth2AuthenticationHandler implements AuthenticationHandler {
 	private static final Logger log = LoggerFactory.getLogger(OAuth2AuthenticationHandler.class);
 	public static final String REQ_ATT_LOCAL_USER = "_oauthLocalUser";
 	public static final String REQ_ATT_OAUTH_DETAILS = "_oauthDetails";
+	public static final String REQ_ATT_OAUTH_JSON = "_oauthJson";
 
 	public static Object getFoundLocalUser(Request r) {
 		return r.getAttributes().get(REQ_ATT_LOCAL_USER);
@@ -50,6 +51,17 @@ public class OAuth2AuthenticationHandler implements AuthenticationHandler {
 	public static OAuth2ProfileDetails getOAuthDetails(Request r) {
 		return (OAuth2ProfileDetails) r.getAttributes().get(REQ_ATT_OAUTH_DETAILS);
 	}
+
+	/**
+	 * Returns the profile details as json formatted text.
+	 *
+	 * @param r
+	 * @return
+	 */
+	public static String getOAuthDetailsJson(Request r) {
+		return (String) r.getAttributes().get(REQ_ATT_OAUTH_JSON);
+	}
+
 
 
 	private final NonceProvider nonceProvider;
@@ -162,7 +174,7 @@ public class OAuth2AuthenticationHandler implements AuthenticationHandler {
 
 				if (resourceResponse != null) {
 					// Step : Get the user info.
-					OAuth2Resource.OAuth2ProfileDetails oAuth2TokenUser = this.oAuth2Helper.getOAuth2UserInfo(resourceResponse, oAuth2Response, prov, oAuth2Code, returnUrl);
+					OAuth2Resource.OAuth2ProfileDetails oAuth2TokenUser = this.oAuth2Helper.getOAuth2UserInfo(request, resourceResponse, oAuth2Response, prov, oAuth2Code, returnUrl);
 
 					return oAuth2TokenUser;
 
