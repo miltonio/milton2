@@ -75,7 +75,7 @@ public class OAuth2Helper {
 
 	}
 
-	private static String toState(String providerId, String returnUrl) {
+	public static String toState(String providerId, String returnUrl) {
 		StringBuilder sb = new StringBuilder(providerId);
 		if (returnUrl != null) {
 			sb.append("||");
