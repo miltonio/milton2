@@ -3,7 +3,8 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.milton</groupId>
-        <artifactId>2.7.1.1</version>
+        <artifactId>milton</artifactId>
+        <version>2.7.1.3</version>
     </parent>
     <groupId>io.milton</groupId>
     <artifactId>milton-anno-ref</artifactId>
