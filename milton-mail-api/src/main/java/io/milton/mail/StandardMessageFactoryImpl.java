@@ -68,7 +68,7 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
             Object o = mm.getContent();
             if (o instanceof String) {
                 String text = (String) o;
-                log.debug( "text: " + text );
+                log.debug("text: " + text);
 
                 sm.setText(text);
             } else if (o instanceof MimeMultipart) {
@@ -86,7 +86,7 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
     }
 
     protected void populateMultiPart(MimeMultipart multi, StandardMessage sm) throws IOException, MessagingException {
-        log.debug( "populateMultiPart: content type: " + multi.getContentType());
+        log.debug("populateMultiPart: content type: " + multi.getContentType());
         for (int i = 0; i < multi.getCount(); i++) {
             BodyPart bp = multi.getBodyPart(i);
             String disp = bp.getDisposition();
@@ -137,7 +137,7 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
                 name = System.currentTimeMillis() + "";
             }
             String ct = bp.getContentType();
-            log.debug( "attachment content type: " + ct);
+            log.debug("attachment content type: " + ct);
             String[] contentIdArr = bp.getHeader("Content-ID");
             String contentId = null;
             if (contentIdArr != null && contentIdArr.length > 0) {
@@ -145,7 +145,7 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
                 contentId = Utils.parseContentId(contentId);
             }
             in = bp.getInputStream();
-            sm.addAttachment(name, ct, contentId, in);
+            sm.addAttachment(name, ct, contentId, bp.getDisposition(), in);
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         } catch (MessagingException ex) {
@@ -154,7 +154,6 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
             Utils.close(in);
         }
     }
-
 
     Map<String, String> findHeaders(MimeMessage mm) {
         try {
@@ -207,41 +206,35 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
                     log.debug("text and html. no attachments");
                     addTextAndHtmlToMime(message, sm);
                 }
+            } else if (hasAttachments(sm)) {
+                // just text and attachments
+                MimeMultipart multipart = new MimeMultipart("mixed");
+                message.setContent(multipart);
+                addTextToMime(multipart, sm);
+                addAttachmentsToMime(multipart, sm);
             } else {
-                if (hasAttachments(sm)) {
-                    // just text and attachments
-                    MimeMultipart multipart = new MimeMultipart("mixed");
-                    message.setContent(multipart);
-                    addTextToMime(multipart, sm);
-                    addAttachmentsToMime(multipart, sm);
-                } else {
-                    // no html, no attachments
-                    message.setContent(sm.getText(), "text/plain");
-                }
+                // no html, no attachments
+                message.setContent(sm.getText(), "text/plain");
             }
+        } else if (isHtml(sm)) {
+            if (hasAttachments(sm)) {
+                // no text, but has html and attachments, so must do mixed
+                MimeMultipart multipart = new MimeMultipart("mixed");
+                message.setContent(multipart);
+                addHtmlToMime(multipart, sm);
+                addAttachmentsToMime(multipart, sm);
+            } else {
+                // html only, no text or attachments
+                addHtmlToMime(message, sm);
+            }
+        } else if (hasAttachments(sm)) {
+            // only attachments
+            MimeMultipart multipart = new MimeMultipart("mixed");
+            message.setContent(multipart);
+            addAttachmentsToMime(multipart, sm);
         } else {
-            if (isHtml(sm)) {
-                if (hasAttachments(sm)) {
-                    // no text, but has html and attachments, so must do mixed
-                    MimeMultipart multipart = new MimeMultipart("mixed");
-                    message.setContent(multipart);
-                    addHtmlToMime(multipart, sm);
-                    addAttachmentsToMime(multipart, sm);
-                } else {
-                    // html only, no text or attachments
-                    addHtmlToMime(message, sm);
-                }
-            } else {
-                if (hasAttachments(sm)) {
-                    // only attachments
-                    MimeMultipart multipart = new MimeMultipart("mixed");
-                    message.setContent(multipart);
-                    addAttachmentsToMime(multipart, sm);
-                } else {
-                    // no text, no html, no attachments - no content
-                    message.setContent("", "text/plain");
-                }
-            }
+            // no text, no html, no attachments - no content
+            message.setContent("", "text/plain");
         }
     }
 
@@ -294,7 +287,7 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
         System.out.println("StandardMessageFactoryImpl - addAttachmentsToMime1");
         if (sm.getAttachments() != null && sm.getAttachments().size() > 0) {
             for (Attachment att : sm.getAttachments()) {
-                if( !isInline(att) ) {
+                if (!isInline(att)) {
                     System.out.println("StandardMessageFactoryImpl - addAttachmentToMime1");
                     addAttachmentToMime(multipart, att);
                 } else {
@@ -320,8 +313,8 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
 
     private void addHtmlToMime(Part part, StandardMessage sm) throws MessagingException {
 
-			// need to use a javax.activation.DataSource (!) to set a text
-			// with content type "text/html"
+        // need to use a javax.activation.DataSource (!) to set a text
+        // with content type "text/html"
 //			part.setDataHandler(new DataHandler(
 //			    new DataSource() {
 //						public InputStream getInputStream() throws IOException {
@@ -338,8 +331,6 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
 //						}
 //			    }
 //			));
-
-
         List<Attachment> htmlInline = findInlineAttachments(sm);
         if (htmlInline == null || htmlInline.isEmpty()) {
             part.setContent(sm.getHtml(), "text/html");
@@ -411,10 +402,12 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
      * @return - a list of attachments which have a non empty Content-ID header
      */
     private List<Attachment> findInlineAttachments(StandardMessage sm) {
-        if( sm.getAttachments() == null ) return null;
+        if (sm.getAttachments() == null) {
+            return null;
+        }
         List<Attachment> list = new ArrayList<Attachment>();
-        for( Attachment att : sm.getAttachments() ) {
-            if( isInline(att)) {
+        for (Attachment att : sm.getAttachments()) {
+            if (isInline(att)) {
                 list.add(att);
             }
         }
@@ -471,7 +464,7 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
                 log.warn("Unknown content type: " + o2.getClass());
                 text = o2.toString();
             }
-            log.debug( "getStringContent: " + text);
+            log.debug("getStringContent: " + text);
             return text;
         } catch (IOException ex) {
             throw new RuntimeException(ex);
@@ -527,7 +520,6 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
         return att.getContentId() != null && att.getContentId().length() > 2;
     }
 
-
     public class AttachmentReadingDataSource implements DataSource {
 
         final Attachment att;
@@ -549,7 +541,7 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
 
         @Override
         public String getContentType() {
-            log.debug( "attachment conte type: " + att.getContentType());
+            log.debug("attachment conte type: " + att.getContentType());
             return att.getContentType();
         }
 
