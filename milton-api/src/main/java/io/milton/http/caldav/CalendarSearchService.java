@@ -21,6 +21,8 @@ import io.milton.principal.CalDavPrincipal;
 import io.milton.resource.CalendarResource;
 import io.milton.resource.ICalResource;
 import io.milton.resource.SchedulingResponseItem;
+
+import java.util.AbstractMap;
 import java.util.Date;
 import java.util.List;
 
@@ -45,7 +47,7 @@ public interface CalendarSearchService {
      */
     List<SchedulingResponseItem> queryFreeBusy(CalDavPrincipal principal, String iCalText);
 
-    List<ICalResource> findCalendarResources(CalendarResource calendar, Date start, Date finish) throws NotAuthorizedException, BadRequestException;
+    List<ICalResource> findCalendarResources(CalendarResource calendar, Date start, Date finish, AbstractMap.SimpleImmutableEntry<String, String> propFilter) throws NotAuthorizedException, BadRequestException;
 
     /**
      * Return a list of events which represent invitations for the given user

@@ -24,6 +24,8 @@ import io.milton.principal.CalDavPrincipal;
 import io.milton.resource.CalendarResource;
 import io.milton.resource.ICalResource;
 import io.milton.resource.SchedulingResponseItem;
+
+import java.util.AbstractMap;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -54,16 +56,16 @@ public class AnnotationsCalendarSearchService implements CalendarSearchService {
     }
 
     @Override
-    public List<ICalResource> findCalendarResources(CalendarResource calendar, Date start, Date finish) throws NotAuthorizedException, BadRequestException {
+    public List<ICalResource> findCalendarResources(CalendarResource calendar, Date start, Date finish, AbstractMap.SimpleImmutableEntry<String, String> propFilter) throws NotAuthorizedException, BadRequestException {
         List<ICalResource> results = null;
         if (calendar instanceof AnnoCalendarResource) {
-            results = annotationResourceFactory.getCalendarDateRangeQueryAnnotationHandler().execute((AnnoCalendarResource) calendar, start, finish);            
+            results = annotationResourceFactory.getCalendarDateRangeQueryAnnotationHandler().execute((AnnoCalendarResource) calendar, start, finish);
             if( results == null ) {
                 log.trace("Got null results from annotations calendar date range query, so will fallback to iterative query: " + wrapped.getClass());
             }
         }
         if( results == null ) {
-            results = wrapped.findCalendarResources(calendar, start, finish);
+            results = wrapped.findCalendarResources(calendar, start, finish, null);
         }
         return results;
     }

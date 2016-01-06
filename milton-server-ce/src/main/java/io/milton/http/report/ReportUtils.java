@@ -19,6 +19,7 @@ package io.milton.http.report;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import javax.xml.namespace.QName;
@@ -87,6 +88,25 @@ public class ReportUtils {
 
 			}
 		}
+	}
+
+	public static Element findRecursively(Element node, String name) {
+		// get all child nodes
+		@SuppressWarnings("unchecked")
+		List<Element> list = node.getChildren();
+
+		Iterator<Element> itr = list.iterator();
+		Element childElement = null;
+		while (itr.hasNext()) {
+			childElement = itr.next();
+			if (name.equals(childElement.getName())) {
+				return childElement;
+			}
+		}
+		if (childElement == null) {
+			return null;
+		}
+		return findRecursively(childElement, name);
 	}
 
 	public static Set<QName> getProps(Document doc, Namespace propNs) {
