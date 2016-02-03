@@ -83,7 +83,8 @@ public class Auth {
         FORM,
         SESSION,
         NTLM,
-        OAUTH
+        OAUTH,
+        BEARER
     };
     private Scheme scheme;
     private String user;
@@ -108,14 +109,19 @@ public class Auth {
             scheme = Scheme.valueOf(schemeCode.toUpperCase());
             enc = sAuth.substring(pos + 1);
         } else {
-            // assume basic
-            scheme = Scheme.BASIC;
-            enc = sAuth;
+            //scheme = Scheme.BASIC;
+            //enc = sAuth;
+
+            schemeCode = sAuth;
+            scheme = Scheme.valueOf(schemeCode.toUpperCase());
+            enc = null;
         }
-        if (scheme.equals(Scheme.BASIC)) {
-            parseBasic(enc);
-        } else if (scheme.equals(Scheme.DIGEST)) {
-            parseDigest(enc);
+        if (enc != null) {
+            if (scheme.equals(Scheme.BASIC)) {
+                parseBasic(enc);
+            } else if (scheme.equals(Scheme.DIGEST)) {
+                parseDigest(enc);
+            }
         }
     }
 
