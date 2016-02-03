@@ -20,6 +20,7 @@
 
 package io.milton.http;
 
+import io.milton.http.Auth.Scheme;
 import junit.framework.TestCase;
 
 /**
@@ -27,7 +28,7 @@ import junit.framework.TestCase;
  * @author brad
  */
 public class AuthTest extends TestCase {
-    
+
     public void testBasic() {
         Auth auth = new Auth( "Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==");
         //Auth auth = new Auth( "Basic username=Aladdin,password=\"open sesame\"");
@@ -47,4 +48,14 @@ public class AuthTest extends TestCase {
 
 
     }
+
+    public void testNullBearer() {
+        Auth auth = new Auth( "Bearer");
+        assertEquals(Scheme.BEARER, auth.getScheme());
+        assertNull(auth.getUser());
+        assertNull(auth.getPassword());
+
+
+    }
+
 }
