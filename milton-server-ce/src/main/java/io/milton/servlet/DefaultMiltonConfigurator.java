@@ -23,9 +23,6 @@ import io.milton.http.AuthenticationHandler;
 import io.milton.http.Filter;
 import io.milton.http.HttpManager;
 import io.milton.http.ResourceFactory;
-import io.milton.http.annotated.AnnotationResourceFactory;
-import io.milton.http.template.JspViewResolver;
-import io.milton.http.template.ViewResolver;
 import io.milton.http.webdav.WebDavResponseHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -230,7 +227,7 @@ public class DefaultMiltonConfigurator implements MiltonConfigurator {
 			// use thread classloader, because this class might be on a child classloader without access to other classes
 			Class c;
 			try {
-				c = Class.forName(className, true, Thread.currentThread().getContextClassLoader());
+				c = Class.forName(className);
 			} catch (ClassNotFoundException e) {
 				// there are some frameworks where a class might be loadable from the local classloader, but
 				// not from the parent. So if not found on parent lets try local
