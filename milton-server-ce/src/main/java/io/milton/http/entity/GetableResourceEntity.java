@@ -78,7 +78,8 @@ public class GetableResourceEntity implements Response.Entity {
 				log.trace("sendContent finished in " + l + "ms");
 			}
 		} catch (IOException ex) {
-			log.warn("IOException writing to output, probably client terminated connection", ex);
+			log.warn("IOException writing to output, probably client terminated connection");
+			log.debug("IOException stack trace", ex);
 			try {
 				outputStream.close(); // attempt to close the stream
 			} catch (Exception e) {
