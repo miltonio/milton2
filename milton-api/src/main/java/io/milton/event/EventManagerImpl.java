@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package io.milton.event;
 
 import java.util.List;
@@ -31,32 +30,33 @@ import org.slf4j.LoggerFactory;
  */
 public class EventManagerImpl implements EventManager {
 
-    private final static Logger log = LoggerFactory.getLogger( EventManagerImpl.class );
+    private final static Logger log = LoggerFactory.getLogger(EventManagerImpl.class);
     private final List<Registration> registrations = new CopyOnWriteArrayList<Registration>();
 
     @Override
-    public void fireEvent( Event e ) {
-        if( log.isTraceEnabled() ) {
-            log.trace( "fireEvent: " + e.getClass().getCanonicalName() );
-        }
-        for( Registration r : registrations) {
-            if( r.clazz.isAssignableFrom(e.getClass())) {
-                if( log.isTraceEnabled()) {
-                    log.trace( "  firing on: " + r.listener.getClass() );
+    public void fireEvent(Event e) {
+        log.trace("fireEvent: {}", e.getClass());
+        for (Registration r : registrations) {
+            if (r.clazz.isAssignableFrom(e.getClass())) {
+                long tm = System.currentTimeMillis();
+                r.listener.onEvent(e);
+                
+                if (log.isTraceEnabled()) {
+                    log.trace("  fired on: {} completed in {}ms", r.listener.getClass(), (System.currentTimeMillis() - tm));
                 }
-                r.listener.onEvent( e );
             }
         }
     }
 
     @Override
-    public synchronized <T extends Event> void registerEventListener( EventListener l, Class<T> c ) {
-        log.info( "registerEventListener: " + l.getClass().getCanonicalName() + " - " + c.getCanonicalName() );
+    public synchronized <T extends Event> void registerEventListener(EventListener l, Class<T> c) {
+        log.info("registerEventListener: " + l.getClass().getCanonicalName() + " - " + c.getCanonicalName());
         Registration r = new Registration(l, c);
         registrations.add(r);
     }
-    
+
     private class Registration {
+
         private final EventListener listener;
         private final Class<? extends Event> clazz;
 
@@ -64,6 +64,6 @@ public class EventManagerImpl implements EventManager {
             this.listener = listener;
             this.clazz = clazz;
         }
-                
+
     }
 }
