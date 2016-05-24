@@ -38,10 +38,8 @@ import io.milton.http.webdav2.WebDavLevel2Protocol;
 import io.milton.http.webdav2.WebDavLevel2ResourceTypeHelper;
 import io.milton.principal.PrincipalSearchService;
 import io.milton.property.PropertySource;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,7 +86,7 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
     private WebDavLevel2Protocol webDavLevel2Protocol;
     private boolean webdavLevel2Enabled = true;
     private LockManager lockManager;
-    private final ICalFormatter iCalFormatter = new ICalFormatter();
+    private ICalFormatter iCalFormatter;
 
     private CalendarSearchService calendarSearchService;
     private AnnotationsCalendarSearchService annotationsCalendarSearchService;
@@ -145,6 +143,9 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
             }
             if (calendarSearchService == null) {
                 log.warn("Using the default calendar search service. Calendar search functions may exhibit poor performance. If thats a problem implement your own: {}", CalendarSearchService.class);
+                if( iCalFormatter == null ) {
+                    iCalFormatter = new ICalFormatter();
+                }
                 DefaultCalendarSearchService c = new DefaultCalendarSearchService(iCalFormatter, mainResourceFactory);
                 // Wrap the default in an annotations handler. It will forward requests to the wrapped
                 // instance for non-annotation resources
@@ -399,4 +400,5 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
     public void setPrincipalSearchService(PrincipalSearchService principalSearchService) {
        this.principalSearchService = principalSearchService;
     }
+       
 }
