@@ -11,9 +11,16 @@
 		<connection>scm:git:git@github.com:miltonio/milton2.git</connection>
 	</scm>
 	<distributionManagement>
+		<!--
 		<repository>
 			<id>ettrema-repo</id>
 			<url>http://milton.io/maven/</url>
+		</repository>
+		-->
+		<repository>
+			<id>bintray-milton-Milton</id> 
+			<name>milton-Milton</name> 
+			<url>https://api.bintray.com/maven/milton/Milton/milton/;publish=1</url>
 		</repository>
 		<snapshotRepository>
 			<uniqueVersion>false</uniqueVersion>
@@ -89,28 +96,28 @@
                                 requires j2h.jar to be on classpath. see http://www.java2html.com/java2html_ant_task.html
                                 <taskdef name="java2html" classname="com.java2html.Java2HTMLTask" />
 
-                                <java2html title="Example" simple="no" tabsize="4" marginsize="2" header="true" footer="false" destination="target/html">
-                                    <fileset dir="${basedir}/src/main/java">
-                                        <include name="**/*.java" />
-                                    </fileset>
-                                </java2html>
-                                <echo>...done</echo>
-                            </tasks>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>java2html</groupId>
-                        <artifactId>j2h</artifactId>
-                        <version>1.3.1</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
--->
+											<java2html title="Example" simple="no" tabsize="4" marginsize="2" header="true" footer="false" destination="target/html">
+												<fileset dir="${basedir}/src/main/java">
+													<include name="**/*.java" />
+												</fileset>
+											</java2html>
+											<echo>...done</echo>
+										</tasks>
+									</configuration>
+									<goals>
+										<goal>run</goal>
+									</goals>
+								</execution>
+							</executions>
+							<dependencies>
+								<dependency>
+									<groupId>java2html</groupId>
+									<artifactId>j2h</artifactId>
+									<version>1.3.1</version>
+								</dependency>
+							</dependencies>
+						</plugin>
+			-->
 
 			<plugin>
 				<artifactId>maven-source-plugin</artifactId>
@@ -125,18 +132,18 @@
 				</executions>
 			</plugin>
 			<!--
-            <plugin>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
--->
+						<plugin>
+							<artifactId>maven-javadoc-plugin</artifactId>
+							<executions>
+								<execution>
+									<id>attach-javadocs</id>
+									<goals>
+										<goal>jar</goal>
+									</goals>
+								</execution>
+							</executions>
+						</plugin>
+			-->
 		</plugins>
 		<extensions>
 			<extension>
@@ -174,25 +181,34 @@
 			<version>3.8.1</version>
 			<scope>test</scope>
 		</dependency>
-        <dependency>
-            <scope>test</scope>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.5</version>
-        </dependency>
+		<dependency>
+			<scope>test</scope>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.7.5</version>
+		</dependency>
 	</dependencies>
+
 
 	<repositories>
 		<repository>
 			<id>milton-repo</id>
 			<url>http://milton.io/maven/</url>
 		</repository>
-         <!--
-        <repository>
-            <id>mvnrepository.com</id>
-            <name>mvnrepository.com</name>
-            <url>http://www.mvnrepository.com/artifacts</url>
-        </repository>
--->
+		<repository>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>bintray-milton-Milton</id>
+			<name>bintray</name>
+			<url>http://dl.bintray.com/milton/Milton</url>
+		</repository>
+		<!--
+				<repository>
+					<id>mvnrepository.com</id>
+					<name>mvnrepository.com</name>
+					<url>http://www.mvnrepository.com/artifacts</url>
+				</repository>
+		-->
 	</repositories>
 </project>
