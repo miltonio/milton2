@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.milton</groupId>
 	<artifactId>milton</artifactId>
-	<version>2.7.1.5</version>
+	<version>2.7.1.6</version>
 	<packaging>pom</packaging>
 	<name>milton</name>
 	<url>http://milton.io</url>
@@ -18,8 +18,8 @@
 		</repository>
 		-->
 		<repository>
-			<id>bintray-milton-Milton</id> 
-			<name>milton-Milton</name> 
+			<id>bintray-milton-Milton</id>
+			<name>milton-Milton</name>
 			<url>https://api.bintray.com/maven/milton/Milton/milton/;publish=1</url>
 		</repository>
 		<snapshotRepository>

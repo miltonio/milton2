@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package io.milton.common;
+    package io.milton.common;
 
 import io.milton.resource.CollectionResource;
 import io.milton.resource.Resource;
