@@ -214,7 +214,7 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
                 addAttachmentsToMime(multipart, sm);
             } else {
                 // no html, no attachments
-                message.setContent(sm.getText(), "text/plain");
+                message.setContent(sm.getText(), "text/plain; charset=utf-8");
             }
         } else if (isHtml(sm)) {
             if (hasAttachments(sm)) {
@@ -234,7 +234,7 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
             addAttachmentsToMime(multipart, sm);
         } else {
             // no text, no html, no attachments - no content
-            message.setContent("", "text/plain");
+            message.setContent("", "text/plain; charset=utf-8");
         }
     }
 
@@ -333,12 +333,13 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
 //			));
         List<Attachment> htmlInline = findInlineAttachments(sm);
         if (htmlInline == null || htmlInline.isEmpty()) {
-            part.setContent(sm.getHtml(), "text/html");
+            part.setContent(sm.getHtml(), "text/html; charset=\"utf-8\"");
         } else {
             MimeMultipart related = new MimeMultipart("related");
             part.setContent(related);
             BodyPart bpHtml = new MimeBodyPart();
-            bpHtml.setContent(sm.getHtml(), "text/html");
+            bpHtml.setHeader("Content-Type","text/plain; charset=\"utf-8\"");
+            bpHtml.setContent(sm.getHtml(), "text/plain; charset=\"utf-8\"");
             related.addBodyPart(bpHtml);
             for (Attachment att : htmlInline) {
                 addAttachmentToMime(related, att);
@@ -370,7 +371,7 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
 
     private void addTextToMime(MimeMultipart multipart, StandardMessage sm) throws MessagingException {
         BodyPart bp = new MimeBodyPart();
-        bp.setContent(sm.getText(), "text/plain");
+        bp.setContent(sm.getText(), "text/plain; charset=utf-8");
         multipart.addBodyPart(bp);
     }
 
@@ -497,7 +498,7 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
 
     @Override
     public void toMimeMessage(StandardMessage sm, MimeMessage mm) {
-        System.out.println("StandardMessageFactoryImpl - toMimeMessage");
+        //System.out.println("StandardMessageFactoryImpl - toMimeMessage");
         try {
             //mm.setS
             mm.setFrom(sm.getFrom().toInternetAddress());
@@ -506,6 +507,7 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
             fillTo(sm.getTo(), mm);
             fillCC(sm.getCc(), mm);
             fillBCC(sm.getBcc(), mm);
+            //mm.setSubject(sm.getSubject(), "utf-8");
             mm.setSubject(sm.getSubject());
             mm.setDisposition(sm.getDisposition());
             fillContentLanguage(sm.getContentLanguage(), mm);
