@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -23,6 +24,7 @@ import java.util.Map;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.RequestContext;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.lang.CharSet;
 import org.apache.commons.lang.StringUtils;
 import org.glassfish.grizzly.http.server.Request;
 import org.slf4j.Logger;
@@ -161,12 +163,21 @@ public class GrizzlyMiltonRequest extends  AbstractRequest  {
 
                     @Override
                     public String getCharacterEncoding() {
-                        return wrapped.getCharacterEncoding();
+                        String s = wrapped.getCharacterEncoding();
+						if( s == null ) {
+							s = StandardCharsets.UTF_8.name();
+						}
+						return s;
                     }
 
                     @Override
                     public String getContentType() {
-                        return wrapped.getContentType();
+                        String s = wrapped.getContentType();
+						if( s == null ) {
+							s = StandardCharsets.UTF_8.name();
+						}
+						return s;
+						
                     }
 
                     @Override
@@ -185,7 +196,13 @@ public class GrizzlyMiltonRequest extends  AbstractRequest  {
                 for (Object o : items) {
                     org.apache.commons.fileupload.FileItem item = (org.apache.commons.fileupload.FileItem) o;
                     if (item.isFormField()) {
-                        params.put(item.getFieldName(), item.getString());
+						String val;
+						if( item.getContentType() != null ) {
+							val = item.getString(); // in case a content type has been specified
+						} else {
+							val = item.getString("UTF-8"); // Note that this is specified as the only allowable encoding for multipart posts
+						}
+						params.put(item.getFieldName(), val);
                     } else {
                         // See http://jira.ettrema.com:8080/browse/MIL-118 - ServletRequest#parseRequestParameters overwrites multiple file uploads when using input type="file" multiple="multiple"
                         String itemKey = item.getFieldName();

@@ -26,75 +26,102 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import javax.activation.DataSource;
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemHeaders;
 
 public class FileItemExt implements DataSource, FileItem {
     
     private static final long serialVersionUID = 1L;
     
     private final FileItem item;
+	private FileItemHeaders headers;
     
     public FileItemExt(FileItem item) {
         this.item = item;
     }
 
+	@Override
     public InputStream getInputStream() throws IOException {
         return item.getInputStream();
     }
 
+	@Override
     public OutputStream getOutputStream() throws IOException {
         return item.getOutputStream();
     }
 
+	@Override
     public String getContentType() {
         return item.getContentType();
     }
 
+	@Override
     public String getName() {
         return item.getName();
     }
 
+	@Override
     public boolean isInMemory() {
         return item.isInMemory();
     }
 
+	@Override
     public long getSize() {
         return item.getSize();
     }
 
+	@Override
     public byte[] get() {
         return item.get();
     }
 
+	@Override
     public String getString(String string) throws UnsupportedEncodingException {
         return item.getString(string);
     }
 
+	@Override
     public String getString() {
         return item.getString();
     }
 
+	@Override
     public void write(File file) throws Exception {
         item.write(file);
     }
 
+	@Override
     public void delete() {
         item.delete();
     }
 
+	@Override
     public String getFieldName() {
         return item.getFieldName();
     }
 
+	@Override
     public void setFieldName(String string) {
         item.setFieldName(string);
     }
 
+	@Override
     public boolean isFormField() {
         return item.isFormField();
     }
 
+	@Override
     public void setFormField(boolean b) {
         item.setFormField(b);
     }
+
+	@Override
+	public FileItemHeaders getHeaders() {
+		return headers;
+	}
+
+	@Override
+	public void setHeaders(FileItemHeaders fih) {
+		this.headers = fih;
+	}
     
 }
