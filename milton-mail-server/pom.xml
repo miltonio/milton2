@@ -36,7 +36,7 @@
         <dependency>
             <groupId>io.milton</groupId>
             <artifactId>aspirin</artifactId>
-            <version>0.10.03.03</version>
+            <version>0.10.03.04</version>
         </dependency>
 <!--
 		<dependency>
