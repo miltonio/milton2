@@ -23,10 +23,12 @@ import io.milton.annotations.ChildrenOf;
 import io.milton.annotations.ContactData;
 import io.milton.annotations.Get;
 import io.milton.annotations.ModifiedDate;
+import io.milton.annotations.PrincipalSearch;
 import io.milton.annotations.PutChild;
 import io.milton.annotations.ResourceController;
 import io.milton.common.ModelAndView;
 import io.milton.http.exceptions.BadRequestException;
+import io.milton.principal.PrincipalSearchCriteria;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -47,7 +49,12 @@ import net.sourceforge.cardme.vcard.types.NameType;
 import net.sourceforge.cardme.vcard.types.TelephoneType;
 import net.sourceforge.cardme.vcard.types.UIDType;
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.Criteria;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Disjunction;
+import org.hibernate.criterion.Junction;
+import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,6 +88,48 @@ public class ContactsController {
         return list;
     }
 
+    @PrincipalSearch
+    public List<MusicianContact> searchMusicianContacts(MusicianAddressBook addressBook, PrincipalSearchCriteria crit) {
+        if( crit.getCuType().equals(PrincipalSearchCriteria.CU_TYPE_INDIVIDUAL) ) {
+            Criteria c = SessionManager.session().createCriteria(MusicianContact.class);
+            
+            Junction combine;
+            if( crit.getTest().equals(PrincipalSearchCriteria.TestType.ALL)) {
+                combine = Restrictions.disjunction();
+            } else {
+                combine = Restrictions.conjunction();
+            }            
+            
+            for( PrincipalSearchCriteria.SearchItem searchItem : crit.getSearchItems()) {
+                Criterion r = newCriterion(searchItem);
+                if( r != null ) {
+                    combine.add(r);
+                }
+            }
+            c.add(combine);
+        }
+        return null;
+    }
+    
+    private Criterion newCriterion(PrincipalSearchCriteria.SearchItem searchItem) {
+        switch(searchItem.getMatchType()) {
+            case CONTAINS:
+                return Restrictions.like(searchItem.getField(), "%" + searchItem.getValue() + "%");
+                
+            case ENDSWITH:
+                return Restrictions.like(searchItem.getField(), "%" + searchItem.getValue() );
+                
+            case EXACT:
+                return Restrictions.eq(searchItem.getField(), searchItem.getValue() );
+                
+            case STARTSWITH:
+                return Restrictions.like(searchItem.getField(), searchItem.getValue() + "%");
+                
+        }
+        return null;
+    }
+    
+    
     @ContactData
     @Get
     public byte[] getContactData(MusicianContact c) {
@@ -214,6 +263,7 @@ public class ContactsController {
     public ModelAndView renderAddressBookPage(MusicianAddressBook addressBook) {
         return new ModelAndView("addressBook", addressBook, "abook");
     }
+
 
     public class MusicianContact {
 
