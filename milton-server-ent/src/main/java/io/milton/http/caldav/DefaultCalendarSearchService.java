@@ -27,12 +27,19 @@ import io.milton.resource.ICalResource;
 import io.milton.resource.Resource;
 import io.milton.resource.SchedulingResponseItem;
 import java.io.IOException;
+import java.io.StringReader;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.data.ParserException;
+import net.fortuna.ical4j.model.Calendar;
+import net.fortuna.ical4j.model.PropertyList;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +66,7 @@ public class DefaultCalendarSearchService implements CalendarSearchService {
     }
 
     @Override
-    public List<ICalResource> findCalendarResources(CalendarResource calendar, Date start, Date end) throws NotAuthorizedException, BadRequestException {
+    public List<ICalResource> findCalendarResources(CalendarResource calendar, Date start, Date end, AbstractMap.SimpleImmutableEntry<String, String> propFilter) throws NotAuthorizedException, BadRequestException {
         // build a list of all calendar resources
         List<ICalResource> list = new ArrayList<ICalResource>();
         for (Resource r : calendar.getChildren()) {
@@ -77,6 +84,25 @@ public class DefaultCalendarSearchService implements CalendarSearchService {
                 log.info("Not in range: " + r.getName());
                 it.remove();
             }
+
+			StringReader sin = new StringReader(r.getICalData());
+			CalendarBuilder builder = new CalendarBuilder();
+			Calendar cal = null;
+
+			try {
+				cal = builder.build(sin);
+			} catch(IOException e) {
+				log.error("Exception building calendar from ics", e);
+			} catch(ParserException e) {
+				log.error("Unable to parse ics", e);
+			}
+
+			if (propFilter != null) {
+				if (!cal.getComponent("VEVENT").getProperty(propFilter.getKey()).getValue().equals(propFilter.getValue())) {
+					log.info("Event do not match properties filter");
+					it.remove();
+				}
+			}
         }
         return list;
 
@@ -305,7 +331,7 @@ public class DefaultCalendarSearchService implements CalendarSearchService {
                 for (Resource rColCal : calHome.getChildren()) {
                     if (rColCal instanceof CalendarResource) {
                         CalendarResource cal = (CalendarResource) rColCal;
-                        List<ICalResource> eventsInRange = findCalendarResources(cal, start, finish);
+                        List<ICalResource> eventsInRange = findCalendarResources(cal, start, finish, null);
                         if (log.isTraceEnabled()) {
                             log.trace("Process calendar: " + cal.getName() + " events in range=" + eventsInRange.size());
                             log.trace("  range= " + start + " - " + finish);

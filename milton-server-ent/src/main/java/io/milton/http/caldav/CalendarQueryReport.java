@@ -20,11 +20,15 @@ import io.milton.resource.CalendarResource;
 import io.milton.resource.ICalResource;
 import io.milton.http.report.ReportUtils;
 import io.milton.resource.Resource;
+
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import javax.xml.namespace.QName;
+
+import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Namespace;
@@ -103,12 +107,21 @@ public class CalendarQueryReport implements QualifiedReport {
     private List<ICalResource> findCalendarResources(CalendarResource calendar, Document doc) throws NotAuthorizedException, BadRequestException {
         Date start;
         Date end;
+        AbstractMap.SimpleImmutableEntry<String, String> propFilter = null;
 
         Element elFilterRoot = doc.getRootElement().getChild("filter", NS_CAL);
         if (elFilterRoot == null) {
             start = null;
             end = null;
         } else {
+        	Element elPropFilter = ReportUtils.findRecursively(elFilterRoot, "prop-filter");
+
+			if (elPropFilter != null) {
+				Element elTextMatch = ReportUtils.find( elPropFilter, "text-match", this.NS_CAL );
+				String filterAttr = ((Attribute)elPropFilter.getAttributes().get(0) ).getValue();
+				propFilter = new AbstractMap.SimpleImmutableEntry<String, String>(filterAttr, elTextMatch.getText());
+			}
+
             Element elTimeRange = ReportUtils.find(elFilterRoot, "time-range", NS_CAL);
 
             if (elTimeRange == null) {
@@ -141,7 +154,7 @@ public class CalendarQueryReport implements QualifiedReport {
             }
         }
         log.info("Search calendar resources. Start=" + start + " End:" + end);
-        return calendarSearchService.findCalendarResources(calendar, start, end);
+        return calendarSearchService.findCalendarResources(calendar, start, end, propFilter);
 
     }
 
