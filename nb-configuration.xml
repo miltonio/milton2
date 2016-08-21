@@ -23,4 +23,9 @@ Any value defined here will override the pom.xml file value but is only applicab
         <org-netbeans-modules-editor-indent.text.x-fortran.CodeStyle.project.text-limit-width>132</org-netbeans-modules-editor-indent.text.x-fortran.CodeStyle.project.text-limit-width>
         <netbeans.compile.on.save>none</netbeans.compile.on.save>
     </properties>
+    <config-data xmlns="http://www.netbeans.org/ns/maven-config-data/1">
+        <configurations>
+            <configuration id="milton-bintray" profiles="milton-bintray"/>
+        </configurations>
+    </config-data>
 </project-shared-configuration>

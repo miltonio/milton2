@@ -25,6 +25,9 @@ import java.util.List;
  */
 public class PrincipalSearchCriteria {
 
+    public static final String CU_TYPE_INDIVIDUAL = "INDIVIDUAL";
+    public static final String CU_TYPE_GROUP = "GROUP";
+    
     public enum TestType
     {
         ANY("anyof"),
@@ -103,6 +106,8 @@ public class PrincipalSearchCriteria {
     }
 
     /**
+     * This is INDIVIDUAL or GROUP
+     * 
      * @return the cuType
      */
     public String getCuType() {
