@@ -48,6 +48,7 @@ import io.milton.annotations.ModifiedDate;
 import io.milton.annotations.Move;
 import io.milton.annotations.Name;
 import io.milton.annotations.Post;
+import io.milton.annotations.PrincipalSearch;
 import io.milton.annotations.PutChild;
 import io.milton.annotations.Realm;
 import io.milton.annotations.Root;
@@ -138,6 +139,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	CalendarsAnnotationHandler calendarsAnnotationHandler = new CalendarsAnnotationHandler(this);
 	AddressBooksAnnotationHandler addressBooksAnnotationHandler = new AddressBooksAnnotationHandler(this);
 	ContactDataAnnotationHandler contactDataAnnotationHandler = new ContactDataAnnotationHandler(this);
+	PrincipalSearchAnnotationHandler principalSearchAnnotationHandler = new PrincipalSearchAnnotationHandler(this);
 	CommonPropertyAnnotationHandler<String> nameAnnotationHandler = new CommonPropertyAnnotationHandler(Name.class, this, "name", "fileName");
 	CommonPropertyAnnotationHandler<String> emailAnnotationHandler = new CommonPropertyAnnotationHandler(Email.class, this, "email");
 	CommonPropertyAnnotationHandler<SupportedCalendarComponentListsSet> supportedComponentSets = new CommonPropertyAnnotationHandler(SupportedComponentSets.class, this, "supportedComponentSets");
@@ -194,6 +196,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		mapOfAnnotationHandlers.put(CalendarOrder.class, calendarOrderAnnotationHandler);
 		mapOfAnnotationHandlers.put(CalendarUserType.class, calendarUserTypeAnnotationHandler);		
 		mapOfAnnotationHandlers.put(ContactData.class, contactDataAnnotationHandler);
+		mapOfAnnotationHandlers.put(PrincipalSearch.class, principalSearchAnnotationHandler);		
 
 		mapOfAnnotationHandlers.put(CalendarDateRangeQuery.class, calendarDateRangeQueryAnnotationHandler);
 		mapOfAnnotationHandlers.put(FreeBusyQuery.class, freeBusyQueryAnnotationHandler);

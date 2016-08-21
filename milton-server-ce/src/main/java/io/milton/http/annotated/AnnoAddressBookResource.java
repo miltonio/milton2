@@ -17,9 +17,14 @@
 package io.milton.http.annotated;
 
 import io.milton.common.InternationalizedString;
+import io.milton.http.exceptions.BadRequestException;
+import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.values.AddressDataTypeList;
 import io.milton.http.values.Pair;
+import io.milton.principal.PrincipalSearchCriteria;
+import io.milton.resource.AddressBookQuerySearchableResource;
 import io.milton.resource.AddressBookResource;
+import io.milton.resource.Resource;
 import java.util.List;
 import java.util.Locale;
 
@@ -27,7 +32,7 @@ import java.util.Locale;
  *
  * @author brad
  */
-public class AnnoAddressBookResource extends AnnoCollectionResource implements AddressBookResource{
+public class AnnoAddressBookResource extends AnnoCollectionResource implements AddressBookResource, AddressBookQuerySearchableResource{
 
 	public AnnoAddressBookResource(AnnotationResourceFactory outer, Object source, AnnoCollectionResource parent) {
 		super(outer, source, parent);
@@ -66,6 +71,11 @@ public class AnnoAddressBookResource extends AnnoCollectionResource implements A
 	@Override
 	public Long getMaxResourceSize() {
 		return 102400L;
+	}
+
+	@Override
+	public List<? extends Resource> getChildren(PrincipalSearchCriteria crit) throws NotAuthorizedException, BadRequestException {
+		return annoFactory.principalSearchAnnotationHandler.execute(this, crit);
 	}
 
 }
