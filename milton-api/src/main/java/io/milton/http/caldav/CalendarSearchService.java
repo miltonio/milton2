@@ -47,51 +47,54 @@ public interface CalendarSearchService {
      */
     List<SchedulingResponseItem> queryFreeBusy(CalDavPrincipal principal, String iCalText);
 
+    List<ICalResource> findCalendarResources(CalendarResource calendar, Date start, Date finish) throws NotAuthorizedException, BadRequestException;
+
     List<ICalResource> findCalendarResources(CalendarResource calendar, Date start, Date finish, AbstractMap.SimpleImmutableEntry<String, String> propFilter) throws NotAuthorizedException, BadRequestException;
 
     /**
      * Return a list of events which represent invitations for the given user
-     * 
+     *
      * @param attendee
      * @return
      * @throws NotAuthorizedException
-     * @throws BadRequestException 
+     * @throws BadRequestException
      */
     List<ICalResource> findAttendeeResources(CalDavPrincipal attendee) throws NotAuthorizedException, BadRequestException;
 
     /**
-     * Return a CTag which represents the state of all events which repreent invitations for the given user
-     * 
+     * Return a CTag which represents the state of all events which repreent
+     * invitations for the given user
+     *
      * @param attendee
      * @return
      * @throws NotAuthorizedException
-     * @throws BadRequestException 
+     * @throws BadRequestException
      */
     String findAttendeeResourcesCTag(CalDavPrincipal attendee) throws NotAuthorizedException, BadRequestException;
-    
+
     /**
      * Returns the name of the collection which contains scheduling collections
      * such as inbox and outbox:
-     * 
-     * Eg For scheduling inbox href like /users/joe/scheduling/inbox this would return scheuduling
-     * 
-     * @return 
+     *
+     * Eg For scheduling inbox href like /users/joe/scheduling/inbox this would
+     * return scheuduling
+     *
+     * @return
      */
     String getSchedulingColName();
-    
+
     /**
      * Returns the name of the scheduling inbox collection, eg 'inbox'
-     * 
-     * @return 
+     *
+     * @return
      */
     String getSchedulingInboxColName();
-    
+
     /**
      * Returns the name of the scheduling outbox collection, eg 'outbox'
-     * 
-     * @return 
+     *
+     * @return
      */
     String getSchedulingOutboxColName();
-    
 
 }

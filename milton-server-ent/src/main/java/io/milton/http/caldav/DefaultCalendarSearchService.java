@@ -66,6 +66,11 @@ public class DefaultCalendarSearchService implements CalendarSearchService {
     }
 
     @Override
+    public List<ICalResource> findCalendarResources(CalendarResource calendar, Date start, Date end) throws NotAuthorizedException, BadRequestException {
+        return findCalendarResources(calendar, start, end, null);
+    }
+    
+    @Override
     public List<ICalResource> findCalendarResources(CalendarResource calendar, Date start, Date end, AbstractMap.SimpleImmutableEntry<String, String> propFilter) throws NotAuthorizedException, BadRequestException {
         // build a list of all calendar resources
         List<ICalResource> list = new ArrayList<ICalResource>();

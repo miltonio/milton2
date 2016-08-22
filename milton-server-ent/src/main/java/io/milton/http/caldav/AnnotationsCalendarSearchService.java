@@ -56,6 +56,11 @@ public class AnnotationsCalendarSearchService implements CalendarSearchService {
     }
 
     @Override
+    public List<ICalResource> findCalendarResources(CalendarResource calendar, Date start, Date finish) throws NotAuthorizedException, BadRequestException {
+        return findCalendarResources(calendar, start, finish, null);
+    }
+    
+    @Override
     public List<ICalResource> findCalendarResources(CalendarResource calendar, Date start, Date finish, AbstractMap.SimpleImmutableEntry<String, String> propFilter) throws NotAuthorizedException, BadRequestException {
         List<ICalResource> results = null;
         if (calendar instanceof AnnoCalendarResource) {
