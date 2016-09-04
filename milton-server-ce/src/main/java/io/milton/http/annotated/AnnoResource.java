@@ -211,10 +211,8 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 			oUser = auth.getTag();
 		}
 
-
-
 		// only check ACL if current user is null (ie guest) or the current user is an AnnoPrincipal
-		if ( !annoFactory.accessControlListAnnotationHandler.getControllerMethods().isEmpty()) {
+		if (!annoFactory.accessControlListAnnotationHandler.getControllerMethods().isEmpty()) {
 			if (acl == null) {
 				if (log.isDebugEnabled()) {
 					if (oUser != null) {
@@ -225,7 +223,7 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 				}
 
 				acl = annoFactory.accessControlListAnnotationHandler.availablePrivs(oUser, this, auth);
-				if( acl == null ) {
+				if (acl == null) {
 					log.info("authorise: got a null access control list");
 				}
 			}
@@ -245,7 +243,11 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 					} else {
 						log.info("Authorisation declined for anonymous access");
 					}
-					log.info("Required priviledge: " + requiredPriv + " was not found in assigned priviledge list of size: " + acl.size());
+					if (acl != null) {
+						log.info("Required priviledge: " + requiredPriv + " was not found in assigned priviledge list of size: " + acl.size());
+					} else {
+						log.info("Null ACL list");
+					}
 				}
 			}
 			return allows;
@@ -405,7 +407,7 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 	private boolean matchesType(Class c, String type) {
 		String name = c.getCanonicalName();
 		int pos = name.lastIndexOf(".");
-		name = name.substring(pos+1);
+		name = name.substring(pos + 1);
 		if (name.equalsIgnoreCase(type)) {
 			return true;
 		}
@@ -441,8 +443,6 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 	public void setDisplayName(String s) {
 		annoFactory.displayNameSetterAnnotationHandler.executeWrite(this, s);
 	}
-
-
 
 	@Override
 	public LockResult lock(LockTimeout timeout, LockInfo lockInfo) throws NotAuthorizedException, PreConditionFailedException, LockedException {
@@ -523,6 +523,5 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 		}
 		return null;
 	}
-
 
 }
