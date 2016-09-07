@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
 public class MusiciansController {
 
     private static final Logger log = LoggerFactory.getLogger(MusiciansController.class);
-    
+
     @ChildrenOf
     public MusiciansController getMusiciansRoot(RootController root) {
         return this;
@@ -65,23 +65,23 @@ public class MusiciansController {
         System.out.println("musicians=" + list.size());
         return list;
     }
-    
+
     @ChildOf
     @Users
     public Musician findMusicianByName(MusiciansController root, String name) {
         return Musician.find(name, SessionManager.session());
     }
-            
-    
+
+
     @Get(contentType="application/json")
     public JsonResult renderMusicianJson(Musician musician) throws UnsupportedEncodingException {
         return JsonResult.returnData(musician);
-    }  
-    
+    }
+
     @Get
     public ModelAndView renderMusicianPage(Musician musician) throws UnsupportedEncodingException {
-        return new ModelAndView("musician", musician, "musicianPage"); 
-    }    
+        return new ModelAndView("musician", musician, "musicianPage");
+    }
 
     @Post(bindData=true)
     public Musician saveMusician(Musician musician) {
@@ -97,32 +97,32 @@ public class MusiciansController {
         log.info("saved musician");
         return musician;
     }
-    
+
     @Get(params={"editMode"})
     public ModelAndView renderMusicianEditPage(Musician musician) throws UnsupportedEncodingException {
-        return new ModelAndView("musician", musician, "musicianEditPage"); 
-    }        
-    
+        return new ModelAndView("musician", musician, "musicianEditPage");
+    }
+
     @Authenticate
     public String getMusicianPassword(Musician m) {
         System.out.println("Authenticate: " + m.getName());
         return m.getPassword(); // The @Authenticate also allows methods which verify a password and return Boolean
     }
-    
+
     @AccessControlList
-    public List<AccessControlledResource.Priviledge> getMusicianPrivs(Musician target, Musician currentUser) {
+    public List<AccessControlledResource.Priviledge> getMusicianPrivs(Musician target, Object currentUser) {
         System.out.println("getMusicianPrivs: " + currentUser);
-        if( target == currentUser ) {
+        if( currentUser instanceof String || target == currentUser ) { // a string indicates a user loaded from the default config, which we consider a sys admin
             return AccessControlledResource.READ_WRITE;
         } else {
             // This prevents read access to each others calendars
-            return null;
-            
+            return AccessControlledResource.NONE;
+
             // This gives read access to each others calendars
             //return AccessControlledResource.READ_CONTENT;
         }
     }
-    
+
     @Name
     public String getMusiciansRootName(MusiciansController musiciansRoot) {
         return "musicians";
@@ -152,15 +152,15 @@ public class MusiciansController {
         tx.commit();
         return m;
     }
-    
+
     @ChildOf(pathSuffix="new")
     public Musician createNewMusician(MusiciansController root) {
         Musician m = new Musician();
         m.setCreatedDate(new Date());
         m.setModifiedDate(new Date());
         return m;
-    }    
-    
+    }
+
     @Delete
     public void deleteMusician(Musician musician) {
         Transaction tx = SessionManager.session().beginTransaction();
@@ -171,11 +171,11 @@ public class MusiciansController {
         }
         SessionManager.session().delete(musician);
         SessionManager.session().flush();
-        tx.commit();        
+        tx.commit();
     }
-    
+
     @PutChild
     public Gig uploadSomething(Musician m, String name, byte[] arr) throws IOException, ParserException {
         throw new RuntimeException("Not really supported");
-    }    
+    }
 }
