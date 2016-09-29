@@ -67,7 +67,7 @@ public class PutChildAnnotationHandler extends AbstractAnnotationHandler {
 		}
 	}
 
-	public void replace(AnnoFileResource fileRes, InputStream inputStream, Long length) throws ConflictException, NotAuthorizedException, BadRequestException {
+	public Object replace(AnnoFileResource fileRes, InputStream inputStream, Long length) throws ConflictException, NotAuthorizedException, BadRequestException {
 		log.trace("execute PUT (replace) method");
 		Object source = fileRes.getSource();
 		ControllerMethod cm = getBestMethod(source.getClass());
@@ -75,11 +75,11 @@ public class PutChildAnnotationHandler extends AbstractAnnotationHandler {
 			// ok, cant replace. Maybe we can delete and PUT?
 			String name = fileRes.getName();
 			annoResourceFactory.deleteAnnotationHandler.execute(fileRes);
-			execute(fileRes.getParent(), name, inputStream, length, null);
+			return execute(fileRes.getParent(), name, inputStream, length, null);
 
 		} else {
 			try {
-				invoke(cm, fileRes, inputStream, length, fileRes);
+                return invoke(cm, fileRes, inputStream, length, fileRes);
 			} catch (NotAuthorizedException e) {
 				throw e;
 			} catch (BadRequestException e) {
