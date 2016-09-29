@@ -52,7 +52,12 @@ public class RootController {
     }
 
     @AccessControlList
-    public List<AccessControlledResource.Priviledge> getMusicianPrivs(RootController target, Musician currentUser) {
-        return AccessControlledResource.READ_CONTENT;
+    public List<AccessControlledResource.Priviledge> getMusicianPrivs(RootController target, Object currentUser) {
+        if (currentUser != null) {
+            return AccessControlledResource.READ_CONTENT;
+        }
+        return AccessControlledResource.NONE;
     }
+
+
 }

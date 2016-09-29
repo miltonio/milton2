@@ -35,6 +35,14 @@
     </build>
 
     <repositories>
+		<repository>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>bintray-milton-Milton</id>
+			<name>bintray</name>
+			<url>http://dl.bintray.com/milton/Milton</url>
+		</repository>
         <repository>
             <id>ettrema-repo</id>
             <url>http://milton.io/maven/</url>

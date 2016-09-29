@@ -80,7 +80,7 @@ public class AccessControlListAnnotationHandler extends AbstractAnnotationHandle
 	}
 
 	public Set<AccessControlledResource.Priviledge> directPrivs(Object curUser, AnnoResource res, Auth auth) {
-		Set<AccessControlledResource.Priviledge> acl =  EnumSet.noneOf(AccessControlledResource.Priviledge.class);
+		Set<AccessControlledResource.Priviledge> acl = EnumSet.noneOf(AccessControlledResource.Priviledge.class);
 		Object source = res.getSource();
 		List<ControllerMethod> availMethods = getMethods(source.getClass());
 		if (availMethods.isEmpty()) {
@@ -101,13 +101,26 @@ public class AccessControlListAnnotationHandler extends AbstractAnnotationHandle
 	private void addPrivsFromMethod(java.lang.reflect.Method method, Object target, Set<AccessControlledResource.Priviledge> acl, Object curUser, AnnoResource res, Auth auth) throws Exception {
 		Object currentUserSource = null;
 		if (curUser != null) {
-			if( curUser instanceof AnnoResource) {
+			if (curUser instanceof AnnoResource) {
 				AnnoResource ar = (AnnoResource) curUser;
 				currentUserSource = ar.getSource();
 			} else {
 				currentUserSource = curUser;
 			}
 		}
+
+		// Check that currentUserSource is compatible with the 2nd arg of the method
+		if (method.getParameterTypes().length < 2) {
+			return;
+		}
+		if (currentUserSource != null) {
+			Class<?> pt = method.getParameterTypes()[1];
+			if (!pt.isAssignableFrom(currentUserSource.getClass())) {
+				log.info("ACL method second arg {} is not assignable from current user type {}", pt, currentUserSource.getClass());
+				return;
+			}
+		}
+
 		Object[] args = annoResourceFactory.buildInvokeArgsExt(res, currentUserSource, true, method, curUser, res, auth);
 
 		Object result = method.invoke(target, args);
@@ -136,11 +149,11 @@ public class AccessControlListAnnotationHandler extends AbstractAnnotationHandle
 				p = Priviledge.READ_CONTENT;
 			}
 			return p;
-		} else if( httpMethod == Method.ACL) {
+		} else if (httpMethod == Method.ACL) {
 			return Priviledge.READ_ACL;
-		} else if( httpMethod == Method.UNLOCK) {
+		} else if (httpMethod == Method.UNLOCK) {
 			return Priviledge.UNLOCK;
-		} else if( httpMethod == Method.PROPFIND) {
+		} else if (httpMethod == Method.PROPFIND) {
 			return Priviledge.READ_PROPERTIES;
 		} else if (httpMethod.isWrite) {
 			return Priviledge.WRITE_CONTENT;

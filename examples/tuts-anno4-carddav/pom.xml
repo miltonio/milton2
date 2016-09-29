@@ -2,6 +2,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.milton.tuts</groupId>
+    <parent>
+        <groupId>io.milton</groupId>
+        <artifactId>milton</artifactId>
+        <version>2.7.2.0</version>
+    </parent>
     <artifactId>tuts-anno4-carddav</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>war</packaging>
@@ -36,14 +41,6 @@
             </plugin>
         </plugins>
     </build>
-
-    <repositories>
-        <repository>
-            <id>milton-repo</id>
-            <url>http://milton.io/maven/</url>
-        </repository>
-    </repositories>
-
 
     <dependencies>
         <dependency>
