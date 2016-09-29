@@ -58,6 +58,9 @@ public class OptionsHandler implements ResourceHandler {
      * Creates an OptionHandler with no authorization
      * 
      * @param responseHandler
+	 * @param resourceHandlerHelper
+	 * @param handlerHelper
+	 * @param enableAuthorisation
      */
     public OptionsHandler( Http11ResponseHandler responseHandler, ResourceHandlerHelper resourceHandlerHelper, HandlerHelper handlerHelper, boolean enableAuthorisation ) {
         this.responseHandler = responseHandler;
