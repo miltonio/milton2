@@ -11,12 +11,6 @@
 		<connection>scm:git:git@github.com:miltonio/milton2.git</connection>
 	</scm>
 	<distributionManagement>
-		<!--
-		<repository>
-			<id>ettrema-repo</id>
-			<url>http://milton.io/maven/</url>
-		</repository>
-		-->
 		<repository>
 			<id>bintray-milton-Milton</id>
 			<name>milton-Milton</name>
