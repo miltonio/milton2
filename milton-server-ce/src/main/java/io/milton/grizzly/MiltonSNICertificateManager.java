@@ -29,7 +29,6 @@ import org.apache.commons.lang.StringUtils;
 import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ConfigurableApplicationContext;
 
 /**
  * a Certificate Manager providing the certificates and PrivateKey which located
@@ -51,7 +50,7 @@ public class MiltonSNICertificateManager {
     private final MiltonSNICertificateStoreSpi keyStoreSpi;
     private final MiltonSNICertificateStore certificateStore;
 
-    public MiltonSNICertificateManager(ConfigurableApplicationContext ctx, MiltonSNICertificateStore store) {
+    public MiltonSNICertificateManager( MiltonSNICertificateStore store) {
         this.certificateStore = store;
         this.keyStoreSpi = new MiltonSNICertificateStoreSpi(this.certificateStore);
         this.primaryDomain = getPropertyOrDefault("secure.primary_domain", "localhost");

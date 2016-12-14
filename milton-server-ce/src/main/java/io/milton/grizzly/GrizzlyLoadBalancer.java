@@ -122,7 +122,7 @@ public class GrizzlyLoadBalancer {
 
 		{   // Start the Kademi SNI SSL service
 			MiltonSNICertificateStore store = null; // TODO: allow injection
-			MiltonSNICertificateManager sniCerManager = new MiltonSNICertificateManager(ctx, store);
+			MiltonSNICertificateManager sniCerManager = new MiltonSNICertificateManager(store);
 			SSLEngineConfigurator sniConfig = sniCerManager.createEngineConfigurator();
 			this.kademiSNIService = new MiltonSNIService(secureHttpPort, sniConfig);
 
