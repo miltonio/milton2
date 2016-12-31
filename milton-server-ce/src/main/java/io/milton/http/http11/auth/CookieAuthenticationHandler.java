@@ -228,6 +228,10 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 		}
 
 		Response response = HttpManager.response();
+		if( response == null ) {
+			log.trace("setLoginCookies: No response object");
+			return ;
+		}
 		String signing = getUrlSigningHash(userUrl, request);
 		String sKeepLoggedIn = null;
 		if (request.getParams() != null) {
