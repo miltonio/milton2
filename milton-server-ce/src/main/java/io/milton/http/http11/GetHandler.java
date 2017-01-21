@@ -78,7 +78,7 @@ public class GetHandler implements ExistingEntityHandler {
 				log.trace("respond not modified with: " + responseHandler.getClass().getCanonicalName());
 			}
 			responseHandler.respondNotModified(r, response, request);
-			return; 
+			return;
 		}
 
 		sendContent(manager, request, response, r, request.getParams());
@@ -114,7 +114,7 @@ public class GetHandler implements ExistingEntityHandler {
 		return false;   // TODO: not implemented
 	}
 
-	
+
 	/**
 	 *
 	 * @param resource
@@ -226,7 +226,7 @@ public class GetHandler implements ExistingEntityHandler {
 		} catch (BadRequestException badRequestException) {
 			throw badRequestException;
 		} catch (Throwable e) {
-			log.error("Exception sending content for:" + request.getAbsolutePath() + " of resource type: " + resource.getClass().getCanonicalName());
+			log.error("Exception sending content for:" + request.getAbsolutePath() + " of resource type: " + resource.getClass().getCanonicalName(), e);
 			throw new RuntimeException(e);
 		}
 	}
