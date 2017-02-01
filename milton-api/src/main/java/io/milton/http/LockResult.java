@@ -27,7 +27,7 @@ import java.io.Serializable;
 public class LockResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    
+
     public static LockResult failed( FailureReason failureReason) {
         return new LockResult(failureReason, null);
     }
@@ -37,7 +37,7 @@ public class LockResult implements Serializable {
     }
 
     public enum FailureReason {
-        ALREADY_LOCKED(Response.Status.SC_CONFLICT),
+        ALREADY_LOCKED(Response.Status.SC_LOCKED),
         PRECONDITION_FAILED(Response.Status.SC_LOCKED);
 
         public Response.Status status;
@@ -67,5 +67,5 @@ public class LockResult implements Serializable {
         return lockToken;
     }
 
-    
+
 }
