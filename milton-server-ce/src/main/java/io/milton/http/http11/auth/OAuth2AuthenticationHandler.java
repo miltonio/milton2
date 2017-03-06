@@ -15,6 +15,8 @@
  */
 package io.milton.http.http11.auth;
 
+import io.milton.http.Auth;
+import io.milton.http.Auth.Scheme;
 import io.milton.http.AuthenticationHandler;
 import io.milton.http.Request;
 import io.milton.http.exceptions.BadRequestException;
@@ -86,6 +88,12 @@ public class OAuth2AuthenticationHandler implements AuthenticationHandler {
 		}
 		String oAuth2Code = request.getParams().get(OAuth.OAUTH_CODE);
 		String oAuth2AccessToken = request.getParams().get(OAuth.OAUTH_ACCESS_TOKEN);
+		if (StringUtils.isBlank(oAuth2AccessToken)) {
+			Auth auth = request.getAuthorization();
+			if (auth != null && auth.getScheme().equals(Scheme.BEARER)) {
+				oAuth2AccessToken = auth.getUser();
+			}
+		}
 		if (StringUtils.isBlank(oAuth2Code) && StringUtils.isBlank(oAuth2AccessToken)) {
 			return false;
 		}
