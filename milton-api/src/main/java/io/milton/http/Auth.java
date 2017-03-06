@@ -19,11 +19,8 @@
 package io.milton.http;
 
 import io.milton.common.StringSplitUtils;
-
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.Map;
-
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -121,6 +118,8 @@ public class Auth {
                 parseBasic(enc);
             } else if (scheme.equals(Scheme.DIGEST)) {
                 parseDigest(enc);
+            } else if (scheme.equals(Scheme.BEARER)) {
+                parseBearer(enc);
             }
         }
     }
@@ -249,6 +248,10 @@ public class Auth {
         qop = (String) headerMap.get("qop"); // RFC 2617 extension
         nc = (String) headerMap.get("nc"); // RFC 2617 extension
         cnonce = (String) headerMap.get("cnonce"); // RFC 2617 extension
+    }
+
+    private void parseBearer(String enc) {
+        user = enc;
     }
 
     @Override
