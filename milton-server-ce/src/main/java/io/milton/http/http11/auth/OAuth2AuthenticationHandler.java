@@ -15,6 +15,8 @@
  */
 package io.milton.http.http11.auth;
 
+import io.milton.http.Auth;
+import io.milton.http.Auth.Scheme;
 import io.milton.http.AuthenticationHandler;
 import io.milton.http.Request;
 import io.milton.http.exceptions.BadRequestException;
@@ -62,8 +64,6 @@ public class OAuth2AuthenticationHandler implements AuthenticationHandler {
 		return (String) r.getAttributes().get(REQ_ATT_OAUTH_JSON);
 	}
 
-
-
 	private final NonceProvider nonceProvider;
 	private final OAuth2Helper oAuth2Helper;
 
@@ -87,7 +87,14 @@ public class OAuth2AuthenticationHandler implements AuthenticationHandler {
 			return false;
 		}
 		String oAuth2Code = request.getParams().get(OAuth.OAUTH_CODE);
-		if (StringUtils.isBlank(oAuth2Code)) {
+		String oAuth2AccessToken = request.getParams().get(OAuth.OAUTH_ACCESS_TOKEN);
+		if (StringUtils.isBlank(oAuth2AccessToken)) {
+			Auth auth = request.getAuthorization();
+			if (auth != null && auth.getScheme().equals(Scheme.BEARER)) {
+				oAuth2AccessToken = auth.getUser();
+			}
+		}
+		if (StringUtils.isBlank(oAuth2Code) && StringUtils.isBlank(oAuth2AccessToken)) {
 			return false;
 		}
 
@@ -95,7 +102,14 @@ public class OAuth2AuthenticationHandler implements AuthenticationHandler {
 			if (r instanceof OAuth2Resource) {
 				OAuth2Resource oAuth2Resource = (OAuth2Resource) r;
 				log.info("This is a OAuth2Resource {} ", oAuth2Resource);
-				OAuth2Resource.OAuth2ProfileDetails oAuth2TokenUser = parse(oAuth2Resource, request);
+				OAuth2Resource.OAuth2ProfileDetails oAuth2TokenUser = null;
+
+				if (StringUtils.isNotBlank(oAuth2Code)) {
+					oAuth2TokenUser = parse(oAuth2Resource, request);
+				} else {
+					oAuth2TokenUser = new OAuth2ProfileDetails();
+					oAuth2TokenUser.setAccessToken(oAuth2AccessToken);
+				}
 
 				if (oAuth2TokenUser == null) {
 					log.warn("Failed to convert oauth2 response to profile");
@@ -105,7 +119,7 @@ public class OAuth2AuthenticationHandler implements AuthenticationHandler {
 				request.getAttributes().put(REQ_ATT_OAUTH_DETAILS, oAuth2TokenUser);
 
 				Object localUser = oAuth2Resource.authenticate(oAuth2TokenUser);
-				if( localUser == null ) {
+				if (localUser == null) {
 					log.info("No local user, cannot authenticate");
 					return false;
 				}
@@ -158,7 +172,10 @@ public class OAuth2AuthenticationHandler implements AuthenticationHandler {
 				log.warn("Could not authenticate oauth2 response because there is no provider ID parameter in the state parameter");
 				return null;
 			}
-			OAuth2Provider prov = oAuth2Resource.getOAuth2Providers().get(provId);
+			OAuth2Provider prov = null;
+			if (oAuth2Resource.getOAuth2Providers() != null) {
+				prov = oAuth2Resource.getOAuth2Providers().get(provId);
+			}
 			if (prov == null) {
 				log.warn("Could not authenticate oauth2 response because couldnt find provider: " + provId);
 				return null;
