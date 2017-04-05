@@ -47,6 +47,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 	private final String requestParamLogout = "miltonLogout";
 	private final String cookieUserUrlValue = "miltonUserUrl";
 	private final String cookieUserUrlHash = "miltonUserUrlHash";
+	private final String loginTokenName = "loginToken";
 	private final List<AuthenticationHandler> handlers;
 	private final ResourceFactory principalResourceFactory;
 	private final NonceProvider nonceProvider;
@@ -102,11 +103,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 		}
 
 		String userUrl = getUserUrl(request);
-		if (userUrl != null) {
-			return true;
-		} else {
-			return false;
-		}
+		return userUrl != null;
 	}
 
 	@Override
@@ -116,7 +113,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 		List<AuthenticationHandler> supportingHandlers = (List<AuthenticationHandler>) request.getAttributes().get(HANDLER_ATT_NAME);
 		if (supportingHandlers != null && !supportingHandlers.isEmpty()) {
 			DiscretePrincipal lastUser = null;
-			for (AuthenticationHandler delegateHandler  : supportingHandlers) {
+			for (AuthenticationHandler delegateHandler : supportingHandlers) {
 				if (log.isTraceEnabled()) {
 					log.trace("authenticate: use delegateHandler: " + delegateHandler);
 				}
@@ -128,7 +125,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 						log.trace("authenticate: authentication passed by delegated handler, persisted userUrl to cookie");
 					} else {
 						log.warn("authenticate: auth.tag is not an instance of " + DiscretePrincipal.class + ", is: " + tag.getClass() + " so is not compatible with cookie authentication");
-					// If form auth returned a non principal object then there is no way to
+						// If form auth returned a non principal object then there is no way to
 						// persist the authentication state, so subsequent requests will fail. To prevent
 						// this we disable form auth and reject the login, this will result in a Basic/Digest
 						// authentication challenge
@@ -228,9 +225,9 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 		}
 
 		Response response = HttpManager.response();
-		if( response == null ) {
+		if (response == null) {
 			log.trace("setLoginCookies: No response object");
-			return ;
+			return;
 		}
 		String signing = getUrlSigningHash(userUrl, request);
 		String sKeepLoggedIn = null;
@@ -304,6 +301,29 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 
 	public String getUserUrlFromRequest(Request request) {
 		String encodedUserUrl = getCookieOrParam(request, cookieUserUrlValue);
+
+		// See if we have it in loginToken
+		if (encodedUserUrl == null) {
+			String lt = getCookieOrParam(request, loginTokenName);
+			if (lt != null) {
+				byte[] raw = base64.fromString(lt);
+				String params = new String(raw);
+				if (params.contains("|")) {
+					String[] parts = params.split("\\|");
+
+					if (parts.length == 2) {
+						encodedUserUrl = parts[0];
+						request.getAttributes().put(cookieUserUrlHash, parts[1]);
+					} else {
+						log.warn("getUserUrlFromRequest: loginToken is invalid: {}", params);
+					}
+
+				} else {
+					log.warn("getUserUrlFromRequest: loginToken is invalid: {}", params);
+				}
+			}
+		}
+
 		if (encodedUserUrl == null) {
 			log.trace("getUserUrlFromRequest: Null encodedUserUrl");
 			return null;
@@ -337,6 +357,34 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 
 	public String getHashFromRequest(Request request) {
 		String signing = getCookieOrParam(request, cookieUserUrlHash);
+
+		if (signing == null) {
+			// See if we already got the signing hash
+			if (request.getAttributes().containsKey(cookieUserUrlHash)) {
+				signing = (String) request.getAttributes().get(cookieUserUrlHash);
+			}
+
+			if (signing == null) {
+				String lt = getCookieOrParam(request, loginTokenName);
+				if (lt != null) {
+					byte[] raw = base64.fromString(lt);
+					String params = new String(raw);
+					if (params.contains("|")) {
+						String[] parts = params.split("\\|");
+
+						if (parts.length == 2) {
+							signing = parts[1];
+						} else {
+							log.warn("getHashFromRequest: loginToken is invalid: {}", params);
+						}
+
+					} else {
+						log.warn("getHashFromRequest: loginToken is invalid: {}", params);
+					}
+				}
+			}
+		}
+
 		return signing;
 	}
 
@@ -391,19 +439,24 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 		} else {
 			// signed ok, check to see if nonce is still valid
 			NonceProvider.NonceValidity val = nonceProvider.getNonceValidity(nonce, null);
-			if (val == NonceProvider.NonceValidity.OK) {
-				return true;
-			} else if (val == NonceProvider.NonceValidity.EXPIRED) {
-				// Hopefully the nonce provider will have a time limit and only return expired
-				// for recently expired nonces. So we will accept these but replace with a refreshed nonce
-				log.warn("Nonce is valid, but expired. We will accept it but reset it");
-				setLoginCookies(userUrl, request);
-				return true;
-			} else if (val == NonceProvider.NonceValidity.INVALID) {
-				log.warn("Received an invalid nonce: " + nonce + " not found in provider: " + nonceProvider);
-				return false;
-			} else {
+			if (val == null) {
 				throw new RuntimeException("Unhandled nonce validity value");
+			} else {
+				switch (val) {
+					case OK:
+						return true;
+					case EXPIRED:
+						// Hopefully the nonce provider will have a time limit and only return expired
+						// for recently expired nonces. So we will accept these but replace with a refreshed nonce
+						log.warn("Nonce is valid, but expired. We will accept it but reset it");
+						setLoginCookies(userUrl, request);
+						return true;
+					case INVALID:
+						log.warn("Received an invalid nonce: " + nonce + " not found in provider: " + nonceProvider);
+						return false;
+					default:
+						throw new RuntimeException("Unhandled nonce validity value");
+				}
 			}
 		}
 	}
@@ -447,6 +500,21 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 			log.trace("Signing:" + signing);
 		}
 		return signing;
+	}
+
+	public String getLoginToken(String userUrl, Request request) {
+		String host = getDomain(request);
+		return getLoginToken(userUrl, request, host);
+	}
+
+	public String getLoginToken(String userUrl, Request request, String host) {
+		String hash = getUrlSigningHash(userUrl, request, host);
+		return getLoginToken(userUrl, hash);
+	}
+
+	public String getLoginToken(String userUrl, String urlSigningHash) {
+		String s = userUrl + '|' + urlSigningHash;
+		return base64.toString(s.getBytes());
 	}
 
 	private void setCookieValues(Response response, String userUrl, String hash, boolean keepLoggedIn) {
@@ -512,6 +580,10 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 
 	public String getUserUrlAttName() {
 		return userUrlAttName;
+	}
+
+	public String getLoginTokenName() {
+		return loginTokenName;
 	}
 
 	public void setUserUrlAttName(String userUrlAttName) {

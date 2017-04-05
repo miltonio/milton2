@@ -45,28 +45,26 @@ public class CookieAuthenticationHandlerTest extends TestCase {
 //		String encodedUserUrl = base64.toString(s.getBytes(Utils.UTF8));
 //		encodedUserUrl = Utils.percentEncode(encodedUserUrl);
 //		System.out.println("encoded=" + encodedUserUrl);
-//		
+//
 //		// now unenc
 //		String s2 = Utils.decodePath(encodedUserUrl);
 //		System.out.println("decoded1:" + s2);
 //		byte[] arr = base64.fromString(s2);
-//		String decoded = new String(arr);		
+//		String decoded = new String(arr);
 //		System.out.println("decoded2=" + decoded);
 //	}
-	
+
 	private final List<String> keys = Arrays.asList("abc");
-	
+
 	private final SimpleMemoryNonceProvider nonceProvider = new SimpleMemoryNonceProvider(100);
-	
+
 	private static final String nonce = "cbc86104-aaf4-455d-8937-b095a21481cf";
 
 	public CookieAuthenticationHandlerTest() {
 		UUID id = UUID.fromString(nonce);
-		nonceProvider.getNonces().put(id, new Nonce(id, new Date()) );
+		nonceProvider.getNonces().put(id, new Nonce(id, new Date()));
 	}
-	
-	
-	
+
 	public void test_GenerateHash() {
 		CookieAuthenticationHandler c = new CookieAuthenticationHandler(nonceProvider, Collections.EMPTY_LIST, null, keys);
 		String s = "/users/Reviewer/";
@@ -74,7 +72,7 @@ public class CookieAuthenticationHandlerTest extends TestCase {
 		String hash = c.getUrlSigningHash(s, request);
 		System.out.println("hash=" + hash);
 	}
-	
+
 //	public void test_ValidatePlain() {
 //		CookieAuthenticationHandler c = new CookieAuthenticationHandler(nonceProvider, Collections.EMPTY_LIST, null, keys);
 //		String s = "/users/Reviewer/";
@@ -85,26 +83,46 @@ public class CookieAuthenticationHandlerTest extends TestCase {
 //		String validatedUrl = c.getUserUrl(request);
 //		assertNotNull(validatedUrl);
 //		assertEquals(s, validatedUrl);
-//	}	
-	
-	public void xtest_ValidateBase64() {
+//	}
+	public void test_ValidateBase64() {
 		CookieAuthenticationHandler c = new CookieAuthenticationHandler(nonceProvider, Collections.EMPTY_LIST, null, keys);
 		String s = "/users/Reviewer/";
 		String encodedUserUrl = c.encodeUserUrl(s);
 		assertTrue(encodedUserUrl.startsWith("b64"));
-		String hash = "4114ce15b1843401065f9ce06ee2a635";
+
 		MockRequest request = new MockRequest();
+		String hash = c.getUrlSigningHash(s, request, request.getHostHeader());
+
 		request.params.put(c.getCookieNameUserUrl(), encodedUserUrl);
 		request.params.put(c.getCookieNameUserUrlHash(), hash);
 		String validatedUrl = c.getUserUrl(request);
 		assertNotNull(validatedUrl);
 		assertEquals(s, validatedUrl);
-	}		
-	
+	}
+
+	public void test_getUserUrlFromRequest() {
+		CookieAuthenticationHandler c = new CookieAuthenticationHandler(nonceProvider, Collections.EMPTY_LIST, null, keys);
+		String s = "/users/Reviewer/";
+		String encodedUserUrl = c.encodeUserUrl(s);
+		assertTrue(encodedUserUrl.startsWith("b64"));
+
+		MockRequest request = new MockRequest();
+		String hash = c.getUrlSigningHash(s, request, request.getHostHeader());
+
+		String loginToken = c.getLoginToken(encodedUserUrl, hash);
+
+		request.params.put(c.getLoginTokenName(), loginToken);
+		String validatedUrl = c.getUserUrl(request);
+
+		assertNotNull(validatedUrl);
+		assertEquals(s, validatedUrl);
+	}
+
 	public class MockRequest extends AbstractRequest {
-		private final Map<String,Cookie> cookies = new HashMap<String, Cookie>();
-		private final Map<String,String> headers = new HashMap<String, String>();
-		private final Map<String,String> params = new HashMap<String, String>();
+
+		private final Map<String, Cookie> cookies = new HashMap<String, Cookie>();
+		private final Map<String, String> headers = new HashMap<String, String>();
+		private final Map<String, String> params = new HashMap<String, String>();
 		private Auth auth;
 
 		@Override
@@ -117,8 +135,6 @@ public class CookieAuthenticationHandlerTest extends TestCase {
 			return "xyz.com";
 		}
 
-		
-		
 		@Override
 		public Map<String, String> getHeaders() {
 			throw new UnsupportedOperationException("Not supported yet.");
@@ -156,15 +172,13 @@ public class CookieAuthenticationHandlerTest extends TestCase {
 
 		@Override
 		public void parseRequestParameters(Map<String, String> params, Map<String, FileItem> files) throws RequestParseException {
-			
+
 		}
 
 		@Override
 		public Map<String, String> getParams() {
 			return params;
 		}
-		
-		
 
 		@Override
 		public Cookie getCookie(String name) {
@@ -180,6 +194,6 @@ public class CookieAuthenticationHandlerTest extends TestCase {
 		public String getRemoteAddr() {
 			return null;
 		}
-		
+
 	}
 }
