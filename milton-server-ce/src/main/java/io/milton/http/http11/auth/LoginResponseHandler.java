@@ -90,7 +90,13 @@ public class LoginResponseHandler extends AbstractWrappingResponseHandler {
 	 */
 	@Override
 	public void respondUnauthorised(Resource resource, Response response, Request request) {
-		log.info("respondUnauthorised");
+			log.info("respondUnauthorised");
+		String secondFactorMessage = (String) request.getAttributes().get("secondFactorMessage");
+		if(secondFactorMessage != null){
+			respondJson2FA(request, response, resource);
+			return;
+		}
+		
 		//String acceptHeader = request.getAcceptHeader();
 		Boolean disabled = (Boolean) request.getAttributes().get(ATT_DISABLE);
 		if (disabled == null || !disabled) {
@@ -203,6 +209,28 @@ public class LoginResponseHandler extends AbstractWrappingResponseHandler {
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+	}
+	
+	private void respondJson2FA(Request request, Response response, Resource resource) {
+		JSONObject json = new JSONObject();
+		Boolean loginResult = (Boolean) request.getAttributes().get("loginResult");
+		String secondFactorMessage = (String) request.getAttributes().get("secondFactorMessage");
+		json.accumulate("loginResult", loginResult);
+		json.accumulate("code2FA", secondFactorMessage);
+		response.setStatus(Response.Status.SC_UNAUTHORIZED);
+		response.setCacheControlNoCacheHeader();
+		ByteArrayOutputStream bout = new ByteArrayOutputStream();
+		try {
+			Writer pw = new OutputStreamWriter(bout, "UTF-8");
+			json.write(pw);
+			pw.flush();
+			byte[] arr = bout.toByteArray();
+			response.setContentLengthHeader((long) arr.length);
+
+			response.getOutputStream().write(arr);
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 	private void respondJson(Request request, Response response, Resource resource) {
