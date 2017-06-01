@@ -86,7 +86,9 @@ public class ResourceHandlerHelper {
 		String host = request.getHostHeader();
 		String url = urlAdapter.getUrl(request);
 		//log.debug( "find resource: path: " + url + " host: " + host );
+		long tm = System.currentTimeMillis();
 		Resource r = manager.getResourceFactory().getResource(host, url);
+		log.debug("process: found resource={} in {}ms", r, (System.currentTimeMillis()-tm));
 
 		if (r == null) {
 			// If the request is anonymous we might not want to send a 404 for a couple of reasons
