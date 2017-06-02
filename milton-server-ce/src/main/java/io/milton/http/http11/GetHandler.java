@@ -81,7 +81,10 @@ public class GetHandler implements ExistingEntityHandler {
 			return;
 		}
 
+		long tm = System.currentTimeMillis();
 		sendContent(manager, request, response, r, request.getParams());
+		tm = System.currentTimeMillis() - tm;
+		log.info("processExistingResource: resource={} processed in {}ms", resource, tm);		
 	}
 
 	/**
