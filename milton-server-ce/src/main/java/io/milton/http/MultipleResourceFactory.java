@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.milton.http;
 
 import io.milton.http.exceptions.BadRequestException;
@@ -29,76 +28,86 @@ import org.slf4j.LoggerFactory;
 public class MultipleResourceFactory implements ResourceFactory {
 
 	private final Logger log = LoggerFactory.getLogger(MultipleResourceFactory.class);
-    protected final List<ResourceFactory> factories;
-    protected Map<String, ResourceFactory> mapOfFactoriesByHost;
-	
-    public MultipleResourceFactory() {
-        factories = new ArrayList<ResourceFactory>();
-    }
+	protected final List<ResourceFactory> factories;
+	protected Map<String, ResourceFactory> mapOfFactoriesByHost;
 
-    public MultipleResourceFactory( List<ResourceFactory> factories ) {
-        this.factories = factories;
-    }
+	public MultipleResourceFactory() {
+		factories = new ArrayList<ResourceFactory>();
+	}
+
+	public MultipleResourceFactory(List<ResourceFactory> factories) {
+		this.factories = factories;
+	}
 
 	@Override
-    public Resource getResource( String host, String url ) throws NotAuthorizedException, BadRequestException {
-        if( log.isTraceEnabled() ) {
-            log.trace( "getResource: " + url );
-        }
-        ResourceFactory hostRf = null;
-        if( mapOfFactoriesByHost != null ) {
-            hostRf = mapOfFactoriesByHost.get( host );
-        }
-        Resource theResource;
-        if( hostRf != null ) {
-            theResource = hostRf.getResource( host, url );
-        } else {
-            theResource = findFromFactories( host, url );
-        }
-        if( theResource == null ) {
-            log.debug( "no resource factory supplied a resouce" );
-        } else {
-			
+	public Resource getResource(String host, String url) throws NotAuthorizedException, BadRequestException {
+		if (log.isTraceEnabled()) {
+			log.trace("getResource: " + url);
 		}
-        return theResource;
-    }
+		ResourceFactory hostRf = null;
+		if (mapOfFactoriesByHost != null) {
+			hostRf = mapOfFactoriesByHost.get(host);
+		}
+		Resource theResource;
+		if (hostRf != null) {
+			theResource = hostRf.getResource(host, url);
+		} else {
+			theResource = findFromFactories(host, url);
+		}
+		if (theResource == null) {
+			log.debug("no resource factory supplied a resouce");
+		} else {
+
+		}
+		return theResource;
+	}
 
 	/**
 	 * Allows factories to be added after construction
-	 * 
-	 * @param rf 
+	 *
+	 * @param rf
 	 */
 	public void add(ResourceFactory rf) {
 		factories.add(rf);
 	}
-	
+
 	public void addAsFirst(ResourceFactory rf) {
 		factories.add(0, rf);
-	}	
-	
-    /**
-     * When set will always be used exclusively for any matching hosts
-     * 
-     * @return
-     */
-    public Map<String, ResourceFactory> getMapOfFactoriesByHost() {
-        return mapOfFactoriesByHost;
-    }
+	}
 
-    public void setMapOfFactoriesByHost( Map<String, ResourceFactory> mapOfFactoriesByHost ) {
-        this.mapOfFactoriesByHost = mapOfFactoriesByHost;
-    }
+	/**
+	 * When set will always be used exclusively for any matching hosts
+	 *
+	 * @return
+	 */
+	public Map<String, ResourceFactory> getMapOfFactoriesByHost() {
+		return mapOfFactoriesByHost;
+	}
 
-    private Resource findFromFactories( String host, String url ) throws NotAuthorizedException, BadRequestException {
-        for( ResourceFactory rf : factories ) {
-            Resource r = rf.getResource( host, url );
-            if( r != null ) {
-				if(log.isTraceEnabled()) {
-					log.trace("Found resource: " + r.getClass() + " from factory: " + rf.getClass());
+	public void setMapOfFactoriesByHost(Map<String, ResourceFactory> mapOfFactoriesByHost) {
+		this.mapOfFactoriesByHost = mapOfFactoriesByHost;
+	}
+
+	private Resource findFromFactories(String host, String url) throws NotAuthorizedException, BadRequestException {
+
+		for (ResourceFactory rf : factories) {
+			long tm = System.currentTimeMillis();
+			try {
+				Resource r = rf.getResource(host, url);
+				if (r != null) {
+					if (log.isTraceEnabled()) {
+						log.trace("Found resource: " + r.getClass() + " from factory: " + rf.getClass());
+					}
+					return r;
 				}
-                return r;
-            }
-        }
-        return null;
-    }	
+			} finally {
+				tm = System.currentTimeMillis() - tm;
+				if (tm > 1000) {
+					log.info("Slow lookup of {}ms in resourcefactory {}", tm, rf);
+				}
+			}
+		}
+
+		return null;
+	}
 }
