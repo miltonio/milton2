@@ -300,27 +300,23 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 	}
 
 	public String getUserUrlFromRequest(Request request) {
-		String encodedUserUrl = getParamVal(request, cookieUserUrlValue);
+		String encodedUserUrl = null;
+		String lt = getCookieOrParam(request, loginTokenName);
+		if (lt != null) {
+			byte[] raw = base64.fromString(lt);
+			String params = new String(raw);
+			if (params.contains("|")) {
+				String[] parts = params.split("\\|");
 
-		// See if we have it in loginToken
-		if (encodedUserUrl == null) {
-			String lt = getCookieOrParam(request, loginTokenName);
-			if (lt != null) {
-				byte[] raw = base64.fromString(lt);
-				String params = new String(raw);
-				if (params.contains("|")) {
-					String[] parts = params.split("\\|");
-
-					if (parts.length == 2) {
-						encodedUserUrl = parts[0];
-						request.getAttributes().put(cookieUserUrlHash, parts[1]);
-					} else {
-						log.warn("getUserUrlFromRequest: loginToken is invalid: {}", params);
-					}
-
+				if (parts.length == 2) {
+					encodedUserUrl = parts[0];
+					request.getAttributes().put(cookieUserUrlHash, parts[1]);
 				} else {
 					log.warn("getUserUrlFromRequest: loginToken is invalid: {}", params);
 				}
+
+			} else {
+				log.warn("getUserUrlFromRequest: loginToken is invalid: {}", params);
 			}
 		}
 
