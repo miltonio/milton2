@@ -300,7 +300,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 	}
 
 	public String getUserUrlFromRequest(Request request) {
-		String encodedUserUrl = getCookieOrParam(request, cookieUserUrlValue);
+		String encodedUserUrl = getParamVal(request, cookieUserUrlValue);
 
 		// See if we have it in loginToken
 		if (encodedUserUrl == null) {
@@ -322,6 +322,10 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 					log.warn("getUserUrlFromRequest: loginToken is invalid: {}", params);
 				}
 			}
+		}
+
+		if (encodedUserUrl == null) {
+			encodedUserUrl = getCookieOrParam(request, cookieUserUrlValue);
 		}
 
 		if (encodedUserUrl == null) {
@@ -356,7 +360,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 	}
 
 	public String getHashFromRequest(Request request) {
-		String signing = getCookieOrParam(request, cookieUserUrlHash);
+		String signing = getParamVal(request, cookieUserUrlHash);
 
 		if (signing == null) {
 			// See if we already got the signing hash
@@ -383,6 +387,10 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 					}
 				}
 			}
+		}
+
+		if (signing == null) {
+			signing = getCookieOrParam(request, cookieUserUrlHash);
 		}
 
 		return signing;
@@ -566,6 +574,16 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 		Cookie c = request.getCookie(name);
 		if (c != null) {
 			return c.getValue();
+		}
+		return null;
+	}
+
+	private String getParamVal(Request request, String name) {
+		if (request.getParams() != null) {
+			String v = request.getParams().get(name);
+			if (v != null) {
+				return v;
+			}
 		}
 		return null;
 	}
