@@ -177,7 +177,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 					} else {
 						// Logged in ok with details. Check if details came from request parameter, in
 						// which case we need to set cookies
-						if (request.getParams() != null && request.getParams().containsKey(cookieUserUrlValue)) {
+						if (request.getParams() != null && (request.getParams().containsKey(cookieUserUrlValue) || request.getParams().containsKey(loginTokenName))) {
 							if (r instanceof DiscretePrincipal) {
 								DiscretePrincipal dp = (DiscretePrincipal) r;
 								setLoginCookies(dp, request);
