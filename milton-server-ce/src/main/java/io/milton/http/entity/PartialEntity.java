@@ -48,9 +48,9 @@ public class PartialEntity implements Response.Entity {
 		this.contentType = contentType;
 		this.multipartBoundary = multipartBoundary;
 	}
-		
 
-	
+
+
 	public GetableResource getResource() {
 		return resource;
 	}
@@ -71,7 +71,7 @@ public class PartialEntity implements Response.Entity {
 			log.warn("Couldnt calculate range end position because the resource is not reporting a content length, and no end position was requested by the client: " + resource.getName() + " - " + resource.getClass());
 			contentLength = -1l;
 		}
-				
+
 
 		try {
 
@@ -80,8 +80,9 @@ public class PartialEntity implements Response.Entity {
 
 			// This will only write content to the buffer, not output to client
 			resource.sendContent(multiOut, null, params, contentType); // do not pass ranges, we need full content to extract ranges
-			
+
 			response.setContentLengthHeader(bufOut.getSize());
+			bufOut.close();
 
 			// Now we can finally transmit content
 			IOUtils.copy(bufOut.getInputStream(), outputStream);
