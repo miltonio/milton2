@@ -66,6 +66,20 @@ public abstract class Context implements Contextual {
         return  reg.item;
     }
     
+    public void remove(Class c) {
+        Registration reg = getRegistration(c);
+        if( reg != null) {
+            reg.remove();
+        }
+    }
+
+    public void remove(String key) {
+        Registration reg = getRegistration(key);
+        if( reg != null) {
+            reg.remove();
+        }
+    }
+    
     protected <T> Registration<T> getRegistration(Class<T> c) {
         Registration<T> reg = itemByClass.get(c);
         return reg;

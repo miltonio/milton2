@@ -63,6 +63,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -140,7 +141,16 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 
 	@Override
 	public Object authenticate(String user, String password) {
-		AnnoPrincipalResource userRes = annoFactory.usersAnnotationHandler.findUser(getRoot(), user);
+		AnnoPrincipalResource userRes;
+		try {
+			userRes = annoFactory.usersAnnotationHandler.findUser(getRoot(), user);
+		} catch (NotAuthorizedException ex) {
+			log.warn("authenticate: Failed to locate a user", ex);
+			return null;
+		} catch (BadRequestException ex) {
+			log.warn("authenticate: Failed to locate a user", ex);
+			return null;
+		}
 		if (userRes != null) {
 			if (log.isTraceEnabled()) {
 				log.trace("authenticate(Basic): user=" + user + " found object: " + userRes.getSource());
@@ -175,7 +185,16 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 
 	@Override
 	public Object authenticate(DigestResponse digestRequest) {
-		AnnoPrincipalResource userRes = annoFactory.usersAnnotationHandler.findUser(getRoot(), digestRequest.getUser());
+		AnnoPrincipalResource userRes;
+		try {
+			userRes = annoFactory.usersAnnotationHandler.findUser(getRoot(), digestRequest.getUser());
+		} catch (NotAuthorizedException ex) {
+			log.warn("authenticate: Failed to locate a user", ex);
+			return null;
+		} catch (BadRequestException ex) {
+			log.warn("authenticate: Failed to locate a user", ex);
+			return null;
+		}
 		if (userRes != null) {
 			Boolean b = annoFactory.authenticateAnnotationHandler.authenticate(userRes, digestRequest);
 			if (b != null && b) {

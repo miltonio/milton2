@@ -35,25 +35,19 @@ public class UsersAnnotationHandler extends AbstractAnnotationHandler {
 		super(outer, Users.class);
 	}
 
-	public AnnoPrincipalResource findUser(AnnoCollectionResource root, String name) {
+	public AnnoPrincipalResource findUser(AnnoCollectionResource root, String name) throws NotAuthorizedException, BadRequestException {
 
-		try {
-			for (AnnoCollectionResource userHome : findUsersCollections(root)) {
-				List<ControllerMethod> availMethods = getMethods(userHome.getSource().getClass());
-				if (!availMethods.isEmpty()) {
-					Resource r = userHome.child(name);
-					if (r instanceof AnnoPrincipalResource) {
-						AnnoPrincipalResource apr = (AnnoPrincipalResource) r;
-						return apr;
-					}
+		for (AnnoCollectionResource userHome : findUsersCollections(root)) {
+			List<ControllerMethod> availMethods = getMethods(userHome.getSource().getClass());
+			if (!availMethods.isEmpty()) {
+				Resource r = userHome.child(name);
+				if (r instanceof AnnoPrincipalResource) {
+					AnnoPrincipalResource apr = (AnnoPrincipalResource) r;
+					return apr;
 				}
 			}
-
-		} catch (NotAuthorizedException e) {
-			throw new RuntimeException(e);
-		} catch (BadRequestException e) {
-			throw new RuntimeException(e);
 		}
+
 		return null;
 	}
 

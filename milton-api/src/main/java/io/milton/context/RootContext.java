@@ -73,8 +73,15 @@ public class RootContext extends Context implements Closeable {
 
     /**
      * Execute without any return value
+     * @param exec
      */
     public void execute(Executable2 exec) {
+        RequestContext prev = RequestContext.getCurrent();
+        if( prev != null ) {
+            // we already have a request context, so use it
+            exec.execute(prev);
+            return ;
+        }
         RequestContext.setCurrent(null);
         RequestContext context = RequestContext.getInstance(this);
         Registration reg = null;

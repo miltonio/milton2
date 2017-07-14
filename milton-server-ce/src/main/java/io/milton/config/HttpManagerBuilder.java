@@ -483,12 +483,12 @@ public class HttpManagerBuilder {
 
 		initAnnotatedResourceFactory();
 
-		init(authenticationService, outerWebdavResponseHandler, resourceTypeHelper);
+		initProtocols();
 
 		afterInit();
 	}
 
-	private void init(AuthenticationService authenticationService, WebDavResponseHandler webdavResponseHandler, ResourceTypeHelper resourceTypeHelper) {
+	private void initProtocols() {
 		initDone = true;
 		if (handlerHelper == null) {
 			handlerHelper = new HandlerHelper(authenticationService);
@@ -507,6 +507,14 @@ public class HttpManagerBuilder {
 		// Build stack of resource factories before protocols, because protocols use (so depend on)
 		// resource factories
 		buildOuterResourceFactory();
+		
+		if (listeners != null) {
+			for (InitListener l : listeners) {
+				l.beforeProtocolBuild(this);
+			}
+		}
+		
+		
 		buildProtocolHandlers(webdavResponseHandler, resourceTypeHelper);
 		if (filters != null) {
 			filters = new ArrayList<Filter>(filters);
@@ -1362,6 +1370,12 @@ public class HttpManagerBuilder {
 	public WebDavResponseHandler getOuterWebdavResponseHandler() {
 		return outerWebdavResponseHandler;
 	}
+
+	public void setOuterWebdavResponseHandler(WebDavResponseHandler outerWebdavResponseHandler) {
+		this.outerWebdavResponseHandler = outerWebdavResponseHandler;
+	}
+	
+	
 
 	/**
 	 * If not null, is expected to be a comma seperated list of package names.

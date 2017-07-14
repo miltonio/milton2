@@ -47,4 +47,13 @@ public interface InitListener {
 	 * @param m 
 	 */
 	void afterBuild(HttpManagerBuilder b, HttpManager m);
+
+	/**
+	 * Called immediately before building the protocol stack, ie the Http11Protocol etc
+	 * 
+	 * Note that building the protocol stack is done before building the HttpManager
+	 * 
+	 * @param aThis 
+	 */
+	void beforeProtocolBuild(HttpManagerBuilder b);
 }

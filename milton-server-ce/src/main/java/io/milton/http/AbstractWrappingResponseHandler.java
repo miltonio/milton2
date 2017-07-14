@@ -53,6 +53,7 @@ public abstract class AbstractWrappingResponseHandler implements WebDavResponseH
 	protected WebDavResponseHandler wrapped;
 
 	public AbstractWrappingResponseHandler() {
+		log.info("Created without wrapped");
 	}
 
 	public AbstractWrappingResponseHandler(WebDavResponseHandler wrapped) {
