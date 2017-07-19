@@ -74,7 +74,11 @@ public class ResourceHandlerHelper {
 		try {
 			request.parseRequestParameters(params, files);
 		} catch (RequestParseException ex) {
-			log.warn("exception parsing request. probably interrupted upload", ex);
+			if (log.isTraceEnabled()) {
+				log.warn("failed to parse request parameters: {}", ex.getMessage(), ex);
+			} else {
+				log.warn("failed to parse request parameters: {}", ex.getMessage());
+			}
 			return;
 		}
 		request.getAttributes().put(ATT_NAME_PARAMS, params);
