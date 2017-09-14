@@ -53,7 +53,7 @@ public class OAuth2TokenResponse extends OAuthAccessTokenResponse {
 
 	@Override
 	public String getRefreshToken() {
-		return getParam(OAuth.OAUTH_EXPIRES_IN);
+		return getParam(OAuth.OAUTH_REFRESH_TOKEN);
 	}
 
 	@Override

@@ -20,8 +20,8 @@ import io.milton.http.OAuth2TokenResponse;
 import io.milton.http.Request;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.values.Pair;
-import io.milton.resource.OAuth2Resource.OAuth2ProfileDetails;
 import io.milton.resource.OAuth2Provider;
+import io.milton.resource.OAuth2Resource.OAuth2ProfileDetails;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
@@ -188,6 +188,8 @@ public class OAuth2Helper {
 		OAuth2ProfileDetails user = new OAuth2ProfileDetails();
 		user.setCode(oAuth2Code);
 		user.setAccessToken(tokenResponse.getAccessToken());
+		user.setRefreshToken(tokenResponse.getRefreshToken());
+		user.setExpiresIn(tokenResponse.getExpiresIn());
 		user.setDetails(responseMap);
 		user.setReturnUrl(returnUrl);
 
