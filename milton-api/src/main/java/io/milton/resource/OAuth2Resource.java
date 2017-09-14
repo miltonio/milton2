@@ -24,18 +24,21 @@ import java.util.Map;
 public interface OAuth2Resource extends Resource {
 
     /**
-     * Called when an oauth2 login response has been received, with details received
-     * from the remote server. The method should return an application specific
-     * object representing the user if one exists OR if the application chooses to create one.
+     * Called when an oauth2 login response has been received, with details
+     * received from the remote server. The method should return an application
+     * specific object representing the user if one exists OR if the application
+     * chooses to create one.
      *
-     * Or return null to indicate that this resource cannot authenticate the request. In that
-     * case the AuthenticationService may continue looking for other authentication providers
-     * which are able to authenticate the request.
+     * Or return null to indicate that this resource cannot authenticate the
+     * request. In that case the AuthenticationService may continue looking for
+     * other authentication providers which are able to authenticate the
+     * request.
      *
-     * A typical workflow is that an OAuth response will be received, the current user
-     * will be authenticated from the CookieAuthenticationHandler, and the application
-     * will then choose to link the oauth credentials to the current user. Subsequently
-     * the user is then able to authenticat with oauth.
+     * A typical workflow is that an OAuth response will be received, the
+     * current user will be authenticated from the CookieAuthenticationHandler,
+     * and the application will then choose to link the oauth credentials to the
+     * current user. Subsequently the user is then able to authenticat with
+     * oauth.
      *
      * @param profile - the details about the current user as provided by the
      * remote authentication server
@@ -46,7 +49,6 @@ public interface OAuth2Resource extends Resource {
 
     Map<String, OAuth2Provider> getOAuth2Providers();
 
-
     /**
      * This contains the information about the authenticated profile
      */
@@ -55,6 +57,8 @@ public interface OAuth2Resource extends Resource {
         private String tokenLocation;
         private String providerId;
         private String accessToken;
+        private Long expiresIn;
+        private String refreshToken;
         private String code;
         private String returnUrl; // this is the local page to redirect to after authentication
 
@@ -90,6 +94,22 @@ public interface OAuth2Resource extends Resource {
 
         public void setAccessToken(String accessToken) {
             this.accessToken = accessToken;
+        }
+
+        public Long getExpiresIn() {
+            return expiresIn;
+        }
+
+        public void setExpiresIn(Long expiresIn) {
+            this.expiresIn = expiresIn;
+        }
+
+        public String getRefreshToken() {
+            return refreshToken;
+        }
+
+        public void setRefreshToken(String refreshToken) {
+            this.refreshToken = refreshToken;
         }
 
         public Map getDetails() {
