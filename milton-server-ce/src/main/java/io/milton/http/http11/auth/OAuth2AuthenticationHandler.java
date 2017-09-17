@@ -98,6 +98,11 @@ public class OAuth2AuthenticationHandler implements AuthenticationHandler {
 			return false;
 		}
 
+		// Make sure it's not a server request
+		if (request.getParams().containsKey(OAuth.OAUTH_GRANT_TYPE)) {
+			return false;
+		}
+
 		try {
 			if (r instanceof OAuth2Resource) {
 				OAuth2Resource oAuth2Resource = (OAuth2Resource) r;
