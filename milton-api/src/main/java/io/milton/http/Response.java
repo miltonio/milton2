@@ -272,12 +272,20 @@ public interface Response {
     void sendError(Status status, String message);
     
     /**
-     * Will set the status to moved_temporaruly and set the location header
+     * Will set the status to moved_temporarily and set the location header
      * to the given url
      * 
      * @param url
      */
     void sendRedirect( String url );
+    
+    /**
+     * Will set the status to moved_permanently and set the location header
+     * to the given url
+     * 
+     * @param url
+     */
+    void sendPermanentRedirect( String url );
 
     /**
      * The <code>setCookie</code> method is used to set a cookie value
