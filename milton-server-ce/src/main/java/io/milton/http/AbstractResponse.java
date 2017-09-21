@@ -22,7 +22,6 @@ package io.milton.http;
 import io.milton.common.RangeUtils;
 import java.util.Date;
 import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -208,6 +207,15 @@ public abstract class AbstractResponse implements Response {
         setStatus(Response.Status.SC_MOVED_TEMPORARILY);
         setLocationHeader(url);
     }
+	
+	@Override
+	public void sendPermanentRedirect(String url){
+		if (log.isTraceEnabled()) {
+            log.trace("sendPermanentRedirect: " + url);
+        }
+        setStatus(Response.Status.SC_MOVED_PERMANENTLY);
+        setLocationHeader(url);
+	}
 
     protected void setAnyDateHeader(Header name, Date date) {
         if (date == null) {
