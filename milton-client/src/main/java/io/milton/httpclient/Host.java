@@ -852,7 +852,11 @@ public class Host extends Folder {
      * @param path - encoded and relative to host's rootPath. Must NOT be slash
      * prefixed as it will be appended to the host's url
      * @return
-     * @throws com.ettrema.httpclient.HttpException
+     * @throws io.milton.httpclient.HttpException
+     * @throws io.milton.http.exceptions.NotAuthorizedException
+     * @throws io.milton.http.exceptions.BadRequestException
+     * @throws io.milton.http.exceptions.ConflictException
+     * @throws io.milton.http.exceptions.NotFoundException
      */
     public synchronized byte[] get(String path) throws io.milton.httpclient.HttpException, NotAuthorizedException, BadRequestException, ConflictException, NotFoundException {
         String url = this.encodedUrl() + path;
