@@ -95,20 +95,36 @@ public class MailboxAddress implements Serializable{
         return user + "@" + domain;
     }
 
+    public InternetAddress toPlainInternetAddress() {
+        InternetAddress add = new InternetAddress();
+        add.setAddress(user + "@" + domain);
+        return add;
+
+    }
+    
     public InternetAddress toInternetAddress() {
+        InternetAddress add = new InternetAddress();
         try {
-            if( personal == null ) {
-                return  new InternetAddress(user + "@" + domain);
-            } else {
-                try {
-                    return new InternetAddress(user + "@" + domain, personal);
-                } catch (UnsupportedEncodingException ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
-        } catch (AddressException ex) {
-            throw new RuntimeException(ex);
+            add.setPersonal(personal);
+        } catch (UnsupportedEncodingException ex) {
+            // ignore
         }
+        add.setAddress(user + "@" + domain);
+        return add;
+        
+//        try {
+//            if( personal == null ) {
+//                return  new InternetAddress(user + "@" + domain);
+//            } else {
+//                try {
+//                    return new InternetAddress(user + "@" + domain, personal);
+//                } catch (UnsupportedEncodingException ex) {
+//                    throw new RuntimeException(ex);
+//                }
+//            }
+//        } catch (AddressException ex) {
+//            throw new RuntimeException(ex);
+//        }
     }
 
     public String getDomain() {
@@ -136,6 +152,5 @@ public class MailboxAddress implements Serializable{
             return user;
         }
     }
-    
     
 }
