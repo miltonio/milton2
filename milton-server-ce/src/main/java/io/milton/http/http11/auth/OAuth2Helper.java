@@ -25,6 +25,7 @@ import io.milton.resource.OAuth2Resource.OAuth2ProfileDetails;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
+import org.apache.commons.lang.StringUtils;
 import org.apache.oltu.oauth2.client.OAuthClient;
 import org.apache.oltu.oauth2.client.URLConnectionClient;
 import org.apache.oltu.oauth2.client.request.OAuthBearerClientRequest;
@@ -147,42 +148,51 @@ public class OAuth2Helper {
 		String accessToken = oAuth2Response.getAccessToken();
 		String userProfileLocation = provider.getProfileLocation();
 
-		OAuthClientRequest bearerClientRequest
-				= new OAuthBearerClientRequest(userProfileLocation)
-				.setAccessToken(accessToken)
-				.buildQueryMessage();
+		if (StringUtils.isNotBlank(userProfileLocation)) {
+			OAuthClientRequest bearerClientRequest
+					= new OAuthBearerClientRequest(userProfileLocation)
+							.setAccessToken(accessToken)
+							.buildQueryMessage();
 
-		OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());
+			OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());
 
-		return oAuthClient.resource(bearerClientRequest, OAuth.HttpMethod.GET, OAuthResourceResponse.class);
+			return oAuthClient.resource(bearerClientRequest, OAuth.HttpMethod.GET, OAuthResourceResponse.class);
+		}
+
+		return null;
 	}
 
 	public OAuth2ProfileDetails getOAuth2UserInfo(Request request, OAuthResourceResponse resourceResponse, OAuthAccessTokenResponse tokenResponse, OAuth2Provider prov, String oAuth2Code, String returnUrl) throws BadRequestException {
 		log.trace(" getOAuth2UserId start..." + resourceResponse);
-		if (resourceResponse == null) {
-			return null;
-		}
 
-		String resourceResponseBody = resourceResponse.getBody();
-		log.trace(" OAuthResourceResponse, body{}" + resourceResponseBody);
+		Map responseMap = null;
+		if (resourceResponse != null) {
+			String resourceResponseBody = resourceResponse.getBody();
+			log.trace(" OAuthResourceResponse, body{}" + resourceResponseBody);
 
-		request.getAttributes().put(OAuth2AuthenticationHandler.REQ_ATT_OAUTH_JSON, resourceResponseBody);
+			request.getAttributes().put(OAuth2AuthenticationHandler.REQ_ATT_OAUTH_JSON, resourceResponseBody);
 
-		Map responseMap = JSONUtils.parseJSON(resourceResponseBody);
+			responseMap = JSONUtils.parseJSON(resourceResponseBody);
 
-		String userID = (String) responseMap.get("id");
-		String userName = (String) responseMap.get("username");
-		String message = (String) responseMap.get("message");
-		Integer status = -1;
-		Object errCode = responseMap.get("status");
-		if (errCode instanceof Integer) {
-			status = (Integer) errCode;
-		} else if (errCode instanceof String) {
-			status = Integer.valueOf((String) errCode);
-		}
+			String userID = (String) responseMap.get("id");
+			String userName = (String) responseMap.get("username");
+			String message = (String) responseMap.get("message");
+			Integer status = -1;
+			Object errCode = responseMap.get("status");
+			if (errCode instanceof Integer) {
+				status = (Integer) errCode;
+			} else if (errCode instanceof String) {
+				status = Integer.valueOf((String) errCode);
+			}
 
-		if (status >= 400) {
-			throw new BadRequestException(message);
+			if (status >= 400) {
+				throw new BadRequestException(message);
+			}
+
+			if (log.isTraceEnabled()) {
+				log.trace(" userID{}" + userID);
+				log.trace(" userName{}" + userName);
+			}
 		}
 
 		OAuth2ProfileDetails user = new OAuth2ProfileDetails();
@@ -199,8 +209,6 @@ public class OAuth2Helper {
 		}
 
 		if (log.isTraceEnabled()) {
-			log.trace(" userID{}" + userID);
-			log.trace(" userName{}" + userName);
 			log.trace(" oAuth2Code{}" + oAuth2Code);
 			log.trace(" AccessToken{}" + user.getAccessToken());
 			log.trace("\n\n");
