@@ -98,6 +98,11 @@ public class OAuth2AuthenticationHandler implements AuthenticationHandler {
 			return false;
 		}
 
+		// Make sure it's not a server request
+		if (request.getParams().containsKey(OAuth.OAUTH_GRANT_TYPE)) {
+			return false;
+		}
+
 		try {
 			if (r instanceof OAuth2Resource) {
 				OAuth2Resource oAuth2Resource = (OAuth2Resource) r;
@@ -189,13 +194,9 @@ public class OAuth2AuthenticationHandler implements AuthenticationHandler {
 				OAuthResourceResponse resourceResponse = this.oAuth2Helper.getOAuth2Profile(oAuth2Response, prov);
 				log.info("This is a OAuthResourceResponse{} " + resourceResponse);
 
-				if (resourceResponse != null) {
-					// Step : Get the user info.
-					OAuth2Resource.OAuth2ProfileDetails oAuth2TokenUser = this.oAuth2Helper.getOAuth2UserInfo(request, resourceResponse, oAuth2Response, prov, oAuth2Code, returnUrl);
+				OAuth2Resource.OAuth2ProfileDetails oAuth2TokenUser = this.oAuth2Helper.getOAuth2UserInfo(request, resourceResponse, oAuth2Response, prov, oAuth2Code, returnUrl);
 
-					return oAuth2TokenUser;
-
-				}
+				return oAuth2TokenUser;
 			}
 		}
 
