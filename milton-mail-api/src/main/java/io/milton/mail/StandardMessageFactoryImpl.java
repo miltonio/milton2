@@ -193,7 +193,6 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
     }
 
     protected void fillContent(StandardMessage sm, Part message) throws MessagingException {
-        System.out.println("StandardMessageFactoryImpl - fillContent");
         if (isText(sm)) {
             if (isHtml(sm)) {
                 if (hasAttachments(sm)) {
@@ -265,7 +264,6 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
     }
 
     private void addAttachmentToMime(MimeMultipart multipart, Attachment att) throws MessagingException {
-        System.out.println("StandardMessageFactoryImpl - addAttachmentToMime2 - " + att.getContentId());
         MimeBodyPart bp = new MimeBodyPart();
 
         DataSource fds = new AttachmentReadingDataSource(att);
@@ -284,7 +282,6 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
      * @param sm
      */
     private void addAttachmentsToMime(MimeMultipart multipart, StandardMessage sm) throws MessagingException {
-        System.out.println("StandardMessageFactoryImpl - addAttachmentsToMime1");
         if (sm.getAttachments() != null && sm.getAttachments().size() > 0) {
             for (Attachment att : sm.getAttachments()) {
                 if (!isInline(att)) {
@@ -532,7 +529,6 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
 
         @Override
         public InputStream getInputStream() throws IOException {
-            System.out.println("AttachmentReadingDataSource - getInputStream - " + att.getName());
             return att.getInputStream();
         }
 
@@ -543,7 +539,6 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
 
         @Override
         public String getContentType() {
-            log.debug("attachment conte type: " + att.getContentType());
             return att.getContentType();
         }
 
