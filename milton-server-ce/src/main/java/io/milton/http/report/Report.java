@@ -37,6 +37,7 @@ public interface Report {
      */
     String getName();
 
+	
     /**
      * Process the requested report body, and return a document containing the
      * response body.
