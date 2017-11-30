@@ -47,7 +47,13 @@ public class ICalFormatter {
     public void parseEvent(EventResource r, String data) throws IOException, ParserException {
         CalendarBuilder builder = new CalendarBuilder();
         net.fortuna.ical4j.model.Calendar calendar = builder.build(new ByteArrayInputStream(data.getBytes("UTF-8")));
+        if (calendar == null) {
+            return;
+        }
         VEvent ev = event(calendar);
+        if( ev == null) {
+            return ;
+        }
         String summary = null;
         if (ev.getSummary() != null) {
             summary = ev.getSummary().getValue();
@@ -220,7 +226,7 @@ public class ICalFormatter {
         sb.append(source.get("DTEND")).append("\n");
         sb.append(source.get("ORGANIZER")).append("\n");
         // Output the original attendee line
-        if( attendeeMailto == null ) {
+        if (attendeeMailto == null) {
             throw new RuntimeException("attendeeMailto is null");
         }
         sb.append(request.getAttendeeLines().get(attendeeMailto)).append("\n");
@@ -234,7 +240,6 @@ public class ICalFormatter {
             sb.append(formatDate(er.getEnd()));
             sb.append("\n");
         }
-
 
         sb.append("END:VFREEBUSY\n");
         sb.append("END:VCALENDAR\n");
