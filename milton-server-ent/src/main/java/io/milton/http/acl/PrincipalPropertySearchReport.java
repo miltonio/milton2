@@ -4,8 +4,6 @@
  */
 package io.milton.http.acl;
 
-import io.milton.common.Utils;
-import io.milton.http.HttpManager;
 import io.milton.http.caldav.CalDavProtocol;
 import io.milton.http.caldav.CalendarQueryReport;
 import io.milton.http.exceptions.BadRequestException;
@@ -28,10 +26,10 @@ import java.util.*;
 
 import javax.xml.namespace.QName;
 
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.Namespace;
-import org.jdom.filter.ElementFilter;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.Namespace;
+import org.jdom2.filter.ElementFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

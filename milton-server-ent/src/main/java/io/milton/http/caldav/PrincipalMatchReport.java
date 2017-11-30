@@ -7,7 +7,7 @@ package io.milton.http.caldav;
 
 import io.milton.http.report.Report;
 import io.milton.resource.Resource;
-import org.jdom.Document;
+import org.jdom2.Document;
 
 /**
  *

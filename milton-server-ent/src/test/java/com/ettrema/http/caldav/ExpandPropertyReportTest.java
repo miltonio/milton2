@@ -23,9 +23,9 @@ import java.util.List;
 import javax.xml.namespace.QName;
 import junit.framework.TestCase;
 
-import org.jdom.Document;
+import org.jdom2.Document;
 import static org.easymock.EasyMock.*;
-import org.jdom.input.SAXBuilder;
+import org.jdom2.input.SAXBuilder;
 
 /**
  *
@@ -72,7 +72,7 @@ public class ExpandPropertyReportTest extends TestCase {
 
 	public void testProcess() throws Exception {
 		PropFindableResource pfr = createMock(PropFindableResource.class);
-		SAXBuilder builder = new org.jdom.input.SAXBuilder();
+		SAXBuilder builder = new org.jdom2.input.SAXBuilder();
 		String xml = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>" +
 						"<D:expand-property xmlns:D=\"DAV:\">" +
 						"<D:property name=\"version-history\">" +

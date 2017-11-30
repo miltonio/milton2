@@ -7,7 +7,7 @@ package io.milton.http.caldav;
 
 import io.milton.http.report.Report;
 import io.milton.resource.Resource;
-import org.jdom.Document;
+import org.jdom2.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +26,6 @@ public class PrincipalSearchPropertySetReport implements Report {
 
 	@Override
 	public String process(String host, String path, Resource r, Document doc) {
-		System.out.println("XXXXXXXXXXXXXXX NOT IMPLEMENTED XXXXXXXXXXXXXXXXXXXXXXx");
 		log.debug("process");
 		return "<?xml version='1.0' encoding='UTF-8'?>\n"
 				+ "<principal-search-property-set xmlns='DAV:'>\n"

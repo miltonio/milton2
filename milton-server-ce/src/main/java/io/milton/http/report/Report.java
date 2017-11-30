@@ -50,5 +50,5 @@ public interface Report {
      * @param doc
      * @return the response body, usually xml
      */
-    String process(String host, String path, Resource r, org.jdom.Document doc) throws BadRequestException, ConflictException, NotAuthorizedException;
+    String process(String host, String path, Resource r, org.jdom2.Document doc) throws BadRequestException, ConflictException, NotAuthorizedException;
 }
