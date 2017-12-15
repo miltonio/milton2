@@ -23,6 +23,7 @@ import io.milton.annotations.BeanProperty;
 import io.milton.resource.Resource;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.common.LogUtils;
+import io.milton.http.annotated.AnnoResource;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -46,21 +47,29 @@ public class BeanPropertySource implements PropertySource {
 	private static final Logger log = LoggerFactory.getLogger(BeanPropertySource.class);
 	private static final Object[] NOARGS = new Object[0];
 
-	
-	
+
+
 	public BeanPropertySource() {
 	}
 
-	
-	
+
+
 	@Override
 	public Object getProperty(QName name, Resource r) throws NotAuthorizedException {
-		PropertyDescriptor pd = getPropertyDescriptor(r, name.getLocalPart());
+		Object bean;
+		if( r instanceof AnnoResource) {
+			AnnoResource ar = (AnnoResource)r;
+			bean = ar.getSource();
+		} else {
+			bean = r;
+		}
+
+		PropertyDescriptor pd = getPropertyDescriptor(bean, name.getLocalPart());
 		if (pd == null) {
-			throw new IllegalArgumentException("no prop: " + name.getLocalPart() + " on " + r.getClass());
+			throw new IllegalArgumentException("no prop: " + name.getLocalPart() + " on " + bean.getClass());
 		}
 		try {
-			return pd.getReadMethod().invoke(r, NOARGS);
+			return pd.getReadMethod().invoke(bean, NOARGS);
 		} catch (Exception ex) {
 			if (ex.getCause() instanceof NotAuthorizedException) {
 				NotAuthorizedException na = (NotAuthorizedException) ex.getCause();
@@ -74,9 +83,18 @@ public class BeanPropertySource implements PropertySource {
 	@Override
 	public void setProperty(QName name, Object value, Resource r) throws NotAuthorizedException, PropertySetException {
 		log.debug("setProperty: " + name + " = " + value);
-		PropertyDescriptor pd = getPropertyDescriptor(r, name.getLocalPart());
+
+		Object bean;
+		if( r instanceof AnnoResource) {
+			AnnoResource ar = (AnnoResource)r;
+			bean = ar.getSource();
+		} else {
+			bean = r;
+		}
+
+		PropertyDescriptor pd = getPropertyDescriptor(bean, name.getLocalPart());
 		try {
-			pd.getWriteMethod().invoke(r, value);
+			pd.getWriteMethod().invoke(bean, value);
 		} catch (PropertySetException e) {
 			throw e;
 		} catch (Exception ex) {
@@ -100,9 +118,17 @@ public class BeanPropertySource implements PropertySource {
 	@Override
 	public PropertyMetaData getPropertyMetaData(QName name, Resource r) {
 		log.debug("getPropertyMetaData");
-		BeanPropertyResource anno = getAnnotation(r);
+		Object bean;
+		if( r instanceof AnnoResource) {
+			AnnoResource ar = (AnnoResource)r;
+			bean = ar.getSource();
+		} else {
+			bean = r;
+		}
+
+		BeanPropertyResource anno = getAnnotation(bean);
 		if (anno == null) {
-			log.debug(" no annotation: ", r.getClass().getCanonicalName());
+			log.debug(" no annotation: ", bean.getClass().getCanonicalName());
 			return PropertyMetaData.UNKNOWN;
 		}
 		if (!name.getNamespaceURI().equals(anno.value())) {
@@ -150,11 +176,19 @@ public class BeanPropertySource implements PropertySource {
 
 	@Override
 	public List<QName> getAllPropertyNames(Resource r) {
-		BeanPropertyResource anno = getAnnotation(r);
+		Object bean;
+		if( r instanceof AnnoResource) {
+			AnnoResource ar = (AnnoResource)r;
+			bean = ar.getSource();
+		} else {
+			bean = r;
+		}
+
+		BeanPropertyResource anno = getAnnotation(bean);
 		if (anno == null) {
 			return null;
 		}
-		PropertyDescriptor[] pds = PropertyUtils.getPropertyDescriptors(r);
+		PropertyDescriptor[] pds = PropertyUtils.getPropertyDescriptors(bean);
 		List<QName> list = new ArrayList<QName>();
 		for (PropertyDescriptor pd : pds) {
 			if (pd.getReadMethod() != null) {
@@ -164,13 +198,13 @@ public class BeanPropertySource implements PropertySource {
 		return list;
 	}
 
-	
 
-	public BeanPropertyResource getAnnotation(Resource r) {
+
+	public BeanPropertyResource getAnnotation(Object r) {
 		return r.getClass().getAnnotation(BeanPropertyResource.class);
 	}
 
-	public PropertyDescriptor getPropertyDescriptor(Resource r, String name) {
+	public PropertyDescriptor getPropertyDescriptor(Object r, String name) {
 		try {
 			PropertyDescriptor pd = PropertyUtils.getPropertyDescriptor(r, name);
 			return pd;
