@@ -45,6 +45,7 @@ public class DefaultStorageChecker implements StorageChecker {
 
     private final static Logger log = LoggerFactory.getLogger( DefaultStorageChecker.class );
 
+	@Override
     public StorageErrorReason checkStorageOnReplace( Request request, CollectionResource parent, Resource replaced, String host ) {
         if( parent instanceof QuotaResource ) {
             QuotaResource qr = (QuotaResource) parent;

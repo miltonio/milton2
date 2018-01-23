@@ -45,17 +45,27 @@ public class HandlerHelper {
 	private final static Logger log = LoggerFactory.getLogger(HandlerHelper.class);
 	private final AuthenticationService authenticationService;
 	private final List<StorageChecker> storageCheckers;
+	private final AuthorisationListener authorisationListener;
 	private boolean enableExpectContinue = true;
 
 	public HandlerHelper(AuthenticationService authenticationService, List<StorageChecker> storageCheckers) {
 		this.authenticationService = authenticationService;
 		this.storageCheckers = storageCheckers;
+		this.authorisationListener = null;
 	}
 
 	public HandlerHelper(AuthenticationService authenticationService) {
 		this.authenticationService = authenticationService;
 		this.storageCheckers = new ArrayList<StorageChecker>();
 		storageCheckers.add(new DefaultStorageChecker());
+		this.authorisationListener = null;
+	}
+
+	public HandlerHelper(AuthenticationService authenticationService, AuthorisationListener authorisationListener) {
+		this.authenticationService = authenticationService;
+		this.storageCheckers = new ArrayList<StorageChecker>();
+		storageCheckers.add(new DefaultStorageChecker());
+		this.authorisationListener = authorisationListener;
 	}
 
 	/**
@@ -136,6 +146,11 @@ public class HandlerHelper {
 //			Priviledge required = findRequiredPriviledge(method, resource);
 //		} else {
 			boolean authorised = resource.authorise(request, method, auth);
+
+			if( authorisationListener != null ) {
+				authorisationListener.onAuthorisationResult(request, method, auth, authorised);
+			}
+
 			if (!authorised) {
 				if (log.isWarnEnabled()) {
 					log.warn("authorisation declined, requesting authentication: " + request.getAbsolutePath() + ". resource type: " + resource.getClass().getCanonicalName());
@@ -173,9 +188,9 @@ public class HandlerHelper {
 		LockToken token = lr.getCurrentLock();
 		return token != null;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 *
 	 * @param inRequest
 	 * @param inResource
@@ -224,7 +239,7 @@ public class HandlerHelper {
 						return false; // not locked out
 					}
 				}
-								
+
 				log.warn("Locked out. ifHeader=" + ifHeader + " lock-token header=" + lockToken + ", but actual token: " + token.tokenId + " LockedByUser=" + lockedByUser + " RequestUser=" + sUser);
 				return true;
 			}
@@ -234,10 +249,10 @@ public class HandlerHelper {
 
 	/**
 	 * Check of an IF header, and if it exists return true if it contains "no-lock"
-	 * 
+	 *
 	 * @param inRequest
 	 * @param inParentcol
-	 * @return 
+	 * @return
 	 */
 	public boolean missingLock(Request inRequest, Resource inParentcol) {
 		//make sure we are not requiring a lock

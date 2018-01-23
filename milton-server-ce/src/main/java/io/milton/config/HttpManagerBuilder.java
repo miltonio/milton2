@@ -28,6 +28,7 @@ import io.milton.event.EventManager;
 import io.milton.event.EventManagerImpl;
 import io.milton.http.AuthenticationHandler;
 import io.milton.http.AuthenticationService;
+import io.milton.http.AuthorisationListener;
 import io.milton.http.CompressingResponseHandler;
 import io.milton.http.Filter;
 import io.milton.http.HandlerHelper;
@@ -181,6 +182,7 @@ public class HttpManagerBuilder {
 	protected ContentGenerator contentGenerator = new SimpleContentGenerator();
 	protected CacheControlHelper cacheControlHelper = new DefaultCacheControlHelper();
 	protected HandlerHelper handlerHelper;
+	protected AuthorisationListener authorisationListener;
 	protected ArrayList<HttpExtension> protocols;
 	protected ProtocolHandlers protocolHandlers;
 	protected EntityTransport entityTransport;
@@ -491,7 +493,7 @@ public class HttpManagerBuilder {
 	private void initProtocols() {
 		initDone = true;
 		if (handlerHelper == null) {
-			handlerHelper = new HandlerHelper(authenticationService);
+			handlerHelper = new HandlerHelper(authenticationService, authorisationListener);
 			showLog("handlerHelper", handlerHelper);
 		}
 		if (!enableExpectContinue) {
@@ -507,14 +509,14 @@ public class HttpManagerBuilder {
 		// Build stack of resource factories before protocols, because protocols use (so depend on)
 		// resource factories
 		buildOuterResourceFactory();
-		
+
 		if (listeners != null) {
 			for (InitListener l : listeners) {
 				l.beforeProtocolBuild(this);
 			}
 		}
-		
-		
+
+
 		buildProtocolHandlers(webdavResponseHandler, resourceTypeHelper);
 		if (filters != null) {
 			filters = new ArrayList<Filter>(filters);
@@ -1374,8 +1376,8 @@ public class HttpManagerBuilder {
 	public void setOuterWebdavResponseHandler(WebDavResponseHandler outerWebdavResponseHandler) {
 		this.outerWebdavResponseHandler = outerWebdavResponseHandler;
 	}
-	
-	
+
+
 
 	/**
 	 * If not null, is expected to be a comma seperated list of package names.
