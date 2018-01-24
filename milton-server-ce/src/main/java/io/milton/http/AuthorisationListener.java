@@ -22,6 +22,6 @@ package io.milton.http;
 public interface AuthorisationListener {
 
 
-	void onAuthorisationResult(Request request, Request.Method method, Auth auth, boolean authorised);
-	
+	boolean onAuthorisationResult(Request request, Request.Method method, Auth auth, boolean authorised);
+
 }

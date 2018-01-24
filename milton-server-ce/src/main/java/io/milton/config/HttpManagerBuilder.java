@@ -1800,8 +1800,17 @@ public class HttpManagerBuilder {
 			o = createObject(c);
 		}
 		return o;
-
 	}
+
+	public AuthorisationListener getAuthorisationListener() {
+		return authorisationListener;
+	}
+
+	public void setAuthorisationListener(AuthorisationListener authorisationListener) {
+		this.authorisationListener = authorisationListener;
+	}
+
+	
 
 	public class CreationException extends Exception {
 

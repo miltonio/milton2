@@ -148,7 +148,7 @@ public class HandlerHelper {
 			boolean authorised = resource.authorise(request, method, auth);
 
 			if( authorisationListener != null ) {
-				authorisationListener.onAuthorisationResult(request, method, auth, authorised);
+				authorised = authorisationListener.onAuthorisationResult(request, method, auth, authorised);
 			}
 
 			if (!authorised) {
