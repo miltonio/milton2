@@ -70,7 +70,7 @@ public class PropertyMap {
 			return null;
 		}
 	}
-	
+
 	public void setProperty(QName name, Resource r, Object val) {
 		if (!name.getNamespaceURI().equals(nameSpace)) {
 			return;
@@ -87,7 +87,7 @@ public class PropertyMap {
 		} else {
 			return;
 		}
-	}	
+	}
 
 	public PropertyMetaData getPropertyMetaData(QName name, Resource r) {
 		if (!name.getNamespaceURI().equals(nameSpace)) {
@@ -112,7 +112,7 @@ public class PropertyMap {
 	public List<QName> getAllPropertyNames(Resource r) {
 		List<QName> list = new ArrayList<QName>();
 		for (String nm : this.writersMap.keySet()) {
-			QName qname = new QName(WebDavProtocol.NS_DAV.getName(), nm);
+			QName qname = new QName(this.nameSpace, nm);
 			list.add(qname);
 		}
 		return list;
