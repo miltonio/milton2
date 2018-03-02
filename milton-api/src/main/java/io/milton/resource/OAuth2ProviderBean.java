@@ -31,8 +31,9 @@ public class OAuth2ProviderBean implements OAuth2Provider {
     private final String tokenLocation;
     private final String profileLocation;
     private final Collection scopes;
+    private final OAuth2AccessTokenType oAuth2AccessTokenType;
 
-    public OAuth2ProviderBean(String providerId, String location, String clientId, String clientSecret, String redirectUri, String tokenLocation, String profileLocation, Collection scopes) {
+    public OAuth2ProviderBean(String providerId, String location, String clientId, String clientSecret, String redirectUri, String tokenLocation, String profileLocation, Collection scopes, OAuth2AccessTokenType oAuth2AccessTokenType) {
         this.providerId = providerId;
         this.location = location;
         this.clientId = clientId;
@@ -41,11 +42,9 @@ public class OAuth2ProviderBean implements OAuth2Provider {
         this.tokenLocation = tokenLocation;
         this.profileLocation = profileLocation;
         this.scopes = scopes;
+        this.oAuth2AccessTokenType = oAuth2AccessTokenType;
     }
-    
-    
-    
-    
+
     @Override
     public String getAuthLocation() {
         return location;
@@ -79,10 +78,16 @@ public class OAuth2ProviderBean implements OAuth2Provider {
     @Override
     public String getProviderId() {
         return providerId;
-    }       
+    }
 
     @Override
     public Collection<String> getPermissionScopes() {
         return scopes;
     }
+
+    @Override
+    public OAuth2AccessTokenType getOAuth2AccessTokenType() {
+        return oAuth2AccessTokenType;
+    }
+
 }

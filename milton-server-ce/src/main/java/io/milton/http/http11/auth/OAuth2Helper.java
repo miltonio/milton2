@@ -149,10 +149,29 @@ public class OAuth2Helper {
 		String userProfileLocation = provider.getProfileLocation();
 
 		if (StringUtils.isNotBlank(userProfileLocation)) {
-			OAuthClientRequest bearerClientRequest
-					= new OAuthBearerClientRequest(userProfileLocation)
-							.setAccessToken(accessToken)
-							.buildQueryMessage();
+                    OAuthBearerClientRequest builder = new OAuthBearerClientRequest(userProfileLocation)
+					.setAccessToken(accessToken);
+
+			OAuthClientRequest bearerClientRequest;
+
+			if (null == provider.getOAuth2AccessTokenType()) {
+				bearerClientRequest = builder.buildQueryMessage();
+			} else {
+				switch (provider.getOAuth2AccessTokenType()) {
+					case REQUEST_PARAM:
+						bearerClientRequest = builder.buildQueryMessage();
+						break;
+					case BEARER:
+						bearerClientRequest = builder.buildHeaderMessage();
+						break;
+					case BODY:
+						bearerClientRequest = builder.buildBodyMessage();
+						break;
+					default:
+						bearerClientRequest = builder.buildQueryMessage();
+						break;
+				}
+			}
 
 			OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());
 
