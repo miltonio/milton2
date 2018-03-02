@@ -23,19 +23,26 @@ import java.util.Collection;
  */
 public interface OAuth2Provider {
 
+    public static enum OAuth2AccessTokenType {
+        BEARER,
+        REQUEST_PARAM,
+        BODY
+    }
+
     /**
-     * Identifies the provider to this application, ie 'facebook' or 'twitter' or 'myownserver'
-     * 
-     * @return 
+     * Identifies the provider to this application, ie 'facebook' or 'twitter'
+     * or 'myownserver'
+     *
+     * @return
      */
     String getProviderId();
-    
+
     /**
      * This is the URL we will redirect the user to, where they will enter their
-     * username and password into the remote application (if required) and authorise
-     * our app
-     * 
-     * @return 
+     * username and password into the remote application (if required) and
+     * authorise our app
+     *
+     * @return
      */
     String getAuthLocation();
 
@@ -46,21 +53,23 @@ public interface OAuth2Provider {
     String getRedirectURI();
 
     /**
-     * This is the URL we will call direct (server to server) to get an access token
-     * from the access code received in the redirect back to our site from the oauth server
-     * 
-     * @return 
+     * This is the URL we will call direct (server to server) to get an access
+     * token from the access code received in the redirect back to our site from
+     * the oauth server
+     *
+     * @return
      */
     String getTokenLocation();
 
     String getProfileLocation();
-    
+
     /**
-     * Returns a list of named permission scopes, such as "email", "profile", etc,
-     * which determine what this client is permitted to do
-     * 
-     * @return 
+     * Returns a list of named permission scopes, such as "email", "profile",
+     * etc, which determine what this client is permitted to do
+     *
+     * @return
      */
     Collection<String> getPermissionScopes();
-    
+
+    OAuth2AccessTokenType getOAuth2AccessTokenType();
 }
