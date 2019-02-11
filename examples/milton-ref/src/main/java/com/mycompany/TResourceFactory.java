@@ -54,23 +54,23 @@ public class TResourceFactory implements ResourceFactory {
     static {
         principals = new TFolderResource(ROOT, "p");
         users = principals; // same as sabresav demo
-        //users = new TFolderResource( principals, "users" );        
+        //users = new TFolderResource( principals, "users" );
         addUser(users, "userA", "password", "userA@somewhere.com", "ACME", "555 1111");
         addUser(users, "userB", "password", "userB@somewhere.com", "ACME", "555 1121");
         addUser(users, "userC", "password", "userC@somewhere.com", "ACME", "555 1131");
 
         List<String> fbScopes = Arrays.asList("email");
-        
-        OAuth2Provider p = new OAuth2ProviderBean("fb", 
-                "https://graph.facebook.com/oauth/authorize", 
+
+        OAuth2Provider p = new OAuth2ProviderBean("fb",
+                "https://graph.facebook.com/oauth/authorize",
                 "131804060198305",
-                "3acb294b071c9aec86d60ae3daf32a93", 
-                "http://localhost:8080/", 
-                "https://graph.facebook.com/oauth/access_token", 
-                "https://graph.facebook.com/me", 
-                fbScopes);
+                "3acb294b071c9aec86d60ae3daf32a93",
+                "http://localhost:8080/",
+                "https://graph.facebook.com/oauth/access_token",
+                "https://graph.facebook.com/me",
+                fbScopes, OAuth2Provider.OAuth2AccessTokenType.REQUEST_PARAM);
         mapOfOauthProviders.put("fb", p);
-        
+
         List<String> googleScopes = Arrays.asList( "profile");
         p = new OAuth2ProviderBean(
                 "google",   // our internal ID
@@ -80,16 +80,16 @@ public class TResourceFactory implements ResourceFactory {
                 "http://localhost:8080/", // return url
                 "https://www.googleapis.com/oauth2/v3/token", // URL to call to get an access token from an access code
                 "https://www.googleapis.com/plus/v1/people/me", // URL to call to get profile information
-                googleScopes
+                googleScopes, OAuth2Provider.OAuth2AccessTokenType.REQUEST_PARAM
         );
         mapOfOauthProviders.put("google", p);
     }
 
-    
+
     public static TCalDavPrincipal getUser(String name) {
         return (TCalDavPrincipal) users.child(name);
     }
-    
+
     public static TCalDavPrincipal addUser(TFolderResource users, String name, String password, String email, String org, String phone) {
         TCalDavPrincipal user = new TCalDavPrincipal(users, name, password, null, null, null);
         user.setGivenName("joe");
@@ -99,8 +99,8 @@ public class TResourceFactory implements ResourceFactory {
         user.setTelephonenumber(phone);
 
         TFolderResource files = new TFolderResource(user, "files");
-        
-        
+
+
         TFolderResource calendars = new TFolderResource(user, "calendars");
         TCalendarResource cal1 = new TCalendarResource(calendars, "cal1");
         TEvent e = new TEvent(cal1, "event1.ics");
@@ -115,7 +115,7 @@ public class TResourceFactory implements ResourceFactory {
         addContact(addressBook1, "john@blah.com", "john", "long", "111 222 555", "contact3.vcf");
 
         user.setCalendarHome(calendars);
-        
+
         return user;
     }
 
@@ -177,11 +177,11 @@ public class TResourceFactory implements ResourceFactory {
         }
         return null;
     }
-    
+
     public List<Resource> getUsers() {
         System.out.println("TResourcEFactory: " + users.children);
         return users.children;
-    }    
+    }
 
     public static String createICalData() {
         Calendar cal = Calendar.getInstance();

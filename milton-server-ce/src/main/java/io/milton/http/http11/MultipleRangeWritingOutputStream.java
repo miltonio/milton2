@@ -20,6 +20,8 @@ import io.milton.common.Utils;
 import io.milton.http.Range;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -39,7 +41,6 @@ public class MultipleRangeWritingOutputStream extends OutputStream {
 
 	private int currentByte;
 	private Range currentRange;
-	private int currentRangeNum;
 
 	/**
 	 *
@@ -51,7 +52,7 @@ public class MultipleRangeWritingOutputStream extends OutputStream {
 	 */
 	public MultipleRangeWritingOutputStream(long totalResourceLength, OutputStream out, List<Range> ranges, String boundary, String contentType) {
 		this.out = out;
-		this.ranges = ranges;
+		this.ranges = new ArrayList(ranges);
 		this.boundary = boundary;
 		this.contentType = contentType;
 		this.totalResourceLength = totalResourceLength;
@@ -78,33 +79,40 @@ public class MultipleRangeWritingOutputStream extends OutputStream {
 		return false;
 	}
 
-	private Range getCurrentRange() throws IOException {
-		if (currentRange != null) {
-			if (isValid(currentRange)) {
-				return currentRange;
-			}
-		}
-		currentRange = null;
+	private boolean isBeyond(Range r) {
+		return r.getFinish() != null && r.getFinish() < currentByte;
+	}
 
-		while (currentRangeNum < ranges.size()) {
-			Range r = ranges.get(currentRangeNum++);
+	private Range getCurrentRange() throws IOException {
+		if (isValid(currentRange)) {
+			return currentRange;
+		}
+
+		currentRange = null;
+		Iterator<Range> i = ranges.iterator();
+		while (i.hasNext()) {
+			Range r = i.next();
 			if (isValid(r)) {
 				writeRangeHeader(r);
-				return r;
+				currentRange = r;
+				break;
+			}
+			if (isBeyond(r)) {
+				i.remove();
 			}
 		}
-		return null;
+		return currentRange;
 	}
 
 	private void writeRangeHeader(Range r) throws IOException {
 //--3d6b6a416f9b5
 //Content-Type: text/html
 //Content-Range: bytes 100-200/1270
-		out.write(("--" + boundary + "\n").getBytes(Utils.UTF8));
+		out.write(("\n--" + boundary + "\n").getBytes(Utils.UTF8));
 		if (contentType != null) {
 			out.write(("Content-Type: " + contentType + "\n").getBytes(Utils.UTF8));
 		}
-		out.write(("Content-Range: " + RangeUtils.toRangeString(currentByte, r.getFinish(), totalResourceLength) + "\n").getBytes(Utils.UTF8));
+		out.write(("Content-Range: " + RangeUtils.toRangeString(currentByte, r.getFinish(), totalResourceLength) + "\n\n").getBytes(Utils.UTF8));
 	}
 
 }

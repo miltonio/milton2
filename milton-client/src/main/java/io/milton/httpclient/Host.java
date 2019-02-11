@@ -125,16 +125,16 @@ public class Host extends Folder {
 //    System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
 //    System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
 //    System.setProperty("org.apache.commons.logging.simplelog.log.httpclient.wire.header", "debug");
-//    System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient", "debug");    
+//    System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient", "debug");
     }
-    
+
     public static  org.jdom.Document getJDomDocument(InputStream in) throws JDOMException {
 		ByteArrayOutputStream bout = new ByteArrayOutputStream();
 		try {
 			IOUtils.copy(in, bout);
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
-		}		
+		}
 //		System.out.println("");
 //		System.out.println(bout.toString());
 //		System.out.println("");
@@ -146,7 +146,7 @@ public class Host extends Folder {
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
-    }         
+    }
 
     public Host(String server, Integer port, String user, String password, ProxyDetails proxyDetails) {
         this(server, null, port, user, password, proxyDetails, 30000, null, null);
@@ -185,7 +185,7 @@ public class Host extends Folder {
         HttpConnectionParams.setSoTimeout(params, 10000);
         HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
 
-        // Create and initialize scheme registry 
+        // Create and initialize scheme registry
         SchemeRegistry schemeRegistry = new SchemeRegistry();
         schemeRegistry.register(new Scheme("http", 80, PlainSocketFactory.getSocketFactory()));
         schemeRegistry.register(new Scheme("https", 443, SSLSocketFactory.getSocketFactory()));
@@ -222,7 +222,7 @@ public class Host extends Folder {
                         return false;
                 }
             }
-        });        
+        });
 
         if (user != null) {
             client.getCredentialsProvider().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(user, password));
@@ -886,6 +886,7 @@ public class Host extends Folder {
      * @return - the body of the response
      */
     public String doPost(String url, Map<String, String> params) throws io.milton.httpclient.HttpException, NotAuthorizedException, ConflictException, BadRequestException, NotFoundException {
+        log.info("POST: url={}", url);
         notifyStartRequest();
         HttpPost m = new HttpPost(url);
         List<NameValuePair> formparams = new ArrayList<NameValuePair>();

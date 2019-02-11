@@ -184,7 +184,11 @@ public class PutJsonResource extends JsonResource implements PostableResource {
 				}
 			} else {
 				newResource = wrapped.createNew(newName, in, length, contentType);
-				log.info("completed POST processing for file. Created: " + newResource.getName());
+				if( newResource != null ) {
+					log.info("completed POST processing for file. Created: " + newResource.getName());
+				} else {
+					log.info("completed POST processing for file. null resource returned");
+				}
 				eventManager.fireEvent(new PutEvent(newResource));
 			}
 			String newHref = buildNewHref(href, newResource.getName());
