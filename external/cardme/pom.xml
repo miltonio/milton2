@@ -8,7 +8,13 @@
     <name>cardme</name>
 
     <distributionManagement>
+        <repository>
+            <id>bintray-milton-Milton</id>
+            <name>milton-Milton</name>
+            <url>https://api.bintray.com/maven/milton/Milton/cardme/;publish=1</url>
+        </repository>
     </distributionManagement>
+
     <build>
         <plugins>
             <plugin>

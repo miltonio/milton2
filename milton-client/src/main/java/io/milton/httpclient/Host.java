@@ -181,8 +181,8 @@ public class Host extends Folder {
         this.user = user;
         this.password = password;
         HttpParams params = new BasicHttpParams();
-        HttpConnectionParams.setConnectionTimeout(params, 20 * 1000);
-        HttpConnectionParams.setSoTimeout(params, 10000);
+        HttpConnectionParams.setConnectionTimeout(params, timeoutMillis);
+        HttpConnectionParams.setSoTimeout(params, timeoutMillis);
         HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
 
         // Create and initialize scheme registry
@@ -886,7 +886,7 @@ public class Host extends Folder {
      * @return - the body of the response
      */
     public String doPost(String url, Map<String, String> params) throws io.milton.httpclient.HttpException, NotAuthorizedException, ConflictException, BadRequestException, NotFoundException {
-        log.info("POST: url={}", url);
+        log.info("POST: url={} timeout={}", url, timeout);
         notifyStartRequest();
         HttpPost m = new HttpPost(url);
         List<NameValuePair> formparams = new ArrayList<NameValuePair>();
@@ -900,15 +900,17 @@ public class Host extends Folder {
             throw new RuntimeException(ex);
         }
         m.setEntity(entity);
+        long tm = System.currentTimeMillis();
         try {
             ByteArrayOutputStream bout = new ByteArrayOutputStream();
             int res = Utils.executeHttpWithStatus(client, m, bout, newContext());
             Utils.processResultCode(res, url);
             return bout.toString();
         } catch (HttpException ex) {
-            throw new RuntimeException(ex);
+            tm = System.currentTimeMillis() - tm;
+            throw new RuntimeException("RuntimeException URL=" + url + " duration=" + tm, ex);
         } catch (IOException ex) {
-            throw new RuntimeException(ex);
+            throw new RuntimeException("IOException URL=" + url + " duration=" + tm, ex);
         } finally {
             notifyFinishRequest();
         }
