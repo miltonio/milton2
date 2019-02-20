@@ -136,7 +136,7 @@ public class BeanPropertySource implements PropertySource {
 			return PropertyMetaData.UNKNOWN;
 		}
 
-		PropertyDescriptor pd = getPropertyDescriptor(r, name.getLocalPart());
+		PropertyDescriptor pd = getPropertyDescriptor(bean, name.getLocalPart());
 		if (pd == null || pd.getReadMethod() == null) {
 			LogUtils.debug(log, "getPropertyMetaData: no read method:", name.getLocalPart(), r.getClass());
 			return PropertyMetaData.UNKNOWN;
