@@ -40,7 +40,7 @@
 
 
 
-    <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
         <property name="dataSource" ref="dataSource" />
         <property name="packagesToScan" value="io.milton.vfs.db,io.milton.cloud.server.db,com.fuselms.db" />
         <property name="hibernateProperties">
@@ -51,27 +51,26 @@
                 <prop key="hibernate.jdbc.batch_size">0</prop>
                 <prop key="hibernate.query.substitutions">true 'Y', false 'N'</prop>
                 <prop key="hibernate.hbm2ddl.auto">${hibernate.hbm2ddl}</prop>
-                <prop key="hibernate.cache.use_second_level_cache">true</prop>
-                <prop key="hibernate.cache.use_query_cache">true</prop>                
-                <prop key="hibernate.cache.use_minimal_puts">true</prop>
-                <prop key="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory</prop>
                 <!--
                 <prop key=" hibernate.cache.hazelcast.lock_timeout_in_seconds">3</prop> 
                 -->
                 <!-- 3 secs, see http://www.hazelcast.com/docs/2.0/manual/multi_html/ch14.html -->
             </props>
         </property>
-        <property name="namingStrategy" ref="namingStrategy" />
+        <property name="physicalNamingStrategy" ref="namingStrategy" />
+        <property name="implicitNamingStrategy" ref="implicitNamingStrategy" />
     </bean>
     
     <bean id="session.manager" class="io.milton.vfs.db.utils.SessionManager">
         <constructor-arg ref="sessionFactory" />
     </bean>
 
-    <bean id="namingStrategy" class="org.hibernate.cfg.ImprovedNamingStrategy"/>
+    <bean id="namingStrategy" class="io.milton.vfs.db.ImprovedPhysicalNamingStrategy"/>
+    <bean id="implicitNamingStrategy" class="io.milton.vfs.db.ImprovedImplicitNamingStrategy"/>
 
 
-    <bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+
+    <bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
         <property name="dataSource" ref="dataSource" />
         <property name="sessionFactory" ref="sessionFactory" />
     </bean>    

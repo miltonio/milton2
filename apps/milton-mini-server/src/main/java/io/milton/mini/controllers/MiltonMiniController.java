@@ -99,6 +99,11 @@ public class MiltonMiniController implements InitListener {
     @Inject
     private SessionManager sessionManager;
 
+    @Override
+    public void beforeProtocolBuild(HttpManagerBuilder b) {
+
+    }
+
     @Root
     public MiltonMiniController getRoot() {
         return this;
@@ -126,7 +131,6 @@ public class MiltonMiniController implements InitListener {
         }
         return null;
     }
-     
 
     @Get
     public String showLoginPage(LoginPage p) {
@@ -139,13 +143,13 @@ public class MiltonMiniController implements InitListener {
             return new ScratchPage(name);
         }
         return null;
-    }  
-    
+    }
+
     @Get
     public String showScratchPage(ScratchPage p) {
         return "scratch";
-    }    
-    
+    }
+
     @ChildrenOf
     public UsersHome getUsersHome(MiltonMiniController root) {
         return new UsersHome();
@@ -208,14 +212,14 @@ public class MiltonMiniController implements InitListener {
         // HACK, add user to admin group until we build groups page
         Organisation org = Organisation.getRootOrg(SessionManager.session());
         Session session = SessionManager.session();
-        
+
         session.save(profile);
         Group g = org.group("admin", session);
-        if( !g.containsUser(org, org, session)) {
+        if (!g.containsUser(org, org, session)) {
             log.info("Add to admin group, hack!");
             GroupMembership gm = profile.createGroupMembership(g, org, session);
         }
-        
+
         session.flush();
         return profile;
     }
@@ -315,44 +319,54 @@ public class MiltonMiniController implements InitListener {
     public void afterBuild(HttpManagerBuilder b, HttpManager m) {
         Session session = sessionManager.open();
         Transaction tx = session.beginTransaction();
-        Organisation rootOrg = Organisation.getRootOrg(session);
-        if (rootOrg == null) {
-            log.info("Creating root organisation");
-            rootOrg = new Organisation();
-            Date now = currentDateService.getNow();
-            rootOrg.setCreatedDate(now);
-            rootOrg.setModifiedDate(now);
-            rootOrg.setOrgId("root");
-            session.save(rootOrg);
+        try {
+            Organisation rootOrg = Organisation.getRootOrg(session);
+            if (rootOrg == null) {
+                log.info("Creating root organisation");
+                rootOrg = new Organisation();
+                Date now = currentDateService.getNow();
+                rootOrg.setCreatedDate(now);
+                rootOrg.setModifiedDate(now);
+                rootOrg.setOrgId("root");
+                session.save(rootOrg);
+                session.flush();
+            }
+
+            Group adminGroup = rootOrg.group("admin", session);
+            if (adminGroup == null) {
+                adminGroup = rootOrg.createGroup("admin");
+                adminGroup.setRegistrationMode(Group.REGO_MODE_CLOSED);
+                session.save(adminGroup);
+                adminGroup.grantRole(Role.Admin.name(), session);
+                session.flush();
+            }
+
+            Profile admin = Profile.find("admin", session);
+            if (admin == null) {
+                admin = createNewProfile();
+                admin.setName("admin");
+                admin.setNickName("admin");
+                session.save(admin);
+                session.flush();
+
+                admin.createGroupMembership(adminGroup, rootOrg, session);
+                session.flush();
+
+                passwordManager.setPassword(admin, "password8");
+                session.flush();
+            }
+            Repository files = rootOrg.repository("files");
+            if (files == null) {
+                System.out.println("create directory");
+                files = rootOrg.createRepository("files", admin, session);
+                session.save(files);
+                session.flush();
+            }
+            System.out.println("files repo: " + files);
+            tx.commit();
+        } catch (Exception ex) {
+            log.error("EXception creating initial data", ex);
         }
-        
-        Group adminGroup = rootOrg.group("admin", session);
-        if( adminGroup == null ) {
-            adminGroup = rootOrg.createGroup("admin");
-            adminGroup.setRegistrationMode(Group.REGO_MODE_CLOSED);
-            session.save(adminGroup);
-            adminGroup.grantRole(Role.Admin.name(), session);
-        }
-        
-        Profile admin = Profile.find("admin", session);
-        if (admin == null) {
-            admin = createNewProfile();
-            admin.setName("admin");
-            admin.setNickName("admin");
-            session.save(admin);
-            
-            admin.createGroupMembership(adminGroup, rootOrg, session);
-            
-            passwordManager.setPassword(admin, "password8");
-        }
-        Repository files = rootOrg.repository("files");
-        if (files == null) {
-            System.out.println("create directory");
-            files = rootOrg.createRepository("files", admin, session);
-            session.save(files);
-        }
-        System.out.println("files repo: " + files);
-        tx.commit();
     }
 
     public class UsersHome {
@@ -385,7 +399,7 @@ public class MiltonMiniController implements InitListener {
             return "login.html";
         }
     }
-    
+
     public class ScratchPage {
 
         private String name;
@@ -393,11 +407,11 @@ public class MiltonMiniController implements InitListener {
         public ScratchPage(String name) {
             this.name = name;
         }
-                        
+
         public String getName() {
             return "name"; // DW
         }
-    }    
+    }
 
     public class RepoHome {
 

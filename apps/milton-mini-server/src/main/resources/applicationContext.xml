@@ -37,7 +37,7 @@
         <property name="buffering" value="never"/>
         <property name="filters">
             <list>
-                <ref local="open.session.in.view.filter" />
+                <ref bean="open.session.in.view.filter" />
             </list>
         </property>   
         <property name="enableCompression" value="false" />
