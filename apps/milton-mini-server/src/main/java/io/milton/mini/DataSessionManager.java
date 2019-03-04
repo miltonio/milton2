@@ -51,7 +51,7 @@ public class DataSessionManager {
                 }                
             }
             if (trunk != null) {
-                dataSession = new DataSession(trunk, session, hashStore, blobStore, currentDateService);
+                dataSession = new DataSession(trunk, session, hashStore, blobStore, currentDateService, null);
                 request.getAttributes().put(sessKey, dataSession);
             }
         }

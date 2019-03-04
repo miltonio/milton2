@@ -128,7 +128,8 @@ public class TFolderResource extends TResource implements PutableResource, MakeC
         Request req = HttpManager.request();
         pw.print("<p>" + this.getClass().getCanonicalName() + "</p>");
         CalDavPrincipal curUser = null;
-        if (HttpManager.request().getAuthorization() != null) {
+        Object auth = HttpManager.request().getAuthorization().getTag();
+        if (auth instanceof CalDavPrincipal) {
             curUser = (CalDavPrincipal) HttpManager.request().getAuthorization().getTag();
         }
         if (curUser == null) {
@@ -145,7 +146,7 @@ public class TFolderResource extends TResource implements PutableResource, MakeC
     private void generateOAuthLoginLinks(PrintWriter pw) {
         for (OAuth2Provider prov : getOAuth2Providers().values()) {
             String url = OAuth2Helper.getOAuth2URL(prov, null).toString();
-            pw.print("<li><a href='" + url + "'>Login with OAuth2 on " + prov.getProviderId() +"</a></li>");
+            pw.print("<li><a href='" + url + "'>Login with OAuth2 on " + prov.getProviderId() + "</a></li>");
         }
     }
 

@@ -14,6 +14,9 @@
             <goals>
                 <goal>jetty:run</goal>
             </goals>
+            <activatedProfiles>
+                <activatedProfile>run-jetty</activatedProfile>
+            </activatedProfiles>            
         </action>
         <action>
             <actionName>debug</actionName>
@@ -23,7 +26,12 @@
             <properties>
                 <netbeans.deploy.debugmode>true</netbeans.deploy.debugmode>
                 <jpda.listen>maven</jpda.listen>
+                <jna.nosys>true</jna.nosys>
+                <Env.jna.nosys>true</Env.jna.nosys>
             </properties>
+            <activatedProfiles>
+                <activatedProfile>run-jetty</activatedProfile>
+            </activatedProfiles>
         </action>
         <action>
             <actionName>run</actionName>
@@ -37,5 +45,15 @@
             <goals>
                 <goal>deploy</goal>
             </goals>
+        </action>
+        <action>
+            <actionName>CUSTOM-run-grizzly</actionName>
+            <displayName>run-grizzly</displayName>
+            <goals>
+                <goal>compile</goal>
+            </goals>
+            <activatedProfiles>
+                <activatedProfile>run-grizzly</activatedProfile>
+            </activatedProfiles>
         </action>
     </actions>

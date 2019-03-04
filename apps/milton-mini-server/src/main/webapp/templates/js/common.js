@@ -4,7 +4,7 @@ function endsWith(str, suffix) {
 function startsWith(str, prefix) {
     return str.indexOf(prefix) === 0;
 }
-
+String.prototype.contains = function(it) { return this.indexOf(it) != -1; };
 /**
  * ReplaceAll by Fagner Brack (MIT Licensed)
  * Replaces all occurrences of a substring in a string

@@ -77,7 +77,7 @@
                                     <a href="${f.href}" class="${imgClass}"><img height="48" width="48" alt="" src=""/></a>
                                 </td>
                                 <td class="left">
-                                    <a href="${f.href}" class="${imgClass}">${f.name} - ${formatter.class}</a>
+                                    <a href="${f.href}" class="${imgClass}">${f.name} </a>
                                 </td>
                                 <td><abbr title="$formatter.formatDateISO8601($!f.modifiedDate)" class="timeago">${f.modifiedDate}</abbr></td>
                                 <td>${f.contentLength}</td>
