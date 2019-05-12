@@ -553,7 +553,6 @@ public class Host extends Folder {
      * @param newUri - encoded destination url
      * @return
      * @throws IOException
-     * @throws com.ettrema.httpclient.HttpException
      */
     public synchronized int doMove(String sourceUrl, String newUri) throws IOException, io.milton.httpclient.HttpException, NotAuthorizedException, ConflictException, BadRequestException, NotFoundException, URISyntaxException {
         notifyStartRequest();
@@ -571,6 +570,14 @@ public class Host extends Folder {
         List<QName> list = new ArrayList<QName>();
         list.addAll(Arrays.asList(fields));
         return propFind(path, depth, list);
+    }
+    
+    public synchronized List<PropFindResponse> propFind(String path, int depth, QName... fields) throws IOException, io.milton.httpclient.HttpException, NotAuthorizedException, BadRequestException {
+        List<QName> list = new ArrayList<QName>();
+        list.addAll(Arrays.asList(fields));
+        String href = baseHref() + rootPath + path;
+        log.info("propFind: href={}", href);
+        return _doPropFind(href, depth, list);
     }
 
     /**
@@ -602,7 +609,7 @@ public class Host extends Folder {
      * @throws com.ettrema.httpclient.HttpException
      */
     public synchronized List<PropFindResponse> _doPropFind(final String url, final int depth, List<QName> fields) throws IOException, io.milton.httpclient.HttpException, NotAuthorizedException, BadRequestException {
-        log.trace("doPropFind: " + url);
+        log.info("doPropFind: " + url);
         notifyStartRequest();
         final PropFindMethod m = new PropFindMethod(url);
         m.addHeader("Depth", depth + "");
@@ -624,6 +631,8 @@ public class Host extends Folder {
                         HttpEntity entity = response.getEntity();
                         if (entity != null) {
                             entity.writeTo(bout);
+                            //String s = new String(bout.toByteArray());
+                            //log.info("_doPropFind: res{}", s);
                             ByteArrayInputStream bin = new ByteArrayInputStream(bout.toByteArray());
                             Document document = getResponseAsDocument(bin);
                             String sServerDate = null;
@@ -647,6 +656,7 @@ public class Host extends Folder {
                 }
             };
             Integer res = client.execute(m, respHandler, newContext());
+            log.info("_doPropFind: result code {}", res);
 
             Utils.processResultCode(res, url);
             return responses;
