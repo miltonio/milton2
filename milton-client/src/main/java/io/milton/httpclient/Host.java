@@ -38,6 +38,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +58,7 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.client.methods.HttpOptions;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.ConnectionKeepAliveStrategy;
 import org.apache.http.conn.params.ConnRoutePNames;
@@ -67,9 +69,11 @@ import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.auth.DigestScheme;
+import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpProtocolParams;
@@ -119,7 +123,9 @@ public class Host extends Folder {
     private final FileSyncer fileSyncer;
     private final List<ConnectionListener> connectionListeners = new ArrayList<ConnectionListener>();
     private boolean secure; // use HTTPS if true
+    private boolean usePreemptiveAuth = true;
     private boolean useDigestForPreemptiveAuth = true; // if true we will do pre-emptive auth with Digest, otherwise will use Basic
+    private Map<String, String> cookies = new HashMap<String, String>();
 
     static {
 //    System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
@@ -128,17 +134,17 @@ public class Host extends Folder {
 //    System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient", "debug");
     }
 
-    public static  org.jdom.Document getJDomDocument(InputStream in) throws JDOMException {
-		ByteArrayOutputStream bout = new ByteArrayOutputStream();
-		try {
-			IOUtils.copy(in, bout);
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
+    public static org.jdom.Document getJDomDocument(InputStream in) throws JDOMException {
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        try {
+            IOUtils.copy(in, bout);
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
 //		System.out.println("");
 //		System.out.println(bout.toString());
 //		System.out.println("");
-		ByteArrayInputStream bin = new ByteArrayInputStream(bout.toByteArray());
+        ByteArrayInputStream bin = new ByteArrayInputStream(bout.toByteArray());
         try {
             SAXBuilder builder = new SAXBuilder();
             builder.setExpandEntities(false);
@@ -229,7 +235,6 @@ public class Host extends Folder {
             PreemptiveAuthInterceptor interceptor = new PreemptiveAuthInterceptor();
             client.addRequestInterceptor(interceptor, 0);
         }
-
 
         if (proxyDetails != null) {
             if (proxyDetails.isUseSystemProxy()) {
@@ -571,7 +576,7 @@ public class Host extends Folder {
         list.addAll(Arrays.asList(fields));
         return propFind(path, depth, list);
     }
-    
+
     public synchronized List<PropFindResponse> propFind(String path, int depth, QName... fields) throws IOException, io.milton.httpclient.HttpException, NotAuthorizedException, BadRequestException {
         List<QName> list = new ArrayList<QName>();
         list.addAll(Arrays.asList(fields));
@@ -1063,6 +1068,14 @@ public class Host extends Folder {
         transferService.setTimeout(timeout);
     }
 
+    public Map<String, String> getCookies() {
+        return cookies;
+    }
+
+    public void addCookie(String name, String value) {
+        cookies.put(name, value);
+    }
+
     private void notifyStartRequest() {
         for (ConnectionListener l : connectionListeners) {
             l.onStartRequest();
@@ -1133,15 +1146,34 @@ public class Host extends Folder {
         this.useDigestForPreemptiveAuth = useDigestForPreemptiveAuth;
     }
 
+    public boolean isUsePreemptiveAuth() {
+        return usePreemptiveAuth;
+    }
+
+    public void setUsePreemptiveAuth(boolean usePreemptiveAuth) {
+        this.usePreemptiveAuth = usePreemptiveAuth;
+    }
+
     protected HttpContext newContext() {
         HttpContext context = new BasicHttpContext();
-        AuthScheme authScheme;
-        if (useDigestForPreemptiveAuth) {
-            authScheme = new DigestScheme();
-        } else {
-            authScheme = new BasicScheme();
+        if (usePreemptiveAuth) {
+            AuthScheme authScheme;
+            if (useDigestForPreemptiveAuth) {
+                authScheme = new DigestScheme();
+            } else {
+                authScheme = new BasicScheme();
+            }
+            context.setAttribute("preemptive-auth", authScheme);
         }
-        context.setAttribute("preemptive-auth", authScheme);
+        CookieStore cookieStore = new BasicCookieStore();
+        for (Entry<String, String> entry : cookies.entrySet()) {
+            BasicClientCookie cookie = new BasicClientCookie(entry.getKey(), entry.getValue());
+            cookie.setDomain(this.server);
+            cookie.setPath("/");
+            cookieStore.addCookie(cookie);
+        }
+        //cookieStore.addCookie(new BasicClientCookie(name, name));
+        context.setAttribute(HttpClientContext.COOKIE_STORE, cookieStore);
         return context;
     }
 
