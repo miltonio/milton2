@@ -24,9 +24,12 @@ import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.exceptions.NotFoundException;
+import io.milton.http.values.Pair;
 import java.io.*;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.apache.commons.io.IOUtils;
@@ -51,9 +54,9 @@ public class Utils {
     /**
      * Convert the path to a url encoded string, by url encoding each path of the
      * path. Will not be suffixed with a slash
-     * 
+     *
      * @param path
-     * @return 
+     * @return
      */
     public static String buildEncodedUrl(Path path) {
         String url = "";
@@ -66,24 +69,24 @@ public class Utils {
             url += io.milton.common.Utils.percentEncode(s);
         }
         return url;
-    }    
-    
+    }
+
     /**
      * Execute the given request, populate any returned content to the outputstream,
      * and return the status code
-     * 
+     *
      * @param client
      * @param m
      * @param out - may be null
      * @return
-     * @throws IOException 
-     * 
+     * @throws IOException
+     *
      */
     public static int executeHttpWithStatus(HttpClient client, HttpUriRequest m, OutputStream out, HttpContext context) throws IOException {
         HttpResult result = executeHttpWithResult(client, m, out, context);
         return result.getStatusCode();
     }
-    
+
     public static HttpResult executeHttpWithResult(HttpClient client, HttpUriRequest m, OutputStream out, HttpContext context) throws IOException {
         HttpResponse resp = client.execute(m, context);
         HttpEntity entity = resp.getEntity();
@@ -98,15 +101,15 @@ public class Utils {
                 IOUtils.closeQuietly(in);
             }
         }
-        Map<String,String> mapOfHeaders = new HashMap<String, String>();
         Header[] respHeaders = resp.getAllHeaders();
+        List<Pair<String,String>> allHeaders = new ArrayList<Pair<String, String>>();
         for( Header h : respHeaders) {
-            mapOfHeaders.put(h.getName(), h.getValue()); // TODO: should concatenate multi-valued headers
+            allHeaders.add(new Pair(h.getName(), h.getValue())); // TODO: should concatenate multi-valued headers
         }
-        HttpResult result = new HttpResult(resp.getStatusLine().getStatusCode(), mapOfHeaders);
+        HttpResult result = new HttpResult(resp.getStatusLine().getStatusCode(), allHeaders);
         return result;
-    }    
-    
+    }
+
     public static void close(InputStream in) {
         try {
             if (in == null) {
@@ -221,7 +224,7 @@ public class Utils {
 
     public static class CancelledException extends IOException {
     }
-    
+
     public static String format (Map<String,String> parameters, final String encoding) {
         final StringBuilder result = new StringBuilder();
         for ( Entry<String, String> p : parameters.entrySet()) {
@@ -253,5 +256,5 @@ public class Utils {
         } catch (UnsupportedEncodingException problem) {
             throw new IllegalArgumentException(problem);
         }
-    }    
+    }
 }

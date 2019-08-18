@@ -18,6 +18,10 @@
  */
 package io.milton.httpclient;
 
+import io.milton.http.values.Pair;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,14 +30,22 @@ import java.util.Map;
  */
 public class HttpResult {
     private final int statusCode;
-    private final Map<String,String> headers;
+    private final List<Pair<String,String>> allHeaders;
 
-    public HttpResult(int statusCode, Map<String, String> headers) {
+    private Map<String,String> headers;
+
+    public HttpResult(int statusCode, List<Pair<String,String>> allHeaders) {
         this.statusCode = statusCode;
-        this.headers = headers;
+        this.allHeaders = allHeaders;
     }
 
     public Map<String, String> getHeaders() {
+        if( headers == null ) {
+            headers = new LinkedHashMap<String, String>();
+            for( Pair<String,String> p : allHeaders) {
+                headers.put(p.getObject1(), p.getObject2());
+            }
+        }
         return headers;
     }
 
@@ -41,7 +53,13 @@ public class HttpResult {
         return statusCode;
     }
 
-    
-    
-    
+    public List<String> getHeaderValues(String name) {
+        List<String> list = new ArrayList<String>();
+        for( Pair<String, String> h : allHeaders) {
+            if( h.getObject1().equals(name)) {
+                list.add(h.getObject2());
+            }
+        }
+        return list;
+    }
 }
