@@ -33,7 +33,7 @@
     <repositories>
         <repository>
             <id>ettrema-repo</id>
-            <url>http://www.ettrema.com/maven2</url>
+            <url>https://www.ettrema.com/maven2</url>
         </repository>
     </repositories>
 

@@ -36,11 +36,11 @@
             </snapshots>
             <id>bintray-milton-Milton</id>
             <name>bintray</name>
-            <url>http://dl.bintray.com/milton/Milton</url>
+            <url>https://dl.bintray.com/milton/Milton</url>
         </repository>
         <repository>
             <id>ettrema-repo</id>
-            <url>http://milton.io/maven/</url>
+            <url>https://milton.io/maven/</url>
         </repository>
     </repositories>
 

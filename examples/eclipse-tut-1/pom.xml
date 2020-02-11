@@ -44,7 +44,7 @@
     <repositories>
         <repository>
             <id>milton-repo</id>
-            <url>http://milton.io/maven/</url>
+            <url>https://milton.io/maven/</url>
         </repository>
     </repositories>
 
