@@ -43,20 +43,20 @@
     </build>
     <repositories>
         <repository>
-            <url>http://download.java.net/maven/2/</url>
+            <url>https://download.java.net/maven/2/</url>
             <id>hibernate-persistence</id>
             <layout>default</layout>
             <name>Repository for library Library[hibernate-persistence]</name>
         </repository>
         <repository>
-            <url>http://repo1.maven.org/maven2/</url>
+            <url>https://repo1.maven.org/maven2/</url>
             <id>hibernate-support</id>
             <layout>default</layout>
             <name>Repository for library Library[hibernate-support]</name>
         </repository>
         <repository>
             <id>ettrema-repo</id>
-            <url>http://milton.io/maven/</url>
+            <url>https://milton.io/maven/</url>
         </repository>
     </repositories>
     <dependencies>

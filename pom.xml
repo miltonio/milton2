@@ -19,7 +19,7 @@
 		<snapshotRepository>
 			<uniqueVersion>false</uniqueVersion>
 			<id>ettrema-repo</id>
-			<url>http://milton.io/maven/</url>
+			<url>https://milton.io/maven/</url>
 		</snapshotRepository>
 	</distributionManagement>
 	<developers>
@@ -187,7 +187,7 @@
 	<repositories>
 		<repository>
 			<id>milton-repo</id>
-			<url>http://milton.io/maven/</url>
+			<url>https://milton.io/maven/</url>
 		</repository>
 		<repository>
 			<snapshots>
@@ -195,13 +195,13 @@
 			</snapshots>
 			<id>bintray-milton-Milton</id>
 			<name>bintray</name>
-			<url>http://dl.bintray.com/milton/Milton</url>
+			<url>https://dl.bintray.com/milton/Milton</url>
 		</repository>
 		<!--
 				<repository>
 					<id>mvnrepository.com</id>
 					<name>mvnrepository.com</name>
-					<url>http://www.mvnrepository.com/artifacts</url>
+					<url>https://www.mvnrepository.com/artifacts</url>
 				</repository>
 		-->
 	</repositories>
