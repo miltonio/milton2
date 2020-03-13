@@ -23,13 +23,19 @@ package io.milton.servlet;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemHeaders;
 
 public class FileItemWrapper implements io.milton.http.FileItem{
 
     final org.apache.commons.fileupload.FileItem wrapped;
 
     final String name;
+	
+	private Map<String, String> mapOfHeaders;
     
     /**
      * strip path information provided by IE
@@ -87,4 +93,21 @@ public class FileItemWrapper implements io.milton.http.FileItem{
     public long getSize() {
         return wrapped.getSize();
     }
+
+	@Override
+	public Map<String, String> getHeaders() {
+		if (mapOfHeaders == null) {
+			mapOfHeaders = new HashMap<String, String>();
+			if (wrapped.getHeaders() != null) {
+				FileItemHeaders headers = wrapped.getHeaders();
+				Iterator<String> it = headers.getHeaderNames();
+				while (it.hasNext()) {
+					String headerName = it.next();
+					String s = headers.getHeader(headerName);
+					mapOfHeaders.put(headerName, s);
+				}
+			}
+		}
+		return mapOfHeaders;
+	}
 }
