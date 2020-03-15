@@ -24,12 +24,16 @@ import io.milton.common.Path;
 import io.milton.common.RandomFileOutputStream;
 import io.milton.event.NewFolderEvent;
 import io.milton.event.PutEvent;
+import io.milton.http.FileItem;
 import io.milton.http.Handler;
 import io.milton.http.HandlerHelper;
 import io.milton.http.HttpManager;
 import io.milton.http.Range;
 import io.milton.http.Request;
 import io.milton.http.Request.Method;
+import io.milton.http.RequestParseException;
+import static io.milton.http.ResourceHandlerHelper.ATT_NAME_FILES;
+import static io.milton.http.ResourceHandlerHelper.ATT_NAME_PARAMS;
 import io.milton.http.Response;
 import io.milton.http.Response.Status;
 import io.milton.http.exceptions.BadRequestException;
@@ -52,6 +56,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,6 +97,24 @@ public class PutHandler implements Handler {
 
 	@Override
 	public void process(HttpManager manager, Request request, Response response) throws NotAuthorizedException, ConflictException, BadRequestException, NotFoundException {
+		// need a linked hash map to preserve ordering of params
+		Map<String, String> params = new LinkedHashMap<String, String>();
+
+		Map<String, FileItem> files = new HashMap<String, FileItem>();
+
+		try {
+			request.parseRequestParameters(params, files);
+		} catch (RequestParseException ex) {
+			if (log.isTraceEnabled()) {
+				log.warn("failed to parse request parameters: {}", ex.getMessage(), ex);
+			} else {
+				log.warn("failed to parse request parameters: {}", ex.getMessage());
+			}
+			return;
+		}
+		request.getAttributes().put(ATT_NAME_PARAMS, params);
+		request.getAttributes().put(ATT_NAME_FILES, files);
+
 		if (!handlerHelper.checkExpects(responseHandler, request, response)) {
 			return;
 		}
