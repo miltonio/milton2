@@ -29,12 +29,14 @@ public interface Response {
     public final static String HTTP = "text/html";
     public final static String IMAGE_JPG = "image/jpg";
     public final static String MULTIPART = "multipart/form-data";
+    public final static String MULTIPART_MIXED = "multipart/mixed";
     public final static String XML = "text/xml; charset=UTF-8";
 
     public enum ContentType {
 
         HTTP,
         MULTIPART,
+        MULTIPART_MIXED,
         IMAGE_JPG,
         XML;
     }
