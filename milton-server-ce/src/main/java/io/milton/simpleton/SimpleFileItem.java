@@ -30,6 +30,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Map;
 import org.simpleframework.http.Part;
 
 /**
@@ -92,6 +93,11 @@ public class SimpleFileItem implements FileItem{
     public OutputStream getOutputStream() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
+
+	@Override
+	public Map<String, String> getHeaders() {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
 
     void addPart(Part part) {
         try {

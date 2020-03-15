@@ -20,6 +20,7 @@
 package io.milton.http;
 
 import java.io.OutputStream;
+import java.util.Map;
 
 /**
  * Represents an item which has been uploaded in a form POST
@@ -60,4 +61,11 @@ public interface FileItem {
      * @return
      */
     OutputStream getOutputStream();
+
+    /**
+     * A map of headers attached to the file.
+     *
+     * @return
+     */
+    Map<String, String> getHeaders();
 }
