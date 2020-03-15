@@ -24,7 +24,6 @@ import java.util.Map;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.RequestContext;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.lang.CharSet;
 import org.apache.commons.lang.StringUtils;
 import org.glassfish.grizzly.http.server.Request;
 import org.slf4j.Logger;
@@ -154,7 +153,15 @@ public class GrizzlyMiltonRequest extends  AbstractRequest  {
     @Override
     public void parseRequestParameters(Map<String, String> params, Map<String, FileItem> files) throws RequestParseException {
         try {
-            if (isMultiPart()) {
+			if (isMultiPartMixed()) {
+				UploadListener listener = new UploadListener();
+				MonitoredDiskFileItemFactory factory = new MonitoredDiskFileItemFactory(listener);
+				
+				parseQueryString(params);
+				
+				MiltonGrizzlyMultipartUploader mgms = new MiltonGrizzlyMultipartUploader(params, files, factory);
+				mgms.parseRequest(wrapped);
+			} else if (isMultiPart()) {
                 log.trace("parseRequestParameters: isMultiPart");
                 UploadListener listener = new UploadListener();
                 MonitoredDiskFileItemFactory factory = new MonitoredDiskFileItemFactory(listener);
@@ -328,16 +335,24 @@ public class GrizzlyMiltonRequest extends  AbstractRequest  {
         Response.ContentType ct = getRequestContentType();
         return (Response.ContentType.MULTIPART.equals(ct));
     }
+	
+	protected boolean isMultiPartMixed() {
+		Response.ContentType ct = getRequestContentType();
+		return (Response.ContentType.MULTIPART_MIXED.equals(ct));
+	}
 
-    protected Response.ContentType getRequestContentType() {
-        String s = wrapped.getContentType();
-        log.trace("request content type", s);
-        if (s == null) {
-            return null;
-        }
-        if (s.contains(Response.MULTIPART)) {
-            return Response.ContentType.MULTIPART;
-        }
-        return typeContents.get(s);
-    }
+	protected Response.ContentType getRequestContentType() {
+		String s = wrapped.getContentType();
+		log.trace("request content type", s);
+		if (s == null) {
+			return null;
+		}
+		if (s.contains(Response.MULTIPART_MIXED)) {
+			return Response.ContentType.MULTIPART_MIXED;
+		}
+		if (s.contains(Response.MULTIPART)) {
+			return Response.ContentType.MULTIPART;
+		}
+		return typeContents.get(s);
+	}
 }
