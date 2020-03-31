@@ -82,7 +82,7 @@ public class DigestHelper {
 			// format of nonce is
 			//   base64(expirationTime + "" + md5Hex(expirationTime + "" + key))
 			String plainTextNonce = new String( Base64.decodeBase64( auth.getNonce().getBytes("UTF-8") ) );
-			NonceValidity validity = nonceProvider.getNonceValidity( plainTextNonce, nc );
+			NonceValidity validity = nonceProvider.getNonceValidity( plainTextNonce, nc, auth.getUser() );
 	//        if( NonceValidity.INVALID.equals( validity ) ) {
 	//            log.debug( "invalid nonce: " + plainTextNonce );
 	//            return null;
