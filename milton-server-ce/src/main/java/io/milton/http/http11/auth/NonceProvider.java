@@ -63,9 +63,12 @@ public interface NonceProvider {
      * Create and return a nonce value to be used for an authentication session.
      *
      *
-     * @param resource - the resource being accessed.
      * @param request - the current request
      * @return - some string to be used as a nonce value.
      */
     String createNonce( Request request );
+	
+	default String createNonce( Request request, String userUrl ) {
+		return createNonce(request);
+	}
 }

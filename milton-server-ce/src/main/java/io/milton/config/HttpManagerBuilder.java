@@ -382,7 +382,7 @@ public class HttpManagerBuilder {
 								cookieDelegateHandlers.add(formAuthenticationHandler);
 								authenticationHandlers.remove(formAuthenticationHandler);
 							}
-							if( oAuth2Handler != null ) {
+							if (oAuth2Handler != null) {
 								cookieDelegateHandlers.add(oAuth2Handler);
 								authenticationHandlers.remove(oAuth2Handler);
 							}
@@ -393,7 +393,7 @@ public class HttpManagerBuilder {
 						authenticationHandlers.add(cookieAuthenticationHandler);
 					}
 				}
-					}
+			}
 			authenticationService = new AuthenticationService(authenticationHandlers);
 			rootContext.put(authenticationService);
 			if (cookieAuthenticationHandler != null) {
@@ -515,7 +515,6 @@ public class HttpManagerBuilder {
 				l.beforeProtocolBuild(this);
 			}
 		}
-
 
 		buildProtocolHandlers(webdavResponseHandler, resourceTypeHelper);
 		if (filters != null) {
@@ -1377,8 +1376,6 @@ public class HttpManagerBuilder {
 		this.outerWebdavResponseHandler = outerWebdavResponseHandler;
 	}
 
-
-
 	/**
 	 * If not null, is expected to be a comma seperated list of package names.
 	 * These will be scanned for classes which contain classes annotated with
@@ -1569,7 +1566,7 @@ public class HttpManagerBuilder {
 					}
 					if (controllerPackagesToScan != null) {
 						log.info("Scan for controller classes: {}", controllerPackagesToScan);
-						if(log.isTraceEnabled()){
+						if (log.isTraceEnabled()) {
 							log.trace("Searching for classes with annotation: " + ResourceController.class + "(annotation class loader: " + ResourceController.class.getClassLoader() + ")");
 						}
 						Set<ClassLoader> classesClassloaders = new HashSet<ClassLoader>();
@@ -1579,29 +1576,29 @@ public class HttpManagerBuilder {
 							log.info("init annotations controllers from package: {}", packageName);
 							List<Class> classes = ReflectionUtils.getClassNamesFromPackage(packageName);
 							for (Class c : classes) {
-								if(log.isTraceEnabled()){
+								if (log.isTraceEnabled()) {
 									log.trace("Class: " + c + " with annotations: " + java.util.Arrays.asList(c.getAnnotations()) + ", classloader: " + c.getClassLoader());
 									classesClassloaders.add(c.getClassLoader());
 								}
 								Annotation a = c.getAnnotation(ResourceController.class);
 								if (a != null) {
-									if(log.isTraceEnabled()){
+									if (log.isTraceEnabled()) {
 										log.trace("Adding controller with class " + c);
 									}
 									Object controller = createObject(c);
 									controllers.add(controller);
-								}else{
-									if(log.isTraceEnabled()) {
+								} else {
+									if (log.isTraceEnabled()) {
 										log.trace("No " + ResourceController.class + " in " + c + ", skipping");
 									}
 								}
 							}
 						}
-						if(log.isTraceEnabled()){
-							for(ClassLoader cl: classesClassloaders){
+						if (log.isTraceEnabled()) {
+							for (ClassLoader cl : classesClassloaders) {
 								ClassLoader cur = cl;
 								StringBuilder toOut = new StringBuilder("Classloader hierarchy:");
-								while(cur != null){
+								while (cur != null) {
 									toOut.append("\n   id:" + System.identityHashCode(cur) + ", class:" + cur.getClass() + ": " + cur);
 									cur = cur.getParent();
 								}
@@ -1809,8 +1806,6 @@ public class HttpManagerBuilder {
 	public void setAuthorisationListener(AuthorisationListener authorisationListener) {
 		this.authorisationListener = authorisationListener;
 	}
-
-	
 
 	public class CreationException extends Exception {
 
