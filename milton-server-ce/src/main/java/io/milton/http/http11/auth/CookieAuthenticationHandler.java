@@ -442,7 +442,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 			return false;
 		} else {
 			// signed ok, check to see if nonce is still valid
-			NonceProvider.NonceValidity val = nonceProvider.getNonceValidity(nonce, null);
+			NonceProvider.NonceValidity val = nonceProvider.getNonceValidity(nonce, null, userUrl);
 			if (val == null) {
 				throw new RuntimeException("Unhandled nonce validity value");
 			} else {
@@ -492,7 +492,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 	}
 
 	public String getUrlSigningHash(String userUrl, Request request, String host) {
-		String nonce = nonceProvider.createNonce(request);
+		String nonce = nonceProvider.createNonce(request, userUrl);
 		String message = nonce + ":" + userUrl + ":" + host;
 		String key = keys.get(keys.size() - 1); // Use the last key for new cookies
 		String hash = HmacUtils.calcShaHash(message, key);

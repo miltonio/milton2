@@ -57,7 +57,24 @@ public interface NonceProvider {
      * value and ensure that this value is greater then any previously given.
      * @return
      */
-    NonceValidity getNonceValidity( String nonce, Long nonceCount );
+	NonceValidity getNonceValidity( String nonce, Long nonceCount );
+	
+	/**
+	 * Default implementation which calls getNonceValidity( String nonce, Long nonceCount )
+	 * 
+	 * Implementations which wish to apply extra security can check the userid is valid for the nonce
+	 * , IF it is provided
+	 * 
+	 * Note that the userID may be EITHER a userUrl (from cookie auth handler) or a username (from Digest auth)
+	 * 
+	 * @param nonce
+	 * @param nonceCount
+	 * @param userId
+	 * @return 
+	 */
+    default	NonceValidity getNonceValidity( String nonce, Long nonceCount, String userId ) {
+		return getNonceValidity(nonce, nonceCount);
+	}
 
     /**
      * Create and return a nonce value to be used for an authentication session.
@@ -68,6 +85,12 @@ public interface NonceProvider {
      */
     String createNonce( Request request );
 	
+	/**
+	 * 
+	 * @param request
+	 * @param userUrl
+	 * @return 
+	 */
 	default String createNonce( Request request, String userUrl ) {
 		return createNonce(request);
 	}
