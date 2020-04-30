@@ -22,6 +22,7 @@
 			<url>https://milton.io/maven/</url>
 		</snapshotRepository>
 	</distributionManagement>
+	
 	<developers>
 		<developer>
 			<name>Brad McEvoy</name>
