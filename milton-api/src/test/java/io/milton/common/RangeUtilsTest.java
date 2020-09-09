@@ -102,7 +102,7 @@ public class RangeUtilsTest extends TestCase {
         
         RangeUtils.writeRange(in, r, out);
         System.out.println("testWrite_OpenRange wrote: " + out.toByteArray().length + " bytes");
-        assertEquals(40822, out.toByteArray().length);
+        assertEquals(40823, out.toByteArray().length);
     }    
     
     
