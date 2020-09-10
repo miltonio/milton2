@@ -18,7 +18,6 @@
  */
 package io.milton.servlet;
 
-import io.milton.common.ContentTypeUtils;
 import io.milton.common.Path;
 import io.milton.http.ResourceFactory;
 import io.milton.resource.Resource;
@@ -86,10 +85,16 @@ public class StaticResourceFactory implements ResourceFactory {
 	@Override
 	public Resource getResource(String host, String url) {
 		Path p = Path.path(url);
-		String s = stripContext(url);
+		String path = stripContext(url);
+		// Fix for possible attack - see https://nvd.nist.gov/vuln/detail/CVE-2000-0920
+		if( path.contains("../") || path.contains("/..") ) {
+			log.error("getResource: Invalid path {}, attempt to use relative notation", path);
+			return null;
+		}
+
 
 		for (File root : roots) {
-			File file = new File(root, s);
+			File file = new File(root, path);
 			if (file.exists() && file.isFile()) {
 				return new StaticResource(file);
 			}
