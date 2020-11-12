@@ -26,25 +26,25 @@ import java.util.Map;
 
 public interface Response {
 
-    public final static String HTTP = "text/html";
-    public final static String IMAGE_JPG = "image/jpg";
-    public final static String MULTIPART = "multipart/form-data";
-    public final static String MULTIPART_MIXED = "multipart/mixed";
-    public final static String XML = "text/xml; charset=UTF-8";
+    String HTTP = "text/html";
+    String IMAGE_JPG = "image/jpg";
+    String MULTIPART = "multipart/form-data";
+    String MULTIPART_MIXED = "multipart/mixed";
+    String XML = "text/xml; charset=UTF-8";
 
-    public enum ContentType {
+    enum ContentType {
 
         HTTP,
         MULTIPART,
         MULTIPART_MIXED,
         IMAGE_JPG,
-        XML;
+        XML
     }
 
-    public enum ContentEncoding {
+    enum ContentEncoding {
 
         GZIP( "gzip" );
-        public String code;
+        public final String code;
 
         ContentEncoding( String code ) {
             this.code = code;
@@ -71,7 +71,7 @@ public interface Response {
         ACCEPT_RANGES("Accept-Ranges"),
         CONTENT_RANGE( "Content-Range" );
         
-        public String code;
+        public final String code;
 
         Header( String code ) {
             this.code = code;
@@ -90,7 +90,7 @@ public interface Response {
         MAX_AGE( "max-age" ), // "=" delta-seconds            ; Section 14.9.3
         S_MAX_AGE( "s-maxage" ), // "=" delta-seconds           ; Section 14.9.3
         CACHE_EXT( "cache-extension" );  //                       ; Section 14.9.6
-        public String code;
+        public final String code;
 
         CacheControlResponse( String code ) {
             this.code = code;
@@ -128,8 +128,8 @@ public interface Response {
         SC_INSUFFICIENT_STORAGE( 507 ),
         SC_METHOD_FAILURE( 420 ),
         SC_LOCKED( 423 );
-        public int code;
-		public String text;
+        public final int code;
+		public final String text;
 
         Status( int code, String text ) {
             this.code = code;
@@ -156,26 +156,26 @@ public interface Response {
         }
     }
 
-    public interface Entity {
+    interface Entity {
         void write(Response response, OutputStream outputStream) throws Exception;
     }
 
-    public Response.Status getStatus();
+    Response.Status getStatus();
 
-    public Map<String, String> getHeaders();
+    Map<String, String> getHeaders();
 
     /**
      * 
      * @return - the content length which might have been set by a handler, or null
      * if none has been set
      */
-    public Long getContentLength();
+    Long getContentLength();
 
-    public void setContentEncodingHeader( ContentEncoding encoding );
+    void setContentEncodingHeader(ContentEncoding encoding);
 
-    public void setExpiresHeader( Date expiresAt );
+    void setExpiresHeader(Date expiresAt);
 
-    public void setLockTokenHeader( String tokenId );
+    void setLockTokenHeader(String tokenId);
 
     /**
      * Must set multiple Authenticate headers, one for each challenge

@@ -52,13 +52,9 @@ public class DefaultPropPatchParser implements PropPatchRequestParser {
             StreamUtils.readTo( in, bout, false, true );
             byte[] arr = bout.toByteArray();
             return parseContent( arr );
-        } catch( SAXException ex ) {
+        } catch( ReadingException | WritingException ex ) {
             throw new RuntimeException( ex );
-        } catch( ReadingException ex ) {
-            throw new RuntimeException( ex );
-        } catch( WritingException ex ) {
-            throw new RuntimeException( ex );
-        } catch( IOException ex ) {
+        } catch( SAXException | IOException ex ) {
             throw new RuntimeException( ex );
         }
     }
@@ -80,7 +76,7 @@ public class DefaultPropPatchParser implements PropPatchRequestParser {
             return new PropPatchParseResult( handler.getAttributesToSet(), handler.getAttributesToRemove().keySet() );
         } else {
             log.debug( "empty content" );
-            return new PropPatchParseResult( new HashMap<QName, String>(), new HashSet<QName>() );
+            return new PropPatchParseResult(new HashMap<>(), new HashSet<>() );
         }
 
     }

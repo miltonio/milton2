@@ -169,12 +169,12 @@ public class HttpManagerBuilder {
 	protected BasicAuthHandler basicHandler;
 	protected CookieAuthenticationHandler cookieAuthenticationHandler;
 	protected FormAuthenticationHandler formAuthenticationHandler;
-	protected Map<UUID, Nonce> nonces = new ConcurrentHashMap<UUID, Nonce>();
+	protected Map<UUID, Nonce> nonces = new ConcurrentHashMap<>();
 	protected int nonceValiditySeconds = 60 * 60 * 24;
 	protected NonceProvider nonceProvider;
 	protected AuthenticationService authenticationService;
 	protected ExpiredNonceRemover expiredNonceRemover;
-	protected List<Stoppable> shutdownHandlers = new CopyOnWriteArrayList<Stoppable>();
+	protected List<Stoppable> shutdownHandlers = new CopyOnWriteArrayList<>();
 	protected ResourceTypeHelper resourceTypeHelper;
 	protected WebDavResponseHandler webdavResponseHandler;
 	// when wrapping a given response handler, this will be a reference to the outer most instance. or same as main response handler when not wrapping
@@ -210,7 +210,7 @@ public class HttpManagerBuilder {
 	protected boolean enableCookieAuth = true;
 	protected boolean enabledCkBrowser = false;
 	protected boolean enableEarlyAuth = false;
-	protected boolean enableTextContentProperty = false;
+	protected final boolean enableTextContentProperty = false;
 	protected String loginPage = "/login.html";
 	protected List<String> loginPageExcludePaths;
 	protected File rootDir = null;
@@ -235,12 +235,12 @@ public class HttpManagerBuilder {
 	protected String controllerPackagesToScan;
 	protected String controllerClassNames;
 	protected List controllers = new ArrayList();
-	private Long maxAgeSeconds = 10l;
+	private Long maxAgeSeconds = 10L;
 	private String fsHomeDir = null;
 	private PropFindRequestFieldParser propFindRequestFieldParser;
 	private PropFindPropertyBuilder propFindPropertyBuilder;
 	private CacheManager cacheManager = new LocalCacheManager(); // used for locking
-	private RootContext rootContext = new RootContext();
+	private final RootContext rootContext = new RootContext();
 	private List dependencies;
 	private List<String> cookieSigningKeys;
 	private String cookieSigningKeysFile;
@@ -254,7 +254,7 @@ public class HttpManagerBuilder {
 	protected io.milton.http.SecurityManager securityManager() {
 		if (securityManager == null) {
 			if (mapOfNameAndPasswords == null) {
-				mapOfNameAndPasswords = new HashMap<String, String>();
+				mapOfNameAndPasswords = new HashMap<>();
 				mapOfNameAndPasswords.put(defaultUser, defaultPassword);
 				log.info("Configuring default user and password: {}/{} for SimpleSecurityManager", defaultUser, defaultPassword);
 			}
@@ -317,7 +317,7 @@ public class HttpManagerBuilder {
 		log.info("Using mainResourceFactory: {}", mainResourceFactory.getClass());
 		if (authenticationService == null) {
 			if (authenticationHandlers == null) {
-				authenticationHandlers = new ArrayList<AuthenticationHandler>();
+				authenticationHandlers = new ArrayList<>();
 				if (basicHandler == null) {
 					if (enableBasicAuth) {
 						basicHandler = new BasicAuthHandler();
@@ -369,7 +369,7 @@ public class HttpManagerBuilder {
 				if (cookieAuthenticationHandler == null) {
 					if (enableCookieAuth) {
 						if (cookieDelegateHandlers == null) {
-							cookieDelegateHandlers = new ArrayList<AuthenticationHandler>();
+							cookieDelegateHandlers = new ArrayList<>();
 							if (basicHandler != null) {
 								cookieDelegateHandlers.add(basicHandler);
 								authenticationHandlers.remove(basicHandler);
@@ -407,7 +407,7 @@ public class HttpManagerBuilder {
 
 	protected void initCookieSigningKeys() {
 		if (cookieSigningKeys == null) {
-			cookieSigningKeys = new ArrayList<String>();
+			cookieSigningKeys = new ArrayList<>();
 		}
 		if (cookieSigningKeys.isEmpty()) {
 			File fKeys;
@@ -429,13 +429,7 @@ public class HttpManagerBuilder {
 				}
 
 				// Remove any blank lines
-				Iterator<String> it = cookieSigningKeys.iterator();
-				while (it.hasNext()) {
-					String s = it.next();
-					if (StringUtils.isBlank(s)) {
-						it.remove();
-					}
-				}
+				cookieSigningKeys.removeIf(StringUtils::isBlank);
 			} else {
 				log.warn("Cookie signing keys file does not exist: {}. Will attempt to create it with a random key", fKeys.getAbsolutePath());
 				log.warn("*** If using a server cluster you MUST ensure a common key file is used ***");
@@ -518,9 +512,9 @@ public class HttpManagerBuilder {
 
 		buildProtocolHandlers(webdavResponseHandler, resourceTypeHelper);
 		if (filters != null) {
-			filters = new ArrayList<Filter>(filters);
+			filters = new ArrayList<>(filters);
 		} else {
-			filters = new ArrayList<Filter>();
+			filters = new ArrayList<>();
 		}
 		filters.add(defaultStandardFilter);
 	}
@@ -598,19 +592,17 @@ public class HttpManagerBuilder {
 	}
 
 	protected DefaultHttp11ResponseHandler createDefaultHttp11ResponseHandler(AuthenticationService authenticationService) {
-		DefaultHttp11ResponseHandler rh = new DefaultHttp11ResponseHandler(authenticationService, eTagGenerator, contentGenerator);
-		return rh;
+		return new DefaultHttp11ResponseHandler(authenticationService, eTagGenerator, contentGenerator);
 	}
 
 	protected void buildResourceTypeHelper() {
-		WebDavResourceTypeHelper webDavResourceTypeHelper = new WebDavResourceTypeHelper();
-		resourceTypeHelper = webDavResourceTypeHelper;
+		resourceTypeHelper = new WebDavResourceTypeHelper();
 		showLog("resourceTypeHelper", resourceTypeHelper);
 	}
 
 	protected void buildProtocolHandlers(WebDavResponseHandler webdavResponseHandler, ResourceTypeHelper resourceTypeHelper) {
 		if (protocols == null) {
-			protocols = new ArrayList<HttpExtension>();
+			protocols = new ArrayList<>();
 
 			if (matchHelper == null) {
 				matchHelper = new MatchHelper(eTagGenerator);
@@ -1569,7 +1561,7 @@ public class HttpManagerBuilder {
 						if (log.isTraceEnabled()) {
 							log.trace("Searching for classes with annotation: " + ResourceController.class + "(annotation class loader: " + ResourceController.class.getClassLoader() + ")");
 						}
-						Set<ClassLoader> classesClassloaders = new HashSet<ClassLoader>();
+						Set<ClassLoader> classesClassloaders = new HashSet<>();
 						classesClassloaders.add(ResourceController.class.getClassLoader());
 						for (String packageName : controllerPackagesToScan.split(",")) {
 							packageName = packageName.trim();
@@ -1599,7 +1591,7 @@ public class HttpManagerBuilder {
 								ClassLoader cur = cl;
 								StringBuilder toOut = new StringBuilder("Classloader hierarchy:");
 								while (cur != null) {
-									toOut.append("\n   id:" + System.identityHashCode(cur) + ", class:" + cur.getClass() + ": " + cur);
+									toOut.append("\n   id:").append(System.identityHashCode(cur)).append(", class:").append(cur.getClass()).append(": ").append(cur);
 									cur = cur.getParent();
 								}
 								log.trace(toOut.toString());
@@ -1636,13 +1628,9 @@ public class HttpManagerBuilder {
 					// init the default, statically configured sm
 					arf.setSecurityManager(securityManager());
 				}
-				setDisplayNameFormatter(arf.new AnnotationsDisplayNameFormatter(getDisplayNameFormatter()));
+				setDisplayNameFormatter(new AnnotationResourceFactory.AnnotationsDisplayNameFormatter(getDisplayNameFormatter()));
 			}
-		} catch (CreationException e) {
-			throw new RuntimeException("Exception initialising AnnotationResourceFactory", e);
-		} catch (IOException e) {
-			throw new RuntimeException("Exception initialising AnnotationResourceFactory", e);
-		} catch (ClassNotFoundException e) {
+		} catch (CreationException | ClassNotFoundException | IOException e) {
 			throw new RuntimeException("Exception initialising AnnotationResourceFactory", e);
 		}
 	}
@@ -1657,7 +1645,7 @@ public class HttpManagerBuilder {
 	protected PropFindPropertyBuilder propFindPropertyBuilder() {
 		if (propFindPropertyBuilder == null) {
 			if (propertySources == null) {
-				propertySources = new ArrayList<PropertySource>();
+				propertySources = new ArrayList<>();
 			}
 			propFindPropertyBuilder = new DefaultPropFindPropertyBuilder(propertySources);
 		}
@@ -1717,7 +1705,7 @@ public class HttpManagerBuilder {
 		if (found == null) {
 			throw new RuntimeException("Could not find a default or @Inject constructor for class: " + c.getCanonicalName());
 		}
-		Object args[] = new Object[found.getParameterTypes().length];
+		Object[] args = new Object[found.getParameterTypes().length];
 		int i = 0;
 		for (Class paramType : found.getParameterTypes()) {
 			try {
@@ -1731,13 +1719,7 @@ public class HttpManagerBuilder {
 			log.info("Creating: {}", c.getCanonicalName());
 			created = found.newInstance(args);
 			rootContext.put(created);
-		} catch (InstantiationException ex) {
-			throw new CreationException(c, ex);
-		} catch (IllegalAccessException ex) {
-			throw new CreationException(c, ex);
-		} catch (IllegalArgumentException ex) {
-			throw new CreationException(c, ex);
-		} catch (InvocationTargetException ex) {
+		} catch (InstantiationException | InvocationTargetException | IllegalArgumentException | IllegalAccessException ex) {
 			throw new CreationException(c, ex);
 		}
 		// Now look for @Inject fields
@@ -1748,9 +1730,7 @@ public class HttpManagerBuilder {
 				try {
 					field.setAccessible(true);
 					field.set(created, findOrCreateObject(field.getType()));
-				} catch (IllegalArgumentException ex) {
-					throw new CreationException(field, c, ex);
-				} catch (IllegalAccessException ex) {
+				} catch (IllegalArgumentException | IllegalAccessException ex) {
 					throw new CreationException(field, c, ex);
 				} finally {
 					field.setAccessible(acc); // put back the way it was
@@ -1769,20 +1749,14 @@ public class HttpManagerBuilder {
 						methodArgs[ii++] = findOrCreateObject(paramType);
 					}
 					m.invoke(created, methodArgs);
-				} catch (CreationException creationException) {
+				} catch (CreationException | InvocationTargetException | IllegalArgumentException | IllegalAccessException creationException) {
 					throw new CreationException(m, c, creationException);
-				} catch (IllegalAccessException ex) {
-					throw new CreationException(m, c, ex);
-				} catch (IllegalArgumentException ex) {
-					throw new CreationException(m, c, ex);
-				} catch (InvocationTargetException ex) {
-					throw new CreationException(m, c, ex);
 				}
 			}
 		}
 		if (created instanceof InitListener) {
 			if (listeners == null) {
-				listeners = new ArrayList<InitListener>();
+				listeners = new ArrayList<>();
 			}
 			InitListener l = (InitListener) created;
 			l.beforeInit(this); // better late then never!!
@@ -1807,7 +1781,7 @@ public class HttpManagerBuilder {
 		this.authorisationListener = authorisationListener;
 	}
 
-	public class CreationException extends Exception {
+	public static class CreationException extends Exception {
 
 		private final Class attemptedToCreate;
 

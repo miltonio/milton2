@@ -38,31 +38,27 @@ public abstract class Config {
 	protected abstract Enumeration initParamNames();
 
     public File getConfigFile(String path) {
-        File f = new File( getWebInfDir(), path);
-        return f;
+        return new File( getWebInfDir(), path);
     }
 
     public File getWebInfDir() {
         String s = getServletContext().getRealPath("WEB-INF/" );
-        File f = new File(s);
-        return f;
+        return new File(s);
     }
     
     public File getRootFolder() {
         String s = getServletContext().getRealPath("/");
-        File f = new File(s);
-        return f;        
+        return new File(s);
     }
     
     public File mapPath( String url ) {
         String pth;
         pth = getServletContext().getRealPath(url);
-        File file = new File(pth);
-        return file;
+        return new File(pth);
     }	
 	
 	public List<String> getInitParameterNames() {
-		List<String> list = new ArrayList<String>();
+		List<String> list = new ArrayList<>();
 		Enumeration en = initParamNames();
 		while(en.hasMoreElements()) {
 			list.add((String)en.nextElement());

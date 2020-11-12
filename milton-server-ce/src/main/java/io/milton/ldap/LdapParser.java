@@ -129,7 +129,7 @@ public class LdapParser {
 	}
 
 	public Set<String> parseReturningAttributes(BerDecoder reqBer) throws IOException {
-		Set<String> returningAttributes = new HashSet<String>();
+		Set<String> returningAttributes = new HashSet<>();
 		int[] seqSize = new int[1];
 		reqBer.parseSeq(seqSize);
 		int end = reqBer.getParsePosition() + seqSize[0];

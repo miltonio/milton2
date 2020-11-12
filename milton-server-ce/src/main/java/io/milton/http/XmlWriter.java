@@ -47,7 +47,8 @@ public class XmlWriter {
 		OPENING,
 		CLOSING,
 		NO_CONTENT
-	};
+	}
+
 	private boolean allowNewlines = false;
 	protected final OutputStream out;
 	protected final Charset charset;
@@ -362,8 +363,7 @@ public class XmlWriter {
 				open(newLine);
 			}
 
-			Element el = new Element(this, prefix, name);
-			return el;
+			return new Element(this, prefix, name);
 		}
 
 		public Element begin(String uri, String prefix, String name) {
@@ -371,8 +371,7 @@ public class XmlWriter {
 				open();
 			}
 
-			Element el = new Element(this, uri, prefix, name);
-			return el;
+			return new Element(this, uri, prefix, name);
 		}
 
 		/**
@@ -398,13 +397,11 @@ public class XmlWriter {
 	}
 
 	public Element begin(String name) {
-		Element el = new Element(null, name);
-		return el;
+		return new Element(null, name);
 	}
 
 	public Element begin(String nsPrefix, String name) {
-		Element el = new Element(null, nsPrefix, name);
-		return el;
+		return new Element(null, nsPrefix, name);
 	}
 
 	public void writeElement(String nsPrefix, String nsUrl, String name, Type type) {

@@ -135,16 +135,11 @@ public class GrizzlyLoadBalancer {
 					public void service(final Request request, final Response response) throws Exception {
 						log.trace("service");
 						response.suspend();
-						complexAppExecutorService.execute(new Runnable() {
-
-							@Override
-							public void run() {
-								try {
-									forwardToCluster(request, response);
-								} finally {
-									response.resume();
-								}
-
+						complexAppExecutorService.execute(() -> {
+							try {
+								forwardToCluster(request, response);
+							} finally {
+								response.resume();
 							}
 
 						});
@@ -202,7 +197,7 @@ public class GrizzlyLoadBalancer {
 		return defaultVal;
 	}
 
-	public class ExtAsyncHttpClient extends AsyncHttpClient {
+	public static class ExtAsyncHttpClient extends AsyncHttpClient {
 
 		protected BoundRequestBuilder requestBuilder(String method, String url) {
 			//return new BoundRequestBuilder( method, config.isDisableUrlEncodingForBoundedRequests()).setUrl(url).setSignatureCalculator(signatureCalculator);

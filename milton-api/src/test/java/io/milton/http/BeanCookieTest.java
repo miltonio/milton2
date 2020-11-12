@@ -38,7 +38,7 @@ public class BeanCookieTest extends TestCase {
     }
     
     
-    public void testFormat_Complex() throws DateUtils.DateParseException, DateUtils.DateParseException {
+    public void testFormat_Complex() throws DateUtils.DateParseException {
         BeanCookie bc = new BeanCookie("SSID");                
         bc.setValue("XYZ");
         bc.setDomain(".foo.com");

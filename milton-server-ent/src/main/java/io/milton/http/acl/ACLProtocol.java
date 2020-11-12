@@ -93,8 +93,7 @@ public class ACLProtocol implements HttpExtension, PropertySource {
     @Override
     public List<QName> getAllPropertyNames(Resource r) {
         log.debug("getAllPropertyNames");
-        List<QName> list = new ArrayList<QName>();
-        list.addAll(propertyMap.getAllPropertyNames(r));
+        List<QName> list = new ArrayList<>(propertyMap.getAllPropertyNames(r));
         return list;
     }
 
@@ -103,7 +102,7 @@ public class ACLProtocol implements HttpExtension, PropertySource {
         return null;
     }
 
-    class PrincipalUrl implements StandardProperty<HrefList> {
+    static class PrincipalUrl implements StandardProperty<HrefList> {
 
         @Override
         public String fieldName() {
@@ -139,7 +138,7 @@ public class ACLProtocol implements HttpExtension, PropertySource {
      <href>/principals/</href>
      </principal-collection-set>
      */
-    class PrincipalCollectionSetProperty implements StandardProperty<HrefList> {
+    static class PrincipalCollectionSetProperty implements StandardProperty<HrefList> {
 
         @Override
         public String fieldName() {
@@ -163,7 +162,7 @@ public class ACLProtocol implements HttpExtension, PropertySource {
         }
     }
 
-    class CurrentUserPrincipalProperty implements StandardProperty<HrefList> {
+    static class CurrentUserPrincipalProperty implements StandardProperty<HrefList> {
 
         @Override
         public String fieldName() {
@@ -194,7 +193,7 @@ public class ACLProtocol implements HttpExtension, PropertySource {
         }
     }
 
-    class CurrentUserPrivledges implements StandardProperty<PriviledgeList> {
+    static class CurrentUserPrivledges implements StandardProperty<PriviledgeList> {
 
         @Override
         public String fieldName() {
@@ -207,8 +206,7 @@ public class ACLProtocol implements HttpExtension, PropertySource {
                 AccessControlledResource acr = (AccessControlledResource) res;
                 Auth auth = HttpManager.request().getAuthorization();
                 List<Priviledge> list = acr.getPriviledges(auth);
-                PriviledgeList privs = new PriviledgeList(list);
-                return privs;
+                return new PriviledgeList(list);
             } else {
                 return null;
             }

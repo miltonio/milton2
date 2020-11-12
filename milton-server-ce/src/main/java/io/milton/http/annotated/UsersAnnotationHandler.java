@@ -42,8 +42,7 @@ public class UsersAnnotationHandler extends AbstractAnnotationHandler {
 			if (!availMethods.isEmpty()) {
 				Resource r = userHome.child(name);
 				if (r instanceof AnnoPrincipalResource) {
-					AnnoPrincipalResource apr = (AnnoPrincipalResource) r;
-					return apr;
+					return (AnnoPrincipalResource) r;
 				}
 			}
 		}
@@ -55,7 +54,7 @@ public class UsersAnnotationHandler extends AbstractAnnotationHandler {
 		try {
 			// iterate over each root collection, looking for objects which have
 			// a @Authenticate annotation on their ChildOf or ChildrenOf methods
-			List<AnnoCollectionResource> list = new ArrayList<AnnoCollectionResource>();
+			List<AnnoCollectionResource> list = new ArrayList<>();
 			for (Resource col : root.getChildren()) {
 				if (col instanceof AnnoCollectionResource) {
 					AnnoCollectionResource acr = (AnnoCollectionResource) col;
@@ -66,9 +65,7 @@ public class UsersAnnotationHandler extends AbstractAnnotationHandler {
 				}
 			}
 			return list;
-		} catch (NotAuthorizedException e) {
-			throw new RuntimeException(e);
-		} catch (BadRequestException e) {
+		} catch (NotAuthorizedException | BadRequestException e) {
 			throw new RuntimeException(e);
 		}
 	}

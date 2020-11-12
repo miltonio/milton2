@@ -32,7 +32,7 @@ public class ResourceTypeValueWriter implements ValueWriter {
 
 	private static final Logger log = LoggerFactory.getLogger(ResourceTypeValueWriter.class);
 	
-	private final Map<String, String> prefixes = new HashMap<String, String>();
+	private final Map<String, String> prefixes = new HashMap<>();
 
 	public ResourceTypeValueWriter() {
 	}

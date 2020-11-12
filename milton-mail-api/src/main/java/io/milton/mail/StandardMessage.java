@@ -43,71 +43,71 @@ public interface StandardMessage {
      * @param disposition
      * @param in
      */
-    public void addAttachment(String name, String ct, String contentId, String disposition, InputStream in);
+    void addAttachment(String name, String ct, String contentId, String disposition, InputStream in);
 
-    public List<StandardMessage> getAttachedMessages();
+    List<StandardMessage> getAttachedMessages();
 
-    public void setAttachedMessages(List<StandardMessage> attachedMessages);
+    void setAttachedMessages(List<StandardMessage> attachedMessages);
 
-    public String getSubject();
+    String getSubject();
 
-    public MailboxAddress getFrom();
+    MailboxAddress getFrom();
 
-    public List<Attachment> getAttachments();
+    List<Attachment> getAttachments();
 
-    public void setFrom(MailboxAddress from);
+    void setFrom(MailboxAddress from);
 
-    public MailboxAddress getReplyTo();
+    MailboxAddress getReplyTo();
 
-    public void setReplyTo(MailboxAddress replyTo);
+    void setReplyTo(MailboxAddress replyTo);
 
-    public void setSubject(String subject);
+    void setSubject(String subject);
 
-    public String getHtml();
+    String getHtml();
 
-    public void setHtml(String html);
+    void setHtml(String html);
 
-    public String getText();
+    String getText();
 
-    public void setText(String text);
+    void setText(String text);
 
-    public int getSize();
+    int getSize();
 
-    public void setSize(int size);
+    void setSize(int size);
 
-    public void setDisposition(String disposition);
+    void setDisposition(String disposition);
 
-    public String getDisposition();
+    String getDisposition();
 
-    public void setEncoding(String encoding);
+    void setEncoding(String encoding);
 
-    public String getEncoding();
+    String getEncoding();
 
-    public void setContentLanguage(String contentLanguage);
+    void setContentLanguage(String contentLanguage);
 
-    public String getContentLanguage();
+    String getContentLanguage();
 
-    public Map<String, String> getHeaders();
+    Map<String, String> getHeaders();
 
-    public void setHeaders(Map<String, String> headers);
+    void setHeaders(Map<String, String> headers);
 
-    public List<MailboxAddress> getTo();
+    List<MailboxAddress> getTo();
 
-    public void setTo(List<MailboxAddress> to);
+    void setTo(List<MailboxAddress> to);
 
-    public List<MailboxAddress> getCc();
+    List<MailboxAddress> getCc();
 
-    public void setCc(List<MailboxAddress> cc);
+    void setCc(List<MailboxAddress> cc);
 
-    public List<MailboxAddress> getBcc();
+    List<MailboxAddress> getBcc();
 
-    public void setBcc(List<MailboxAddress> bcc);
+    void setBcc(List<MailboxAddress> bcc);
 
     /**
      *
      * @return - creates and returns a new instance of StandardMesssage suitable
      * for use as an attached message
      */
-    public StandardMessage instantiateAttachedMessage();
+    StandardMessage instantiateAttachedMessage();
 
 }

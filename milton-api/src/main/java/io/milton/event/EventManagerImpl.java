@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 public class EventManagerImpl implements EventManager {
 
     private final static Logger log = LoggerFactory.getLogger(EventManagerImpl.class);
-    private final List<Registration> registrations = new CopyOnWriteArrayList<Registration>();
+    private final List<Registration> registrations = new CopyOnWriteArrayList<>();
 
     @Override
     public void fireEvent(Event e) {
@@ -55,7 +55,7 @@ public class EventManagerImpl implements EventManager {
         registrations.add(r);
     }
 
-    private class Registration {
+    private static class Registration {
 
         private final EventListener listener;
         private final Class<? extends Event> clazz;

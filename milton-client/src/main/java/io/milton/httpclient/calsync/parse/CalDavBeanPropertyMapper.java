@@ -57,7 +57,7 @@ public class CalDavBeanPropertyMapper {
 
     public CalDavBeanPropertyMapper(PropertyAccessor propertyAccessor) {
         this.propertyAccessor = propertyAccessor;
-        mapOfMappers = new HashMap<Class, Mapper>();
+        mapOfMappers = new HashMap<>();
         addMapper(Uid.class, new UidMapper());
         addMapper(Location.class, new LocationMapper());
         addMapper(Summary.class, new SummaryMapper());
@@ -80,9 +80,7 @@ public class CalDavBeanPropertyMapper {
             net.fortuna.ical4j.model.Calendar cal4jCalendar;
             try {
                 cal4jCalendar = builder.build(fin);
-            } catch (IOException ex) {
-                throw new RuntimeException(icalText, ex);
-            } catch (ParserException ex) {
+            } catch (IOException | ParserException ex) {
                 throw new RuntimeException(icalText, ex);
             }
             PropertyDescriptor[] pds = PropertyUtils.getPropertyDescriptors(bean);
@@ -154,9 +152,7 @@ public class CalDavBeanPropertyMapper {
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         try {
             outputter.output(calendar, bout);
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        } catch (ValidationException ex) {
+        } catch (IOException | ValidationException ex) {
             throw new RuntimeException(ex);
         }
         return bout.toString();
@@ -184,7 +180,7 @@ public class CalDavBeanPropertyMapper {
         return prop.getDate();
     }
 
-    public abstract class Mapper {
+    public abstract static class Mapper {
 
         abstract void mapToBean(net.fortuna.ical4j.model.Calendar calEvent, Object bean, PropertyDescriptor pd);
 

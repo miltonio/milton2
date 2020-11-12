@@ -103,8 +103,7 @@ public class RootContext extends Context implements Closeable {
         Registration reg = null;
         try {
             reg = context.put(exec, context); // the context is its own onRemove handler
-            T t = exec.execute(context);
-            return t;
+            return exec.execute(context);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         } finally {

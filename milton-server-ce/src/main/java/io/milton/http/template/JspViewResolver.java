@@ -95,11 +95,9 @@ public class JspViewResolver implements ViewResolver {
 				req.setAttribute("model", model);
 				rd.include(req, resp);
 				resp.flushBuffer();
-			} catch (ServletException e) {
-				throw new RuntimeException(jspPath, e);
-			} catch (IOException e) {
+			} catch (ServletException | IOException e) {
 				throw new RuntimeException(jspPath, e);
 			}
-		}		
+        }
 	}
 }

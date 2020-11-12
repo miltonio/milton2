@@ -80,15 +80,11 @@ public class MiltonFtpHandler implements FtpHandler {
 		SocketAddress sa = session.getServiceAddress();
 		log.debug("message received: " + sa.toString());
 		if (actionListener != null) {
-			actionListener.onAction(session, request, new Runnable() {
-
-				@Override
-				public void run() {
-					try {
-						wrapped.messageReceived(session, request);
-					} catch (Throwable ex) {
-						log.error("Exception", ex);
-					}
+			actionListener.onAction(session, request, () -> {
+				try {
+					wrapped.messageReceived(session, request);
+				} catch (Throwable ex) {
+					log.error("Exception", ex);
 				}
 			});
 		} else {

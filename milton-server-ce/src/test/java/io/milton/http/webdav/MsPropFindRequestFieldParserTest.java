@@ -44,7 +44,7 @@ public class MsPropFindRequestFieldParserTest extends TestCase {
         request = createMock( InputStream.class );
         wrapped = createMock( PropFindRequestFieldParser.class );
         fieldParser = new MsPropFindRequestFieldParser( wrapped );
-        set = new HashSet<QName>();
+        set = new HashSet<>();
     }
 
     public void testGetRequestedFields_WrappedReturnsFields() {
@@ -69,7 +69,7 @@ public class MsPropFindRequestFieldParserTest extends TestCase {
     }
 	
 	private Set<Property> toProperties(Set<QName> set) {
-		Set<Property> props = new HashSet<Property>();
+		Set<Property> props = new HashSet<>();
 		for(QName n : set ) {
 			props.add(new Property(n, null));
 		}

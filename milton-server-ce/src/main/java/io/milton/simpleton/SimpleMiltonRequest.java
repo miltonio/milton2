@@ -105,7 +105,6 @@ public class SimpleMiltonRequest extends AbstractRequest {
         // note that a non-full uri will always start with a slash.
         if (s.startsWith("http")) {
             log.debug("target: " + s);
-            return s;
         } else {
             String host = baseRequest.getValue("Host");
             Address a = baseRequest.getAddress();
@@ -125,9 +124,9 @@ public class SimpleMiltonRequest extends AbstractRequest {
             }
             s = s + baseRequest.getTarget();
 //            s = s + a.getPath(); // note that this is unencoded, but milton expects absolute url to be encoded, eg raw
-            return s;
 
         }
+        return s;
 //        String s = baseRequest.getTarget();
 //        s = "http://localhost:8088" + s;
 //        return s;
@@ -173,7 +172,7 @@ public class SimpleMiltonRequest extends AbstractRequest {
             if (part.isFile()) {
                 SimpleFileItem item = (SimpleFileItem) files.get(name);
                 if (item == null) {
-                    String filename = truncateFileName(getUserAgentHeader(), part.getFileName());;
+                    String filename = truncateFileName(getUserAgentHeader(), part.getFileName());
                     item = new SimpleFileItem(name, part.getContentType().toString(), filename);
                     files.put(name, item);
                 }
@@ -215,7 +214,7 @@ public class SimpleMiltonRequest extends AbstractRequest {
     }
 
     public Map<String, String> getHeaders() {
-        Map<String, String> headers = new HashMap<String, String>();
+        Map<String, String> headers = new HashMap<>();
         for (String s : baseRequest.getNames()) {
             String val = baseRequest.getValue(s);
             headers.put(s, val);
@@ -233,7 +232,7 @@ public class SimpleMiltonRequest extends AbstractRequest {
     }
 
     public List<Cookie> getCookies() {
-        ArrayList<Cookie> list = new ArrayList<Cookie>();
+        ArrayList<Cookie> list = new ArrayList<>();
         for (org.simpleframework.http.Cookie c : baseRequest.getCookies()) {
             list.add(new SimpletonCookie(c));
         }

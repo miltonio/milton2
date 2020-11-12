@@ -27,7 +27,7 @@ import io.milton.resource.Resource;
 public class ResourceList extends ArrayList<CommonResource> {
 
 	private static final long serialVersionUID = 1L;
-	private final Map<String, CommonResource> map = new HashMap<String, CommonResource>();
+	private final Map<String, CommonResource> map = new HashMap<>();
 
 	public ResourceList() {
 	}
@@ -69,8 +69,7 @@ public class ResourceList extends ArrayList<CommonResource> {
 			throw new NullPointerException("Attempt to add resource with null name: " + e.getClass().getName());
 		}
 		map.put(e.getName(), e);
-		boolean b = super.add(e);
-		return b;
+		return super.add(e);
 	}
 
 	/**
@@ -131,10 +130,8 @@ public class ResourceList extends ArrayList<CommonResource> {
 			return null;
 		}
 
-		List<Resource> list = new ArrayList<Resource>();
-		for (Resource res : this) {
-			list.add(res);
-		}
+		List<Resource> list = new ArrayList<>();
+        list.addAll(this);
 		if (list.isEmpty()) {
 			return null;
 		}
@@ -152,29 +149,23 @@ public class ResourceList extends ArrayList<CommonResource> {
 
 	public ResourceList getSortByModifiedDate() {
 		ResourceList list = new ResourceList(this);
-		Collections.sort(list, new Comparator<Resource>() {
-			@Override
-			public int compare(Resource o1, Resource o2) {
-				Date dt1 = o1.getModifiedDate();
-				Date dt2 = o2.getModifiedDate();
-				if (dt1 == null) {
-					return -1;
-				}
-				return -1 * dt1.compareTo(dt2);
+		list.sort((Comparator<Resource>) (o1, o2) -> {
+			Date dt1 = o1.getModifiedDate();
+			Date dt2 = o2.getModifiedDate();
+			if (dt1 == null) {
+				return -1;
 			}
+			return -1 * dt1.compareTo(dt2);
 		});
 		return list;
 	}
 
 	public ResourceList getSortByName() {
 		ResourceList list = new ResourceList(this);
-		Collections.sort(list, new Comparator<Resource>() {
-			@Override
-			public int compare(Resource o1, Resource o2) {
-				String n1 = o1.getName();
-				String n2 = o2.getName();
-				return n1.compareTo(n2);
-			}
+		list.sort((Comparator<Resource>) (o1, o2) -> {
+			String n1 = o1.getName();
+			String n2 = o2.getName();
+			return n1.compareTo(n2);
 		});
 		return list;
 	}
@@ -192,8 +183,7 @@ public class ResourceList extends ArrayList<CommonResource> {
 			array[n] = array[k];
 			array[k] = temp;
 		}
-		ResourceList newList = new ResourceList(array);
-		return newList;
+		return new ResourceList(array);
 	}
 
 	public ResourceList exclude(String s) {
@@ -214,13 +204,7 @@ public class ResourceList extends ArrayList<CommonResource> {
 
 	public ResourceList _exclude(String... s) {
 		ResourceList newList = new ResourceList(this);
-		Iterator<CommonResource> it = newList.iterator();
-		while (it.hasNext()) {
-			Resource ct = it.next();
-			if (contains(s, ct.getName())) {
-				it.remove();
-			}
-		}
+		newList.removeIf(ct -> contains(s, ct.getName()));
 		return newList;
 	}
 
@@ -241,13 +225,7 @@ public class ResourceList extends ArrayList<CommonResource> {
 	 */
 	public ResourceList ofType(String s) {
 		ResourceList newList = new ResourceList(this);
-		Iterator<CommonResource> it = newList.iterator();
-		while (it.hasNext()) {
-			CommonResource ct = it.next();
-			if (!ct.is(s)) {
-				it.remove();
-			}
-		}
+		newList.removeIf(ct -> !ct.is(s));
 		return newList;
 	}
 

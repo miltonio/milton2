@@ -42,12 +42,12 @@ public interface EntityTransport {
 	 * @param response
 	 * @throws Exception 
 	 */
-	public void sendResponseEntity(Response response) throws Exception;
+    void sendResponseEntity(Response response) throws Exception;
 
 	/**
 	 * Called after sending
 	 * 
 	 * @param response 
 	 */
-	public void closeResponse(Response response);
+    void closeResponse(Response response);
 }

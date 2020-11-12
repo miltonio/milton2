@@ -234,10 +234,8 @@ public final class FileSystemResourceFactory implements ResourceFactory {
         if (this.contextPath != null && contextPath.length() > 0) {
             url = url.replaceFirst('/' + contextPath, "");
             log.debug("stripped context: " + url);
-            return url;
-        } else {
-            return url;
         }
+        return url;
     }
 
     boolean isDigestAllowed() {

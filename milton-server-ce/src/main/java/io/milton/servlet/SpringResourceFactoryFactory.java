@@ -73,7 +73,7 @@ public class SpringResourceFactoryFactory implements MiltonConfigurator{
 
     ApplicationContext context;
     
-    private HttpManagerBuilder configurer = new HttpManagerBuilder();
+    private final HttpManagerBuilder configurer = new HttpManagerBuilder();
 
     private HttpManager httpManager;
     

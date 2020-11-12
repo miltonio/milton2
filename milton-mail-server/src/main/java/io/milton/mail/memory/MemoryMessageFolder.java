@@ -12,7 +12,7 @@ public class MemoryMessageFolder implements MessageFolder {
 
     private final static Logger log = LoggerFactory.getLogger(MemoryMessageFolder.class);
 
-    List<MessageResource> messages = new ArrayList<MessageResource>();
+    final List<MessageResource> messages = new ArrayList<>();
 
     public Collection<MessageResource> getMessages() {
         return messages;

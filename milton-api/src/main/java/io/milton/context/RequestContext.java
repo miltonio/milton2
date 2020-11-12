@@ -21,8 +21,8 @@ import java.util.ArrayList;
 
 public class RequestContext extends Context implements RemovalCallback {
 
-    private static final ThreadLocal<RequestContext> tlContext = new ThreadLocal<RequestContext>();
-    private RootContext parent;
+    private static final ThreadLocal<RequestContext> tlContext = new ThreadLocal<>();
+    private final RootContext parent;
 
     /**
      * For convenience, equivalent to RequestContext.getCurrent().get(c)
@@ -64,8 +64,7 @@ public class RequestContext extends Context implements RemovalCallback {
     
 
     public static RequestContext getCurrent() {
-        RequestContext c = tlContext.get();
-        return c;
+        return tlContext.get();
     }
 
     static void setCurrent(RequestContext rc) {
@@ -135,7 +134,7 @@ public class RequestContext extends Context implements RemovalCallback {
     @Override
     public void onRemove(Object item) {
         tlContext.set(null);
-        ArrayList<Registration> items = new ArrayList<Registration>(this.itemByClass.values());
+        ArrayList<Registration> items = new ArrayList<>(this.itemByClass.values());
         for (Registration reg : items) {
             reg.remove();
         }

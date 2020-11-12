@@ -40,7 +40,7 @@ public class LockResult implements Serializable {
         ALREADY_LOCKED(Response.Status.SC_LOCKED),
         PRECONDITION_FAILED(Response.Status.SC_LOCKED);
 
-        public Response.Status status;
+        public final Response.Status status;
 
         FailureReason(Response.Status status) {
             this.status = status;

@@ -29,7 +29,7 @@ import java.util.Date;
 
 public abstract class FckCommon implements PostableResource, DigestResource {
 
-    protected Path url;
+    protected final Path url;
     protected final CollectionResource wrappedResource;
 
     FckCommon( CollectionResource wrappedResource, Path url ) {

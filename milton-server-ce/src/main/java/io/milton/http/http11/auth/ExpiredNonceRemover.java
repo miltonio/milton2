@@ -54,7 +54,7 @@ public class ExpiredNonceRemover implements Runnable, Service {
     public ExpiredNonceRemover( Map<UUID, Nonce> nonces, int nonceValiditySeconds ) {
         this.nonces = nonces;
         this.nonceValiditySeconds = nonceValiditySeconds;
-        scheduler = Executors.newScheduledThreadPool( 1, new DaemonThreadFactory() );		
+        scheduler = Executors.newScheduledThreadPool( 1, new DaemonThreadFactory());
     }
 
 	public void start() {
@@ -85,7 +85,7 @@ public class ExpiredNonceRemover implements Runnable, Service {
 
 
 
-    private class DaemonThreadFactory implements ThreadFactory {
+    private static class DaemonThreadFactory implements ThreadFactory {
 
         public Thread newThread( Runnable r ) {
             Thread t = new Thread( r, ExpiredNonceRemover.class.getCanonicalName() );

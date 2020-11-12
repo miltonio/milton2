@@ -376,7 +376,7 @@ public class UploadReader {
 
         private InputStream relocIn;
         private String nextToken;
-        private byte[] COMMA = new byte[1];
+        private final byte[] COMMA = new byte[1];
 
         /**
          * Constructs the Enumeration of RelocateRanges from an InputStream

@@ -63,7 +63,7 @@ public class SimpleMemoryNonceProvider implements NonceProvider {
 		if (log.isTraceEnabled()) {
 			log.trace("Created SimpleMemoryNonceProvider(b): nonceValiditySeconds: " + nonceValiditySeconds);
 		}
-		this.nonces = new ConcurrentHashMap<UUID, Nonce>();
+		this.nonces = new ConcurrentHashMap<>();
 		this.nonceValiditySeconds = nonceValiditySeconds;
 		this.remover = new ExpiredNonceRemover(nonces, nonceValiditySeconds);
 	}

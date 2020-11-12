@@ -35,8 +35,7 @@ public class HrefListValueWriter implements ValueWriter {
 
 	@Override
 	public boolean supports(String nsUri, String localName, Class c) {
-		boolean b = HrefList.class.isAssignableFrom(c);
-		return b;
+		return HrefList.class.isAssignableFrom(c);
 	}
 
 	@Override

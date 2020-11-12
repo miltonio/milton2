@@ -102,8 +102,8 @@ public class Email {
 
     
     private Address from;
-    public Recipients recipients = new Recipients();
-    public Attachments attachments = new Attachments();
+    public final Recipients recipients = new Recipients();
+    public final Attachments attachments = new Attachments();
     private String subject;
     private String text;
     private String html;
@@ -143,11 +143,11 @@ public class Email {
         this.html = html;
     }
 
-    public class Recipients {
+    public static class Recipients {
 
-        List<Address> to = new ArrayList<Address>();
-        List<Address> cc = new ArrayList<Address>();
-        List<Address> bcc = new ArrayList<Address>();
+        final List<Address> to = new ArrayList<>();
+        final List<Address> cc = new ArrayList<>();
+        final List<Address> bcc = new ArrayList<>();
 
         public void addBCC(Address add) {
             to.add(add);
@@ -205,9 +205,7 @@ public class Email {
             InMemoryAttachment att;
             try {
                 att = new InMemoryAttachment(fileName, contentType, inputStream);
-            } catch (ReadingException ex) {
-                throw new RuntimeException(ex);
-            } catch (WritingException ex) {
+            } catch (ReadingException | WritingException ex) {
                 throw new RuntimeException(ex);
             }
             list.add(att);
@@ -220,10 +218,10 @@ public class Email {
         String getContentType();
     }
     
-    public class InMemoryAttachment implements
+    public static class InMemoryAttachment implements
             Attachment {
-        String name;
-        String contentType;
+        final String name;
+        final String contentType;
         ByteArrayInputStream data;
 
         public InMemoryAttachment(String name, String contentType, InputStream data) throws ReadingException, WritingException {

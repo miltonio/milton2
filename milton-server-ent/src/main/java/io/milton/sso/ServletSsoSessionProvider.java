@@ -30,7 +30,7 @@ public class ServletSsoSessionProvider implements SsoSessionProvider, HttpSessio
 	 * Note, one shared map across all instances of ServletSsoSessionProvider!
 	 * 
 	 */
-	private static final Map<String,HttpSession> mapOfSessions = new ConcurrentHashMap<String, HttpSession>();
+	private static final Map<String,HttpSession> mapOfSessions = new ConcurrentHashMap<>();
 	
 	private String userSessionVariableName = "user";
 	
@@ -42,8 +42,7 @@ public class ServletSsoSessionProvider implements SsoSessionProvider, HttpSessio
 		if( sess == null ) {
 			return null;
 		} else {
-			Object oUser = sess.getAttribute(userSessionVariableName);
-			return oUser;
+			return sess.getAttribute(userSessionVariableName);
 		}
 	}
 

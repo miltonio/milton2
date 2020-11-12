@@ -58,10 +58,7 @@ public class MatchHelper {
 	public boolean checkIfMatch(Resource r, Request req) {
 		if( r == null ) {
 			String h = req.getIfMatchHeader();
-			if( h == null ) {
-				return true;
-			}
-			return false;
+			return h == null;
 		}
 		Boolean result = _checkIfMatch(r, req);
 		if (result != null) {
@@ -74,7 +71,7 @@ public class MatchHelper {
 			// no if header, return true so processing continues
 			return true;
 		}
-		Pattern pattern = Pattern.compile(".*\\[\"(.*)\"\\]\\)$");
+		Pattern pattern = Pattern.compile(".*\\[\"(.*)\"]\\)$");
 		Matcher m = pattern.matcher(value);
 		if (!m.matches()) {
 			// If header doesn't contain an etag, so nothing to check, all good..
@@ -126,10 +123,8 @@ public class MatchHelper {
 		}
 		requestedEtag = cleanUp(requestedEtag);
 		//System.out.println("checkIfMatch: compare: " + requestedEtag + " = " + currentEtag);
-		if (requestedEtag.equals(currentEtag) || requestedEtag.equals("*")) {
-			return true; // found a matching tag, return true to continue
-		}
-		return false; // a if-match header was sent, but a matching tag is not present, so return false
+		return requestedEtag.equals(currentEtag) || requestedEtag.equals("*"); // found a matching tag, return true to continue
+// a if-match header was sent, but a matching tag is not present, so return false
 	}
 
 	/**
@@ -191,17 +186,14 @@ public class MatchHelper {
 		if (currentEtag == null || currentEtag.length() == 0) {
 			return false; // no etag on the resource, but an etag was given in header, so fail
 		}
-		if (requestedEtag.equals(currentEtag) || requestedEtag.equals("*")) {
-			return true; // found a matching tag, return true to continue
-		}
-
-		return false; // a if-match header was sent, but a matching tag is not present, so return false
+		return requestedEtag.equals(currentEtag) || requestedEtag.equals("*"); // found a matching tag, return true to continue
+// a if-match header was sent, but a matching tag is not present, so return false
 
 	}
 
 	private List<String> splitToList(String s) {
 		String[] arr = s.split(",");
-		List<String> list = new ArrayList<String>();
+		List<String> list = new ArrayList<>();
 		for (String part : arr) {
 			part = part.trim();
 			if (part.length() > 0) {

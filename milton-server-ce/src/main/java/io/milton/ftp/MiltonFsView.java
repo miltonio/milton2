@@ -24,7 +24,6 @@ import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.resource.CollectionResource;
 import io.milton.resource.Resource;
-import java.util.logging.Level;
 import org.apache.ftpserver.ftplet.FileSystemView;
 import org.apache.ftpserver.ftplet.FtpException;
 import org.apache.ftpserver.ftplet.FtpFile;
@@ -57,9 +56,7 @@ public class MiltonFsView implements FileSystemView {
 		try {
 			Resource home = resourceFactory.getResource(host, homePath.toString());
 			return wrap(homePath, home);
-		} catch (NotAuthorizedException ex) {
-			throw new FtpException(ex);
-		} catch (BadRequestException ex) {
+		} catch (NotAuthorizedException | BadRequestException ex) {
 			throw new FtpException(ex);
 		}
 
@@ -87,9 +84,7 @@ public class MiltonFsView implements FileSystemView {
 				log.debug("not a collection: " + rp.resource.getName());
 				return false;
 			}
-		} catch (NotAuthorizedException ex) {
-			throw new FtpException(ex);
-		} catch (BadRequestException ex) {
+		} catch (NotAuthorizedException | BadRequestException ex) {
 			throw new FtpException(ex);
 		}
 	}
@@ -110,9 +105,7 @@ public class MiltonFsView implements FileSystemView {
 			} else {
 				return new MiltonFtpFile(this, rp.path, rp.resource, user);
 			}
-		} catch (NotAuthorizedException ex) {
-			throw new FtpException(ex);
-		} catch (BadRequestException ex) {
+		} catch (NotAuthorizedException | BadRequestException ex) {
 			throw new FtpException(ex);
 		}
 	}
@@ -124,9 +117,7 @@ public class MiltonFsView implements FileSystemView {
 				return (CollectionResource) working;
 			}
 			return null;
-		} catch (NotAuthorizedException e) {
-			throw new FtpException(e);
-		} catch (BadRequestException e) {
+		} catch (NotAuthorizedException | BadRequestException e) {
 			throw new FtpException(e);
 		}
 

@@ -46,7 +46,7 @@ public class AddressBookResourceTypeHelper implements ResourceTypeHelper {
             qn = new QName(CardDavProtocol.CARDDAV_NS, "addressbook");
             qn2 = new QName(CardDavProtocol.CARDDAV_NS, "directory");
             if (list == null) {
-                list = new ArrayList<QName>();
+                list = new ArrayList<>();
             }
     	    if (r instanceof AddressBookDirectoryResource) {
                 list.add(qn2);

@@ -37,7 +37,7 @@ import javax.xml.namespace.QName;
  */
 public class PropertyMap {
 
-	private final Map<String, StandardProperty> writersMap = new HashMap<String, StandardProperty>();
+	private final Map<String, StandardProperty> writersMap = new HashMap<>();
 	private final String nameSpace;
 
 	public PropertyMap(String nameSpace) {
@@ -49,11 +49,7 @@ public class PropertyMap {
 			return false;
 		}
 		StandardProperty pa = writersMap.get(name.getLocalPart());
-		if (pa == null) {
-			return false;
-		} else {
-			return true;
-		}
+		return pa != null;
 	}
 
 	public Object getProperty(QName name, Resource r) {
@@ -110,7 +106,7 @@ public class PropertyMap {
 	}
 
 	public List<QName> getAllPropertyNames(Resource r) {
-		List<QName> list = new ArrayList<QName>();
+		List<QName> list = new ArrayList<>();
 		for (String nm : this.writersMap.keySet()) {
 			QName qname = new QName(this.nameSpace, nm);
 			list.add(qname);

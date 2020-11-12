@@ -15,7 +15,7 @@ public class PopSession {
 
     private final static Logger log = LoggerFactory.getLogger(PopSession.class);
 
-    UUID sessionId;
+    final UUID sessionId;
     PopState state;
     AuthState auth;
     final MailResourceFactory resourceFactory;
@@ -44,15 +44,7 @@ public class PopSession {
             } else {
                 m.invoke(state, session, this, arr);
             }
-        } catch (IllegalAccessException ex) {
-            throw new RuntimeException(ex);
-        } catch (IllegalArgumentException ex) {
-            throw new RuntimeException(ex);
-        } catch (InvocationTargetException ex) {
-            throw new RuntimeException(ex);
-        } catch (NoSuchMethodException ex) {
-            throw new RuntimeException(ex);
-        } catch (SecurityException ex) {
+        } catch (IllegalAccessException | SecurityException | NoSuchMethodException | InvocationTargetException | IllegalArgumentException ex) {
             throw new RuntimeException(ex);
         }
     }

@@ -53,7 +53,7 @@ public class DataBinder {
 
 	private final String[] dateFormats = {"dd/MM/yyyy", "dd/MM/yyyy HH:mm", "yyyy/MM/dd HH:mm"};
 	
-    private static final ThreadLocal<TimeZone> tlTimezone = new ThreadLocal<TimeZone>();
+    private static final ThreadLocal<TimeZone> tlTimezone = new ThreadLocal<>();
 
     public static void setTimeZoneForRequest(TimeZone tz) {
         tlTimezone.set(tz);

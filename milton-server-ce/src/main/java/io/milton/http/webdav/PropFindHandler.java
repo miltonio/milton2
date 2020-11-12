@@ -26,7 +26,6 @@ import io.milton.http.Response;
 import io.milton.resource.PropFindableResource;
 import io.milton.http.Request;
 import io.milton.http.ResourceHandlerHelper;
-import io.milton.property.PropertySource;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
@@ -158,7 +157,7 @@ public class PropFindHandler implements ExistingEntityHandler, PropertyHandler {
     }
 
     private Set<QName> getAllFields( PropertiesRequest parseResult, PropFindableResource resource ) throws NotAuthorizedException, BadRequestException {
-        Set<QName> set = new HashSet<QName>();
+        Set<QName> set = new HashSet<>();
         if( parseResult.isAllProp() ) {
             set.addAll( propertyBuilder.findAllProps( resource ) );
         } else {

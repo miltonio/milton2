@@ -139,7 +139,7 @@ public class AuthenticationService {
 	 * @return - a list of http challenges
 	 */
 	public List<String> getChallenges(Resource resource, Request request) {
-		List<String> challenges = new ArrayList<String>();
+		List<String> challenges = new ArrayList<>();
 		for (AuthenticationHandler h : authenticationHandlers) {
 			if (h.isCompatible(resource, request)) {
 				log.debug("challenge for auth: " + h.getClass());

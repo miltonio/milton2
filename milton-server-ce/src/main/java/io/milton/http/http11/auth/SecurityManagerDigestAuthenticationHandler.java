@@ -50,7 +50,7 @@ public class SecurityManagerDigestAuthenticationHandler implements Authenticatio
     }
 
     public SecurityManagerDigestAuthenticationHandler(SecurityManager securityManager) {
-		Map<UUID, Nonce> nonces = new ConcurrentHashMap<UUID, Nonce>();
+		Map<UUID, Nonce> nonces = new ConcurrentHashMap<>();
 		int nonceValiditySeconds = 60*60*24;
 		ExpiredNonceRemover expiredNonceRemover = new ExpiredNonceRemover(nonces, nonceValiditySeconds);
 		this.nonceProvider = new SimpleMemoryNonceProvider(nonceValiditySeconds, expiredNonceRemover, nonces);
@@ -80,8 +80,7 @@ public class SecurityManagerDigestAuthenticationHandler implements Authenticatio
             log.debug("requested digest authentication is invalid or incorrectly formatted");
             return null;
         } else {
-            Object o = securityManager.authenticate( resp );
-            return o;
+            return securityManager.authenticate( resp );
         }
 
     }

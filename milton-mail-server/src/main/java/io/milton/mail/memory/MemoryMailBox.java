@@ -19,11 +19,11 @@ public class MemoryMailBox implements Mailbox{
 
     private static final StandardMessageFactory factory = new StandardMessageFactoryImpl();
 
-    String password;
-    Map<String,MessageFolder> folders;
+    final String password;
+    final Map<String,MessageFolder> folders;
 
     public MemoryMailBox() {
-        folders = new HashMap<String, MessageFolder>();
+        folders = new HashMap<>();
         MemoryMessageFolder folder = addFolder("inbox");
         this.password = "password";
     }

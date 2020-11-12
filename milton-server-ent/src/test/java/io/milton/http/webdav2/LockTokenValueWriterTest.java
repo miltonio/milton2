@@ -38,9 +38,9 @@ public class LockTokenValueWriterTest extends TestCase {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		XmlWriter xmlWriter = new XmlWriter(out);
 		LockInfo lockInfo = new LockInfo(LockInfo.LockScope.EXCLUSIVE, LockInfo.LockType.READ, null, LockInfo.LockDepth.ZERO);
-		LockTimeout lockTimeout = new LockTimeout(1000l);
+		LockTimeout lockTimeout = new LockTimeout(1000L);
 		LockToken token = new LockToken("abc123", lockInfo, lockTimeout);
-		Map<String,String> prefixes = new HashMap<String, String>();
+		Map<String,String> prefixes = new HashMap<>();
 		
 		valueWriter.writeValue(xmlWriter, "ns", "pre", "lock", token, "/test", prefixes);
 		

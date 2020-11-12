@@ -127,8 +127,7 @@ rrToString() {
 public List
 getStrings() {
 	List list = new ArrayList(strings.size());
-	for (int i = 0; i < strings.size(); i++)
-		list.add(byteArrayToString((byte []) strings.get(i), false));
+	for (Object string : strings) list.add(byteArrayToString((byte[]) string, false));
 	return list;
 }
 
@@ -143,9 +142,8 @@ getStringsAsByteArrays() {
 
 void
 rrToWire(DNSOutput out, Compression c, boolean canonical) {
-	Iterator it = strings.iterator();
-	while (it.hasNext()) {
-		byte [] b = (byte []) it.next();
+	for (Object string : strings) {
+		byte[] b = (byte[]) string;
 		out.writeCountedString(b);
 	}
 }

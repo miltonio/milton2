@@ -56,7 +56,7 @@ public class PropFindXmlGeneratorHelper {
 	 */
 	Map<String, String> findNameSpaces(List<PropFindResponse> propFindResponses) {
 		int i = 1;
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		// always add webdav namespace
 		map.put(WebDavProtocol.NS_DAV.getName(), WebDavProtocol.NS_DAV.getPrefix());
 		// Hack for caldav!!! Temporary only!!!
@@ -77,12 +77,12 @@ public class PropFindXmlGeneratorHelper {
 	}
 
 	String generateNamespaceDeclarations(Map<String, String> mapOfNamespaces) {
-		String decs = "";
+		StringBuilder decs = new StringBuilder();
 		for (String uri : mapOfNamespaces.keySet()) {
 			String prefix = mapOfNamespaces.get(uri);
-			decs += " xmlns:" + prefix + "=\"" + uri + "\"";
+			decs.append(" xmlns:").append(prefix).append("=\"").append(uri).append("\"");
 		}
-		return decs;
+		return decs.toString();
 	}
 
 	void appendResponses(XmlWriter writer, List<PropFindResponse> propFindResponses, Map<String, String> mapOfNamespaces,  boolean writeErrorProps) {
@@ -149,8 +149,6 @@ public class PropFindXmlGeneratorHelper {
 		try {
 			String xml = out.toString("UTF-8");
 			outputStream.write(xml.getBytes("UTF-8")); // note: this can and should write to the outputstream directory. but if it aint broke, dont fix it...
-		} catch (UnsupportedEncodingException ex) {
-			throw new RuntimeException(ex);
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}

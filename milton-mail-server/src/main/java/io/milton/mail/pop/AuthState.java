@@ -3,7 +3,7 @@ package io.milton.mail.pop;
 import io.milton.mail.Mailbox;
 import io.milton.mail.MailboxAddress;
 import java.io.UnsupportedEncodingException;
-import java.util.logging.Level;
+
 import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

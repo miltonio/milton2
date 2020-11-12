@@ -7,7 +7,6 @@ package io.milton.http.annotated.scheduling;
 
 import io.milton.http.XmlWriter;
 import io.milton.http.XmlWriter.Element;
-import io.milton.http.webdav.WebDavProtocol;
 import io.milton.resource.SchedulingResponseItem;
 import io.milton.http.caldav.ITip.StatusResponse;
 import java.io.ByteArrayOutputStream;
@@ -112,7 +111,7 @@ public class SchedulingXmlHelper {
 
     }
 
-    private class Helper {
+    private static class Helper {
 
         String generateNamespaceDeclarations() {
             return "xmlns:D=\"DAV:\" xmlns:" + CALDAV_PREFIX + "=\"urn:ietf:params:xml:ns:caldav\"";
@@ -122,8 +121,6 @@ public class SchedulingXmlHelper {
             try {
                 String xml = out.toString("UTF-8");
                 outputStream.write(xml.getBytes("UTF-8")); // note: this can and should write to the outputstream directory. but if it aint broke, dont fix it...
-            } catch (UnsupportedEncodingException ex) {
-                throw new RuntimeException(ex);
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }

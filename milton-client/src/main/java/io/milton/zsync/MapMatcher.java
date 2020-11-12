@@ -187,9 +187,7 @@ public class MapMatcher {
             mc.removematch( mc.blockcount() - 1 );
             is.close();
             return complete;
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        } catch (NoSuchAlgorithmException ex) {
+        } catch (IOException | NoSuchAlgorithmException ex) {
             throw new RuntimeException(ex);
         } finally {
 			StreamUtils.close(is);
@@ -251,10 +249,8 @@ public class MapMatcher {
         if (strongSum == null) {
             p = new ChecksumPair(weakSum);
             ChecksumPair link = mc.hashtable.find(p);
-            if (link != null) {
-				//System.out.println(" found weak match link: " + link);
-                return true;
-            }
+            //System.out.println(" found weak match link: " + link);
+            return link != null;
         } else {
             p = new ChecksumPair(weakSum, strongSum);
             ChecksumPair link = mc.hashtable.findMatch(p);

@@ -87,7 +87,7 @@ public static final short FUDGE		= 300;
 private Name name, alg;
 private String digest;
 private int digestBlockLength;
-private byte [] key;
+private final byte [] key;
 
 private void
 getDigest() {

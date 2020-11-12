@@ -34,7 +34,7 @@ public class DefaultContentTypeServiceTest extends TestCase {
     
     @Override
     protected void setUp() throws Exception {
-        mapOfContentTypes = new HashMap<String, List<String>>();
+        mapOfContentTypes = new HashMap<>();
         mapOfContentTypes.put("html", ContentTypeUtils.toList("text/html"));
         mapOfContentTypes.put("aiff", ContentTypeUtils.toList("audio/x-aiff,audio/aiff"));
         

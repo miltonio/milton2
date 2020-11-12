@@ -43,10 +43,7 @@ public class TestScratch extends TestCase{
     private static boolean isMilton(boolean A, boolean B, boolean C, boolean D) {
 
 
-        if (A && (B || C) || D) {
-            return true;
-        }
-        return false;
+        return A && (B || C) || D;
 
     }    
 }

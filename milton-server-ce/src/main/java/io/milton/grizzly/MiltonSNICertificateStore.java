@@ -27,16 +27,16 @@ import java.util.List;
  */
 public interface MiltonSNICertificateStore {
 
-	public X509Certificate[] getCertificatesFromDb(String hostName);
+	X509Certificate[] getCertificatesFromDb(String hostName);
 
-	public PrivateKey loadPrivateKeyFromDb(String alias, char[] password);
+	PrivateKey loadPrivateKeyFromDb(String alias, char[] password);
 
-	public boolean containsAlias(String hostName);
+	boolean containsAlias(String hostName);
 
-	public String getCertificateAlias(Certificate cf);
+	String getCertificateAlias(Certificate cf);
 
-	public Date getCreationDate(String alias);
+	Date getCreationDate(String alias);
 
-	public List<String> aliases();
+	List<String> aliases();
 
 }

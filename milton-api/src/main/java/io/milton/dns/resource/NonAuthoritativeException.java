@@ -24,7 +24,7 @@ public class NonAuthoritativeException extends Exception{
 	 */
 	private static final long serialVersionUID = 3054727106748339165L;
 
-	private String domainName;
+	private final String domainName;
 	
 	public NonAuthoritativeException(String domainName) {
 		this(domainName, "No authoritative data for " + domainName);

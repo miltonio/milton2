@@ -204,12 +204,11 @@ public class MkColHandler implements Handler {
 		CollectionResource createResource(MakeCollectionableResource existingCol, String newName, Request request) throws ConflictException, NotAuthorizedException, BadRequestException, IOException;
 	}
 
-	private class DefaultCollectionResourceCreator implements CollectionResourceCreator {
+	private static class DefaultCollectionResourceCreator implements CollectionResourceCreator {
 
 		@Override
 		public CollectionResource createResource(MakeCollectionableResource existingCol, String newName, Request request) throws ConflictException, NotAuthorizedException, BadRequestException, IOException {
-			CollectionResource made = existingCol.createCollection(newName);
-			return made;
+			return existingCol.createCollection(newName);
 		}
 	}
 

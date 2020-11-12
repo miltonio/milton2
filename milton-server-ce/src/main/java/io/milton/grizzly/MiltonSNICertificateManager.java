@@ -95,7 +95,7 @@ public class MiltonSNICertificateManager {
                 cer = keyStoreSpi.engineGetCertificateChain(domainName);
             }
             if( log.isDebugEnabled()) {
-                log.debug("the Certificate Chain is :" , Arrays.toString(cer));
+                log.debug("the Certificate Chain is : {}" , Arrays.toString(cer));
             }
             return cer;
         }
@@ -137,7 +137,7 @@ public class MiltonSNICertificateManager {
         private X509Certificate[] loadCertificatesFromLocalFile() {
             try {
                 List<File> certFiles = getCertificateFiles();
-                List<X509Certificate> certificates = new ArrayList<X509Certificate>();
+                List<X509Certificate> certificates = new ArrayList<>();
 
                 for (File certFile : certFiles) {
                     if (certFile.isFile() && certFile.exists()) {
@@ -160,7 +160,7 @@ public class MiltonSNICertificateManager {
         }
 
         private List<File> getCertificateFiles() throws URISyntaxException {
-            List<File> certificate = new ArrayList<File>();
+            List<File> certificate = new ArrayList<>();
             String pathToCerts = getPropertyOrDefault("secure.certificate", null);
             String[] certParts = pathToCerts.split(",");
             for (String certPath : certParts) {

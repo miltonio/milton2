@@ -208,7 +208,7 @@ public class UploadMaker {
          * the space between consecutive blocks, and if it is >= 0, adds that space to the list of ranges.
          */
 
-        LinkedList<Long> localOffsets = new LinkedList<Long>(); // List of local matching block offsets
+        LinkedList<Long> localOffsets = new LinkedList<>(); // List of local matching block offsets
         //ArrayList<Range> rangeList = new ArrayList<Range>(); // output List
         ByteRangeWriter rangeList = new ByteRangeWriter(16384);
         RandomAccessFile randAccess = null;
@@ -304,7 +304,7 @@ public class UploadMaker {
                     blockIndex += blockRange.getFinish() - blockRange.getStart() - 1;
                 } else {
 
-                    blockRange = new Range((long)blockIndex, blockIndex + 1l);
+                    blockRange = new Range((long)blockIndex, blockIndex + 1L);
                 }
 
                 RelocateRange relocRange = new RelocateRange(blockRange, localOffset);
@@ -355,7 +355,7 @@ public class UploadMaker {
      */
     public static List<DataRange> getDataRanges(List<Range> ranges, File local) throws IOException {
 
-        List<DataRange> dataRanges = new ArrayList<DataRange>();
+        List<DataRange> dataRanges = new ArrayList<>();
         RandomAccessFile randAccess = new RandomAccessFile(local, "r");
 
         for (Range range : ranges) {

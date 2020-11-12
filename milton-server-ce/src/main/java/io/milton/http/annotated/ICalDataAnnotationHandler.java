@@ -49,8 +49,7 @@ public class ICalDataAnnotationHandler extends AbstractAnnotationHandler {
 				} else {
 					for (String nameProp : CTAG_PROP_NAMES) {
 						if (PropertyUtils.isReadable(source, nameProp)) {
-							Object oPropVal = PropertyUtils.getProperty(source, nameProp);
-							value = oPropVal;
+							value = PropertyUtils.getProperty(source, nameProp);
 							break;
 						}
 					}

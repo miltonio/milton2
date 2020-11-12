@@ -473,8 +473,7 @@ public class NullSafeDateTimeConverter extends AbstractConverter {
         for (String pattern : patterns) {
             try {
                 DateFormat format = getFormat(pattern);
-                Calendar calendar = parse(sourceType, targetType, value, format);
-                return calendar;
+                return parse(sourceType, targetType, value, format);
             }catch (Exception ex) {
                 if (firstEx == null) {
                     firstEx = ex;
@@ -516,8 +515,7 @@ public class NullSafeDateTimeConverter extends AbstractConverter {
             }
             throw new ConversionException(msg);
         }
-        Calendar calendar = format.getCalendar();
-        return calendar;
+        return format.getCalendar();
     }
 
     /**
@@ -587,9 +585,9 @@ public class NullSafeDateTimeConverter extends AbstractConverter {
     }
 
     private String toString(Class type) {
-        String typeName;
+        StringBuilder typeName;
         if (type == null) {
-            typeName = "null";
+            typeName = new StringBuilder("null");
         } else if (type.isArray()) {
             Class elementType = type.getComponentType();
             int count = 1;
@@ -597,21 +595,21 @@ public class NullSafeDateTimeConverter extends AbstractConverter {
                 elementType = elementType.getComponentType();
                 count++;
             }
-            typeName = elementType.getName();
+            typeName = new StringBuilder(elementType.getName());
             for (int i = 0; i < count; i++) {
-                typeName += "[]";
+                typeName.append("[]");
             }
         } else {
-            typeName = type.getName();
+            typeName = new StringBuilder(type.getName());
         }
-        if (typeName.startsWith("java.lang.")
-                || typeName.startsWith("java.util.")
-                || typeName.startsWith("java.math.")) {
-            typeName = typeName.substring("java.lang.".length());
-        } else if (typeName.startsWith(PACKAGE)) {
-            typeName = typeName.substring(PACKAGE.length());
+        if (typeName.toString().startsWith("java.lang.")
+                || typeName.toString().startsWith("java.util.")
+                || typeName.toString().startsWith("java.math.")) {
+            typeName = new StringBuilder(typeName.substring("java.lang.".length()));
+        } else if (typeName.toString().startsWith(PACKAGE)) {
+            typeName = new StringBuilder(typeName.substring(PACKAGE.length()));
         }
-        return typeName;
+        return typeName.toString();
     }
 
     private TimeZone timeZone() {

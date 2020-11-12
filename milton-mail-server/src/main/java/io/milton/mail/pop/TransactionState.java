@@ -18,12 +18,12 @@ import org.slf4j.LoggerFactory;
 public class TransactionState extends BaseState {
 
     private final static Logger log = LoggerFactory.getLogger(TransactionState.class);
-    MessageFolder inbox;
+    final MessageFolder inbox;
 
     TransactionState(PopSession popSession) {
         super(popSession);
         this.popSession = popSession;
-        popSession.messages = new ArrayList<Message>();
+        popSession.messages = new ArrayList<>();
         inbox = popSession.auth.mbox.getInbox();
         if( inbox != null ) {
             int num = 1;
@@ -121,13 +121,9 @@ public class TransactionState extends BaseState {
         } else {
             popSession.reply(session, "+OK " + m.size() + " octets");
             Session mailSess = null;
-            ChunkWriter store = new ChunkWriter() {
-
-                @Override
-                public void newChunk(int i, byte[] data) {
-                    IoBuffer bb = IoBuffer.wrap(data);
-                    session.write(bb);
-                }
+            ChunkWriter store = (i, data) -> {
+                IoBuffer bb = IoBuffer.wrap(data);
+                session.write(bb);
             };
             ChunkingOutputStream out = new ChunkingOutputStream(store, 1024);
             try {

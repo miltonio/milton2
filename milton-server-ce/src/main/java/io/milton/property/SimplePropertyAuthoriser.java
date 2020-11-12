@@ -43,7 +43,7 @@ public class SimplePropertyAuthoriser implements PropertyAuthoriser {
         if( auth != null && auth.getTag() != null ) {
             return null;
         } else {
-            Set<CheckResult> s = new HashSet<CheckResult>();
+            Set<CheckResult> s = new HashSet<>();
             for( QName qn : fields ) {
                 s.add(new CheckResult( qn, Status.SC_UNAUTHORIZED, "Not logged in", resource));
             }

@@ -74,7 +74,7 @@ public class CalendarQueryReport implements QualifiedReport {
         PropertiesRequest parseResult = PropertiesRequest.toProperties(props);
 
         // Generate the response
-        List<PropFindResponse> respProps = new ArrayList<PropFindResponse>();
+        List<PropFindResponse> respProps = new ArrayList<>();
 
         if (resource instanceof CalendarResource) {
             CalendarResource calendar = (CalendarResource) resource;
@@ -90,7 +90,7 @@ public class CalendarQueryReport implements QualifiedReport {
                 String href = parentHref + cr.getName();
                 //List<PropFindResponse> resps = propertyBuilder.buildProperties(calendar, 0, parseResult, href);
 
-                List<PropFindResponse> resps = new ArrayList<PropFindResponse>();
+                List<PropFindResponse> resps = new ArrayList<>();
                 propertyBuilder.processResource(resps, cr, parseResult, href, 0, 0, href);
 
                 respProps.addAll(resps);
@@ -99,8 +99,7 @@ public class CalendarQueryReport implements QualifiedReport {
             throw new BadRequestException(resource, "Resource is not a " + CalendarResource.class.getCanonicalName() + " is a: " + resource.getClass());
         }
 
-        String xml = xmlGenerator.generate(respProps);
-        return xml;
+        return xmlGenerator.generate(respProps);
     }
 
 
@@ -118,8 +117,8 @@ public class CalendarQueryReport implements QualifiedReport {
 
 			if (elPropFilter != null) {
 				Element elTextMatch = ReportUtils.find( elPropFilter, "text-match", this.NS_CAL );
-				String filterAttr = ((Attribute)elPropFilter.getAttributes().get(0) ).getValue();
-				propFilter = new AbstractMap.SimpleImmutableEntry<String, String>(filterAttr, elTextMatch.getText());
+				String filterAttr = elPropFilter.getAttributes().get(0).getValue();
+				propFilter = new AbstractMap.SimpleImmutableEntry<>(filterAttr, elTextMatch.getText());
 			}
 
             Element elTimeRange = ReportUtils.find(elFilterRoot, "time-range", NS_CAL);

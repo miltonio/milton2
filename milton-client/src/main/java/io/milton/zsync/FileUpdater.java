@@ -78,7 +78,7 @@ public class FileUpdater {
             double a = 10;
             int range = 0;
             int blockLength = 0;
-            List<Range> rangeList = new ArrayList<Range>();
+            List<Range> rangeList = new ArrayList<>();
             byte[] data = null;
             FileChannel wChannel = null;
 
@@ -154,7 +154,7 @@ public class FileUpdater {
      * @return ArrayList with ranges for requesting
      */
     private List<Range> rangeLookUp(int i, int blocksize, MakeContext mc) {
-        List<Range> ranges = new ArrayList<Range>();
+        List<Range> ranges = new ArrayList<>();
         for (; i < mc.fileMap.length; i++) {
             if (mc.fileMap[i] == -1) {
                 ranges.add(new Range((long) i * blocksize, (i * blocksize) + (long) blocksize));

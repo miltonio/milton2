@@ -47,7 +47,7 @@ public class RecordTypes {
 	private final Map<Class<? extends DomainResourceRecord>, RecordMapper> mappers;
 
 	public RecordTypes() {
-		this.mappers = new ConcurrentHashMap<Class<? extends DomainResourceRecord>, RecordTypes.RecordMapper>();
+		this.mappers = new ConcurrentHashMap<>();
 		mappers.put(ADomainResourceRecord.class, new ARecordMapper());
 		mappers.put(MXDomainResourceRecord.class, new MXRecordMapper());
 		mappers.put(NSDomainResourceRecord.class, new NSRecordMapper());
@@ -78,7 +78,7 @@ public class RecordTypes {
 		Record map(Name domainName, T r) throws TextParseException;
 	}
 
-	public class ARecordMapper implements RecordMapper<ADomainResourceRecord> {
+	public static class ARecordMapper implements RecordMapper<ADomainResourceRecord> {
 
 		@Override
 		public Record map(Name domainName, ADomainResourceRecord r) throws TextParseException {
@@ -98,7 +98,7 @@ public class RecordTypes {
 		}
 	}
 
-	public class MXRecordMapper implements RecordMapper<MXDomainResourceRecord> {
+	public static class MXRecordMapper implements RecordMapper<MXDomainResourceRecord> {
 
 		@Override
 		public Record map(Name domainName, MXDomainResourceRecord r) throws TextParseException {
@@ -109,24 +109,22 @@ public class RecordTypes {
 			Name targetName = Utils.stringToName(r.getTarget());
 			if( targetName == null ) {
 				throw new RuntimeException("targetName name is null: " + r.getClass() + " - " + r.getTarget());
-			}			
-			MXRecord mxrr = new MXRecord(thisName, DClass.IN, r.getTtl(), r.getPriority(), targetName);
-			return mxrr;
+			}
+			return new MXRecord(thisName, DClass.IN, r.getTtl(), r.getPriority(), targetName);
 		}
 	}
 
-	public class NSRecordMapper implements RecordMapper<NSDomainResourceRecord> {
+	public static class NSRecordMapper implements RecordMapper<NSDomainResourceRecord> {
 
 		@Override
 		public Record map(Name domainName, NSDomainResourceRecord r) throws TextParseException {
 			Name thisName = Utils.stringToName(r.getName());
 			Name targetName = Utils.stringToName(r.getTarget());
-			NSRecord mxrr = new NSRecord(thisName, DClass.IN, r.getTtl(), targetName);
-			return mxrr;
+			return new NSRecord(thisName, DClass.IN, r.getTtl(), targetName);
 		}
 	}
 
-	public class SOARecordMapper implements RecordMapper<SOADomainResourceRecord> {
+	public static class SOARecordMapper implements RecordMapper<SOADomainResourceRecord> {
 
 		@Override
 		public Record map(Name domainName, SOADomainResourceRecord r) throws TextParseException {
@@ -139,11 +137,10 @@ public class RecordTypes {
 				}
 			}
 			Name adminEmailName = Utils.stringToName(adminEmail);
-			SOARecord soarr = new SOARecord(thisName, DClass.IN, r.getTtl(),
+			return new SOARecord(thisName, DClass.IN, r.getTtl(),
 					hostName, adminEmailName, r.getZoneSerialNumber(),
 					r.getRefresh(), r.getRetry(), r.getExpire(),
 					r.getMinimum());
-			return soarr;
 		}
 	}
 }

@@ -40,7 +40,7 @@ import io.milton.resource.Resource;
  * @author brad
  */
 public interface StorageChecker {
-    public enum StorageErrorReason {
+    enum StorageErrorReason {
         SER_QUOTA_EXCEEDED,
         SER_DISK_FULL
     }

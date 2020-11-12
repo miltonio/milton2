@@ -161,9 +161,7 @@ public class SchedulingInboxResource extends BaseSchedulingResource implements C
                 ctag = CTagAnnotationHandler.deriveCtag(this);
             }
             return ctag;
-        } catch (NotAuthorizedException ex) {
-            throw new RuntimeException(ex);
-        } catch (BadRequestException ex) {
+        } catch (NotAuthorizedException | BadRequestException ex) {
             throw new RuntimeException(ex);
         }
     }

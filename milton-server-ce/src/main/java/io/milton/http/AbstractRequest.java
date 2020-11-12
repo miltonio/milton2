@@ -32,7 +32,7 @@ public abstract class AbstractRequest implements Request {
 
 	@Override
 	public abstract String getRequestHeader(Request.Header header);
-	private final Map<String, Object> attributes = new HashMap<String, Object>();
+	private final Map<String, Object> attributes = new HashMap<>();
 
 	@Override
 	public Date getIfModifiedHeader() {
@@ -95,15 +95,16 @@ public abstract class AbstractRequest implements Request {
 		if (depthStr == null) {
 			return INFINITY;
 		} else {
-			if (depthStr.equals("0")) {
-				return 0;
-			} else if (depthStr.equals("1")) {
-				return 1;
-			} else if (depthStr.equals("infinity")) {
-				return INFINITY;
-			} else {
-				log.warn("Unknown depth value: " + depthStr);
-				return INFINITY;
+			switch (depthStr) {
+				case "0":
+					return 0;
+				case "1":
+					return 1;
+				case "infinity":
+					return INFINITY;
+				default:
+					log.warn("Unknown depth value: " + depthStr);
+					return INFINITY;
 			}
 		}
 	}
@@ -125,8 +126,7 @@ public abstract class AbstractRequest implements Request {
 			return null;
 		}
 		try {
-			long l = Long.parseLong(s);
-			return l;
+			return Long.parseLong(s);
 		} catch (NumberFormatException ex) {
 			log.warn("Couldnt parse content length header: " + s);
 			return null;

@@ -134,7 +134,7 @@ public class Path implements Serializable {
     }
 
     public List<String> getAfterFirst() {
-        List<String> afterFirst = new ArrayList<String>();
+        List<String> afterFirst = new ArrayList<>();
         Path p = this;
         while( p != null && p.getParent() != null && !p.getParent().isRoot() ) {
             afterFirst.add( 0, p.getName() );
@@ -228,8 +228,7 @@ public class Path implements Serializable {
     }
 
     public Path child( String name ) {
-        Path ch = new Path( this, name );
-        return ch;
+        return new Path(this, name );
     }
 
     public boolean isRelative() {

@@ -28,8 +28,7 @@ public class AccessControlledResourceTypeHelper implements ResourceTypeHelper {
 
 	@Override
     public List<QName> getResourceTypes( Resource r ) {
-        List<QName> list = wrapped.getResourceTypes( r );
-        return list;
+        return wrapped.getResourceTypes( r );
     }
 
 	@Override

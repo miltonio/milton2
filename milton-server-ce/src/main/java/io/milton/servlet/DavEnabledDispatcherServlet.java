@@ -20,7 +20,6 @@
 package io.milton.servlet;
 
 import java.io.IOException;
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -52,9 +51,7 @@ public class DavEnabledDispatcherServlet extends DispatcherServlet{
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
             doService(req, resp);
-        } catch(ServletException e) {
-            throw e;
-        } catch(IOException e) {
+        } catch(ServletException | IOException e) {
             throw e;
         } catch (Exception ex) {
             throw new ServletException(ex);

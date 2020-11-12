@@ -24,8 +24,8 @@ import java.util.HashMap;
  */
 public abstract class Context implements Contextual { 
     
-    protected HashMap<Class,Registration> itemByClass = new HashMap<Class,Registration>();
-    protected HashMap<String,Registration> itemByName = new HashMap<String,Registration>();
+    protected HashMap<Class,Registration> itemByClass = new HashMap<>();
+    protected HashMap<String,Registration> itemByName = new HashMap<>();
     
     /** If creating, the item is inserted into the given context
      *
@@ -81,13 +81,11 @@ public abstract class Context implements Contextual {
     }
     
     protected <T> Registration<T> getRegistration(Class<T> c) {
-        Registration<T> reg = itemByClass.get(c);
-        return reg;
+        return (Registration<T>) itemByClass.get(c);
     }
         
     protected <T> Registration<T> getRegistration(String id) {
-        Registration<T> o = itemByName.get(id);
-        return o;
+        return (Registration<T>) itemByName.get(id);
     }    
     
     /** Place o into context, keying by the given id
@@ -109,7 +107,7 @@ public abstract class Context implements Contextual {
     
     public <T> Registration<T> put( T o, RemovalCallback f ) {
         if( o == null ) throw new NullPointerException("o is null");
-        Registration<T> reg = new Registration<T>(o,f,this);
+        Registration<T> reg = new Registration<>(o, f, this);
         register( o.getClass(), o, reg );
         return reg;
     }
@@ -118,7 +116,7 @@ public abstract class Context implements Contextual {
     /** Put the given object into context, keying only the given id
      */
     public <T> Registration<T> put( String id, T o, Factory f ) {
-        Registration<T> reg = new Registration<T>(o,f,this);
+        Registration<T> reg = new Registration<>(o, f, this);
         reg.addKey(id);
         itemByName.put(id,reg);
         return reg;

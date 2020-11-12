@@ -128,7 +128,7 @@ public class StringSplitUtils {
 
         int patLen = oldPattern.length();
         while( index >= 0 ) {
-            sbuf.append( inString.substring( pos, index ) );
+            sbuf.append(inString, pos, index);
             sbuf.append( newPattern );
             pos = index + patLen;
             index = inString.indexOf( oldPattern, pos );
@@ -217,6 +217,6 @@ public class StringSplitUtils {
             list.add( str.substring( start, i ) );
         }
 
-        return (String[]) list.toArray( new String[list.size()] );
+        return (String[]) list.toArray(new String[0]);
     }
 }

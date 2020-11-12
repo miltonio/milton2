@@ -164,7 +164,7 @@ public class AddressBookQueryReport implements QualifiedReport
   			}
   		}
 
-  		List<PrincipalSearchCriteria.SearchItem> searchTerms = new ArrayList<PrincipalSearchCriteria.SearchItem>();
+  		List<PrincipalSearchCriteria.SearchItem> searchTerms = new ArrayList<>();
   		List<Element> propFilters = ReportUtils.findAll( doc.getRootElement(), "prop-filter", this.CARDDAV_NS );
   		for ( Element propFilter : propFilters )
   		{
@@ -199,7 +199,7 @@ public class AddressBookQueryReport implements QualifiedReport
   				List<? extends Resource> result = searchableAddressBook.getChildren( crit );
 
   				// Generate the response
-  				List<PropFindResponse> respProps = new ArrayList<PropFindResponse>();
+  				List<PropFindResponse> respProps = new ArrayList<>();
   				for ( Resource r : result )
   				{
   					if ( r != null )
@@ -228,15 +228,11 @@ public class AddressBookQueryReport implements QualifiedReport
   				log.warn( "You must implement AddressBookQuerySearchableResource to support CardDAV addressbook-query" );
   			}
   		}
-  		catch( NotAuthorizedException e )
+  		catch( NotAuthorizedException | BadRequestException e )
   		{
   			log.error( "ERROR occured in AddressBookQueryReport.process", e );
   		}
-  		catch( BadRequestException e )
-  		{
-  			log.error( "ERROR occured in AddressBookQueryReport.process", e );
-  		}
-  		return "";
+		return "";
   	}
 
   	private Set<QName> getProps( Document doc )
@@ -247,7 +243,7 @@ public class AddressBookQueryReport implements QualifiedReport
   			throw new RuntimeException( "No prop element" );
   		}
 
-  		Set<QName> set = new HashSet<QName>();
+  		Set<QName> set = new HashSet<>();
   		for ( Object o : elProp.getChildren() )
   		{
   			if ( o instanceof Element )

@@ -175,7 +175,7 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
     @Override
     protected void buildProtocolHandlers(WebDavResponseHandler webdavResponseHandler, ResourceTypeHelper resourceTypeHelper) {
         if (protocols == null) {
-            protocols = new ArrayList<HttpExtension>();
+            protocols = new ArrayList<>();
 
             if (matchHelper == null) {
                 matchHelper = new MatchHelper(eTagGenerator);
@@ -253,7 +253,7 @@ public class HttpManagerBuilderEnt extends HttpManagerBuilder {
         if (wellKnownResourceFactory != null) {
             log.info("Enabled well-known protocol");
             if (wellKnownHandlers == null) {
-                wellKnownHandlers = new ArrayList<WellKnownResourceFactory.WellKnownHandler>();
+                wellKnownHandlers = new ArrayList<>();
                 for (HttpExtension p : protocols) {
                     if (p instanceof WellKnownResourceFactory.WellKnownHandler) {
                         WellKnownResourceFactory.WellKnownHandler wellKnownHandler = (WellKnownResourceFactory.WellKnownHandler) p;

@@ -73,10 +73,10 @@ public class JNameServer implements Service {
 	private static final Logger log = LoggerFactory.getLogger(JNameServer.class.getName());
 	static final int FLAG_DNSSECOK = 1;
 	static final int FLAG_SIGONLY = 2;
-	DomainResourceFactory drf;
-	List<InetSocketAddress> sockAddrs = new ArrayList<InetSocketAddress>();
-	List<TcpListener> tcpListeners = new ArrayList<TcpListener>();
-	List<UdpListener> udpListeners = new ArrayList<UdpListener>();
+	final DomainResourceFactory drf;
+	final List<InetSocketAddress> sockAddrs = new ArrayList<>();
+	final List<TcpListener> tcpListeners = new ArrayList<>();
+	final List<UdpListener> udpListeners = new ArrayList<>();
 	private final RecordTypes recordTypes = new RecordTypes();
 	volatile boolean running;
 
@@ -177,8 +177,7 @@ public class JNameServer implements Service {
 
 	private void addAdditional2(Message response, int section, int flags) {
 		Record[] records = response.getSectionArray(section);
-		for (int i = 0; i < records.length; i++) {
-			Record r = records[i];
+		for (Record r : records) {
 			Name glueName = r.getAdditionalName();
 			if (glueName != null) {
 				addGlue(response, glueName, flags);
@@ -278,8 +277,8 @@ public class JNameServer implements Service {
 					flags);
 		} else if (sr.isSuccessful()) {
 			RRset[] rrsets = sr.answers();
-			for (int i = 0; i < rrsets.length; i++) {
-				addRRset(name, response, rrsets[i], Section.ANSWER, flags);
+			for (RRset rrset : rrsets) {
+				addRRset(name, response, rrset, Section.ANSWER, flags);
 			}
 			if (zdr != null) {
 				RRset rrSet = getRRset(domainName, zdr, Type.NS, DClass.IN);
@@ -348,8 +347,8 @@ public class JNameServer implements Service {
 			if (isExact && type == Type.ANY) {
 				sr = new SetResponse(SetResponse.SUCCESSFUL);
 				RRset[] sets = getAllRRsets(domainName, dr, DClass.IN);
-				for (int i = 0; i < sets.length; i++) {
-					sr.addRRset(sets[i]);
+				for (RRset set : sets) {
+					sr.addRRset(set);
 				}
 				return sr;
 			}
@@ -544,8 +543,8 @@ public class JNameServer implements Service {
 
 	class TcpListener implements Runnable {
 
-		InetAddress addr;
-		int port;
+		final InetAddress addr;
+		final int port;
 		ServerSocket sock;
 
 		TcpListener(InetSocketAddress sa) {
@@ -622,11 +621,7 @@ public class JNameServer implements Service {
 				while (running) {
 					final Socket s = sock.accept();
 					Thread t;
-					t = new Thread(new Runnable() {
-						public void run() {
-							TCPclient(s);
-						}
-					});
+					t = new Thread(() -> TCPclient(s));
 					t.start();
 				}
 			} catch (IOException e) {
@@ -638,8 +633,8 @@ public class JNameServer implements Service {
 	class UdpListener implements Runnable {
 
 		DatagramSocket sock;
-		InetAddress addr;
-		int port;
+		final InetAddress addr;
+		final int port;
 
 		UdpListener(InetSocketAddress sa) {
 			this.addr = sa.getAddress();
@@ -752,7 +747,7 @@ public class JNameServer implements Service {
 		if (dr == null) {
 			return null;
 		}
-		List<RRset> rrSets = new ArrayList<RRset>();
+		List<RRset> rrSets = new ArrayList<>();
 		List<DomainResourceRecord> allRecords = dr.getRecords();
 
 		for (DomainResourceRecord dnsRec : allRecords) {
@@ -787,7 +782,7 @@ public class JNameServer implements Service {
 
 			Name tname = new Name(name, name.labels() - tlabels);
 			DomainResource dr = getDomainResource(Utils.nameToString(tname));
-			if (dr != null && dr instanceof ZoneDomainResource) {
+			if (dr instanceof ZoneDomainResource) {
 				zdr = (ZoneDomainResource) dr;
 				break;
 			}

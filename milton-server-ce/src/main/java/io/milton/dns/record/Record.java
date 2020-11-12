@@ -76,7 +76,7 @@ public abstract class Record implements Cloneable, Comparable, Serializable {
      */
     abstract Record getObject();
 
-    private static final Record getEmptyRecord(Name name, int type, int dclass, long ttl, boolean hasData) {
+    private static Record getEmptyRecord(Name name, int type, int dclass, long ttl, boolean hasData) {
         Record proto, rec;
 
         if (hasData) {
@@ -363,8 +363,8 @@ public abstract class Record implements Cloneable, Comparable, Serializable {
         boolean escaped = false;
         boolean hasEscapes = false;
 
-        for (int i = 0; i < array.length; i++) {
-            if (array[i] == '\\') {
+        for (byte item : array) {
+            if (item == '\\') {
                 hasEscapes = true;
                 break;
             }
@@ -380,8 +380,8 @@ public abstract class Record implements Cloneable, Comparable, Serializable {
 
         int digits = 0;
         int intval = 0;
-        for (int i = 0; i < array.length; i++) {
-            byte b = array[i];
+        for (byte value : array) {
+            byte b = value;
             if (escaped) {
                 if (b >= '0' && b <= '9' && digits < 3) {
                     digits++;
@@ -399,12 +399,12 @@ public abstract class Record implements Cloneable, Comparable, Serializable {
                 }
                 os.write(b);
                 escaped = false;
-            } else if (array[i] == '\\') {
+            } else if (value == '\\') {
                 escaped = true;
                 digits = 0;
                 intval = 0;
             } else {
-                os.write(array[i]);
+                os.write(value);
             }
         }
         if (digits > 0 && digits < 3) {
@@ -426,8 +426,8 @@ public abstract class Record implements Cloneable, Comparable, Serializable {
         if (quote) {
             sb.append('"');
         }
-        for (int i = 0; i < array.length; i++) {
-            int b = array[i] & 0xFF;
+        for (byte value : array) {
+            int b = value & 0xFF;
             if (b < 0x20 || b >= 0x7f) {
                 sb.append('\\');
                 sb.append(byteFormat.format(b));
@@ -594,7 +594,7 @@ public abstract class Record implements Cloneable, Comparable, Serializable {
      * @return true if the records are equal, false otherwise.
      */
     public boolean equals(Object arg) {
-        if (arg == null || !(arg instanceof Record)) {
+        if (!(arg instanceof Record)) {
             return false;
         }
         Record r = (Record) arg;
@@ -612,8 +612,8 @@ public abstract class Record implements Cloneable, Comparable, Serializable {
     public int hashCode() {
         byte[] array = toWireCanonical(true);
         int code = 0;
-        for (int i = 0; i < array.length; i++) {
-            code += ((code << 3) + (array[i] & 0xFF));
+        for (byte b : array) {
+            code += ((code << 3) + (b & 0xFF));
         }
         return code;
     }

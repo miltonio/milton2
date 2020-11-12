@@ -76,10 +76,8 @@ public class AspirinMailSender implements MailSender, AspirinListener {
             }
             mm.setContent(text, "text/plain");
             sendMail(mm);
-        } catch (UnsupportedEncodingException ex) {
+        } catch (UnsupportedEncodingException | MessagingException ex) {
             throw new RuntimeException(ex);
-        } catch (MessagingException messagingException) {
-            throw new RuntimeException(messagingException);
         }
     }
 

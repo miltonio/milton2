@@ -71,7 +71,7 @@ import java.io.OutputStreamWriter;
  */
 public class MetaFileMaker {
 
-	{
+	static {
 		Security.addProvider(new JarsyncProvider());
 	}
 	/** Default length of strong checksum (MD4) */
@@ -96,15 +96,13 @@ public class MetaFileMaker {
 			config.weakSum = new Rsum();
 			config.blockLength = blocksize;
 			config.strongSumLength = hashLengths[2];
-			List<ChecksumPair> list = new ArrayList<ChecksumPair>((int) Math.ceil((double) fileLength / (double) blocksize));
+			List<ChecksumPair> list = new ArrayList<>((int) Math.ceil((double) fileLength / (double) blocksize));
 			MessageDigest sha1Digest = MessageDigest.getInstance("SHA1");
 			list = gen.generateSums(fileData, config, sha1Digest);
 			headers.sha1 = SHA1.toString(sha1Digest);
 			return new MetaData(headers, list);
-		} catch (IOException ioe) {
+		} catch (IOException | NoSuchAlgorithmException ioe) {
 			throw new RuntimeException(ioe);
-		} catch (NoSuchAlgorithmException nae) {
-			throw new RuntimeException(nae);
 		}
 	}
 
@@ -278,7 +276,7 @@ public class MetaFileMaker {
 		return blocksize;
 	}
 
-	public class MetaData {
+	public static class MetaData {
 
 		private final Headers headers;
 		private final List<ChecksumPair> list;

@@ -18,8 +18,8 @@ public class MemoryMessageResource implements MessageResource {
 
     private final StandardMessageFactory factory;
 
-    MemoryMessageFolder folder;
-    StandardMessage message;
+    final MemoryMessageFolder folder;
+    final StandardMessage message;
 
     public MemoryMessageResource( MemoryMessageFolder folder, MimeMessage mimeMessage, StandardMessageFactory factory ) {
         super();
@@ -34,8 +34,7 @@ public class MemoryMessageResource implements MessageResource {
     }
 
     public int size() {
-        int i = message.getSize();
-        return i;
+        return message.getSize();
     }
 
     public void writeTo( OutputStream out ) {
@@ -43,9 +42,7 @@ public class MemoryMessageResource implements MessageResource {
         factory.toMimeMessage( message, mm );
         try {
             mm.writeTo( out );
-        } catch( IOException ex ) {
-            throw new RuntimeException( ex );
-        } catch( MessagingException ex ) {
+        } catch( IOException | MessagingException ex ) {
             throw new RuntimeException( ex );
         }
     }

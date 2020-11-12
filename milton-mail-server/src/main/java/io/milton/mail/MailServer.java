@@ -11,7 +11,7 @@ public class MailServer {
     private final static Logger log = LoggerFactory.getLogger( MailServer.class );
     private MailSender mailSender;
     private SmtpServer smtpServer;
-    private SmtpServer msaSmtpServer;
+    private final SmtpServer msaSmtpServer;
     private PopServer popServer;
 
 

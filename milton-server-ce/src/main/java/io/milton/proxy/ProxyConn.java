@@ -24,7 +24,7 @@ import java.net.Socket;
 /** proxyconn is glue between two Sockets wrapped in dataconn, to pss traffic between them. **/
 class ProxyConn implements Runnable {
 
-    public boolean debug = false;
+    public final boolean debug = false;
     protected Thread t;
     protected DataConn c1,  c2;
 

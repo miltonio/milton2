@@ -46,12 +46,12 @@ public class ExtendedResolver implements Resolver {
 
 private static class Resolution implements ResolverListener {
 	Resolver [] resolvers;
-	int [] sent;
-	Object [] inprogress;
-	int retries;
+	final int [] sent;
+	final Object [] inprogress;
+	final int retries;
 	int outstanding;
 	boolean done;
-	Message query;
+	final Message query;
 	Message response;
 	Throwable thrown;
 	ResolverListener listener;
@@ -59,7 +59,7 @@ private static class Resolution implements ResolverListener {
 	public
 	Resolution(ExtendedResolver eres, Message query) {
 		List l = eres.resolvers;
-		resolvers = (Resolver []) l.toArray (new Resolver[l.size()]);
+		resolvers = (Resolver []) l.toArray (new Resolver[0]);
 		if (eres.loadBalance) {
 			int nresolvers = resolvers.length;
 			/*
@@ -284,8 +284,8 @@ ExtendedResolver() throws UnknownHostException {
 	init();
 	String [] servers = ResolverConfig.getCurrentConfig().servers();
 	if (servers != null) {
-		for (int i = 0; i < servers.length; i++) {
-			Resolver r = new SimpleResolver(servers[i]);
+		for (String server : servers) {
+			Resolver r = new SimpleResolver(server);
 			r.setTimeout(quantum);
 			resolvers.add(r);
 		}
@@ -304,8 +304,8 @@ ExtendedResolver() throws UnknownHostException {
 public
 ExtendedResolver(String [] servers) throws UnknownHostException {
 	init();
-	for (int i = 0; i < servers.length; i++) {
-		Resolver r = new SimpleResolver(servers[i]);
+	for (String server : servers) {
+		Resolver r = new SimpleResolver(server);
 		r.setTimeout(quantum);
 		resolvers.add(r);
 	}
@@ -325,45 +325,39 @@ ExtendedResolver(Resolver [] res) throws UnknownHostException {
 
 public void
 setPort(int port) {
-	for (int i = 0; i < resolvers.size(); i++)
-		((Resolver)resolvers.get(i)).setPort(port);
+	for (Object resolver : resolvers) ((Resolver) resolver).setPort(port);
 }
 
 public void
 setTCP(boolean flag) {
-	for (int i = 0; i < resolvers.size(); i++)
-		((Resolver)resolvers.get(i)).setTCP(flag);
+	for (Object resolver : resolvers) ((Resolver) resolver).setTCP(flag);
 }
 
 public void
 setIgnoreTruncation(boolean flag) {
-	for (int i = 0; i < resolvers.size(); i++)
-		((Resolver)resolvers.get(i)).setIgnoreTruncation(flag);
+	for (Object resolver : resolvers) ((Resolver) resolver).setIgnoreTruncation(flag);
 }
 
 public void
 setEDNS(int level) {
-	for (int i = 0; i < resolvers.size(); i++)
-		((Resolver)resolvers.get(i)).setEDNS(level);
+	for (Object resolver : resolvers) ((Resolver) resolver).setEDNS(level);
 }
 
 public void
 setEDNS(int level, int payloadSize, int flags, List options) {
-	for (int i = 0; i < resolvers.size(); i++)
-		((Resolver)resolvers.get(i)).setEDNS(level, payloadSize,
-						     flags, options);
+	for (Object resolver : resolvers)
+		((Resolver) resolver).setEDNS(level, payloadSize,
+				flags, options);
 }
 
 public void
 setTSIGKey(TSIG key) {
-	for (int i = 0; i < resolvers.size(); i++)
-		((Resolver)resolvers.get(i)).setTSIGKey(key);
+	for (Object resolver : resolvers) ((Resolver) resolver).setTSIGKey(key);
 }
 
 public void
 setTimeout(int secs, int msecs) {
-	for (int i = 0; i < resolvers.size(); i++)
-		((Resolver)resolvers.get(i)).setTimeout(secs, msecs);
+	for (Object resolver : resolvers) ((Resolver) resolver).setTimeout(secs, msecs);
 }
 
 public void
@@ -413,7 +407,7 @@ getResolver(int n) {
 /** Returns all resolvers used by this ExtendedResolver */
 public Resolver []
 getResolvers() {
-	return (Resolver []) resolvers.toArray(new Resolver[resolvers.size()]);
+	return (Resolver []) resolvers.toArray(new Resolver[0]);
 }
 
 /** Adds a new resolver to be used by this ExtendedResolver */

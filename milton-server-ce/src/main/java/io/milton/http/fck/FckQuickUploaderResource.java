@@ -87,11 +87,7 @@ public class FckQuickUploaderResource extends FckCommon {
                 } else {
                     throw new BadRequestException( target, "Cant create subfolder" );
                 }
-            } catch( ConflictException ex ) {
-                throw new RuntimeException( ex );
-            } catch( NotAuthorizedException ex ) {
-                throw new RuntimeException( ex );
-            } catch( BadRequestException ex ) {
+            } catch( ConflictException | BadRequestException | NotAuthorizedException ex ) {
                 throw new RuntimeException( ex );
             }
         }
@@ -119,13 +115,7 @@ public class FckQuickUploaderResource extends FckCommon {
             } else {
                 throw new BadRequestException(target, "Does not implement PutableResource");
             }
-        } catch( ConflictException ex ) {
-            throw new RuntimeException( ex );
-        } catch( NotAuthorizedException ex ) {
-            throw new RuntimeException( ex );
-        } catch( BadRequestException ex ) {
-            throw new RuntimeException( ex );
-        } catch( IOException ex ) {
+        } catch( ConflictException | IOException | BadRequestException | NotAuthorizedException ex ) {
             throw new RuntimeException( ex );
         }
 

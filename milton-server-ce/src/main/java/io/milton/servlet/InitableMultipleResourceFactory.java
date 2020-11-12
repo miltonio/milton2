@@ -65,9 +65,7 @@ public class InitableMultipleResourceFactory extends MultipleResourceFactory {
 		Object o;
 		try {
 			o = c.newInstance();
-		} catch (IllegalAccessException ex) {
-			throw new RuntimeException(s, ex);
-		} catch (InstantiationException ex) {
+		} catch (IllegalAccessException | InstantiationException ex) {
 			throw new RuntimeException(s, ex);
 		}
 		ResourceFactory rf = (ResourceFactory) o;

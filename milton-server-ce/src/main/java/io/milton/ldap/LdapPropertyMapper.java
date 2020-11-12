@@ -42,10 +42,10 @@ public class LdapPropertyMapper {
 
 	private static final Logger log = LoggerFactory.getLogger(SimpleLdapFilter.class);
 	private final PropFindPropertyBuilder propertyBuilder;
-	private final Map<QName, String> mapQNameDavToLdap = new ConcurrentHashMap<QName, String>();
-	private final Map<String, QName> mapQNameLdapToDav = new ConcurrentHashMap< String, QName>();
-	private final Map<String, String> mapLocalNameDavToLdap = new ConcurrentHashMap<String, String>();
-	private final Map<String, String> mapLocalNameLdapToDav = new ConcurrentHashMap< String, String>();
+	private final Map<QName, String> mapQNameDavToLdap = new ConcurrentHashMap<>();
+	private final Map<String, QName> mapQNameLdapToDav = new ConcurrentHashMap<>();
+	private final Map<String, String> mapLocalNameDavToLdap = new ConcurrentHashMap<>();
+	private final Map<String, String> mapLocalNameLdapToDav = new ConcurrentHashMap<>();
 	
 	private final String ldapNameSpace = "ldap";
 
@@ -70,8 +70,7 @@ public class LdapPropertyMapper {
 	}
 	
 	public ValueAndType getProperty(QName field, Resource resource) throws NotAuthorizedException, BadRequestException {
-		ValueAndType vt = propertyBuilder.getProperty(field, resource);
-		return vt;
+		return propertyBuilder.getProperty(field, resource);
 	}
 
 	public QName mapToDavProp(String s) {
@@ -121,7 +120,7 @@ public class LdapPropertyMapper {
 	public Set<LdapMappedProp> mapProperties(boolean returnAllAttributes, Set<String> returningAttributes, PropFindableResource res) throws NotAuthorizedException, BadRequestException {
 		if (returnAllAttributes) {
 			Set<QName> davProps = propertyBuilder.findAllProps(res);
-			Set<LdapMappedProp> mapped = new HashSet<LdapMappedProp>();
+			Set<LdapMappedProp> mapped = new HashSet<>();
 			for (QName p : davProps) {
 				String ldapProp = mapToLdapProp(p);
 				LdapMappedProp ldapMappedProp = new LdapMappedProp(ldapProp, p);
@@ -129,7 +128,7 @@ public class LdapPropertyMapper {
 			}
 			return mapped;
 		} else {
-			Set<LdapMappedProp> mapped = new HashSet<LdapMappedProp>();
+			Set<LdapMappedProp> mapped = new HashSet<>();
 			for (String s : returningAttributes) {
 				QName qn = mapToDavProp(s);
 				LdapMappedProp ldapMappedProp = new LdapMappedProp(s, qn);
@@ -139,10 +138,10 @@ public class LdapPropertyMapper {
 		}
 	}
 
-	public class LdapMappedProp {
+	public static class LdapMappedProp {
 
-		String ldapName;
-		QName mappedName;
+		final String ldapName;
+		final QName mappedName;
 
 		public LdapMappedProp(String ldapName, QName mappedName) {
 			this.ldapName = ldapName;

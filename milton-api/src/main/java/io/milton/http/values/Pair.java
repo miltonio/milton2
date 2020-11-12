@@ -28,8 +28,8 @@ package io.milton.http.values;
  * @author nabil.shams
  */
 public class Pair<T,U> {
-	private T object1;
-	private U object2;
+	private final T object1;
+	private final U object2;
 	public Pair(T t, U u){
 		object1 = t;
 		object2 = u;

@@ -89,11 +89,7 @@ public class StandardMessageWrapper implements StandardMessage {
 
     @Override
     public MailboxAddress getReplyTo() {
-        if (replyTo != null) {
-            return wrapped.getReplyTo();
-        } else {
-            return wrapped.getReplyTo();
-        }
+        return wrapped.getReplyTo();
     }
 
     @Override

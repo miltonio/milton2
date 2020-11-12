@@ -38,7 +38,6 @@ import java.util.Map;
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.Calendar;
-import net.fortuna.ical4j.model.PropertyList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,7 +72,7 @@ public class DefaultCalendarSearchService implements CalendarSearchService {
     @Override
     public List<ICalResource> findCalendarResources(CalendarResource calendar, Date start, Date end, AbstractMap.SimpleImmutableEntry<String, String> propFilter) throws NotAuthorizedException, BadRequestException {
         // build a list of all calendar resources
-        List<ICalResource> list = new ArrayList<ICalResource>();
+        List<ICalResource> list = new ArrayList<>();
         for (Resource r : calendar.getChildren()) {
             if (r instanceof ICalResource) {
                 ICalResource cr = (ICalResource) r;
@@ -122,9 +121,7 @@ public class DefaultCalendarSearchService implements CalendarSearchService {
             event = new EventResourceImpl();
             try {
                 formatter.parseEvent(event, r.getICalData());
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            } catch (ParserException ex) {
+            } catch (IOException | ParserException ex) {
                 throw new RuntimeException(ex);
             }
         }
@@ -150,7 +147,7 @@ public class DefaultCalendarSearchService implements CalendarSearchService {
     public List<SchedulingResponseItem> queryFreeBusy(CalDavPrincipal principal, String iCalText) {
         ICalFormatter.FreeBusyRequest r = formatter.parseFreeBusyRequest(iCalText);
         log.info("queryFreeBusy: attendees=" + r.getAttendeeLines().size() + " - " + r.getAttendeeMailtos().size());
-        List<SchedulingResponseItem> list = new ArrayList<SchedulingResponseItem>();
+        List<SchedulingResponseItem> list = new ArrayList<>();
         // For each attendee locate events within the given date range and add them as busy responses
         try {
             for (String attendeeMailto : r.getAttendeeMailtos()) {
@@ -168,9 +165,7 @@ public class DefaultCalendarSearchService implements CalendarSearchService {
                     list.add(item);
                 }
             }
-        } catch (NotAuthorizedException ex) {
-            throw new RuntimeException(ex);
-        } catch (BadRequestException ex) {
+        } catch (NotAuthorizedException | BadRequestException ex) {
             throw new RuntimeException(ex);
         }
         return list;
@@ -190,7 +185,7 @@ public class DefaultCalendarSearchService implements CalendarSearchService {
      */
     @Override
     public List<ICalResource> findAttendeeResources(CalDavPrincipal user) throws NotAuthorizedException, BadRequestException {
-        List<ICalResource> list = new ArrayList<ICalResource>();
+        List<ICalResource> list = new ArrayList<>();
         String host = HttpManager.request().getHostHeader();
         Resource rUsersHome = resourceFactory.getResource(host, usersBasePath);
         if( rUsersHome instanceof CollectionResource ) {
@@ -290,8 +285,7 @@ public class DefaultCalendarSearchService implements CalendarSearchService {
             return null;
         } else {
             if (r instanceof CalDavPrincipal) {
-                CalDavPrincipal p = (CalDavPrincipal) r;
-                return p;
+                return (CalDavPrincipal) r;
             } else {
                 log.warn("findUserFromMailto: found a resource but it is not a CalDavPrincipal. Is a: " + r.getClass().getCanonicalName());
                 return null;
@@ -346,9 +340,7 @@ public class DefaultCalendarSearchService implements CalendarSearchService {
                             EventResourceImpl er = new EventResourceImpl();
                             try {
                                 formatter.parseEvent(er, event.getICalData());
-                            } catch (IOException ex) {
-                                throw new RuntimeException(ex);
-                            } catch (ParserException ex) {
+                            } catch (IOException | ParserException ex) {
                                 throw new RuntimeException(ex);
                             }
 

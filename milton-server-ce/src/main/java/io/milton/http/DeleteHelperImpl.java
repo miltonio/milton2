@@ -61,8 +61,7 @@ public class DeleteHelperImpl implements DeleteHelper {
 			return locked;
 		} else if (r instanceof CollectionResource) {
 			CollectionResource col = (CollectionResource) r;
-			List<Resource> list = new ArrayList<Resource>();
-			list.addAll(col.getChildren());
+            List<Resource> list = new ArrayList<>(col.getChildren());
 			for (Resource rChild : list) {
 				if (rChild instanceof DeletableResource) {
 					DeletableResource rChildDel = (DeletableResource) rChild;
@@ -102,8 +101,7 @@ public class DeleteHelperImpl implements DeleteHelper {
 
 		} else if (r instanceof CollectionResource) {
 			CollectionResource col = (CollectionResource) r;
-			List<Resource> list = new ArrayList<Resource>();
-			list.addAll(col.getChildren());
+            List<Resource> list = new ArrayList<>(col.getChildren());
 			for (Resource rChild : list) {
 				if (rChild == null) {
 					log.warn("got a null item in list");

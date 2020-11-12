@@ -35,9 +35,9 @@ public class PropPatchSaxHandler extends DefaultHandler
 	private final static QName SET = new QName(WebDavProtocol.DAV_URI, "set");
 	private final static QName REMOVE = new QName(WebDavProtocol.DAV_URI, "remove");
 	private final static QName PROP = new QName(WebDavProtocol.DAV_URI, "prop");
-	private final Stack<StateHandler> handlers = new Stack<StateHandler>();
-	private final Map<QName, String> attributesSet = new LinkedHashMap<QName, String>();
-	private final Map<QName, String> attributesRemove = new LinkedHashMap<QName, String>();
+	private final Stack<StateHandler> handlers = new Stack<>();
+	private final Map<QName, String> attributesSet = new LinkedHashMap<>();
+	private final Map<QName, String> attributesRemove = new LinkedHashMap<>();
 
 	@Override
 	public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException
@@ -97,7 +97,7 @@ public class PropPatchSaxHandler extends DefaultHandler
 		{
 		}
 
-		public static StateHandler Ignore = new StateHandler()
+		public static final StateHandler Ignore = new StateHandler()
 		{
 			@Override
 			public StateHandler startChild(QName name, Attributes attributes) throws SAXException

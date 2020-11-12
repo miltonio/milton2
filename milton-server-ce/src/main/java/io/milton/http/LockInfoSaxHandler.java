@@ -44,7 +44,7 @@ public class LockInfoSaxHandler extends DefaultHandler {
 
 	private static final Logger log = LoggerFactory.getLogger(LockInfoSaxHandler.class);
 
-	public static LockInfo parseLockInfo(Request request) throws IOException, FileNotFoundException, SAXException {
+	public static LockInfo parseLockInfo(Request request) throws IOException, SAXException {
 		InputStream in = request.getInputStream();
 
 		XMLReader reader = XMLReaderFactory.createXMLReader();
@@ -86,7 +86,7 @@ public class LockInfoSaxHandler extends DefaultHandler {
 
 	private final LockInfo info = new LockInfo();
 	private StringBuilder owner;
-	private final Stack<String> elementPath = new Stack<String>();
+	private final Stack<String> elementPath = new Stack<>();
 
 	@Override
 	public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException {

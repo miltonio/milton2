@@ -42,14 +42,12 @@ public class FckResourceFactory implements ResourceFactory {
 		if (FckFileManagerResource.URL.equals(path)) {
 			CollectionResource h = getParent(host, path.getParent());
 			if (h != null) {
-				FckFileManagerResource fck = new FckFileManagerResource(h);
-				return fck;
+				return new FckFileManagerResource(h);
 			}
 		} else if (FckQuickUploaderResource.URL.equals(path)) {
 			CollectionResource h = getParent(host, path.getParent());
 			if (h != null) {
-				FckQuickUploaderResource fck = new FckQuickUploaderResource(h);
-				return fck;
+				return new FckQuickUploaderResource(h);
 			}
 		}
 		return wrappedFactory.getResource(host, url);

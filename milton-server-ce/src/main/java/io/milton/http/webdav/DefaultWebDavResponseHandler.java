@@ -41,7 +41,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -177,7 +177,7 @@ public class DefaultWebDavResponseHandler implements WebDavResponseHandler, Buff
 
 	@Override
 	public void respondDeleteFailed(Request request, Response response, Resource resource, Status status) {
-		List<HrefStatus> statii = new ArrayList<HrefStatus>();
+		List<HrefStatus> statii = new ArrayList<>();
 		statii.add(new HrefStatus(request.getAbsoluteUrl(), status));
 		responseMultiStatus(resource, response, request, statii);
 
@@ -214,7 +214,7 @@ public class DefaultWebDavResponseHandler implements WebDavResponseHandler, Buff
 		try {
 			outputStream.flush();
 		} catch (IOException ex) {
-			log.warn("exception flushing response", ex.getMessage());
+			log.warn("exception flushing response", ex);
 		}
 	}
 

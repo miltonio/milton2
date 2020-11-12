@@ -148,7 +148,7 @@ public class OAuth2AuthenticationHandler implements AuthenticationHandler {
 
 	@Override
 	public boolean isCompatible(Resource resource, Request request) {
-		return (request != null) && (request instanceof Request);
+		return (request instanceof Request);
 	}
 
 	@Override
@@ -161,7 +161,7 @@ public class OAuth2AuthenticationHandler implements AuthenticationHandler {
 			return null;
 		}
 
-		log.info("This is a OAuth2Resource{} " + oAuth2Resource);
+		log.info("This is a OAuth2Resource {} ", oAuth2Resource);
 
 		String oAuth2Code = request.getParams().get(OAuth.OAUTH_CODE);
 		String oAuth2Error = request.getParams().get("error");
@@ -187,16 +187,14 @@ public class OAuth2AuthenticationHandler implements AuthenticationHandler {
 			}
 			// Step :Obtain the access token
 			OAuthAccessTokenResponse oAuth2Response = this.oAuth2Helper.obtainAuth2Token(prov, oAuth2Code);
-			log.info("This is a OAuth2TokenResponse{} " + oAuth2Response);
+			log.info("This is a OAuth2TokenResponse {} ", oAuth2Response);
 
 			if (oAuth2Response != null) {
 				// Step : Get the profile.
 				OAuthResourceResponse resourceResponse = this.oAuth2Helper.getOAuth2Profile(oAuth2Response, prov);
-				log.info("This is a OAuthResourceResponse{} " + resourceResponse);
+				log.info("This is a OAuthResourceResponse {} ", resourceResponse);
 
-				OAuth2Resource.OAuth2ProfileDetails oAuth2TokenUser = this.oAuth2Helper.getOAuth2UserInfo(request, resourceResponse, oAuth2Response, prov, oAuth2Code, returnUrl);
-
-				return oAuth2TokenUser;
+				return this.oAuth2Helper.getOAuth2UserInfo(request, resourceResponse, oAuth2Response, prov, oAuth2Code, returnUrl);
 			}
 		}
 

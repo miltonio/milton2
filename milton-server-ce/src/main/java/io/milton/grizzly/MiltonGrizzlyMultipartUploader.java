@@ -78,7 +78,7 @@ public class MiltonGrizzlyMultipartUploader {
 
 		if (!ar.status) {
 			if (ar.error instanceof Exception) {
-				throw (Exception) ar.error;
+				throw ar.error;
 			} else {
 				throw new Exception(ar.error.getMessage(), ar.error);
 			}
@@ -170,12 +170,7 @@ public class MiltonGrizzlyMultipartUploader {
 				final OutputStream outputStream = f.getOutputStream();
 				final NIOInputStream stream = multipartEntry.getNIOInputStream();
 
-				stream.notifyAvailable(new UploadReadHandler(stream, outputStream, new Consumer<Throwable>() {
-					@Override
-					public void accept(Throwable t) {
-						files.put(mpn, new FileItemWrapper(f));
-					}
-				}));
+				stream.notifyAvailable(new UploadReadHandler(stream, outputStream, t -> files.put(mpn, new FileItemWrapper(f))));
 			} else {
 				// Parse Param
 				if (StringUtils.isBlank(multipartName)) {
@@ -298,7 +293,7 @@ public class MiltonGrizzlyMultipartUploader {
 		}
 
 		public static <T> T wait(final AsyncRunnable<T> runnable) throws InterruptedException {
-			final AtomicReference<T> notifier = new AtomicReference<T>();
+			final AtomicReference<T> notifier = new AtomicReference<>();
 
 			// run the asynchronous code
 			runnable.run(notifier);
@@ -319,14 +314,14 @@ public class MiltonGrizzlyMultipartUploader {
 		}
 	}
 
-	private class AsyncResult {
+	private static class AsyncResult {
 
 		public AsyncResult(Throwable error) {
 			this.status = error == null;
 			this.error = error;
 		}
 
-		boolean status;
-		Throwable error;
+		final boolean status;
+		final Throwable error;
 	}
 }

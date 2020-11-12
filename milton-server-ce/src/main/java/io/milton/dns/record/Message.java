@@ -51,7 +51,7 @@ public class Message implements Cloneable {
 	 */
 	public static final int MAXLENGTH = 65535;
 	private Header header;
-	private List[] sections;
+	private final List[] sections;
 	private int size;
 	private TSIG tsigkey;
 	private TSIGRecord querytsig;
@@ -77,8 +77,8 @@ public class Message implements Cloneable {
 	 * when it should have been.
 	 */
 	static final int TSIG_FAILED = 4;
-	private static Record[] emptyRecordArray = new Record[0];
-	private static RRset[] emptyRRsetArray = new RRset[0];
+	private static final Record[] emptyRecordArray = new Record[0];
+	private static final RRset[] emptyRRsetArray = new RRset[0];
 
 	private Message(Header header) {
 		sections = new List[4];
@@ -342,9 +342,9 @@ public class Message implements Cloneable {
 	 */
 	public OPTRecord getOPT() {
 		Record[] additional = getSectionArray(Section.ADDITIONAL);
-		for (int i = 0; i < additional.length; i++) {
-			if (additional[i] instanceof OPTRecord) {
-				return (OPTRecord) additional[i];
+		for (Record record : additional) {
+			if (record instanceof OPTRecord) {
+				return (OPTRecord) record;
 			}
 		}
 		return null;
@@ -375,7 +375,7 @@ public class Message implements Cloneable {
 			return emptyRecordArray;
 		}
 		List l = sections[section];
-		return (Record[]) l.toArray(new Record[l.size()]);
+		return (Record[]) l.toArray(new Record[0]);
 	}
 
 	private static boolean sameSet(Record r1, Record r2) {
@@ -398,28 +398,28 @@ public class Message implements Cloneable {
 		List sets = new LinkedList();
 		Record[] recs = getSectionArray(section);
 		Set hash = new HashSet();
-		for (int i = 0; i < recs.length; i++) {
-			Name name = recs[i].getName();
+		for (Record rec : recs) {
+			Name name = rec.getName();
 			boolean newset = true;
 			if (hash.contains(name)) {
 				for (int j = sets.size() - 1; j >= 0; j--) {
 					RRset set = (RRset) sets.get(j);
-					if (set.getType() == recs[i].getRRsetType()
-							&& set.getDClass() == recs[i].getDClass()
+					if (set.getType() == rec.getRRsetType()
+							&& set.getDClass() == rec.getDClass()
 							&& set.getName().equals(name)) {
-						set.addRR(recs[i]);
+						set.addRR(rec);
 						newset = false;
 						break;
 					}
 				}
 			}
 			if (newset) {
-				RRset set = new RRset(recs[i]);
+				RRset set = new RRset(rec);
 				sets.add(set);
 				hash.add(name);
 			}
 		}
-		return (RRset[]) sets.toArray(new RRset[sets.size()]);
+		return (RRset[]) sets.toArray(new RRset[0]);
 	}
 
 	public void toWire(DNSOutput out) {

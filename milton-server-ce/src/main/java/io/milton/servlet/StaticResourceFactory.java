@@ -50,7 +50,7 @@ public class StaticResourceFactory implements ResourceFactory {
 	private Date modDate = new Date();
 
 	public StaticResourceFactory() {
-		roots = new ArrayList<File>();
+		roots = new ArrayList<>();
 		String sRoots = System.getProperty(FILE_ROOTS_SYS_PROP_NAME);
 		if (sRoots != null && sRoots.length() > 0) {
 			for (String s : sRoots.split(",")) {
@@ -106,10 +106,8 @@ public class StaticResourceFactory implements ResourceFactory {
 		if (this.contextPath != null && contextPath.length() > 0) {
 			url = url.replaceFirst('/' + contextPath, "");
 			log.debug("stripped context: " + url);
-			return url;
-		} else {
-			return url;
 		}
+		return url;
 	}
 
 	public String getContextPath() {

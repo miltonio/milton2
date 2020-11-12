@@ -43,13 +43,13 @@ public class MonitoredOutputStream extends OutputStream
         this.listener.start();
     }
 
-    public void write(byte b[], int off, int len) throws IOException
+    public void write(byte[] b, int off, int len) throws IOException
     {
         target.write(b,off,len);
         listener.bytesRead(len - off);
     }
 
-    public void write(byte b[]) throws IOException
+    public void write(byte[] b) throws IOException
     {
         target.write(b);
         listener.bytesRead(b.length);

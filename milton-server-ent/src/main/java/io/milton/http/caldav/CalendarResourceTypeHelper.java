@@ -52,7 +52,7 @@ public class CalendarResourceTypeHelper implements ResourceTypeHelper {
             log.trace("getResourceTypes: is a calendar");
             qn = new QName(CalDavProtocol.CALDAV_NS, "calendar");
             if (list == null) {
-                list = new ArrayList<QName>();
+                list = new ArrayList<>();
             }
             list.add(qn);
         }
@@ -60,7 +60,7 @@ public class CalendarResourceTypeHelper implements ResourceTypeHelper {
             log.trace("getResourceTypes: is a schedule-inbox");
             qn = new QName(CalDavProtocol.CALDAV_NS, "schedule-inbox");
             if (list == null) {
-                list = new ArrayList<QName>();
+                list = new ArrayList<>();
             }
             list.add(qn);
         }
@@ -68,7 +68,7 @@ public class CalendarResourceTypeHelper implements ResourceTypeHelper {
             log.trace("getResourceTypes: is a schedule-outbox");
             qn = new QName(CalDavProtocol.CALDAV_NS, "schedule-outbox");
             if (list == null) {
-                list = new ArrayList<QName>();
+                list = new ArrayList<>();
             }
             list.add(qn);
         }

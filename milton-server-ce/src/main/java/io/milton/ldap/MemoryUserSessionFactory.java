@@ -45,7 +45,7 @@ public class MemoryUserSessionFactory implements UserFactory {
 	}
 
 	public MemoryUserSessionFactory() {
-		this.users = new HashMap<String, MemoryUser>();
+		this.users = new HashMap<>();
 	}
 
 	public void addUser(String name, String password, String givenName, String surname, String email) {
@@ -91,7 +91,7 @@ public class MemoryUserSessionFactory implements UserFactory {
 	@Override
 	public List<LdapContact> galFind(Condition condition, int sizeLimit) throws NotAuthorizedException, BadRequestException{
 		log.trace("galFind");
-		List<LdapContact> results = new ArrayList<LdapContact>();
+		List<LdapContact> results = new ArrayList<>();
 		for (MemoryUser user : users.values()) {
 			if (condition == null || condition.isMatch(user)) {
 				LogUtils.debug(log, "searchContacts: add to results", user.userName);
@@ -116,7 +116,7 @@ public class MemoryUserSessionFactory implements UserFactory {
 	 * 
 	 */
 	@BeanPropertyResource(value="ldap")
-	public class MemoryUser extends MapContact implements LdapPrincipal, LdapContact {
+	public static class MemoryUser extends MapContact implements LdapPrincipal, LdapContact {
 
 		private final String userName;
 		private String password;

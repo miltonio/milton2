@@ -92,7 +92,7 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 		this.userAgentHelper = userAgentHelper;
 		this.handlerHelper = handlerHelper;
 		this.eTagGenerator = eTagGenerator;
-		handlers = new HashSet<Handler>();
+		handlers = new HashSet<>();
 		this.resourceTypeHelper = resourceTypeHelper;
 		this.quotaDataAccessor = quotaDataAccessor;
 		this.propertyMap = new PropertyMap(WebDavProtocol.NS_DAV.getName());
@@ -130,7 +130,7 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 		ValueWriters valueWriters = new ValueWriters();
 
 		if (propertySources == null) {
-			propertySources = new ArrayList<PropertySource>();
+			propertySources = new ArrayList<>();
 		}
 		log.debug("provided property sources: " + propertySources.size());
 		this.propertySources = propertySources;
@@ -152,7 +152,7 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 		handlers.add(new MoveHandler(responseHandler, handlerHelper, resourceHandlerHelper, userAgentHelper));
 
 		// Reports are added by other protocols via addReport
-		reports = new HashMap<String, Report>();
+		reports = new HashMap<>();
 		handlers.add(new ReportHandler(responseHandler, resourceHandlerHelper, reports));
 	}
 
@@ -185,8 +185,7 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 
 	@Override
 	public Object getProperty(QName name, Resource r) {
-		Object o = propertyMap.getProperty(name, r);
-		return o;
+		return propertyMap.getProperty(name, r);
 	}
 
 	@Override
@@ -268,7 +267,7 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 		}
 	}
 
-	class CreationDatePropertyWriter implements StandardProperty<Date> {
+	static class CreationDatePropertyWriter implements StandardProperty<Date> {
 
 		private final String fieldName;
 
@@ -293,7 +292,7 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 		}
 	}
 
-	class LastModifiedDatePropertyWriter implements StandardProperty<Date> {
+	static class LastModifiedDatePropertyWriter implements StandardProperty<Date> {
 
 		@Override
 		public String fieldName() {
@@ -329,14 +328,13 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 		}
 	}
 
-	class ContentTypePropertyWriter implements StandardProperty<String> {
+	static class ContentTypePropertyWriter implements StandardProperty<String> {
 
 		@Override
 		public String getValue(PropFindableResource res) {
 			if (res instanceof GetableResource) {
 				GetableResource getable = (GetableResource) res;
-				String s = getable.getContentType(null);
-				return s;
+				return getable.getContentType(null);
 			} else {
 				return "";
 			}
@@ -353,14 +351,13 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 		}
 	}
 
-	class ContentLengthPropertyWriter implements StandardProperty<Long> {
+	static class ContentLengthPropertyWriter implements StandardProperty<Long> {
 
 		@Override
 		public Long getValue(PropFindableResource res) {
 			if (res instanceof GetableResource) {
 				GetableResource getable = (GetableResource) res;
-				Long l = getable.getContentLength();
-				return l;
+				return getable.getContentLength();
 			} else {
 				return null;
 			}
@@ -425,8 +422,7 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 
 		@Override
 		public String getValue(PropFindableResource res) {
-			String etag = eTagGenerator.generateEtag(res);
-			return etag;
+			return eTagGenerator.generateEtag(res);
 		}
 
 		@Override
@@ -449,7 +445,7 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 		}
 	}
 
-	class MSIsCollectionPropertyWriter implements StandardProperty<Boolean> {
+	static class MSIsCollectionPropertyWriter implements StandardProperty<Boolean> {
 
 		@Override
 		public String fieldName() {
@@ -467,7 +463,7 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 		}
 	}
 
-	class MSIsReadOnlyPropertyWriter implements StandardProperty<Boolean> {
+	static class MSIsReadOnlyPropertyWriter implements StandardProperty<Boolean> {
 
 		@Override
 		public String fieldName() {
@@ -510,7 +506,7 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 		}
 	}
 
-	class MiltonExtTextContentProperty implements StandardProperty<String> {
+	static class MiltonExtTextContentProperty implements StandardProperty<String> {
 
 		@Override
 		public String fieldName() {
@@ -529,11 +525,7 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 						return bout.toString("UTF-8");
 					} catch (IOException e) {
 						throw new RuntimeException(e);
-					} catch (NotAuthorizedException e) {
-						return null;
-					} catch (BadRequestException e) {
-						return null;
-					} catch (NotFoundException e) {
+					} catch (NotAuthorizedException | NotFoundException | BadRequestException e) {
 						return null;
 					}
 				}
@@ -548,11 +540,10 @@ public class WebDavProtocol implements HttpExtension, PropertySource {
 	}
 
 	protected void sendStringProp(XmlWriter writer, String name, String value) {
-		String s = value;
-		if (s == null) {
+		if (value == null) {
 			writer.writeProperty(null, name);
 		} else {
-			writer.writeProperty(null, name, s);
+			writer.writeProperty(null, name, value);
 		}
 	}
 

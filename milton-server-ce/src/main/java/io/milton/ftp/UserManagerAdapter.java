@@ -96,9 +96,7 @@ public class UserManagerAdapter implements UserManager {
             Resource hostRoot;
             try {
                 hostRoot = resourceFactory.getResource( naa.domain, "/" );
-            } catch (NotAuthorizedException ex) {
-                throw new RuntimeException(ex);
-            } catch (BadRequestException ex) {
+            } catch (NotAuthorizedException | BadRequestException ex) {
                 throw new RuntimeException(ex);
             }
             if( hostRoot == null ) {

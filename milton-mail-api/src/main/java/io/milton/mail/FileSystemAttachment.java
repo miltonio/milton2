@@ -67,9 +67,7 @@ public class FileSystemAttachment implements Attachment, Serializable {
             Utils.close(bout);
             Utils.close(fout);
             return new FileSystemAttachment(name, ct, outFile, contentId);
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        } catch (MessagingException ex) {
+        } catch (IOException | MessagingException ex) {
             throw new RuntimeException(ex);
         } finally {
             Utils.close(in);

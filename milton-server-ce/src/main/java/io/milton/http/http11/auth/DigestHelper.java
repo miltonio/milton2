@@ -70,7 +70,7 @@ public class DigestHelper {
 			}
 
 			// Check nonce was a Base64 encoded (as sent by DigestProcessingFilterEntryPoint)
-			if( !Base64.isArrayByteBase64( auth.getNonce().getBytes("UTF-8") ) ) {
+			if( !Base64.isBase64(auth.getNonce().getBytes("UTF-8"))) {
 				log.warn( "nonce not base64 encoded" );
 				return null;
 			}
@@ -93,8 +93,7 @@ public class DigestHelper {
 	//            return null;
 	//        }
 
-			DigestResponse resp = toDigestResponse( auth, method );
-			return resp;
+			return toDigestResponse( auth, method );
 		} catch (UnsupportedEncodingException ex) {
 			throw new RuntimeException(ex);
 		}
@@ -126,17 +125,16 @@ public class DigestHelper {
 
 
     private DigestResponse toDigestResponse( Auth auth, Method m ) {
-        DigestResponse dr = new DigestResponse(
-            m,
-            auth.getUser(),
-            auth.getRealm(),
-            auth.getNonce(),
-            auth.getUri(),
-            auth.getResponseDigest(),
-            auth.getQop(),
-            auth.getNc(),
-            auth.getCnonce() );
-        return dr;
+		return new DigestResponse(
+			m,
+			auth.getUser(),
+			auth.getRealm(),
+			auth.getNonce(),
+			auth.getUri(),
+			auth.getResponseDigest(),
+			auth.getQop(),
+			auth.getNc(),
+			auth.getCnonce() );
 
     }
 }

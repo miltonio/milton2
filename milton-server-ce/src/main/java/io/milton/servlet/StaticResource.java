@@ -100,9 +100,8 @@ public class StaticResource implements GetableResource {
 
 	@Override
 	public Date getModifiedDate() {
-		Date dt = new Date(file.lastModified());
-//        log.debug("static resource modified: " + dt);
-		return dt;
+        //        log.debug("static resource modified: " + dt);
+		return new Date(file.lastModified());
 	}
 
 	@Override
@@ -113,8 +112,7 @@ public class StaticResource implements GetableResource {
 	@Override
 	public String getContentType(String preferredList) {
 		String mime = ContentTypeUtils.findContentTypes(getName());
-		String s = ContentTypeUtils.findAcceptableContentType(mime, preferredList);
-		return s;
+        return ContentTypeUtils.findAcceptableContentType(mime, preferredList);
 	}
 
 	@Override
@@ -125,8 +123,7 @@ public class StaticResource implements GetableResource {
 	@Override
 	public Long getMaxAgeSeconds(Auth auth) {
 		//Long ll = 315360000l; // immutable
-		Long ll = 25920000l; // 1 year
-		return ll;
+        return 25920000l;
 	}
 
 	public LockToken getLockToken() {

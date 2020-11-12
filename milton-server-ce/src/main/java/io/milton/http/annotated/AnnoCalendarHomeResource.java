@@ -55,7 +55,7 @@ public class AnnoCalendarHomeResource extends AnnoCollectionResource {
 	@Override
 	public List<? extends Resource> getChildren(boolean isChildLoopup) throws NotAuthorizedException, BadRequestException {
 		ResourceList annoResources = findChildren(isChildLoopup);
-		List<Resource> list = new ArrayList<Resource>(annoResources);
+		List<Resource> list = new ArrayList<>(annoResources);
 		list.add(inboxResource);
 		list.add(outboxResource);
 		return list;

@@ -65,13 +65,13 @@ public class JsonPropPatchHandler {
 
     public PropFindResponse process(Resource wrappedResource, String encodedUrl, Map<String, String> params) throws NotAuthorizedException, ConflictException, BadRequestException {
         log.trace("process");
-        Map<QName, String> fields = new HashMap<QName, String>();
+        Map<QName, String> fields = new HashMap<>();
         for (String fieldName : params.keySet()) {
             String sFieldValue = params.get(fieldName);
             QName qn;
             if (fieldName.contains(":")) {
                 // name is of form uri:local  E.g. MyDav:authorName
-                String parts[] = fieldName.split(":");
+                String[] parts = fieldName.split(":");
                 String nsUri = parts[0];
                 String localName = parts[1];
                 qn = new QName(nsUri, localName);

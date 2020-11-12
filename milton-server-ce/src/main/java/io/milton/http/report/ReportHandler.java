@@ -97,14 +97,12 @@ public class ReportHandler implements ExistingEntityHandler {
 			}
 		} catch (JDOMException ex) {
 			java.util.logging.Logger.getLogger(ReportHandler.class.getName()).log(Level.SEVERE, null, ex);
-		} catch (ReadingException ex) {
-			throw new RuntimeException(ex);
 		} catch (WritingException ex) {
 			throw new RuntimeException(ex);
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
-	}
+    }
 
 	@Override
 	public boolean isCompatible(Resource res) {

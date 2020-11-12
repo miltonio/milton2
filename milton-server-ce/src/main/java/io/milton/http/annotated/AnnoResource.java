@@ -63,7 +63,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,8 +96,7 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 		Request request = HttpManager.request();
 		Object result = annoFactory.postAnnotationHandler.execute(this, request, parameters);
 		if (result instanceof String) {
-			String redirect = (String) result;
-			return redirect;
+			return (String) result;
 		} else if (result instanceof JsonResult) {
 			jsonResult = (JsonResult) result;
 		} else {
@@ -144,10 +143,7 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 		AnnoPrincipalResource userRes;
 		try {
 			userRes = annoFactory.usersAnnotationHandler.findUser(getRoot(), user);
-		} catch (NotAuthorizedException ex) {
-			log.warn("authenticate: Failed to locate a user", ex);
-			return null;
-		} catch (BadRequestException ex) {
+		} catch (NotAuthorizedException | BadRequestException ex) {
 			log.warn("authenticate: Failed to locate a user", ex);
 			return null;
 		}
@@ -188,10 +184,7 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 		AnnoPrincipalResource userRes;
 		try {
 			userRes = annoFactory.usersAnnotationHandler.findUser(getRoot(), digestRequest.getUser());
-		} catch (NotAuthorizedException ex) {
-			log.warn("authenticate: Failed to locate a user", ex);
-			return null;
-		} catch (BadRequestException ex) {
+		} catch (NotAuthorizedException | BadRequestException ex) {
 			log.warn("authenticate: Failed to locate a user", ex);
 			return null;
 		}
@@ -387,8 +380,7 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 				return null;
 			}
 		}
-		Long l = annoFactory.maxAgeAnnotationHandler.get(this);
-		return l;
+		return annoFactory.maxAgeAnnotationHandler.get(this);
 	}
 
 	@Override
@@ -427,10 +419,7 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 		String name = c.getCanonicalName();
 		int pos = name.lastIndexOf(".");
 		name = name.substring(pos + 1);
-		if (name.equalsIgnoreCase(type)) {
-			return true;
-		}
-		return false;
+		return name.equalsIgnoreCase(type);
 	}
 
 	public String getHref() {
@@ -513,7 +502,7 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 		}
 		Set<Priviledge> set = annoFactory.accessControlListAnnotationHandler.availablePrivs(curUser, this, auth);
 		if (set != null && !set.isEmpty()) {
-			return new ArrayList<Priviledge>(set);
+			return new ArrayList<>(set);
 		} else {
 			log.warn("Empty privs for: " + curUser);
 			return Collections.EMPTY_LIST;

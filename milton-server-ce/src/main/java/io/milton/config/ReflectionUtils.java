@@ -39,7 +39,7 @@ public class ReflectionUtils {
 
 	public static List<Class> getClassNamesFromPackage(String packageName) throws IOException, ClassNotFoundException {
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-		ArrayList<Class> classes = new ArrayList<Class>();
+		ArrayList<Class> classes = new ArrayList<>();
 
 		String packagePath = packageName.replace(".", "/");
 		Enumeration<URL> packageResources = classLoader.getResources(packagePath);

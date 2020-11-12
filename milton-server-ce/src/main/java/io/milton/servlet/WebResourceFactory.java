@@ -108,7 +108,7 @@ public class WebResourceFactory implements ResourceFactory, Initable {
 				resource = config.getServletContext().getResource(path);
 			} catch (MalformedURLException ex) {
 				//throw new RuntimeException(ex);
-				log.warn("malformed url when attempting to locate servlet resource", path);
+				log.warn("malformed url when attempting to locate servlet resource {}", path);
 				return null;
 			}
 			if (resource != null) {

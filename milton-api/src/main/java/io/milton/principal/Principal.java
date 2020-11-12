@@ -76,7 +76,7 @@ public interface Principal {
      * by the DAV standard
      *
      */
-    public static interface PrincipleId {
+    interface PrincipleId {
         /**
          * Eg D:href or D:all
          *

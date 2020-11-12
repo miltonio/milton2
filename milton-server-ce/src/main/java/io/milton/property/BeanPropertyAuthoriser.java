@@ -73,7 +73,7 @@ public class BeanPropertyAuthoriser implements PropertyAuthoriser{
 		}
 		for (QName name : fields) {
 			if (!name.getNamespaceURI().equals(anno.value())) {
-				log.debug("different namespace", anno.value(), name.getNamespaceURI());
+				log.debug("different namespace {} - {}", anno.value(), name.getNamespaceURI());
 			} else {
 				PropertyDescriptor pd = beanPropertySource.getPropertyDescriptor(resource, name.getLocalPart());
 				if (pd != null) {					
@@ -86,7 +86,7 @@ public class BeanPropertyAuthoriser implements PropertyAuthoriser{
 						if( !AclUtils.containsPriviledge(role, actualPrivs)) {
 							log.debug("not authorised to access field: " + name);
 							if (results == null) {
-								results = new HashSet<CheckResult>();
+								results = new HashSet<>();
 							}
 							results.add(new CheckResult(name, Response.Status.SC_UNAUTHORIZED, "Not authorised to edit field: " + name.getLocalPart(), resource));
 						}

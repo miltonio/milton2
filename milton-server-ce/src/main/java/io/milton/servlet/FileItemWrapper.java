@@ -97,7 +97,7 @@ public class FileItemWrapper implements io.milton.http.FileItem{
 	@Override
 	public Map<String, String> getHeaders() {
 		if (mapOfHeaders == null) {
-			mapOfHeaders = new HashMap<String, String>();
+			mapOfHeaders = new HashMap<>();
 			if (wrapped.getHeaders() != null) {
 				FileItemHeaders headers = wrapped.getHeaders();
 				Iterator<String> it = headers.getHeaderNames();

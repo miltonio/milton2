@@ -31,10 +31,6 @@ package io.milton.dns.utils;
 
 import io.milton.dns.Name;
 import io.milton.dns.TextParseException;
-import io.milton.dns.record.RRset;
-import io.milton.dns.record.Record;
-import io.milton.dns.resource.DomainResourceRecord;
-import io.milton.dns.resource.DomainResource;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -44,9 +40,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
-
 
 
 public class Utils {
@@ -93,11 +86,8 @@ public class Utils {
 				BufferedReader rdr = new BufferedReader(new InputStreamReader(
 						conn.getInputStream(), "ASCII") );
 				String addrS = rdr.readLine();
-				InetAddress addr = InetAddress.getByName(addrS);
-				return addr;
+                return InetAddress.getByName(addrS);
 				
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
 			} catch(UnknownHostException e) {
 				e.printStackTrace();
 			} catch (IOException e) {

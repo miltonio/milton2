@@ -53,7 +53,7 @@ public class DefaultPropertyAuthoriser implements PropertyAuthoriser {
         } else {
             // return all properties
 			log.info("checkPermissions: property authorisation failed because user does not have permission for method: " + method.code);
-            Set<CheckResult> set = new HashSet<CheckResult>();
+            Set<CheckResult> set = new HashSet<>();
             for( QName name : fields ) {
                 set.add( new CheckResult( name, Status.SC_UNAUTHORIZED, "Not authorised", resource));
             }

@@ -57,7 +57,7 @@ public class AclUtils {
     }
 
     public static Set<AccessControlledResource.Priviledge> asSet(AccessControlledResource.Priviledge ... privs) {
-        Set<AccessControlledResource.Priviledge> set = new HashSet<AccessControlledResource.Priviledge>(privs.length);
+        Set<AccessControlledResource.Priviledge> set = new HashSet<>(privs.length);
         set.addAll(Arrays.asList(privs));
         return set;
     }
@@ -70,7 +70,7 @@ public class AclUtils {
      * @return - a set containiing all priviledges, direct or implied, by the given collection
      */
     public static Set<AccessControlledResource.Priviledge> expand(Iterable<AccessControlledResource.Priviledge> privs) {
-        Set<AccessControlledResource.Priviledge> set = new HashSet<AccessControlledResource.Priviledge>();
+        Set<AccessControlledResource.Priviledge> set = new HashSet<>();
         _expand(privs, set);
         return set;
     }

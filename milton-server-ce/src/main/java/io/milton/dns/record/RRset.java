@@ -51,7 +51,7 @@ private static final long serialVersionUID = -3270249290171239695L;
  * rrs contains both normal and RRSIG records, with the RRSIG records
  * at the end.
  */
-private List rrs;
+private final List rrs;
 private short nsigs;
 private short position;
 

@@ -358,7 +358,7 @@ public class Upload {
 	 */
 	public InputStream getInputStream() throws UnsupportedEncodingException, IOException{
 
-		List<InputStream> streamList = new ArrayList<InputStream>();
+		List<InputStream> streamList = new ArrayList<>();
 		
 		/*
 		 * The getParams and getRelocStream must be terminated by a single LF character.
@@ -370,7 +370,7 @@ public class Upload {
 		streamList.add( IOUtils.toInputStream( Character.toString( LF ), CHARSET) ); 
 		streamList.add( getDataStream() );
 
-		return new SequenceInputStream( new IteratorEnum<InputStream>( streamList ) );
+		return new SequenceInputStream(new IteratorEnum<>(streamList) );
 	}
 
 	/**
@@ -480,7 +480,7 @@ public class Upload {
 	 */
 	public static class IteratorEnum <T> implements Enumeration<T>{
 
-		Iterator<T> iter;
+		final Iterator<T> iter;
 		
 		public IteratorEnum( List<T> list ) {
 			
@@ -508,8 +508,8 @@ public class Upload {
 	 */
 	public static class KeyValue {
 		
-		public String KEY;
-		public String VALUE;
+		public final String KEY;
+		public final String VALUE;
 		
 		public KeyValue ( String key, String value ) {
 			

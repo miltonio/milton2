@@ -126,7 +126,7 @@ public class UtilsTest extends TestCase {
             byte b = result.getBytes()[i];
             System.out.print(" " + b);
         }
-        System.out.println("");
+        System.out.println();
     }
 
 	public void testGetDecodedDestination_Simple() {

@@ -32,5 +32,5 @@ public interface ADomainResourceRecord extends DomainResourceRecord {
      * 
      * @return 
      */
-    public InetAddress getAddress();
+    InetAddress getAddress();
 }

@@ -36,14 +36,12 @@ public class ContentTypeAnnotationHandler extends AbstractAnnotationHandler {
 		try {			
 			ControllerMethod cm = getBestMethod(source.getClass(), null, null, Object.class);
 			if (cm != null) {
-				String val = (String) invoke(cm, res, accepts);
-				return val;
+				return (String) invoke(cm, res, accepts);
 			} else {
 				// look for an annotation on the source itself
 				java.lang.reflect.Method m = annoResourceFactory.findMethodForAnno(source.getClass(), annoClass);
 				if (m != null) {
-					String val = (String) m.invoke(source, accepts);
-					return val;
+					return (String) m.invoke(source, accepts);
 				}
 				for (String propName : propertyNames) {
 					Object s = attemptToReadProperty(source, propName);

@@ -32,7 +32,7 @@ public class Task implements Runnable {
 	
 	private static final Logger log = LoggerFactory.getLogger(Task.class);
 	
-	long enqueueTime;
+	final long enqueueTime;
 	long startTime;
 	final HttpManager httpManager;
 	final Response response;

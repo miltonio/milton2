@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.buffer.SimpleBufferAllocator;
@@ -39,7 +40,7 @@ public class MinaPopServer implements PopServer {
     }
 
     public MinaPopServer(int popPort, MailResourceFactory resourceFactory, Filter filter) {
-        this( popPort, resourceFactory, Arrays.asList( filter));
+        this( popPort, resourceFactory, Collections.singletonList(filter));
     }
 
     

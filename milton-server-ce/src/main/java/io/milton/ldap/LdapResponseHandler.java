@@ -74,7 +74,7 @@ public class LdapResponseHandler {
 	public void sendRootDSE(int currentMessageId) throws IOException {
 		log.debug("LOG_LDAP_SEND_ROOT_DSE");
 
-		Map<String, Object> attributes = new HashMap<String, Object>();
+		Map<String, Object> attributes = new HashMap<>();
 		attributes.put("objectClass", "top");
 		attributes.put("namingContexts", Ldap.NAMING_CONTEXTS);
 		//attributes.put("supportedsaslmechanisms", "PLAIN");
@@ -157,10 +157,10 @@ public class LdapResponseHandler {
 	 * @throws IOException on error
 	 */
 	public void sendBaseContext(int currentMessageId) throws IOException {
-		List<String> objectClasses = new ArrayList<String>();
+		List<String> objectClasses = new ArrayList<>();
 		objectClasses.add("top");
 		objectClasses.add("organizationalUnit");
-		Map<String, Object> attributes = new HashMap<String, Object>();
+		Map<String, Object> attributes = new HashMap<>();
 		attributes.put("objectClass", objectClasses);
 		attributes.put("description", "Milton LDAP Gateway");
 		sendEntry(currentMessageId, Ldap.BASE_CONTEXT, attributes);
@@ -174,10 +174,10 @@ public class LdapResponseHandler {
 	 * @throws IOException on error
 	 */
 	public void sendComputerContext(int currentMessageId, Set<String> returningAttributes) throws IOException {
-		List<String> objectClasses = new ArrayList<String>();
+		List<String> objectClasses = new ArrayList<>();
 		objectClasses.add("top");
 		objectClasses.add("apple-computer");
-		Map<String, Object> attributes = new HashMap<String, Object>();
+		Map<String, Object> attributes = new HashMap<>();
 		addIf(attributes, returningAttributes, "objectClass", objectClasses);
 		addIf(attributes, returningAttributes, "apple-generateduid", Ldap.COMPUTER_GUID);
 		addIf(attributes, returningAttributes, "apple-serviceinfo", getServiceInfo());
@@ -187,7 +187,7 @@ public class LdapResponseHandler {
 		addIf(attributes, returningAttributes, "cn", getCurrentHostName());
 
 		String dn = "cn=" + getCurrentHostName() + ", " + Ldap.COMPUTER_CONTEXT;
-		log.debug("LOG_LDAP_SEND_COMPUTER_CONTEXT", dn, attributes);
+		LogUtils.debug(log, "LOG_LDAP_SEND_COMPUTER_CONTEXT", dn, attributes);
 
 		sendEntry(currentMessageId, dn, attributes);
 	}

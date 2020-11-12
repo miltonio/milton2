@@ -81,7 +81,7 @@ public class SimpleResource implements GetableResource, PostableResource{
     }
 
     public Long getMaxAgeSeconds(Auth auth) {
-        return 60l;
+        return 60L;
     }
 
     public String getContentType(String accepts) {

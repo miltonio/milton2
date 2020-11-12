@@ -92,19 +92,14 @@ public class StandardMessageFactoryImplTest extends TestCase {
         assertEquals(1, sm.getAttachments().size());
         for( Attachment att : sm.getAttachments() ) {
             System.out.println( att.getName() + " - " + att.size() );
-            att.useData(new InputStreamConsumer() {
-
-                public void execute(InputStream in) {
-                    ByteArrayOutputStream bout = new ByteArrayOutputStream();
-                    try {
-                        StreamUtils.readTo(in, bout);
-                    } catch (ReadingException ex) {
-                        Logger.getLogger(StandardMessageFactoryImplTest.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (WritingException ex) {
-                        Logger.getLogger(StandardMessageFactoryImplTest.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                    //System.out.println(bout.toString());
+            att.useData(in1 -> {
+                ByteArrayOutputStream bout = new ByteArrayOutputStream();
+                try {
+                    StreamUtils.readTo(in1, bout);
+                } catch (ReadingException | WritingException ex) {
+                    Logger.getLogger(StandardMessageFactoryImplTest.class.getName()).log(Level.SEVERE, null, ex);
                 }
+                //System.out.println(bout.toString());
             });
         }
 

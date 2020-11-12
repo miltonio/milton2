@@ -54,7 +54,7 @@ public class CookieAuthenticationHandlerTest extends TestCase {
 //		System.out.println("decoded2=" + decoded);
 //	}
 
-	private final List<String> keys = Arrays.asList("abc");
+	private final List<String> keys = Collections.singletonList("abc");
 
 	private final SimpleMemoryNonceProvider nonceProvider = new SimpleMemoryNonceProvider(100);
 
@@ -118,11 +118,11 @@ public class CookieAuthenticationHandlerTest extends TestCase {
 		assertEquals(s, validatedUrl);
 	}
 
-	public class MockRequest extends AbstractRequest {
+	public static class MockRequest extends AbstractRequest {
 
-		private final Map<String, Cookie> cookies = new HashMap<String, Cookie>();
-		private final Map<String, String> headers = new HashMap<String, String>();
-		private final Map<String, String> params = new HashMap<String, String>();
+		private final Map<String, Cookie> cookies = new HashMap<>();
+		private final Map<String, String> headers = new HashMap<>();
+		private final Map<String, String> params = new HashMap<>();
 		private Auth auth;
 
 		@Override
@@ -187,7 +187,7 @@ public class CookieAuthenticationHandlerTest extends TestCase {
 
 		@Override
 		public List<Cookie> getCookies() {
-			return new ArrayList<Cookie>(cookies.values());
+			return new ArrayList<>(cookies.values());
 		}
 
 		@Override

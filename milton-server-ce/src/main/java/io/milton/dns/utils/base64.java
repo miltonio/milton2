@@ -105,7 +105,7 @@ formatString(byte [] b, int lineLength, String prefix, boolean addClose) {
 				sb.append(" )");
 		}
 		else {
-			sb.append(s.substring(i, i + lineLength));
+			sb.append(s, i, i + lineLength);
 			sb.append("\n");
 		}
 	}
@@ -122,9 +122,9 @@ public static byte []
 fromString(String str) {
 	ByteArrayOutputStream bs = new ByteArrayOutputStream();
 	byte [] raw = str.getBytes();
-	for (int i = 0; i < raw.length; i++) {
-		if (!Character.isWhitespace((char)raw[i]))
-			bs.write(raw[i]);
+	for (byte b : raw) {
+		if (!Character.isWhitespace((char) b))
+			bs.write(b);
 	}
 	byte [] in = bs.toByteArray();
 	if (in.length % 4 != 0) {

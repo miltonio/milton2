@@ -90,9 +90,9 @@ public class PrincipalPropertySearchReport implements Report {
         PropertiesRequest parseResult = PropertiesRequest.toProperties(props);
 
         // Generate the response
-        List<PropFindResponse> respProps = new ArrayList<PropFindResponse>();
+        List<PropFindResponse> respProps = new ArrayList<>();
         PrincipalSearchCriteria crit = new PrincipalSearchCriteria();
-        List<PrincipalSearchCriteria.SearchItem> searchTerms = new ArrayList<PrincipalSearchCriteria.SearchItem>();
+        List<PrincipalSearchCriteria.SearchItem> searchTerms = new ArrayList<>();
         for (Element el : ReportUtils.findAll(doc.getRootElement(), "property-search", NS_DAV)) {
             String field = null;
             Element elProp = ReportUtils.find(el, "prop", NS_DAV);
@@ -133,7 +133,7 @@ public class PrincipalPropertySearchReport implements Report {
         }
         for (DiscretePrincipal dp : foundResources) {
             String href = dp.getPrincipalURL();
-            List<PropFindResponse> resps = new ArrayList<PropFindResponse>();
+            List<PropFindResponse> resps = new ArrayList<>();
             if (dp instanceof PropFindableResource) {
                 PropFindableResource pfr = (PropFindableResource) dp;
                 propertyBuilder.processResource(resps, pfr, parseResult, href, 0, 0, href);
@@ -153,7 +153,7 @@ public class PrincipalPropertySearchReport implements Report {
             throw new RuntimeException("No prop element");
         }
 
-        Set<QName> set = new HashSet<QName>();
+        Set<QName> set = new HashSet<>();
         for (Object o : elProp.getChildren()) {
             if (o instanceof Element) {
                 Element el = (Element) o;

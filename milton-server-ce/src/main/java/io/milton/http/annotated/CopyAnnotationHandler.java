@@ -51,11 +51,7 @@ public class CopyAnnotationHandler extends AbstractAnnotationHandler {
 				destObject = arDest.getSource();
 			}
 			invoke(cm, res, newName, rDest, destObject);
-		} catch (NotAuthorizedException e) {
-			throw e;
-		} catch (BadRequestException e) {
-			throw e;
-		} catch (ConflictException e) {
+		} catch (NotAuthorizedException | ConflictException | BadRequestException e) {
 			throw e;
 		} catch (Exception e) {
 			throw new RuntimeException(e);

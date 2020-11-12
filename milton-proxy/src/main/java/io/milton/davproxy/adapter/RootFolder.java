@@ -82,7 +82,7 @@ public class RootFolder implements CollectionResource, GetableResource, DigestRe
 
     @Override
     public List<? extends Resource> getChildren() {
-        List<Resource> list = new ArrayList<Resource>();
+        List<Resource> list = new ArrayList<>();
         for (Entry<String, Host> root : roots.entrySet()) {
             MappedHostResourceAdapter mappedHost = new MappedHostResourceAdapter(root.getKey(), root.getValue(), securityManager, hostName, contentGenerator, remoteManager);
             list.add(mappedHost);

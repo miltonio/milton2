@@ -71,7 +71,7 @@ public class FsDirectoryResource extends FsResource implements MakeCollectionabl
 
     @Override
     public List<? extends Resource> getChildren() {
-        ArrayList<FsResource> list = new ArrayList<FsResource>();
+        ArrayList<FsResource> list = new ArrayList<>();
         File[] files = this.file.listFiles();
         if (files != null) {
             for (File fchild : files) {
@@ -95,7 +95,8 @@ public class FsDirectoryResource extends FsResource implements MakeCollectionabl
     @Override
     public String checkRedirect(Request request) {
         if (factory.getDefaultPage() != null) {
-            return request.getAbsoluteUrl() + "/" + factory.getDefaultPage();
+            final boolean hasSlash = request.getAbsoluteUrl().endsWith("/");
+            return (hasSlash ? request.getAbsoluteUrl() : request.getAbsoluteUrl() + "/") + factory.getDefaultPage();
         } else {
             return null;
         }
@@ -153,8 +154,6 @@ public class FsDirectoryResource extends FsResource implements MakeCollectionabl
      */
     @Override
     public void sendContent(OutputStream out, Range range, Map<String, String> params, String contentType) throws IOException, NotAuthorizedException {
-        String subpath = getFile().getCanonicalPath().substring(factory.getRoot().getCanonicalPath().length()).replace('\\', '/');
-        String uri = subpath;
         //String uri = "/" + factory.getContextPath() + subpath;
         XmlWriter w = new XmlWriter(out);
         w.open("html");
@@ -193,7 +192,7 @@ public class FsDirectoryResource extends FsResource implements MakeCollectionabl
             w.open("tr");
 
             w.open("td");
-            String path = buildHref(uri, r.getName());
+            String path = buildHref(getFile().getCanonicalPath().substring(factory.getRoot().getCanonicalPath().length()).replace('\\', '/'), r.getName());
             w.begin("a").writeAtt("href", path).open().writeText(r.getName()).close();
 
             w.begin("a").writeAtt("href", "#").writeAtt("onclick", "editDocument('" + path + "')").open().writeText("(edit with office)").close();

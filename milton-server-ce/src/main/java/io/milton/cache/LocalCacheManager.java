@@ -27,10 +27,9 @@ public class LocalCacheManager implements CacheManager {
 	
 	@Override
     public Map getMap(String name) {
-		ConcurrentLinkedHashMap cache = new ConcurrentLinkedHashMap.Builder()
-				.maximumWeightedCapacity(maximumWeightedCapacity)
-				.build();		
-		return cache;
+        return new ConcurrentLinkedHashMap.Builder()
+                .maximumWeightedCapacity(maximumWeightedCapacity)
+                .build();
     }
 
 	public int getMaximumWeightedCapacity() {

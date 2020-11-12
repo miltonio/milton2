@@ -88,8 +88,7 @@ public class PutJsonResource extends JsonResource implements PostableResource {
 	@Override
 	public String getContentType(String accepts) {
 		//String s = "application/x-javascript; charset=utf-8";
-		String s = "text/plain";
-		return s;
+		return "text/plain";
 		//return "application/json";
 	}
 
@@ -97,7 +96,7 @@ public class PutJsonResource extends JsonResource implements PostableResource {
 	public String processForm(Map<String, String> parameters, Map<String, FileItem> files) throws ConflictException, NotAuthorizedException, BadRequestException {
 		log.info("processForm: " + wrapped.getClass());
 
-		newFiles = new ArrayList<NewFile>();
+		newFiles = new ArrayList<>();
 
 		try {
 			if (parameters.containsKey("content")) {
@@ -322,7 +321,7 @@ public class PutJsonResource extends JsonResource implements PostableResource {
 		return s;
 	}
 
-	public class NewFile {
+	public static class NewFile {
 
 		private String href;
 		private String originalName;

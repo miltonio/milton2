@@ -30,10 +30,10 @@ public class FactoryCatalog {
 
     private static final Logger log = LoggerFactory.getLogger(FactoryCatalog.class);
 
-    public Map<Class,Factory> factoriesByClass = new HashMap<Class,Factory>();
-    public Map<String,Factory> factoriesById = new HashMap<String,Factory>();
-    public List<Factory> factories = new ArrayList<Factory>();
-    public Map<String,String> keys = new HashMap<String,String>();
+    public final Map<Class,Factory> factoriesByClass = new HashMap<>();
+    public final Map<String,Factory> factoriesById = new HashMap<>();
+    public final List<Factory> factories = new ArrayList<>();
+    public final Map<String,String> keys = new HashMap<>();
     public File configFile;
 
     public void setKeys(Map<String,String> mapOfKeys) {
@@ -99,9 +99,7 @@ public class FactoryCatalog {
     }
 
     public Factory get(String id) {
-        Factory factory = factoriesById.get(id);
-        if( factory == null ) return null;
-        return factory;
+        return factoriesById.get(id);
     }
 
     

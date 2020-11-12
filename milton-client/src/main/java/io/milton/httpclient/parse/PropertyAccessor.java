@@ -37,7 +37,7 @@ public class PropertyAccessor {
     }
 
     public PropertyAccessor() {
-        converters = new ArrayList<Converter>();
+        converters = new ArrayList<>();
         converters.add(new UUIDConverter());
     }
 
@@ -64,11 +64,7 @@ public class PropertyAccessor {
                 }
                 writeMethod.invoke(bean, value);
             }
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException("Prop: " + writeMethod.getName(), e);
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException("Prop: " + writeMethod.getName(), e);
-        } catch (InvocationTargetException e) {
+        } catch (IllegalAccessException | InvocationTargetException | IllegalArgumentException e) {
             throw new RuntimeException("Prop: " + writeMethod.getName(), e);
         }
     }
@@ -81,11 +77,7 @@ public class PropertyAccessor {
         Object value;
         try {
             value = readMethod.invoke(bean);
-        } catch (IllegalAccessException ex) {
-            throw new RuntimeException("Getter: " + readMethod.getName(), ex);
-        } catch (IllegalArgumentException ex) {
-            throw new RuntimeException("Getter: " + readMethod.getName(), ex);
-        } catch (InvocationTargetException ex) {
+        } catch (IllegalAccessException | InvocationTargetException | IllegalArgumentException ex) {
             throw new RuntimeException("Getter: " + readMethod.getName(), ex);
         }
         if( value == null ) {
@@ -113,7 +105,7 @@ public class PropertyAccessor {
         Object convert(Object source);
     }
     
-    public class UUIDConverter implements Converter {
+    public static class UUIDConverter implements Converter {
 
         @Override
         public Class getTarget() {

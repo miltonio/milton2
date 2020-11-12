@@ -49,8 +49,6 @@ public class FileUtils {
                 os.write(i);
                 i = is.read();
             }
-        } catch (FileNotFoundException ex) {
-            ex.printStackTrace();
         } catch (IOException ex) {
             ex.printStackTrace();
         } finally {
@@ -102,15 +100,7 @@ public class FileUtils {
         try {
             Method m = o.getClass().getMethod("close");
             m.invoke(o);
-        } catch (IllegalArgumentException ex) {
-            throw new RuntimeException(ex);
-        } catch (SecurityException ex) {
-            throw new RuntimeException(ex);
-        } catch (IllegalAccessException ex) {
-            throw new RuntimeException(ex);
-        } catch (InvocationTargetException ex) {
-            throw new RuntimeException(ex);
-        } catch (NoSuchMethodException ex) {
+        } catch (IllegalArgumentException | NoSuchMethodException | InvocationTargetException | IllegalAccessException | SecurityException ex) {
             throw new RuntimeException(ex);
         }
     }
@@ -125,8 +115,7 @@ public class FileUtils {
 
     public OutputStream openFileForWrite(File file) throws FileNotFoundException {
         FileOutputStream fout = new FileOutputStream(file);
-        BufferedOutputStream bout = new BufferedOutputStream(fout);
-        return bout;
+        return new BufferedOutputStream(fout);
     }
 
     public String readFile(File file) throws FileNotFoundException {
@@ -136,7 +125,7 @@ public class FileUtils {
             fr = new FileReader(file);
             br = new BufferedReader(fr);
             StringBuilder sb = new StringBuilder();
-            String s = null;
+            String s;
             while ((s = br.readLine()) != null) {
                 sb.append(s);
                 sb.append("\n");
@@ -191,8 +180,7 @@ public class FileUtils {
         try {
             int pos = nm.lastIndexOf(".");
             if (pos > -1) {
-                String ext = nm.substring(pos + 1);
-                return ext;
+                return nm.substring(pos + 1);
             } else {
                 return null;
             }

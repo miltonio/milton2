@@ -83,7 +83,7 @@ public class DefaultPropFindPropertyBuilder implements PropFindPropertyBuilder {
 	public List<PropFindResponse> buildProperties(PropFindableResource pfr, int depth, PropertiesRequest parseResult, String url) throws URISyntaxException, NotAuthorizedException, BadRequestException {
 		LogUtils.trace(log, "buildProperties: ", pfr.getClass(), "url:", url);
 		url = fixUrlForWindows(url);
-		List<PropFindResponse> propFindResponses = new ArrayList<PropFindResponse>();
+		List<PropFindResponse> propFindResponses = new ArrayList<>();
 		appendResponses(propFindResponses, pfr, depth, parseResult, url);
 		return propFindResponses;
 	}
@@ -112,8 +112,8 @@ public class DefaultPropFindPropertyBuilder implements PropFindPropertyBuilder {
 
 	@Override
 	public void processResource(List<PropFindResponse> responses, PropFindableResource resource, PropertiesRequest parseResult, String href, int requestedDepth, int currentDepth, String collectionHref) throws NotAuthorizedException, BadRequestException {
-		final LinkedHashMap<QName, ValueAndType> knownProperties = new LinkedHashMap<QName, ValueAndType>();
-		final ArrayList<NameAndError> unknownProperties = new ArrayList<NameAndError>();
+		final LinkedHashMap<QName, ValueAndType> knownProperties = new LinkedHashMap<>();
+		final ArrayList<NameAndError> unknownProperties = new ArrayList<>();
 
 		if (resource instanceof CollectionResource) {
 			if (!href.endsWith("/")) {
@@ -126,9 +126,7 @@ public class DefaultPropFindPropertyBuilder implements PropFindPropertyBuilder {
 		} else {
 			requestedFields = parseResult.getNames();
 		}
-		Iterator<QName> it = requestedFields.iterator();
-		while (it.hasNext()) {
-			QName field = it.next();
+		for (QName field : requestedFields) {
 			LogUtils.trace(log, "processResource: find property:", field);
 			if (field.getLocalPart().equals("href")) {
 				knownProperties.put(field, new ValueAndType(href, String.class));
@@ -173,7 +171,7 @@ public class DefaultPropFindPropertyBuilder implements PropFindPropertyBuilder {
 		}
 
 		//Map<Status, List<NameAndError>> errorProperties = new HashMap<Status, List<NameAndError>>();
-		Map<Status, List<NameAndError>> errorProperties = new EnumMap<Status, List<NameAndError>>(Status.class);
+		Map<Status, List<NameAndError>> errorProperties = new EnumMap<>(Status.class);
 		errorProperties.put(Status.SC_NOT_FOUND, unknownProperties);
 		PropFindResponse r = new PropFindResponse(href, knownProperties, errorProperties);
 		responses.add(r);
@@ -209,7 +207,7 @@ public class DefaultPropFindPropertyBuilder implements PropFindPropertyBuilder {
 
 	@Override
 	public Set<QName> findAllProps(PropFindableResource resource) throws NotAuthorizedException, BadRequestException {
-		Set<QName> names = new LinkedHashSet<QName>();
+		Set<QName> names = new LinkedHashSet<>();
 		for (PropertySource source : this.propertySources) {
 			List<QName> allprops = source.getAllPropertyNames(resource);
 			if (allprops != null) {

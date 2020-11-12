@@ -26,7 +26,7 @@ import io.milton.resource.LdapContact;
 public interface Condition {
 
     @SuppressWarnings({"JavaDoc"})
-    public enum Operator {
+    enum Operator {
         Or, And, Not, IsEqualTo,
         IsGreaterThan, IsGreaterThanOrEqualTo,
         IsLessThan, IsLessThanOrEqualTo,

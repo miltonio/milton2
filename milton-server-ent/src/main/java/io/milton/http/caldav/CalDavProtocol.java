@@ -104,7 +104,7 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
         propertyMapAppleCal.add(new ColorProperty());
         propertyMapAppleCal.add(new CalendarOrderProperty());
 
-        handlers = new HashSet<Handler>();
+        handlers = new HashSet<>();
         handlers.add(new ACLHandler(responseHandler, handlerHelper));
 
         handlers.add(new MkCalendarHandler(webDavProtocol.getMkColHandler(), webDavProtocol.getPropPatchHandler()));
@@ -177,7 +177,7 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
     @Override
     public List<QName> getAllPropertyNames(Resource r) {
         log.trace("getAllPropertyNames");
-        List<QName> list = new ArrayList<QName>();
+        List<QName> list = new ArrayList<>();
         list.addAll(propertyMapCalDav.getAllPropertyNames(r));
         list.addAll(propertyMapCalServer.getAllPropertyNames(r));
         list.addAll(propertyMapAppleCal.getAllPropertyNames(r));
@@ -193,7 +193,7 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
     /*
      <calendar-description xmlns='urn:ietf:params:xml:ns:caldav'/>
      */
-    class CalenderDescriptionProperty implements StandardProperty<String> {
+    static class CalenderDescriptionProperty implements StandardProperty<String> {
 
         @Override
         public String fieldName() {
@@ -223,7 +223,7 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
      <href xmlns='DAV:'>/calendars/__uids__/admin</href>
      </calendar-home-set>     
      */
-    class CalenderHomeSetProperty implements StandardProperty<HrefList> {
+    static class CalenderHomeSetProperty implements StandardProperty<HrefList> {
 
         @Override
         public String fieldName() {
@@ -257,7 +257,7 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
      <href xmlns='DAV:'>/principals/users/admin/</href>
      </calendar-user-address-set>
      */
-    class CalenderUserAddressSetProperty implements StandardProperty<HrefList> {
+    static class CalenderUserAddressSetProperty implements StandardProperty<HrefList> {
 
         @Override
         public String fieldName() {
@@ -348,7 +348,7 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
         }
     }
 
-    class CalenderUserTypeProperty implements StandardProperty {
+    static class CalenderUserTypeProperty implements StandardProperty {
 
         public CalenderUserTypeProperty() {
         }
@@ -402,7 +402,7 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
      * xmlns:T="http://calendarserver.org/ns/" 203
      * >ABCD-GUID-IN-THIS-COLLECTION-20070228T122324010340</T:getctag>
      */
-    class CTagProperty implements StandardProperty<String> {
+    static class CTagProperty implements StandardProperty<String> {
 
         @Override
         public String fieldName() {
@@ -425,7 +425,7 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
         }
     }
 
-    class ColorProperty implements PropertyMap.WritableStandardProperty<String> {
+    static class ColorProperty implements PropertyMap.WritableStandardProperty<String> {
 
         @Override
         public String fieldName() {
@@ -456,7 +456,7 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
         }
     }
 
-    class CalendarOrderProperty implements WritableStandardProperty<String> {
+    static class CalendarOrderProperty implements WritableStandardProperty<String> {
 
         public CalendarOrderProperty() {
         }
@@ -509,7 +509,7 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
      * can use in an MKCALENDAR or extended MKCOL request when creating a
      * calendar.
      */
-    class SupportedCalendarComponentSetsProperty implements PropertyMap.WritableStandardProperty<SupportedCalendarComponentListsSet> {
+    static class SupportedCalendarComponentSetsProperty implements PropertyMap.WritableStandardProperty<SupportedCalendarComponentListsSet> {
 
         @Override
         public String fieldName() {
@@ -540,7 +540,7 @@ public class CalDavProtocol implements HttpExtension, PropertySource, WellKnownH
      * See http://www.ietf.org/rfc/rfc4791.txt
      *
      */
-    class SupportedCalendarComponentSetProperty implements PropertyMap.WritableStandardProperty<SupportedCalendarComponentList> {
+    static class SupportedCalendarComponentSetProperty implements PropertyMap.WritableStandardProperty<SupportedCalendarComponentList> {
 
         @Override
         public String fieldName() {

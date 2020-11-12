@@ -134,7 +134,7 @@ public class UploadMakerEx {
 		ByteRangeWriter dataWriter = new ByteRangeWriter( 16384 );
 		RandomAccessFile randAccess = null;
 		
-		Collections.sort(reverseMap, new OffsetPair.LocalSort()); 
+		reverseMap.sort(new OffsetPair.LocalSort());
 		reverseMap.add(new OffsetPair(local.length(), -1)); 
 
 		try {
@@ -177,7 +177,7 @@ public class UploadMakerEx {
 	public static InputStream serversRelocationRangesEx(List<OffsetPair> reverseMap, int blockSize, long fileLength, boolean combineRanges) throws UnsupportedEncodingException, IOException{
 		
 		RelocWriter relocRanges = new RelocWriter( 16384 );
-		Collections.sort(reverseMap, new OffsetPair.RemoteSort());
+		reverseMap.sort(new OffsetPair.RemoteSort());
 		
 		for (ListIterator<OffsetPair> iter = reverseMap.listIterator(); iter.hasNext(); ){
 			

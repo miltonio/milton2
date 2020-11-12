@@ -77,8 +77,7 @@ public class PropFindJsonResource extends JsonResource implements GetableResourc
             if (sMaxAge != null && sMaxAge.length() > 0) {
                 try {
                     log.trace("using max age from parameter");
-                    Long maxAge = Long.parseLong(sMaxAge);
-                    return maxAge;
+                    return Long.parseLong(sMaxAge);
                 } catch (NumberFormatException e) {
                     log.debug("Couldnt parse max age parameter: " + sMaxAge);
                 }

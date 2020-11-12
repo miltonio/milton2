@@ -4,7 +4,7 @@ import org.apache.mina.core.session.IoSession;
 
 public class GreetingState implements PopState {
 
-    PopSession popSession;
+    final PopSession popSession;
 
     public GreetingState(PopSession popSession) {
         super();

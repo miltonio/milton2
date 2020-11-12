@@ -109,7 +109,7 @@ public class OptionsHandler implements ResourceHandler {
     }
 
     private List<String> determineMethodsAllowed( HttpManager manager, Resource res ) {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         for( Handler f : manager.getAllHandlers() ) {
             if( f.isCompatible( res ) ) {
                 for( String m : f.getMethods() ) {

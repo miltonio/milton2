@@ -63,28 +63,22 @@ public class ZSyncClient implements FileSyncer{
      * @throws NotFoundException - if the remote file does not exist
      */
     @Override
-    public File download(Host host, Path remotePath, File localFile, final ProgressListener listener) throws IOException, NotFoundException, HttpException, CancelledException, NotAuthorizedException, BadRequestException, ConflictException {
+    public File download(Host host, Path remotePath, File localFile, final ProgressListener listener) throws IOException, NotFoundException, HttpException, NotAuthorizedException, BadRequestException, ConflictException {
         LogUtils.trace(log, "download", host, remotePath);
         final File fRemoteMeta = File.createTempFile("zsync-meta", remotePath.getName());
         String url = host.getHref(remotePath.child(".zsync"));
         boolean notExisting = false;
         try {
-            transferService.get(url, new StreamReceiver() {
-
-                @Override
-                public void receive(InputStream in) throws IOException {
-                    if (listener != null && listener.isCancelled()) {
-                        throw new CancelledException();
-                    }
-                    FileOutputStream fout = null;
-                    try {
-                        fout = new FileOutputStream(fRemoteMeta);
-                        Utils.writeBuffered(in, fout, listener);
-                    } catch (CancelledException cancelled) {
-                        throw cancelled;
-                    } catch (IOException ex) {
-                        throw ex;
-                    }
+            transferService.get(url, in -> {
+                if (listener != null && listener.isCancelled()) {
+                    throw new CancelledException();
+                }
+                FileOutputStream fout = null;
+                try {
+                    fout = new FileOutputStream(fRemoteMeta);
+                    Utils.writeBuffered(in, fout, listener);
+                } catch (IOException cancelled) {
+                    throw cancelled;
                 }
             }, null, listener, null);
         } catch (BadRequestException e) {
@@ -121,18 +115,14 @@ public class ZSyncClient implements FileSyncer{
      * @throws HttpException
      */
     @Override
-    public void upload(Host host, File localcopy, Path remotePath, final ProgressListener listener) throws IOException, NotFoundException, CancelledException, NotAuthorizedException, ConflictException {
+    public void upload(Host host, File localcopy, Path remotePath, final ProgressListener listener) throws IOException, NotFoundException, NotAuthorizedException, ConflictException {
         final File fRemoteMeta = File.createTempFile("zsync", remotePath.getName());
         String baseUrl = host.getHref(remotePath);
         String url = baseUrl + "/.zsync";
         try {
-            transferService.get(url, new StreamReceiver() {
-
-                @Override
-                public void receive(InputStream in) throws IOException {
-                    OutputStream fout = new FileOutputStream(fRemoteMeta);
-                    Utils.writeBuffered(in, fout, listener);
-                }
+            transferService.get(url, in -> {
+                OutputStream fout = new FileOutputStream(fRemoteMeta);
+                Utils.writeBuffered(in, fout, listener);
             }, null, listener, null);
         } catch (BadRequestException e) {
             throw new NotFoundException(url);

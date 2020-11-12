@@ -67,14 +67,13 @@ public class MkCalendarHandler implements Handler, MkColHandler.CollectionResour
         if (existingCol instanceof ExtMakeCalendarResource) {
             // This way does the create and set properties in a single operation
             final ExtMakeCalendarResource col = (ExtMakeCalendarResource) existingCol;
-            final List<CollectionResource> theNewCol = new ArrayList<CollectionResource>();
+            final List<CollectionResource> theNewCol = new ArrayList<>();
             PropFindResponse resp = propPatchHandler.doPropPatch(request, col, new PropPatchSetter() {
                 @Override
                 public PropFindResponse setProperties(String href, PropPatchParseResult parseResult, Resource r) throws NotAuthorizedException, BadRequestException, ConflictException {
                     CollectionResource newCal = col.createCalendar(href, parseResult.getFieldsToSet());
                     theNewCol.add(newCal);
-                    PropFindResponse resp = new PropFindResponse(href, Collections.EMPTY_MAP, Collections.EMPTY_MAP);
-                    return resp;
+                    return new PropFindResponse(href, Collections.EMPTY_MAP, Collections.EMPTY_MAP);
                 }
 
                 @Override

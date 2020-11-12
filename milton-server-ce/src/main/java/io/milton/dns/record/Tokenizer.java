@@ -20,9 +20,6 @@ package io.milton.dns.record;
 import io.milton.dns.Address;
 import io.milton.dns.Name;
 import io.milton.dns.TextParseException;
-import io.milton.dns.utils.base16;
-import io.milton.dns.utils.base32;
-import io.milton.dns.utils.base64;
 
 import java.io.*;
 import java.net.*;
@@ -38,8 +35,8 @@ import io.milton.dns.utils.*;
 
 public class Tokenizer {
 
-private static String delim = " \t\n;()\"";
-private static String quotes = "\"";
+private static final String delim = " \t\n;()\"";
+private static final String quotes = "\"";
 
 /** End of file */
 public static final int EOF		= 0;
@@ -59,13 +56,13 @@ public static final int QUOTED_STRING	= 4;
 /** A comment; only returned when wantComment is set */
 public static final int COMMENT		= 5;
 
-private PushbackInputStream is;
+private final PushbackInputStream is;
 private boolean ungottenToken;
 private int multiline;
 private boolean quoting;
 private String delimiters;
-private Token current;
-private StringBuffer sb;
+private final Token current;
+private final StringBuffer sb;
 private boolean wantClose;
 
 private String filename;
@@ -131,7 +128,7 @@ public static class Token {
 }
 
 public static class TokenizerException extends TextParseException {
-	String message;
+	final String message;
 
 	public
 	TokenizerException(String filename, int line, String message) {

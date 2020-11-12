@@ -25,7 +25,7 @@ import java.util.List;
  * @author brad
  */
 public interface ContentTypeService {
-    public List<String> findContentTypes( String name );
+    List<String> findContentTypes(String name);
     
     String getPreferedMimeType(String accept, List<String> canProvide);
     

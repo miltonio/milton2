@@ -72,10 +72,8 @@ public class RemoteSmtpMailSender implements MailSender {
             }
             mm.setContent(text, "text/plain");
             sendMail(mm);
-        } catch (UnsupportedEncodingException ex) {
+        } catch (UnsupportedEncodingException | MessagingException ex) {
             throw new RuntimeException(ex);
-        } catch (MessagingException messagingException) {
-            throw new RuntimeException(messagingException);
         }
     }
 
@@ -120,8 +118,7 @@ public class RemoteSmtpMailSender implements MailSender {
             props.put("mail.debug", "true");
         }
 
-        Session session = Session.getInstance(props, null);
-        return session;
+        return Session.getInstance(props, null);
     }
 
     @Override

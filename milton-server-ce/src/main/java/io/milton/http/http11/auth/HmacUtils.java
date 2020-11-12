@@ -38,15 +38,11 @@ public class HmacUtils {
 			mac.init(signingKey);
 			byte[] rawHmac = mac.doFinal(data.getBytes());
 			result = Base64.encodeBase64URLSafeString(rawHmac);
-		} catch (NoSuchAlgorithmException e) {
-			throw new RuntimeException(HMAC_SHA1_ALGORITHM, e);
-		} catch (InvalidKeyException e) {
-			throw new RuntimeException(HMAC_SHA1_ALGORITHM, e);
-		} catch (IllegalStateException e) {
+		} catch (NoSuchAlgorithmException | IllegalStateException | InvalidKeyException e) {
 			throw new RuntimeException(HMAC_SHA1_ALGORITHM, e);
 		}
 
-		return result;
+        return result;
 	}
 	
 

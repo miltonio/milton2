@@ -176,14 +176,10 @@ public class AnnoCollectionResource extends AnnoResource implements CollectionRe
 			set = annoFactory.childrenOfAnnotationHandler.execute(this, isChildLookup);
 		} catch (NotAuthorizedException e) {
 			throw e;
-		} catch (NotFoundException ex) {
-			throw new RuntimeException(ex);
 		} catch (Exception ex) {
 			throw new RuntimeException(ex);
 		}
-		for (AnnoResource r : set) {
-			children.add(r);
-		}
+		children.addAll(set);
 
 		// Now add any temp lock resources
 		for (LockHolder holder : annoFactory.getTempResourcesForParent(this)) {
@@ -265,13 +261,7 @@ public class AnnoCollectionResource extends AnnoResource implements CollectionRe
 
 	void removeLockHolder(String name) {
 		if (children != null) {
-			Iterator<CommonResource> it = children.iterator();
-			while (it.hasNext()) {
-				Resource r = it.next();
-				if (r instanceof LockNullResource && r.getName().equals(name)) {
-					it.remove();
-				}
-			}
+			children.removeIf(r -> r instanceof LockNullResource && r.getName().equals(name));
 		}
 	}
 

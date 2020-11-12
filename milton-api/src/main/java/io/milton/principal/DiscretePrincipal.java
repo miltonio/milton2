@@ -43,7 +43,7 @@ public interface DiscretePrincipal extends Principal, Resource{
      *
      * @return
      */
-    public String getPrincipalURL();
+    String getPrincipalURL();
 
 
 }

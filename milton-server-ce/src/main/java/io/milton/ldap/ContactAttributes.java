@@ -28,7 +28,7 @@ import java.util.Set;
  */
 public class ContactAttributes {
 
-	public static final Set<String> CONTACT_ATTRIBUTES = new HashSet<String>();
+	public static final Set<String> CONTACT_ATTRIBUTES = new HashSet<>();
 
 	static {
 		CONTACT_ATTRIBUTES.add("imapUid");

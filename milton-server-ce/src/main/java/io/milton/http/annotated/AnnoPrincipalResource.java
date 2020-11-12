@@ -86,9 +86,7 @@ public class AnnoPrincipalResource extends AnnoCollectionResource implements Dis
 				}
 			}
 			return list;
-		} catch (NotAuthorizedException e) {
-			throw new RuntimeException(e);
-		} catch (BadRequestException e) {
+		} catch (NotAuthorizedException | BadRequestException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -110,9 +108,7 @@ public class AnnoPrincipalResource extends AnnoCollectionResource implements Dis
 				}
 			}
 			return list;
-		} catch (NotAuthorizedException e) {
-			throw new RuntimeException(e);
-		} catch (BadRequestException e) {
+		} catch (NotAuthorizedException | BadRequestException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -132,9 +128,7 @@ public class AnnoPrincipalResource extends AnnoCollectionResource implements Dis
 				}
 			}
 			return list;
-		} catch (NotAuthorizedException e) {
-			throw new RuntimeException(e);
-		} catch (BadRequestException e) {
+		} catch (NotAuthorizedException | BadRequestException e) {
 			throw new RuntimeException(e);
 		}
 	}

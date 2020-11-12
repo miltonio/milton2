@@ -79,7 +79,7 @@ public class SubethaSmtpServer implements MessageListener, SmtpServer {
     }
     
     protected void initSmtpReceiver() {
-        Collection<MessageListener> listeners = new ArrayList<MessageListener>(1);
+        Collection<MessageListener> listeners = new ArrayList<>(1);
         listeners.add(this);
 
         if( enableTls ) {
@@ -111,17 +111,13 @@ public class SubethaSmtpServer implements MessageListener, SmtpServer {
             return false;
         }
         final AcceptEvent event = new AcceptEvent(sFrom, sRecipient);
-        Filter terminal = new Filter() {
+        Filter terminal = (chain, e) -> {
+            MailboxAddress recip = MailboxAddress.parse(event.getRecipient());
+            Mailbox recipMailbox = resourceFactory.getMailbox(recip);
 
-            @Override
-            public void doEvent(FilterChain chain, Event e) {
-                MailboxAddress recip = MailboxAddress.parse(event.getRecipient());
-                Mailbox recipMailbox = resourceFactory.getMailbox(recip);
-
-                boolean b = (recipMailbox != null && !recipMailbox.isEmailDisabled());
-                log.debug("accept email from: " + event.getFrom() + " to: " + event.getRecipient() + "?" + b);
-                event.setAccept(b);
-            }
+            boolean b = (recipMailbox != null && !recipMailbox.isEmailDisabled());
+            log.debug("accept email from: " + event.getFrom() + " to: " + event.getRecipient() + "?" + b);
+            event.setAccept(b);
         };
         FilterChain chain = new FilterChain(filters, terminal);
         chain.doEvent(event);
@@ -134,24 +130,20 @@ public class SubethaSmtpServer implements MessageListener, SmtpServer {
      * 
      */
     @Override
-    public void deliver(String sFrom, String sRecipient, final InputStream data) throws TooMuchDataException, IOException {
+    public void deliver(String sFrom, String sRecipient, final InputStream data) throws IOException {
         log.debug("deliver email from: " + sFrom + " to: " + sRecipient);
         log.debug("email from: " + sFrom + " to: " + sRecipient);
         final DeliverEvent event = new DeliverEvent(sFrom, sRecipient, data);
-        Filter terminal = new Filter() {
+        Filter terminal = (chain, e) -> {
+            MailboxAddress from = MailboxAddress.parse(event.getFrom());
+            MailboxAddress recip = MailboxAddress.parse(event.getRecipient());
 
-            @Override
-            public void doEvent(FilterChain chain, Event e) {
-                MailboxAddress from = MailboxAddress.parse(event.getFrom());
-                MailboxAddress recip = MailboxAddress.parse(event.getRecipient());
+            MimeMessage mm = parseInput(data);
 
-                MimeMessage mm = parseInput(data);
+            Mailbox recipMailbox = resourceFactory.getMailbox(recip);
+            log.debug("recipient is known to us, so store: " + recip);
+            storeMail(recipMailbox,mm);
 
-                Mailbox recipMailbox = resourceFactory.getMailbox(recip);
-                log.debug("recipient is known to us, so store: " + recip);
-                storeMail(recipMailbox,mm);
-
-            }
         };
         FilterChain chain = new FilterChain(filters, terminal);
         chain.doEvent(event);

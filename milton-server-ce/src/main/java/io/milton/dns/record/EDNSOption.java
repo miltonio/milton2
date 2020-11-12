@@ -217,7 +217,7 @@ toWire() throws IOException {
  */
 public boolean
 equals(Object arg) {
-	if (arg == null || !(arg instanceof EDNSOption))
+	if (!(arg instanceof EDNSOption))
 		return false;
 	EDNSOption opt = (EDNSOption) arg;
 	if (code != opt.code)
@@ -232,8 +232,7 @@ public int
 hashCode() {
 	byte [] array = getData();
 	int hashval = 0;
-	for (int i = 0; i < array.length; i++)
-		hashval += ((hashval << 3) + (array[i] & 0xFF));
+	for (byte b : array) hashval += ((hashval << 3) + (b & 0xFF));
 	return hashval;
 }
 

@@ -92,7 +92,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Host extends Folder {
 
-    public static List<QName> defaultFields = Arrays.asList(
+    public static final List<QName> defaultFields = Arrays.asList(
             RespUtils.davName("resourcetype"),
             RespUtils.davName("etag"),
             RespUtils.davName("displayname"),
@@ -101,13 +101,13 @@ public class Host extends Folder {
             RespUtils.davName("getlastmodified"),
             RespUtils.davName("iscollection"),
             RespUtils.davName("lockdiscovery"));
-    private static String LOCK_XML = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>"
+    private static final String LOCK_XML = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>"
             + "<D:lockinfo xmlns:D='DAV:'>"
             + "<D:lockscope><D:exclusive/></D:lockscope>"
             + "<D:locktype><D:write/></D:locktype>"
             + "<D:owner>${owner}</D:owner>"
             + "</D:lockinfo>";
-    private static final Set<String> WEBDAV_REDIRECTABLE = new HashSet<String>(Arrays.asList(new String[]{"PROPFIND", "LOCK", "UNLOCK", "DELETE"}));
+    private static final Set<String> WEBDAV_REDIRECTABLE = new HashSet<>(Arrays.asList("PROPFIND", "LOCK", "UNLOCK", "DELETE"));
     private static final Logger log = LoggerFactory.getLogger(Host.class);
     public final String server;
     public final Integer port;
@@ -121,11 +121,11 @@ public class Host extends Folder {
     private final DefaultHttpClient client;
     private final TransferService transferService;
     private final FileSyncer fileSyncer;
-    private final List<ConnectionListener> connectionListeners = new ArrayList<ConnectionListener>();
+    private final List<ConnectionListener> connectionListeners = new ArrayList<>();
     private boolean secure; // use HTTPS if true
     private boolean usePreemptiveAuth = true;
     private boolean useDigestForPreemptiveAuth = true; // if true we will do pre-emptive auth with Digest, otherwise will use Basic
-    private Map<String, String> cookies = new HashMap<String, String>();
+    private final Map<String, String> cookies = new HashMap<>();
 
     static {
 //    System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
@@ -264,7 +264,7 @@ public class Host extends Folder {
      * @param path
      * @return
      * @throws IOException
-     * @throws com.ettrema.httpclient.HttpException
+     * @throws io.milton.httpclient.HttpException
      */
     public Resource find(String path) throws IOException, io.milton.httpclient.HttpException, NotAuthorizedException, BadRequestException {
         return find(path, false);
@@ -305,7 +305,7 @@ public class Host extends Folder {
      * @param path
      * @return
      * @throws IOException
-     * @throws com.ettrema.httpclient.HttpException
+     * @throws io.milton.httpclient.HttpException
      * @throws NotAuthorizedException
      * @throws BadRequestException
      */
@@ -324,7 +324,7 @@ public class Host extends Folder {
      *
      * @param newUri
      * @return
-     * @throws com.ettrema.httpclient.HttpException
+     * @throws io.milton.httpclient.HttpException
      * @throws NotAuthorizedException
      * @throws ConflictException
      * @throws BadRequestException
@@ -340,7 +340,7 @@ public class Host extends Folder {
      *
      * @param newUri - must be fully qualified and correctly encoded
      * @return
-     * @throws com.ettrema.httpclient.HttpException
+     * @throws io.milton.httpclient.HttpException
      */
     public synchronized int doMkCol(String newUri) throws io.milton.httpclient.HttpException, NotAuthorizedException, ConflictException, BadRequestException, NotFoundException, URISyntaxException {
         notifyStartRequest();
@@ -380,7 +380,7 @@ public class Host extends Folder {
      * @param uri - must be encoded
      * @param timeout lock timeout in seconds, or -1 if infinite
      * @return
-     * @throws com.ettrema.httpclient.HttpException
+     * @throws io.milton.httpclient.HttpException
      */
     public synchronized String doLock(String uri, int timeout) throws io.milton.httpclient.HttpException, NotAuthorizedException, ConflictException, BadRequestException, NotFoundException, URISyntaxException {
         notifyStartRequest();
@@ -405,7 +405,7 @@ public class Host extends Folder {
      * @param uri - must be encoded
      * @param lockToken
      * @return
-     * @throws com.ettrema.httpclient.HttpException
+     * @throws io.milton.httpclient.HttpException
      */
     public synchronized int doUnLock(String uri, String lockToken) throws io.milton.httpclient.HttpException, NotAuthorizedException, ConflictException, BadRequestException, NotFoundException, URISyntaxException {
         notifyStartRequest();
@@ -442,7 +442,7 @@ public class Host extends Folder {
 
     /**
      *
-     * @param newUri
+     * @param remotePath
      * @param file
      * @param listener
      * @return - the result code
@@ -480,7 +480,6 @@ public class Host extends Folder {
      * @param content
      * @param contentLength
      * @param contentType
-     * @param etag - expected etag on the server, or null if a new file
      * @return - the result code
      */
     public synchronized HttpResult doPut(String newUri, InputStream content, Long contentLength, String contentType, IfMatchCheck matchCheck, ProgressListener listener) {
@@ -493,7 +492,7 @@ public class Host extends Folder {
      * @param from - encoded source url
      * @param newUri - encoded destination
      * @return
-     * @throws com.ettrema.httpclient.HttpException
+     * @throws io.milton.httpclient.HttpException
      */
     public synchronized int doCopy(String from, String newUri) throws io.milton.httpclient.HttpException, NotAuthorizedException, ConflictException, BadRequestException, NotFoundException, URISyntaxException {
         notifyStartRequest();
@@ -503,9 +502,7 @@ public class Host extends Folder {
             int res = Utils.executeHttpWithStatus(client, m, null, newContext());
             Utils.processResultCode(res, from);
             return res;
-        } catch (HttpException ex) {
-            throw new RuntimeException(ex);
-        } catch (IOException ex) {
+        } catch (HttpException | IOException ex) {
             throw new RuntimeException(ex);
         } finally {
             notifyFinishRequest();
@@ -520,7 +517,7 @@ public class Host extends Folder {
      * @param path - unencoded and relative to Host's rootPath
      * @return
      * @throws IOException
-     * @throws com.ettrema.httpclient.HttpException
+     * @throws io.milton.httpclient.HttpException
      * @throws NotAuthorizedException
      * @throws ConflictException
      * @throws BadRequestException
@@ -536,7 +533,7 @@ public class Host extends Folder {
      * @param url - encoded url
      * @return
      * @throws IOException
-     * @throws com.ettrema.httpclient.HttpException
+     * @throws io.milton.httpclient.HttpException
      */
     public synchronized int doDelete(String url) throws IOException, io.milton.httpclient.HttpException, NotAuthorizedException, ConflictException, BadRequestException, NotFoundException {
         notifyStartRequest();
@@ -572,14 +569,12 @@ public class Host extends Folder {
     }
 
     public synchronized List<PropFindResponse> propFind(Path path, int depth, QName... fields) throws IOException, io.milton.httpclient.HttpException, NotAuthorizedException, BadRequestException {
-        List<QName> list = new ArrayList<QName>();
-        list.addAll(Arrays.asList(fields));
+        List<QName> list = new ArrayList<>(Arrays.asList(fields));
         return propFind(path, depth, list);
     }
 
     public synchronized List<PropFindResponse> propFind(String path, int depth, QName... fields) throws IOException, io.milton.httpclient.HttpException, NotAuthorizedException, BadRequestException {
-        List<QName> list = new ArrayList<QName>();
-        list.addAll(Arrays.asList(fields));
+        List<QName> list = new ArrayList<>(Arrays.asList(fields));
         String href = baseHref() + rootPath + path;
         log.info("propFind: href={}", href);
         return _doPropFind(href, depth, list);
@@ -594,7 +589,7 @@ public class Host extends Folder {
      * @param fields - the list of fields to get, or null to use default fields
      * @return
      * @throws IOException
-     * @throws com.ettrema.httpclient.HttpException
+     * @throws io.milton.httpclient.HttpException
      * @throws NotAuthorizedException
      * @throws BadRequestException
      */
@@ -611,7 +606,7 @@ public class Host extends Folder {
      * specified url, 1 means it and its direct children, etc
      * @return
      * @throws IOException
-     * @throws com.ettrema.httpclient.HttpException
+     * @throws io.milton.httpclient.HttpException
      */
     public synchronized List<PropFindResponse> _doPropFind(final String url, final int depth, List<QName> fields) throws IOException, io.milton.httpclient.HttpException, NotAuthorizedException, BadRequestException {
         log.info("doPropFind: " + url);
@@ -627,51 +622,46 @@ public class Host extends Folder {
             m.setEntity(requestEntity);
 
             final ByteArrayOutputStream bout = new ByteArrayOutputStream();
-            final List<PropFindResponse> responses = new ArrayList<PropFindResponse>();
-            ResponseHandler<Integer> respHandler = new ResponseHandler<Integer>() {
-                @Override
-                public Integer handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
-                    Header serverDateHeader = response.getFirstHeader("Date");
-                    if (response.getStatusLine().getStatusCode() == 207) {
-                        HttpEntity entity = response.getEntity();
-                        if (entity != null) {
-                            entity.writeTo(bout);
-                            //String s = new String(bout.toByteArray());
-                            //log.info("_doPropFind: res{}", s);
-                            ByteArrayInputStream bin = new ByteArrayInputStream(bout.toByteArray());
-                            Document document = getResponseAsDocument(bin);
-                            String sServerDate = null;
-                            if (serverDateHeader != null) {
-                                sServerDate = serverDateHeader.getValue();
-                            }
-                            Date serverDate = null;
-                            if (sServerDate != null && sServerDate.length() > 0) {
-                                try {
-                                    serverDate = DateUtils.parseDate(sServerDate);
-                                } catch (DateParseException ex) {
-                                    log.warn("Couldnt parse date header: " + sServerDate, ex);
-                                }
-                            }
-                            //System.out.println("propfind: " + url);
-                            buildResponses(document, serverDate, responses, depth);
-
+            final List<PropFindResponse> responses = new ArrayList<>();
+            ResponseHandler<Integer> respHandler = response -> {
+                Header serverDateHeader = response.getFirstHeader("Date");
+                if (response.getStatusLine().getStatusCode() == 207) {
+                    HttpEntity entity = response.getEntity();
+                    if (entity != null) {
+                        entity.writeTo(bout);
+                        //String s = new String(bout.toByteArray());
+                        //log.info("_doPropFind: res{}", s);
+                        ByteArrayInputStream bin = new ByteArrayInputStream(bout.toByteArray());
+                        Document document = getResponseAsDocument(bin);
+                        String sServerDate = null;
+                        if (serverDateHeader != null) {
+                            sServerDate = serverDateHeader.getValue();
                         }
+                        Date serverDate = null;
+                        if (sServerDate != null && sServerDate.length() > 0) {
+                            try {
+                                serverDate = DateUtils.parseDate(sServerDate);
+                            } catch (DateParseException ex) {
+                                log.warn("Couldnt parse date header: " + sServerDate, ex);
+                            }
+                        }
+                        //System.out.println("propfind: " + url);
+                        buildResponses(document, serverDate, responses, depth);
+
                     }
-                    return response.getStatusLine().getStatusCode();
                 }
+                return response.getStatusLine().getStatusCode();
             };
             Integer res = client.execute(m, respHandler, newContext());
             log.info("_doPropFind: result code {}", res);
 
             Utils.processResultCode(res, url);
             return responses;
-        } catch (ConflictException ex) {
+        } catch (ConflictException | HttpException ex) {
             throw new RuntimeException(ex);
         } catch (NotFoundException e) {
             log.trace("not found: " + url);
             return null;
-        } catch (HttpException ex) {
-            throw new RuntimeException(ex);
         } finally {
             notifyFinishRequest();
         }
@@ -700,8 +690,7 @@ public class Host extends Folder {
 //        IOUtils.copy( in, out );
 //        String xml = out.toString();
         try {
-            Document document = getJDomDocument(in);
-            return document;
+            return getJDomDocument(in);
         } catch (JDOMException ex) {
             throw new RuntimeException(ex);
         }
@@ -712,8 +701,8 @@ public class Host extends Folder {
      * @param url - fully qualified and encoded URL
      * @param receiver
      * @param rangeList - if null does a normal GET request
-     * @throws com.ettrema.httpclient.HttpException
-     * @throws com.ettrema.httpclient.Utils.CancelledException
+     * @throws io.milton.httpclient.HttpException
+     * @throws io.milton.httpclient.Utils.CancelledException
      */
     public synchronized void doGet(String url, StreamReceiver receiver, List<Range> rangeList, ProgressListener listener) throws io.milton.httpclient.HttpException, Utils.CancelledException, NotAuthorizedException, BadRequestException, ConflictException, NotFoundException {
         transferService.get(url, receiver, rangeList, listener, newContext());
@@ -726,8 +715,8 @@ public class Host extends Folder {
      * @param listener
      * @throws IOException
      * @throws NotFoundException
-     * @throws com.ettrema.httpclient.HttpException
-     * @throws com.ettrema.httpclient.Utils.CancelledException
+     * @throws io.milton.httpclient.HttpException
+     * @throws io.milton.httpclient.Utils.CancelledException
      * @throws NotAuthorizedException
      * @throws BadRequestException
      * @throws ConflictException
@@ -738,31 +727,28 @@ public class Host extends Folder {
             fileSyncer.download(this, path, file, listener);
         } else {
             String url = this.buildEncodedUrl(path);
-            transferService.get(url, new StreamReceiver() {
-                @Override
-                public void receive(InputStream in) throws IOException {
-                    OutputStream out = null;
-                    BufferedOutputStream bout = null;
-                    try {
-                        out = FileUtils.openOutputStream(file);
-                        bout = new BufferedOutputStream(out);
-                        IOUtils.copy(in, bout);
-                        bout.flush();
-                    } finally {
-                        IOUtils.closeQuietly(bout);
-                        IOUtils.closeQuietly(out);
-                    }
-
+            transferService.get(url, in -> {
+                OutputStream out = null;
+                BufferedOutputStream bout = null;
+                try {
+                    out = FileUtils.openOutputStream(file);
+                    bout = new BufferedOutputStream(out);
+                    IOUtils.copy(in, bout);
+                    bout.flush();
+                } finally {
+                    IOUtils.closeQuietly(bout);
+                    IOUtils.closeQuietly(out);
                 }
+
             }, null, listener, newContext());
         }
     }
 
-    public synchronized byte[] doGet(Path path) throws IOException, NotFoundException, io.milton.httpclient.HttpException, CancelledException, NotAuthorizedException, BadRequestException, ConflictException {
+    public synchronized byte[] doGet(Path path) throws IOException, NotFoundException, io.milton.httpclient.HttpException, NotAuthorizedException, BadRequestException, ConflictException {
         return doGet(path, null);
     }
 
-    public synchronized byte[] doGet(Path path, Map<String, String> queryParams) throws IOException, NotFoundException, io.milton.httpclient.HttpException, CancelledException, NotAuthorizedException, BadRequestException, ConflictException {
+    public synchronized byte[] doGet(Path path, Map<String, String> queryParams) throws IOException, NotFoundException, io.milton.httpclient.HttpException, NotAuthorizedException, BadRequestException, ConflictException {
         LogUtils.trace(log, "doGet", path);
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         doGet(path, bout, queryParams);
@@ -770,19 +756,14 @@ public class Host extends Folder {
 
     }
 
-    public synchronized void doGet(Path path, final OutputStream out, Map<String, String> queryParams) throws IOException, NotFoundException, io.milton.httpclient.HttpException, CancelledException, NotAuthorizedException, BadRequestException, ConflictException {
+    public synchronized void doGet(Path path, final OutputStream out, Map<String, String> queryParams) throws IOException, NotFoundException, io.milton.httpclient.HttpException, NotAuthorizedException, BadRequestException, ConflictException {
         String url = this.buildEncodedUrl(path);
         LogUtils.trace(log, "doGet", url);
         if (queryParams != null && queryParams.size() > 0) {
             String qs = Utils.format(queryParams, "UTF-8");
             url += "?" + qs;
         }
-        transferService.get(url, new StreamReceiver() {
-            @Override
-            public void receive(InputStream in) throws IOException {
-                IOUtils.copy(in, out);
-            }
-        }, null, null, newContext());
+        transferService.get(url, in -> IOUtils.copy(in, out), null, null, newContext());
     }
 
     /**
@@ -790,27 +771,26 @@ public class Host extends Folder {
      * @param path - encoded path, but not fully qualified. Must not be prefixed
      * with a slash, as it will be appended to the host's URL
      * @throws java.net.ConnectException
-     * @throws Unauthorized
+     * @throws NotAuthorizedException
      * @throws UnknownHostException
      * @throws SocketTimeoutException
      * @throws IOException
-     * @throws com.ettrema.httpclient.HttpException
+     * @throws io.milton.httpclient.HttpException
      */
     public synchronized void options(String path) throws java.net.ConnectException, NotAuthorizedException, UnknownHostException, SocketTimeoutException, IOException, io.milton.httpclient.HttpException, NotFoundException {
         String url = this.encodedUrl() + path;
         doOptions(url);
     }
 
-    public void doOptions(Path path) throws NotFoundException, java.net.ConnectException, NotAuthorizedException, java.net.UnknownHostException, SocketTimeoutException, IOException, io.milton.httpclient.HttpException {
+    public void doOptions(Path path) throws NotFoundException, NotAuthorizedException, IOException, io.milton.httpclient.HttpException {
         String dest = buildEncodedUrl(path);
         doOptions(dest);
     }
 
-    private synchronized void doOptions(String url) throws NotFoundException, java.net.ConnectException, NotAuthorizedException, java.net.UnknownHostException, SocketTimeoutException, IOException, io.milton.httpclient.HttpException {
+    private synchronized void doOptions(String url) throws NotFoundException, NotAuthorizedException, IOException, io.milton.httpclient.HttpException {
         notifyStartRequest();
-        String uri = url;
         log.trace("doOptions: {}", url);
-        HttpOptions m = new HttpOptions(uri);
+        HttpOptions m = new HttpOptions(url);
         InputStream in = null;
         try {
             int res = Utils.executeHttpWithStatus(client, m, null, newContext());
@@ -819,9 +799,7 @@ public class Host extends Folder {
                 return;
             }
             Utils.processResultCode(res, url);
-        } catch (ConflictException ex) {
-            throw new RuntimeException(ex);
-        } catch (BadRequestException ex) {
+        } catch (ConflictException | BadRequestException ex) {
             throw new RuntimeException(ex);
         } finally {
             Utils.close(in);
@@ -835,7 +813,7 @@ public class Host extends Folder {
      *
      * @param path
      * @return
-     * @throws com.ettrema.httpclient.HttpException
+     * @throws io.milton.httpclient.HttpException
      * @throws NotAuthorizedException
      * @throws BadRequestException
      * @throws ConflictException
@@ -845,14 +823,11 @@ public class Host extends Folder {
         String url = buildEncodedUrl(path);
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
-            transferService.get(url, new StreamReceiver() {
-                @Override
-                public void receive(InputStream in) {
-                    try {
-                        IOUtils.copy(in, out);
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
-                    }
+            transferService.get(url, in -> {
+                try {
+                    IOUtils.copy(in, out);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
                 }
             }, null, null, newContext());
         } catch (CancelledException ex) {
@@ -877,14 +852,11 @@ public class Host extends Folder {
         String url = this.encodedUrl() + path;
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
-            transferService.get(url, new StreamReceiver() {
-                @Override
-                public void receive(InputStream in) {
-                    try {
-                        IOUtils.copy(in, out);
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
-                    }
+            transferService.get(url, in -> {
+                try {
+                    IOUtils.copy(in, out);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
                 }
             }, null, null, newContext());
         } catch (CancelledException ex) {
@@ -904,7 +876,7 @@ public class Host extends Folder {
         log.info("POST: url={} timeout={}", url, timeout);
         notifyStartRequest();
         HttpPost m = new HttpPost(url);
-        List<NameValuePair> formparams = new ArrayList<NameValuePair>();
+        List<NameValuePair> formparams = new ArrayList<>();
         for (Entry<String, String> entry : params.entrySet()) {
             formparams.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
         }
@@ -931,15 +903,15 @@ public class Host extends Folder {
         }
     }
 
-    /**
-     *
-     * @param url - fully qualified and encoded
-     * @param params
-     * @param parts
-     * @return
-     * @throws com.ettrema.httpclient.HttpException
-     */
-//    public String doPost(String url, Map<String, String> params, Part[] parts) throws com.ettrema.httpclient.HttpException, NotAuthorizedException, ConflictException, BadRequestException, NotFoundException {
+//    /**
+//     *
+//     * @param url - fully qualified and encoded
+//     * @param params
+//     * @param parts
+//     * @return
+//     * @throws io.milton.httpclient.HttpException
+//     */
+//    public String doPost(String url, Map<String, String> params, Part[] parts) throws io.milton.httpclient.HttpException, NotAuthorizedException, ConflictException, BadRequestException, NotFoundException {
 //        notifyStartRequest();
 //        PostMethod filePost = new PostMethod(url);
 //        if (params != null) {
@@ -1253,8 +1225,7 @@ public class Host extends Folder {
 
         @Override
         protected RequestDirector createClientRequestDirector(HttpRequestExecutor requestExec, ClientConnectionManager conman, ConnectionReuseStrategy reustrat, ConnectionKeepAliveStrategy kastrat, HttpRoutePlanner rouplan, HttpProcessor httpProcessor, HttpRequestRetryHandler retryHandler, RedirectStrategy redirectStrategy, AuthenticationHandler targetAuthHandler, AuthenticationHandler proxyAuthHandler, UserTokenHandler stateHandler, HttpParams params) {
-            RequestDirector rd = super.createClientRequestDirector(requestExec, conman, reustrat, kastrat, rouplan, httpProcessor, retryHandler, redirectStrategy, targetAuthHandler, proxyAuthHandler, stateHandler, params);
-            return rd;
+            return super.createClientRequestDirector(requestExec, conman, reustrat, kastrat, rouplan, httpProcessor, retryHandler, redirectStrategy, targetAuthHandler, proxyAuthHandler, stateHandler, params);
         }
     }
 }

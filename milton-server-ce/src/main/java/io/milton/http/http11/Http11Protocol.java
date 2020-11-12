@@ -40,7 +40,7 @@ public class Http11Protocol implements HttpExtension{
     private List<CustomPostHandler> customPostHandlers;
 
     public Http11Protocol(Http11ResponseHandler responseHandler, HandlerHelper handlerHelper, ResourceHandlerHelper resourceHandlerHelper, boolean enableOptionsAuth, MatchHelper matchHelper, PartialGetHelper partialGetHelper) {
-        this.handlers = new HashSet<Handler>();
+        this.handlers = new HashSet<>();
         this.handlerHelper = handlerHelper;
         handlers.add(new OptionsHandler(responseHandler, resourceHandlerHelper, handlerHelper, enableOptionsAuth));
         handlers.add(new GetHandler(responseHandler, resourceHandlerHelper, matchHelper, partialGetHelper));

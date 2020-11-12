@@ -24,33 +24,24 @@ import io.milton.http.HttpManager;
 import io.milton.http.Range;
 import io.milton.http.Request;
 import io.milton.http.Request.Method;
-import io.milton.http.exceptions.BadRequestException;
-import io.milton.http.exceptions.ConflictException;
-import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.http11.auth.OAuth2Helper;
 import io.milton.principal.CalDavPrincipal;
-import io.milton.resource.CollectionResource;
-import io.milton.resource.MakeCalendarResource;
-import io.milton.resource.MakeCollectionableResource;
-import io.milton.resource.OAuth2Provider;
-import io.milton.resource.PutableResource;
-import io.milton.resource.Resource;
+import io.milton.resource.*;
+import org.apache.commons.io.output.ByteArrayOutputStream;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.io.output.ByteArrayOutputStream;
-
 public class TFolderResource extends TResource implements PutableResource, MakeCollectionableResource, MakeCalendarResource {
 
     private static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(TResource.class);
-    ArrayList<Resource> children = new ArrayList<Resource>();
+    ArrayList<Resource> children = new ArrayList<>();
 
     public TFolderResource(TFolderResource parent, String name) {
         super(parent, name);
@@ -95,8 +86,7 @@ public class TFolderResource extends TResource implements PutableResource, MakeC
     @Override
     public CollectionResource createCollection(String newName) {
         log.debug("createCollection: " + newName);
-        TFolderResource r = new TFolderResource(this, newName);
-        return r;
+        return new TFolderResource(this, newName);
     }
 
     public Resource createNew(String newName, InputStream inputStream, Long length, String contentType) throws IOException {
@@ -118,14 +108,13 @@ public class TFolderResource extends TResource implements PutableResource, MakeC
     }
 
     @Override
-    public void sendContent(OutputStream out, Range range, Map<String, String> params, String contentType) throws IOException, NotAuthorizedException, BadRequestException, MalformedURLException {
+    public void sendContent(OutputStream out, Range range, Map<String, String> params, String contentType) {
         // HEY EVERYONE
         // This is just a really simple dumb example of generating content -
         // you CAN use JSPs and templates and stuff!!
         PrintWriter pw = new PrintWriter(out);
         pw.print("<html><body>");
         pw.print("<h1>" + this.getName() + "</h1>");
-        Request req = HttpManager.request();
         pw.print("<p>" + this.getClass().getCanonicalName() + "</p>");
         CalDavPrincipal curUser = null;
         Object auth = HttpManager.request().getAuthorization().getTag();
@@ -199,9 +188,8 @@ public class TFolderResource extends TResource implements PutableResource, MakeC
     }
 
     @Override
-    public CollectionResource createCalendar(String newName) throws NotAuthorizedException, ConflictException, BadRequestException {
-        TCalendarResource cal = new TCalendarResource(this, newName);
-        return cal;
+    public CollectionResource createCalendar(String newName) {
+        return new TCalendarResource(this, newName);
     }
 
     @Override

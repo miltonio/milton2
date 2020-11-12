@@ -71,14 +71,11 @@ class SimpleLdapFilter implements LdapFilter {
 	}
 
 	private boolean checkIgnore() {
-		if ("objectclass".equals(attributeName) && STAR.equals(value)) {
-			// ignore cases where any object class can match
-			return true;
-//		} else if (LdapConnection.CRITERIA_MAP.get(attributeName) == null && LdapUtils.getContactAttributeName(attributeName) == null) {
-//			log.debug("LOG_LDAP_UNSUPPORTED_FILTER_ATTRIBUTE", attributeName, value);
-//			return true;
-		}
-		return false;
+		// ignore cases where any object class can match
+		//		} else if (LdapConnection.CRITERIA_MAP.get(attributeName) == null && LdapUtils.getContactAttributeName(attributeName) == null) {
+		//			log.debug("LOG_LDAP_UNSUPPORTED_FILTER_ATTRIBUTE", attributeName, value);
+		//			return true;
+		return "objectclass".equals(attributeName) && STAR.equals(value);
 	}
 
 	@Override
@@ -151,14 +148,11 @@ class SimpleLdapFilter implements LdapFilter {
 		} else if (propValue == null) {
 			// This is a presence filter: found
 			return true;
-		} else if ((operator == Ldap.LDAP_FILTER_EQUALITY) && propValue.equalsIgnoreCase(value)) {
+		} else // Found a substring match
+			if ((operator == Ldap.LDAP_FILTER_EQUALITY) && propValue.equalsIgnoreCase(value)) {
 			// Found an exact match
 			return true;
-		} else if ((operator == Ldap.LDAP_FILTER_SUBSTRINGS) && (propValue.toLowerCase().indexOf(value.toLowerCase()) >= 0)) {
-			// Found a substring match
-			return true;
-		}
-		return false;
+		} else return (operator == Ldap.LDAP_FILTER_SUBSTRINGS) && (propValue.toLowerCase().indexOf(value.toLowerCase()) >= 0);
 	}
 
 	@Override
@@ -172,7 +166,7 @@ class SimpleLdapFilter implements LdapFilter {
 			List<LdapContact> galPersons = userFactory.galFind(conditions.startsWith(contactAttributeName, "*".equals(value) ? "A" : value), sizeLimit);
 			if (operator == Ldap.LDAP_FILTER_EQUALITY) {
 				// Make sure only exact matches are returned
-				List<LdapContact> list = new ArrayList<LdapContact>();
+				List<LdapContact> list = new ArrayList<>();
 				for (LdapContact person : galPersons) {
 					if (isMatch(person)) {
 						// Found an exact match
@@ -190,7 +184,7 @@ class SimpleLdapFilter implements LdapFilter {
 	@Override
 	public void add(LdapFilter filter) {
 		// Should never be called
-		log.error("LOG_LDAP_UNSUPPORTED_FILTER", "nested simple filters");
+		LogUtils.debug(log, "LOG_LDAP_UNSUPPORTED_FILTER", "nested simple filters");
 	}
 	
 }

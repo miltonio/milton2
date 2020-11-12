@@ -52,7 +52,7 @@ public interface OAuth2Resource extends Resource {
     /**
      * This contains the information about the authenticated profile
      */
-    public static class OAuth2ProfileDetails {
+    class OAuth2ProfileDetails {
 
         private String tokenLocation;
         private String providerId;

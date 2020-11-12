@@ -29,7 +29,6 @@
 
 package io.milton.dns.tools;
 
-import io.milton.dns.Name;
 import io.milton.dns.record.Lookup;
 import io.milton.dns.record.Record;
 import io.milton.dns.record.Type;
@@ -61,9 +60,9 @@ public class lookup {
 		}
 		if (lookup.getResult() == Lookup.SUCCESSFUL) {
 			Record[] answers = lookup.getAnswers();
-			for (int i = 0; i < answers.length; i++) {
-				System.out.println(answers[i]);
-			}
+            for (Record answer : answers) {
+                System.out.println(answer);
+            }
 		}
 	}
 

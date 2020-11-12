@@ -102,11 +102,9 @@ public class SimpleFileItem implements FileItem{
     void addPart(Part part) {
         try {
             StreamUtils.readTo(part.getInputStream(), out);
-        } catch (ReadingException ex) {
-            throw new RuntimeException(ex);
         } catch (WritingException ex) {
             throw new RuntimeException(ex);
-        } catch( Exception ex ) {
+        } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
     }

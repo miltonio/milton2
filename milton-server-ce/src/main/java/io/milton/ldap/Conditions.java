@@ -29,11 +29,11 @@ import java.util.Map;
  */
 public class Conditions {
 
-	protected static enum FolderQueryTraversal {
+	protected enum FolderQueryTraversal {
 		Shallow, Deep
 	}
 	
-	public final Map<Operator, String> OPERATOR_MAP = new EnumMap<Operator, String>(Operator.class);
+	public final Map<Operator, String> OPERATOR_MAP = new EnumMap<>(Operator.class);
 
 	private final LdapPropertyMapper propertyMapper;
 	

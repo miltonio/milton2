@@ -39,7 +39,7 @@ public class RespUtils {
 
     private static final Logger log = LoggerFactory.getLogger( RespUtils.class );
     
-    public static Namespace NS_DAV = Namespace.getNamespace("D", "DAV:");
+    public static final Namespace NS_DAV = Namespace.getNamespace("D", "DAV:");
     
     public static QName davName(String localName) {
         return new QName(NS_DAV.getURI(), localName, NS_DAV.getPrefix());
@@ -69,15 +69,13 @@ public class RespUtils {
     public static Long asLong( Element el, String name ) {
         String s = asString( el, name );
         if( s == null || s.length()==0 ) return null;
-        long l = Long.parseLong( s );
-        return l;
+        return Long.parseLong( s );
     }
     
     public static Long asLong( Element el, String name, Namespace ns ) {
         String s = asString( el, name, ns );
         if( s == null || s.length()==0 ) return null;
-        long l = Long.parseLong( s );
-        return l;
+        return Long.parseLong( s );
     }    
 
     public static boolean hasChild( Element el, String name ) {
@@ -89,7 +87,7 @@ public class RespUtils {
     
 
     public static  List<Element> getElements(Element root, String name) {
-        List<Element> list = new ArrayList<Element>();
+        List<Element> list = new ArrayList<>();
         Iterator it = root.getDescendants(new ElementFilter(name));
         while(it.hasNext()) {
             Object o = it.next();

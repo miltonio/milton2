@@ -24,6 +24,6 @@ package io.milton.mail;
  */
 public interface MailResourceFactory {
 
-    public Mailbox getMailbox(MailboxAddress add);
+    Mailbox getMailbox(MailboxAddress add);
     
 }

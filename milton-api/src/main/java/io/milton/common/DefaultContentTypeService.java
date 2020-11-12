@@ -49,7 +49,7 @@ public class DefaultContentTypeService implements ContentTypeService {
     }
 
     public DefaultContentTypeService() {
-        mapOfContentTypes = new ConcurrentHashMap<String, List<String>>();
+        mapOfContentTypes = new ConcurrentHashMap<>();
         Properties p = new Properties();
         InputStream in = getClass().getResourceAsStream("/mime-types.properties");
         if (in != null) {
@@ -61,8 +61,7 @@ public class DefaultContentTypeService implements ContentTypeService {
             for (String extension : p.stringPropertyNames()) {
                 String v = p.getProperty(extension);
                 String[] contentTypes = v.split(",");
-                List<String> list = new ArrayList<String>();
-                list.addAll(Arrays.asList(contentTypes));
+                List<String> list = new ArrayList<>(Arrays.asList(contentTypes));
                 mapOfContentTypes.put(extension, list);
             }
         } else {

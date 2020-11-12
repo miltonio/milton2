@@ -19,16 +19,6 @@
 
 package io.milton.zsync;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
-import java.util.ArrayList;
-import java.util.List;
-
 //import jazsync.jazsync.Rsum;
 //
 //import org.jarsync.ChecksumPair;

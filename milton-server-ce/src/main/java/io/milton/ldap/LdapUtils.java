@@ -49,12 +49,10 @@ public class LdapUtils {
 	public static Set<String> convertLdapToContactReturningAttributes(Set<String> returningAttributes) {
 		Set<String> contactReturningAttributes;
 		if (returningAttributes != null && !returningAttributes.isEmpty()) {
-			contactReturningAttributes = new HashSet<String>();
+			contactReturningAttributes = new HashSet<>();
 			// always return uid
 			contactReturningAttributes.add("imapUid");
-			for (String attribute : returningAttributes) {
-				contactReturningAttributes.add(attribute);
-			}
+            contactReturningAttributes.addAll(returningAttributes);
 		} else {
 			contactReturningAttributes = ContactAttributes.CONTACT_ATTRIBUTES;
 		}

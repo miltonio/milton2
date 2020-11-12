@@ -76,8 +76,8 @@ public class PartialGetHelperTest extends TestCase {
 		assertNotNull(ranges);
 		assertEquals(1, ranges.size());
 		Range r = ranges.get(0);
-		assertEquals(0l, r.getStart().longValue());
-		assertEquals(499l, r.getFinish().longValue());
+		assertEquals(0L, r.getStart().longValue());
+		assertEquals(499L, r.getFinish().longValue());
 	}
 	
 	public void testGetRange_multi() {

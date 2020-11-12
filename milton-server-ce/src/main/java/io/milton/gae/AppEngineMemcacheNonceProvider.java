@@ -30,7 +30,6 @@ import io.milton.http.Request;
 import io.milton.http.http11.auth.Nonce;
 import io.milton.http.http11.auth.NonceProvider;
 import io.milton.http.http11.auth.NonceProvider.NonceValidity;
-import io.milton.resource.Resource;
 
 /**
  * Uses google's memcache implementation to store nonces which are available
@@ -51,7 +50,7 @@ public class AppEngineMemcacheNonceProvider implements NonceProvider {
     
     protected final int nonceValiditySeconds;
     protected boolean enableNonceCountChecking;
-    protected MemcacheService memcache = MemcacheServiceFactory.getMemcacheService();
+    protected final MemcacheService memcache = MemcacheServiceFactory.getMemcacheService();
     
     public AppEngineMemcacheNonceProvider( int nonceValiditySeconds ) {
         this.nonceValiditySeconds = nonceValiditySeconds;

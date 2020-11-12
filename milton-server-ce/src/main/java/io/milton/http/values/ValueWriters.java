@@ -54,7 +54,7 @@ public class ValueWriters {
 	 *
 	 */
 	public ValueWriters() {
-		writers = new ArrayList<ValueWriter>();
+		writers = new ArrayList<>();
 
 		// BM: Note that windows explorer is picky about its date format. This
 		// property writer supports it explicitly

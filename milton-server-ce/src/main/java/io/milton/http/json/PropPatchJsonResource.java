@@ -66,13 +66,13 @@ public class PropPatchJsonResource extends JsonResource implements PostableResou
         cfg.setIgnoreTransientFields( true );
         cfg.setCycleDetectionStrategy( CycleDetectionStrategy.LENIENT );
 
-        List<FieldError> errors = new ArrayList<FieldError>();
+        List<FieldError> errors = new ArrayList<>();
         if( resp != null && resp.getErrorProperties() != null ) {
             log.debug( "error props: " + resp.getErrorProperties().size());
             for( Status stat : resp.getErrorProperties().keySet() ) {
                 List<NameAndError> props = resp.getErrorProperties().get( stat );
                 for( NameAndError ne : props ) {
-                    errors.add( new FieldError( ne.getName().getLocalPart(), ne.getError(), stat.code ) );
+                    errors.add(new FieldError(ne.getName().getLocalPart(), ne.getError(), stat.code));
                 }
             }
         }
@@ -106,7 +106,7 @@ public class PropPatchJsonResource extends JsonResource implements PostableResou
 
 
 
-    public class FieldError {
+    public static class FieldError {
 
         private String name;
         private String description;

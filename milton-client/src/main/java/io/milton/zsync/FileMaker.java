@@ -91,12 +91,12 @@ public class FileMaker {
      * @param rangeLoader - accessor object, to get the binary data of the
      * "remote" file
      */
-    public File make(File inputFile, File metafile, RangeLoader rangeLoader) throws IOException, Exception {
+    public File make(File inputFile, File metafile, RangeLoader rangeLoader) throws Exception {
         MetaFileReader mfr = new MetaFileReader(metafile);
         return make(mfr, inputFile, rangeLoader);
     }
 
-    private File make(MetaFileReader mfr, File inputFile, RangeLoader rangeLoader) throws IOException, Exception {
+    private File make(MetaFileReader mfr, File inputFile, RangeLoader rangeLoader) throws Exception {
         MakeContext makeContext = new MakeContext(mfr.getHashtable(), new long[mfr.getBlockCount()]);
         Arrays.fill(makeContext.fileMap, -1);
         double complete = mapMatcher.mapMatcher(inputFile, mfr, makeContext);
@@ -129,7 +129,7 @@ public class FileMaker {
         if (complete == 0) {
             return null;
         }
-        List<Range> ranges = new ArrayList<Range>();
+        List<Range> ranges = new ArrayList<>();
         int blocksize = mfr.getBlocksize();
         for (int i = 0; i < mc.fileMap.length; i++) {
             if (mc.fileMap[i] == -1) {

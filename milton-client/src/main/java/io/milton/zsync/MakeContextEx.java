@@ -71,7 +71,7 @@ public class MakeContextEx extends MakeContext {
 		/*
 		 * Concatenates the Lists of OffsetPairs in matchMap into a single List
 		 */
-		List<OffsetPair> reverseMap = new LinkedList<OffsetPair>();
+		List<OffsetPair> reverseMap = new LinkedList<>();
 		
         for (List<OffsetPair> item : matchMap) {
             if (item != null) {
@@ -108,7 +108,7 @@ public class MakeContextEx extends MakeContext {
 		
 		if ( matchMap[blockIndex] == null ) {
 			
-			matchMap[blockIndex] = new LinkedList<OffsetPair>();
+			matchMap[blockIndex] = new LinkedList<>();
 		} 
 		matchMap[blockIndex].add( new OffsetPair(offset, blockIndex) );
 		nextOffset = offset +  blocksize; //Set nextOffset to past the end of the previous match

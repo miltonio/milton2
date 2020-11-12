@@ -25,8 +25,8 @@ package io.milton.common;
  */
 public class NameSpace {
 
-    private String name;
-    private String prefix;
+    private final String name;
+    private final String prefix;
 
     public NameSpace(String name, String prefix) {
         this.name = name;

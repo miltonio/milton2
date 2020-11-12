@@ -108,7 +108,7 @@ public class TestDateUtils extends TestCase {
     public void testParseNormal() throws DateParseException {
         Date dt = DateUtils.parseDate( "Sun, 28 Mar 2010 01:00:00 GMT");
         System.out.println( dt.getTime() );
-        assertEquals( 1269738000000l, dt.getTime());
+        assertEquals(1269738000000L, dt.getTime());
     }
 
     /**
@@ -119,7 +119,7 @@ public class TestDateUtils extends TestCase {
     public void testParseWithoutSeconds() throws DateParseException {
         Date dt = DateUtils.parseDate( "Sun, 28 Mar 2010 01:00 GMT");
         System.out.println( dt.getTime() );
-        assertEquals( 1269738000000l, dt.getTime());
+        assertEquals(1269738000000L, dt.getTime());
     }
 
     public void testParseHeaderFormat() throws DateParseException {

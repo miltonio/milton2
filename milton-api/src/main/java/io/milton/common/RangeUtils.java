@@ -16,15 +16,15 @@
  */
 package io.milton.common;
 
-import io.milton.common.StreamUtils;
 import io.milton.http.Range;
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -50,16 +50,15 @@ public class RangeUtils {
     
     public static void writeRanges(InputStream in, List<Range> ranges, OutputStream responseOut) throws IOException {
         try {
-            InputStream bufIn = in; //new BufferedInputStream(in);
             long pos = 0;
             for (Range r : ranges) {
                 long skip = r.getStart() - pos;
-                bufIn.skip(skip);
+                in.skip(skip);
                 Long length = r.getLength();
                 if (length == null) { // will return null if cant calculate
                     throw new IOException("Unable to write range because either start or finish index are not provided: " + r);
                 }
-                sendBytes(bufIn, responseOut, length);
+                sendBytes(in, responseOut, length);
                 pos = r.getFinish();
             }
         } finally {

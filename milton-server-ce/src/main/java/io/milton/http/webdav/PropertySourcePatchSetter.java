@@ -78,9 +78,9 @@ public class PropertySourcePatchSetter implements PropPatchSetter {
 	@Override
 	public PropFindResponse setProperties(String href, PropPatchParseResult parseResult, Resource r) throws NotAuthorizedException, BadRequestException {
 		log.trace("setProperties: resource type: {}", r.getClass());
-		Map<QName, ValueAndType> knownProps = new HashMap<QName, ValueAndType>();
+		Map<QName, ValueAndType> knownProps = new HashMap<>();
 
-		Map<Status, List<NameAndError>> errorProps = new EnumMap<Status, List<NameAndError>>(Status.class);
+		Map<Status, List<NameAndError>> errorProps = new EnumMap<>(Status.class);
 		for (Entry<QName, String> entry : parseResult.getFieldsToSet().entrySet()) {
 			QName name = entry.getKey();
 			boolean found = false;
@@ -168,16 +168,11 @@ public class PropertySourcePatchSetter implements PropPatchSetter {
 		} else {
 			log.trace("resource is not commitable");
 		}
-		PropFindResponse resp = new PropFindResponse(href, knownProps, errorProps);
-		return resp;
+		return new PropFindResponse(href, knownProps, errorProps);
 	}
 
 	private void addErrorProp(Map<Status, List<NameAndError>> errorProps, Status stat, QName name, String err) {
-		List<NameAndError> list = errorProps.get(stat);
-		if (list == null) {
-			list = new ArrayList<NameAndError>();
-			errorProps.put(stat, list);
-		}
+		List<NameAndError> list = errorProps.computeIfAbsent(stat, k -> new ArrayList<>());
 		NameAndError ne = new NameAndError(name, err);
 		list.add(ne);
 

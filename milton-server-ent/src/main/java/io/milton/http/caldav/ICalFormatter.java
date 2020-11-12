@@ -75,7 +75,7 @@ public class ICalFormatter {
      */
     public List<String> parseAttendees(String data) {
         String[] lines = toLines(data);
-        List<String> attendees = new ArrayList<String>();
+        List<String> attendees = new ArrayList<>();
         for (String line : lines) {
             if (line != null && line.contains(":")) {
                 int pos = line.indexOf(":");
@@ -93,7 +93,7 @@ public class ICalFormatter {
     public FreeBusyRequest parseFreeBusyRequest(String data) {
         FreeBusyRequest r = new FreeBusyRequest();
         String[] lines = toLines(data);
-        List<String> attendees = new ArrayList<String>();
+        List<String> attendees = new ArrayList<>();
         r.setAttendeeMailtos(attendees);
         for (String line : lines) {
             if (line != null && line.contains(":")) {
@@ -157,17 +157,14 @@ public class ICalFormatter {
         }
         Calendar cal = Calendar.getInstance();
         cal.setTime(d);
-        StringBuilder sb = new StringBuilder();
-        sb.append(cal.get(Calendar.YEAR)).append("");
-        sb.append(pad2(cal.get(Calendar.MONTH) + 1));
-        sb.append(pad2(cal.get(Calendar.DAY_OF_MONTH)));
-        sb.append('T');
-        sb.append(pad2(cal.get(Calendar.HOUR_OF_DAY)));
-        sb.append(pad2(cal.get(Calendar.MINUTE)));
-        sb.append(pad2(cal.get(Calendar.SECOND)));
-        sb.append('Z');
-        String s = sb.toString();
-        return s;
+        return cal.get(Calendar.YEAR) +
+                pad2(cal.get(Calendar.MONTH) + 1) +
+                pad2(cal.get(Calendar.DAY_OF_MONTH)) +
+                'T' +
+                pad2(cal.get(Calendar.HOUR_OF_DAY)) +
+                pad2(cal.get(Calendar.MINUTE)) +
+                pad2(cal.get(Calendar.SECOND)) +
+                'Z';
     }
 
     private static String pad2(int i) {
@@ -182,8 +179,7 @@ public class ICalFormatter {
         // CN="Wilfredo Sanchez Vega":mailto:wilfredo@example.com
         int pos = s.lastIndexOf(MAILTO);
         if (pos >= 0) {
-            String m = s.substring(pos + MAILTO.length(), s.length());
-            return m;
+            return s.substring(pos + MAILTO.length(), s.length());
         } else {
             return null;
         }
@@ -191,7 +187,7 @@ public class ICalFormatter {
     }
 
     private String[] toLines(String data) {
-        List<String> lines = new ArrayList<String>();
+        List<String> lines = new ArrayList<>();
         for (String s : data.split("\n")) {
             if (s.startsWith(" ")) {
                 s = s.trim();
@@ -246,14 +242,14 @@ public class ICalFormatter {
         return sb.toString();
     }
 
-    public class FreeBusyRequest {
+    public static class FreeBusyRequest {
 
         private Date start;
         private Date finish;
         private String organiserMailto;
         private List<String> attendeeMailtos;
-        private final Map<String, String> attendeeLines = new HashMap<String, String>();
-        private final Map<String, String> lines = new HashMap<String, String>();
+        private final Map<String, String> attendeeLines = new HashMap<>();
+        private final Map<String, String> lines = new HashMap<>();
 
         public Date getStart() {
             return start;

@@ -42,8 +42,7 @@ public class FreeBusyQueryAnnotationHandler extends AbstractAnnotationHandler {
 				return null;
 			} else {
 				Object[] args = annoResourceFactory.buildInvokeArgs(principal, cm.method, icalText);
-				List<SchedulingResponseItem> responseItems = (List<SchedulingResponseItem>) invoke(cm, principal, args);
-				return responseItems;
+				return (List<SchedulingResponseItem>) invoke(cm, principal, args);
 			}
 			
 		} catch (Exception e) {

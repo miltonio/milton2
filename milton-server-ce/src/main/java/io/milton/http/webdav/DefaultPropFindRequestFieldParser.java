@@ -52,7 +52,7 @@ public class DefaultPropFindRequestFieldParser implements PropFindRequestFieldPa
 
 	@Override
     public PropertiesRequest getRequestedFields( InputStream in ) {
-		final Set<QName> set = new LinkedHashSet<QName>();
+		final Set<QName> set = new LinkedHashSet<>();
         try {
             ByteArrayOutputStream bout = new ByteArrayOutputStream();
             StreamUtils.readTo( in, bout, false, true );
@@ -73,10 +73,7 @@ public class DefaultPropFindRequestFieldParser implements PropFindRequestFieldPa
                     } else {
                         set.addAll( handler.getAttributes().keySet() );
                     }
-                } catch( IOException e ) {
-                    log.warn( "exception parsing request body", e );
-                    // ignore
-                } catch( SAXException e ) {
+                } catch( IOException | SAXException e ) {
                     log.warn( "exception parsing request body", e );
                     // ignore
                 }

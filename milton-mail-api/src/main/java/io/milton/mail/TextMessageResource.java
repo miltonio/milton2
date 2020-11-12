@@ -24,6 +24,6 @@ import java.util.Collection;
  *
  */
 public interface TextMessageResource extends MessageResource {
-    public String getTextContent();
-    public Collection<Attachment> getAttachments();
+    String getTextContent();
+    Collection<Attachment> getAttachments();
 }

@@ -122,7 +122,7 @@ public class SearchRunnable implements Runnable {
 							if (galContacts != null && galContacts.size() > 0) {
 								LdapContact person = galContacts.get(0);
 								if (persons == null) {
-									persons = new HashSet<LdapContact>();
+									persons = new HashSet<>();
 								}
 								persons.add(person);
 							}
@@ -154,7 +154,7 @@ public class SearchRunnable implements Runnable {
 				log.info("not a weird search... check for normal conditions");
 				if (user != null) {
 					log.debug("we have a user...");
-					Set<LdapContact> persons = new HashSet<LdapContact>();
+					Set<LdapContact> persons = new HashSet<>();
 					if (ldapFilter.isFullSearch()) {
 						// append personal contacts first
 						log.info("do personcal contact search");
@@ -286,12 +286,10 @@ public class SearchRunnable implements Runnable {
 	 * @throws IOException on error
 	 */
 	public Set<LdapContact> contactFind(Condition condition, Set<String> returningAttributes, int maxCount) throws IOException {
-		Set<LdapContact> results = new HashSet<LdapContact>();
+		Set<LdapContact> results = new HashSet<>();
 		List<LdapContact> contacts = user.searchContacts(condition, maxCount);
 		LogUtils.trace(log, "contactFind: contacts size:", contacts.size());
-		for (LdapContact contact : contacts) {
-			results.add(contact);
-		}
+        results.addAll(contacts);
 		return results;
 	}
 
@@ -307,7 +305,7 @@ public class SearchRunnable implements Runnable {
 				log.warn("Abandon flag is set, so exiting send!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 				break;
 			}
-			Map<String, Object> response = new HashMap<String, Object>();
+			Map<String, Object> response = new HashMap<>();
 			Set<LdapMappedProp> props = propertyMapper.mapProperties(returnAllAttributes, returningAttributes, person);
 
 			response.put("uid", person.getName());

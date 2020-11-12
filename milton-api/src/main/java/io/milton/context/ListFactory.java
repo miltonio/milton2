@@ -50,8 +50,7 @@ public class ListFactory implements Factory<List>{
             Object o = bl.locateBean(requestContext);
             list.add(o);
         }
-        Registration<List> reg = new Registration<List>(list, null, context);
-        return reg;
+        return new Registration<List>(list, null, context);
     }
 
     @Override

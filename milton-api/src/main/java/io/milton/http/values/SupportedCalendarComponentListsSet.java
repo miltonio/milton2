@@ -20,6 +20,7 @@
 package io.milton.http.values;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -42,9 +43,7 @@ public class SupportedCalendarComponentListsSet extends ArrayList<SupportedCalen
     }
 
     public SupportedCalendarComponentListsSet(SupportedCalendarComponentList ... lists) {
-        for( SupportedCalendarComponentList l : lists ) {
-            add(l);
-        }
+        this.addAll(Arrays.asList(lists));
     }
     
 

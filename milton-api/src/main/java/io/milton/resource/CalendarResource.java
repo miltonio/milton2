@@ -28,7 +28,7 @@ import io.milton.http.values.SupportedCalendarComponentList;
 public interface CalendarResource extends CalendarCollection, PropFindableResource {
 
 
-    public enum ComponentType {
+    enum ComponentType {
         VEVENT,
         VTODO,
         VTIMEZONE,

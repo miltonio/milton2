@@ -47,7 +47,7 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 	/**
 	 * Map of methods for this annotation, keyed on the class of the source
 	 */
-	List<ControllerMethod> controllerMethods = new ArrayList<ControllerMethod>();
+	final List<ControllerMethod> controllerMethods = new ArrayList<>();
 
 	public AbstractAnnotationHandler(AnnotationResourceFactory outer, Class annoClass, Method... methods) {
 		this.annoResourceFactory = outer;
@@ -137,7 +137,7 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 	}
 
 	List<ControllerMethod> getMethods(Class sourceClass) {
-		List<ControllerMethod> foundMethods = new ArrayList<ControllerMethod>();
+		List<ControllerMethod> foundMethods = new ArrayList<>();
 		for (ControllerMethod cm : controllerMethods) {
 			Class key = cm.sourceType;
 			if (key.isAssignableFrom(sourceClass)) {
@@ -154,7 +154,7 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 	 * @return
 	 */
 	List<ControllerMethod> getMethods(Class sourceClass, String sourceClassName) {
-		List<ControllerMethod> foundMethods = new ArrayList<ControllerMethod>();
+		List<ControllerMethod> foundMethods = new ArrayList<>();
 		for (ControllerMethod cm : controllerMethods) {
 			Class key = cm.sourceType;
 			if (key.isAssignableFrom(sourceClass)) {
@@ -188,8 +188,7 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 		for (String propName : propNames) {
 			if (PropertyUtils.isReadable(source, propName)) {
 				// found a readable property, so return it				
-				Object oName = PropertyUtils.getProperty(source, propName);
-				return oName;
+				return PropertyUtils.getProperty(source, propName);
 			}
 		}
 		return null;
@@ -262,7 +261,7 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 		}
 	}
 
-	protected Object invoke(ControllerMethod cm, AnnoResource sourceRes, Object... values) throws NotAuthorizedException, BadRequestException, NotFoundException, Exception {
+	protected Object invoke(ControllerMethod cm, AnnoResource sourceRes, Object... values) throws Exception {
 		try {
 			Object[] args;
 			if (values == null || values.length == 0) {
@@ -288,12 +287,8 @@ public abstract class AbstractAnnotationHandler implements AnnotationHandler {
 				throw (ConflictException)cause;				
 			}
 			throw e;			
-		} catch(NotAuthorizedException e) {
+		} catch(NotAuthorizedException | NotFoundException | BadRequestException e) {
 			throw e;
-		} catch(BadRequestException e) {
-			throw e;
-		} catch(NotFoundException e) {
-			throw e;			
 		} catch (Exception e) {
 			throw new Exception("Method: " + cm, e);
 		}

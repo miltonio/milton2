@@ -16,7 +16,7 @@ public class PopIOHandlerAdapter extends IoHandlerAdapter {
 
     private final static Logger log = LoggerFactory.getLogger(PopIOHandlerAdapter.class);
 
-    private MailResourceFactory resourceFactory;
+    private final MailResourceFactory resourceFactory;
     private final List<Filter> filters;
 
 	public PopIOHandlerAdapter(MailResourceFactory resourceFactory, List<Filter> filters) {
@@ -34,12 +34,7 @@ public class PopIOHandlerAdapter extends IoHandlerAdapter {
     public void messageReceived(final IoSession session, final Object msg) throws Exception {
         log.info("pop message: " + msg);
         PopMessageEvent event = new PopMessageEvent(session, msg);
-        Filter terminal = new Filter() {
-
-            public void doEvent(FilterChain chain, Event event) {
-                MinaPopServer.sess(session).messageReceived(session, msg);
-            }
-        };
+        Filter terminal = (chain, event1) -> MinaPopServer.sess(session).messageReceived(session, msg);
         FilterChain chain = new FilterChain(filters, terminal);
         chain.doEvent(event);
     }
@@ -48,7 +43,7 @@ public class PopIOHandlerAdapter extends IoHandlerAdapter {
     public void sessionCreated(IoSession session) throws Exception {
         log.info("Session created...");
         ((SocketSessionConfig) session.getConfig()).setReceiveBufferSize(2048);
-        ((SocketSessionConfig) session.getConfig()).setIdleTime(IdleStatus.BOTH_IDLE, 10);
+        session.getConfig().setIdleTime(IdleStatus.BOTH_IDLE, 10);
         PopSession sess = new PopSession(session, resourceFactory);
         session.setAttribute("stateMachine", sess);
     }

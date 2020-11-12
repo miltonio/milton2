@@ -26,6 +26,6 @@ import java.net.Socket;
 
 public interface ResponseGenerator {
 
-	public byte[] generateReply(Message query, SetResponse sr, Socket s)
+	byte[] generateReply(Message query, SetResponse sr, Socket s)
 			throws IOException;
 }

@@ -30,5 +30,5 @@ package io.milton.http;
  *
  */
 public interface Filter {
-    public void process(FilterChain chain, Request request, Response response);   
+    void process(FilterChain chain, Request request, Response response);
 }

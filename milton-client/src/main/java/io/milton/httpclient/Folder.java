@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 public class Folder extends Resource {
 
     private static final Logger log = LoggerFactory.getLogger(Folder.class);
-    final List<FolderListener> folderListeners = new ArrayList<FolderListener>();
+    final List<FolderListener> folderListeners = new ArrayList<>();
     protected final Map<Folder, List<Resource>> cache;
 
     /**
@@ -94,7 +94,7 @@ public class Folder extends Resource {
     }
 
     @Override
-    public File downloadTo(File destFolder, ProgressListener listener) throws FileNotFoundException, IOException, HttpException, NotAuthorizedException, BadRequestException {
+    public File downloadTo(File destFolder, ProgressListener listener) throws IOException, HttpException, NotAuthorizedException, BadRequestException {
         File thisDir = new File(destFolder, this.name);
         thisDir.mkdir();
         for (Resource r : this.children()) {
@@ -123,7 +123,7 @@ public class Folder extends Resource {
     public List<? extends Resource> children() throws IOException, HttpException, NotAuthorizedException, BadRequestException {
         List<Resource> children = cache.get(this);
         if (children == null) {
-            children = new ArrayList<Resource>();
+            children = new ArrayList<>();
             String thisHref = href();
             if (log.isTraceEnabled()) {
                 log.trace("load children for: " + thisHref);
@@ -171,7 +171,7 @@ public class Folder extends Resource {
         return href() + " (is a folder)";
     }
 
-    public void upload(File f) throws IOException, HttpException, NotAuthorizedException, ConflictException, BadRequestException, FileNotFoundException, NotFoundException {
+    public void upload(File f) throws IOException, HttpException, NotAuthorizedException, ConflictException, BadRequestException, NotFoundException {
         upload(f, null);
     }
 
@@ -182,7 +182,7 @@ public class Folder extends Resource {
      * @param throttle - optional, can be used to slow down the transfer
      * @throws IOException
      */
-    public void upload(File f, ProgressListener listener) throws IOException, HttpException, NotAuthorizedException, ConflictException, BadRequestException, FileNotFoundException, NotFoundException {
+    public void upload(File f, ProgressListener listener) throws IOException, HttpException, NotAuthorizedException, ConflictException, BadRequestException, NotFoundException {
         if (f.isDirectory()) {
             uploadFolder(f, listener);
         } else {
@@ -190,7 +190,7 @@ public class Folder extends Resource {
         }
     }
 
-    public io.milton.httpclient.File uploadFile(File f) throws FileNotFoundException, IOException, HttpException, NotAuthorizedException, ConflictException, BadRequestException, NotFoundException {
+    public io.milton.httpclient.File uploadFile(File f) throws IOException, HttpException, NotAuthorizedException, ConflictException, BadRequestException, NotFoundException {
         return uploadFile(f, null);
     }
 
@@ -250,8 +250,7 @@ public class Folder extends Resource {
     public io.milton.httpclient.File upload(String name, InputStream content, Integer contentLength, ProgressListener listener) throws IOException, HttpException, NotAuthorizedException, ConflictException, BadRequestException, NotFoundException {
         Long length = null;
         if (contentLength != null) {
-            long l = contentLength;
-            length = l;
+            length = (long) contentLength;
         }
         return upload(name, content, length, listener);
     }
@@ -321,9 +320,7 @@ public class Folder extends Resource {
             Folder child = (Folder) child(name);
             notifyOnChildAdded(child);
             return child;
-        } catch (ConflictException e) {
-            return handlerCreateFolderException(newUri, name);
-        } catch (MethodNotAllowedException e) {
+        } catch (ConflictException | MethodNotAllowedException e) {
             return handlerCreateFolderException(newUri, name);
         }
     }
@@ -333,8 +330,7 @@ public class Folder extends Resource {
         this.flush();
         Resource child = this.child(name);
         if (child instanceof Folder) {
-            Folder fChild = (Folder) child;
-            return fChild;
+            return (Folder) child;
         } else {
             if (child == null) {
                 log.error("Couldnt create remote collection");
@@ -357,7 +353,7 @@ public class Folder extends Resource {
     }
 
     void notifyOnChildAdded(Resource child) {
-        List<FolderListener> l2 = new ArrayList<FolderListener>(folderListeners); // defensive copy in case the folderListeners is changed by the listeners
+        List<FolderListener> l2 = new ArrayList<>(folderListeners); // defensive copy in case the folderListeners is changed by the listeners
         for (FolderListener l : l2) {
             l.onChildAdded(this, child);
         }
@@ -366,7 +362,7 @@ public class Folder extends Resource {
     }
 
     void notifyOnChildRemoved(Resource child) {
-        List<FolderListener> l2 = new ArrayList<FolderListener>(folderListeners);// defensive copy in case the folderListeners is changed by the listeners
+        List<FolderListener> l2 = new ArrayList<>(folderListeners);// defensive copy in case the folderListeners is changed by the listeners
         for (FolderListener l : l2) {
             l.onChildRemoved(this, child);
         }

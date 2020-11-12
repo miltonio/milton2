@@ -120,8 +120,7 @@ public class TransferService {
     public HttpResult put(String encodedUrl, InputStream content, Long contentLength, String contentType, IfMatchCheck etagMatch, ProgressListener listener, HttpContext context) {
         LogUtils.trace(log, "put: ", encodedUrl);
         notifyStartRequest();
-        String s = encodedUrl;
-        HttpPut p = new HttpPut(s);
+        HttpPut p = new HttpPut(encodedUrl);
         p.addHeader(Request.Header.CONTENT_TYPE.code, contentType);
         p.addHeader(Request.Header.OVERWRITE.code, "T"); // we always allow overwrites
         if (etagMatch != null) {
@@ -134,7 +133,7 @@ public class TransferService {
 
         NotifyingFileInputStream notifyingIn = null;
         try {
-            notifyingIn = new NotifyingFileInputStream(content, contentLength, s, listener);
+            notifyingIn = new NotifyingFileInputStream(content, contentLength, encodedUrl, listener);
             HttpEntity requestEntity;
             if (contentLength == null) {
                 throw new RuntimeException("Content length for input stream is null, you must provide a length");

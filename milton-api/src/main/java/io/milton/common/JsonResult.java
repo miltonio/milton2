@@ -18,7 +18,7 @@
 package io.milton.common;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -34,8 +34,7 @@ public class JsonResult {
     public static String CONTENT_TYPE = "application/json; charset=utf-8";
 
     public static JsonResult error(String description) {
-        JsonResult r = new JsonResult(false, description);
-        return r;        
+        return new JsonResult(false, description);
     }
     
     public static JsonResult fieldError(String field, String fieldMessage) {
@@ -79,20 +78,20 @@ public class JsonResult {
     
     public JsonResult(boolean status, String message) {
         this.status = status;
-        this.messages = Arrays.asList(message);
+        this.messages = Collections.singletonList(message);
     }        
     
     public JsonResult(boolean status, String message, String nextHref) {
         this.status = status;
         this.nextHref = nextHref;
-        this.messages = Arrays.asList(message);
+        this.messages = Collections.singletonList(message);
     }          
     
     public void addFieldMessage(String field, String message) {
         if( fieldMessages == null ) {
-            fieldMessages = new ArrayList<FieldMessage>();
+            fieldMessages = new ArrayList<>();
         }
-        fieldMessages.add(new FieldMessage(field, message)); 
+        fieldMessages.add(new FieldMessage(field, message));
     }
     
     /**
@@ -183,7 +182,7 @@ public class JsonResult {
      * The field name is the name of the POST variable which caused the error
      * 
      */
-    public class FieldMessage {
+    public static class FieldMessage {
         private String field;
         private String message;
 

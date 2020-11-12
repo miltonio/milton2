@@ -73,8 +73,8 @@ public class ServletRequest extends AbstractRequest {
     private final Request.Method method;
     private final String url;
     private Auth auth;
-    private static final Map<ContentType, String> contentTypes = new EnumMap<ContentType, String>(ContentType.class);
-    private static final Map<String, ContentType> typeContents = new HashMap<String, ContentType>();
+    private static final Map<ContentType, String> contentTypes = new EnumMap<>(ContentType.class);
+    private static final Map<String, ContentType> typeContents = new HashMap<>();
 
     static {
         contentTypes.put(ContentType.HTTP, Response.HTTP);
@@ -84,8 +84,8 @@ public class ServletRequest extends AbstractRequest {
             typeContents.put(contentTypes.get(key), key);
         }
     }
-    private static final ThreadLocal<HttpServletRequest> tlRequest = new ThreadLocal<HttpServletRequest>();
-    private static final ThreadLocal<ServletContext> tlServletContext = new ThreadLocal<ServletContext>();
+    private static final ThreadLocal<HttpServletRequest> tlRequest = new ThreadLocal<>();
+    private static final ThreadLocal<ServletContext> tlServletContext = new ThreadLocal<>();
 
     public static HttpServletRequest getRequest() {
         return tlRequest.get();
@@ -105,8 +105,7 @@ public class ServletRequest extends AbstractRequest {
         this.servletContext = servletContext;
         String sMethod = r.getMethod();
         method = Request.Method.valueOf(sMethod);
-        String s = r.getRequestURL().toString(); //MiltonUtils.stripContext(r);
-        url = s;
+        url = r.getRequestURL().toString();
         tlRequest.set(r);
         tlServletContext.set(servletContext);
 		
@@ -263,7 +262,7 @@ public class ServletRequest extends AbstractRequest {
 
     protected Response.ContentType getRequestContentType() {
         String s = request.getContentType();
-        log.trace("request content type", s);
+        log.trace("request content type - {}", s);
         if (s == null) {
             return null;
         }
@@ -275,13 +274,13 @@ public class ServletRequest extends AbstractRequest {
 
     protected boolean isMultiPart() {
         ContentType ct = getRequestContentType();
-        log.trace("content type:", ct);
+        log.trace("content type: {}", ct);
         return (ContentType.MULTIPART.equals(ct));
     }
 
     @Override
     public Map<String, String> getHeaders() {
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         Enumeration num = request.getHeaderNames();
         while (num.hasMoreElements()) {
             String name = (String) num.nextElement();
@@ -305,7 +304,7 @@ public class ServletRequest extends AbstractRequest {
 
     @Override
     public List<Cookie> getCookies() {
-        ArrayList<Cookie> list = new ArrayList<Cookie>();
+        ArrayList<Cookie> list = new ArrayList<>();
         if (request.getCookies() != null) {
             for (javax.servlet.http.Cookie c : request.getCookies()) {
                 list.add(toBeanCookie(c));

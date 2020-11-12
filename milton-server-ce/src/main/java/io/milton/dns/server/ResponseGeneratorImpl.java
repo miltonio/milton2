@@ -19,14 +19,10 @@
 package io.milton.dns.server;
 
 import io.milton.dns.record.Message;
-import io.milton.dns.record.RRset;
-import io.milton.dns.record.Record;
 import io.milton.dns.record.SetResponse;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ResponseGeneratorImpl implements ResponseGenerator {
 

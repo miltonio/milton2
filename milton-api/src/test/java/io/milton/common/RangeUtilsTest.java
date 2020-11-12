@@ -76,10 +76,10 @@ public class RangeUtilsTest extends TestCase {
         ByteArrayInputStream in = new ByteArrayInputStream(buf);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-        List<Range> ranges = new ArrayList<Range>();
-        ranges.add(new Range(501l, 1000l));
-        ranges.add(new Range(2001l, 2500l));
-        ranges.add(new Range(3001l, 3500l));
+        List<Range> ranges = new ArrayList<>();
+        ranges.add(new Range(501L, 1000L));
+        ranges.add(new Range(2001L, 2500L));
+        ranges.add(new Range(3001L, 3500L));
 
         RangeUtils.writeRanges(in, ranges, out);
 

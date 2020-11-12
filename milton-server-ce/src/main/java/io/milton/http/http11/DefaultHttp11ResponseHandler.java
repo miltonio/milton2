@@ -42,8 +42,12 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 
+import io.milton.servlet.ServletRequest;
+import io.milton.servlet.ServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.servlet.ServletException;
 
 /**
  *
@@ -177,7 +181,16 @@ public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Buff
 		}
 		log.trace("respondRedirect");
 		// delegate to the response, because this can be server dependent
-		response.sendRedirect(redirectUrl);
+		try {
+			ServletRequest.getRequest().getRequestDispatcher(redirectUrl.substring(redirectUrl.lastIndexOf("/"))).forward(ServletRequest.getRequest(), ServletResponse.getResponse());
+		} catch (ServletException e) {
+
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+//		response.sendRedirect(redirectUrl);
 //        response.setStatus(Response.Status.SC_MOVED_TEMPORARILY);
 //        response.setLocationHeader(redirectUrl);
 	}

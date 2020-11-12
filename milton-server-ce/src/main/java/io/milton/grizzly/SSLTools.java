@@ -55,8 +55,7 @@ public class SSLTools {
 		CertificateFactory cf = CertificateFactory.getInstance("X.509");
 		ByteArrayInputStream bais = new ByteArrayInputStream(certificateBytes);
 		try {
-			Certificate cert = cf.generateCertificate(bais);
-			return cert;
+			return cf.generateCertificate(bais);
 		} catch (CertificateException certificateException) {
 			throw new CertificateException("Could not read certificate", certificateException);
 		}
@@ -261,8 +260,7 @@ public class SSLTools {
 		byte[] certModulusData = rsaPublicKey.getModulus().toByteArray();
 		MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
 		byte[] certID = sha1.digest(certModulusData);
-		String certIDinHex = toHexString(certID);
-		return certIDinHex;
+		return toHexString(certID);
 	}
 
 	/**
@@ -275,8 +273,7 @@ public class SSLTools {
 	public static String getPrivateKeyModulusSHA1(final RSAPrivateKey rsaPrivateKey) {
 		byte[] keyModulusData = rsaPrivateKey.getModulus().toByteArray();
 		byte[] keyID = DigestUtils.sha1(keyModulusData);
-		String keyIDinHex = toHexString(keyID);
-		return keyIDinHex;
+		return toHexString(keyID);
 	}
 
 	/**
@@ -307,7 +304,7 @@ public class SSLTools {
 	public static boolean isCertificateValid(final String certificateText, final String privateKeyText, final char[] privateKeyPassword)
 			throws GeneralSecurityException, IOException {
 		RSAPrivateKey pk = parseRSAPrivateKey(privateKeyText, privateKeyPassword);
-		X509Certificate certificate = (X509Certificate) parseX509Certificate(certificateText);
+		X509Certificate certificate = parseX509Certificate(certificateText);
 		return isCertificateValid(certificate, pk);
 	}
 
@@ -333,15 +330,7 @@ public class SSLTools {
 	 * @return PasswordFinder
 	 */
 	public static PasswordFinder getPasswordFinder(final String password) {
-		return new PasswordFinder() {
-
-			@Override
-			public char[] getPassword() {
-				final char[] pass = password.toCharArray();
-				return pass;
-
-			}
-		};
+		return () -> password.toCharArray();
 	}
 
 	/**
@@ -351,15 +340,7 @@ public class SSLTools {
 	 * @return PasswordFinder
 	 */
 	public static PasswordFinder getPasswordFinder(final char[] password) {
-		return new PasswordFinder() {
-
-			@Override
-			public char[] getPassword() {
-				final char[] pass = password;
-				return pass;
-
-			}
-		};
+		return () -> password;
 	}
 
 	/**
@@ -395,8 +376,7 @@ public class SSLTools {
 	public static KeyPair generateKeyPair(int keysize) throws NoSuchAlgorithmException {
 		KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA", new BouncyCastleProvider());
 		keyGen.initialize(keysize, new SecureRandom());
-		KeyPair keypair = keyGen.generateKeyPair();
-		return keypair;
+		return keyGen.generateKeyPair();
 	}
 
 	/**
@@ -417,7 +397,7 @@ public class SSLTools {
 		sb.append(header);
 		int index = 0;
 		while (index < privatePem.length()) {
-			sb.append(privatePem.substring(index, Math.min(index + 64, privatePem.length()))).append("\n");
+			sb.append(privatePem, index, Math.min(index + 64, privatePem.length())).append("\n");
 			index += 64;
 		}
 		sb.append(footer);

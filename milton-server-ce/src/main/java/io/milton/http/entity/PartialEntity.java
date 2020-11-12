@@ -69,7 +69,7 @@ public class PartialEntity implements Response.Entity {
 		Long contentLength = resource.getContentLength();
 		if (contentLength == null) {
 			log.warn("Couldnt calculate range end position because the resource is not reporting a content length, and no end position was requested by the client: " + resource.getName() + " - " + resource.getClass());
-			contentLength = -1l;
+			contentLength = -1L;
 		}
 
 

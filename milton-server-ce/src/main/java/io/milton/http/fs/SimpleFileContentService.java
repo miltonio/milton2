@@ -29,7 +29,7 @@ import org.apache.commons.io.IOUtils;
 public class SimpleFileContentService implements FileContentService {
 
     @Override
-    public void setFileContent(File file, InputStream in) throws FileNotFoundException, IOException {
+    public void setFileContent(File file, InputStream in) throws IOException {
         FileOutputStream out = null;
         try {
             out = new FileOutputStream(file);
@@ -41,7 +41,6 @@ public class SimpleFileContentService implements FileContentService {
 
     @Override
     public InputStream getFileContent(File file) throws FileNotFoundException {
-        FileInputStream fin = new FileInputStream(file);
-        return fin;
+        return new FileInputStream(file);
     }
 }

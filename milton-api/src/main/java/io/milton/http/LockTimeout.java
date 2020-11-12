@@ -19,22 +19,21 @@
 
 package io.milton.http;
 
-import io.milton.http.Request;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class LockTimeout implements Serializable{
 
     private static final long serialVersionUID = 1L;
 
 
-    private static Logger log = LoggerFactory.getLogger(LockTimeout.class);
+    private static final Logger log = LoggerFactory.getLogger(LockTimeout.class);
     private static final String INFINITE = "Infinite";
     
             
@@ -49,7 +48,7 @@ public class LockTimeout implements Serializable{
         s = s.trim();
         if( s.length() == 0 ) return new LockTimeout((List<Long>)null);
 
-        List<Long> list = new ArrayList<Long>();
+        List<Long> list = new ArrayList<>();
         for( String part : s.split(",")) {
             part = part.trim();
             if( part.equalsIgnoreCase(INFINITE)) {
@@ -61,9 +60,8 @@ public class LockTimeout implements Serializable{
                 }
             }
         }
-        
-        LockTimeout timeout = new LockTimeout(list);
-        return timeout;
+
+        return new LockTimeout(list);
     }
 
     static String trim(String s) {
@@ -81,8 +79,8 @@ public class LockTimeout implements Serializable{
         if( pos <= 0 ) {
             return null;
         }
-        String s = part.substring(pos+1, part.length());
-        long l = 0;
+        String s = part.substring(pos+1);
+        long l;
         try {
             l = Long.parseLong(s);
             return l;
@@ -166,7 +164,7 @@ public class LockTimeout implements Serializable{
             } else if( maxSeconds != null ) {
                 return addSeconds( maxSeconds);
             } else {
-                return addSeconds(60l); // default default
+                return addSeconds(60L); // default default
             }
         } else {
             if( maxSeconds != null ) {

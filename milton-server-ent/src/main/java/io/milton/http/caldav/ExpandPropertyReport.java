@@ -169,7 +169,7 @@ public class ExpandPropertyReport implements Report {
 
 			for (PropFindResponse r : propFindResponses) {
 				Set<Entry<QName, ValueAndType>> set = r.getKnownProperties().entrySet();
-				set = new HashSet<Entry<QName, ValueAndType>>(set);
+				set = new HashSet<>(set);
 				for (Entry<QName, ValueAndType> p : set) {
 					Object val = p.getValue().getValue();
 					QName name = p.getKey();
@@ -188,13 +188,12 @@ public class ExpandPropertyReport implements Report {
 		}
 
 		//show("",propFindResponses);
-		
-		String xml = xmlGenerator.generate(propFindResponses);
-		return xml;
+
+		return xmlGenerator.generate(propFindResponses);
 	}
 
 	public PropertiesRequest parse(Element elProp) {
-		Set<Property> set = new HashSet<Property>();
+		Set<Property> set = new HashSet<>();
 		for (Object o : elProp.getChildren()) {
 			if (o instanceof Element) {
 				Element el = (Element) o;
@@ -206,12 +205,11 @@ public class ExpandPropertyReport implements Report {
 				}
 			}
 		}
-		PropertiesRequest pr = new PropertiesRequest(set);
-		return pr;
+		return new PropertiesRequest(set);
 	}
 
 	private Set<Property> parseChildren(Element elProp) {
-		Set<Property> set = new HashSet<Property>();
+		Set<Property> set = new HashSet<>();
 		for (Object o : elProp.getChildren()) {
 			if (o instanceof Element) {
 				Element el = (Element) o;
@@ -232,8 +230,7 @@ public class ExpandPropertyReport implements Report {
 		if (ns == null) {
 			ns = WebDavProtocol.DAV_URI;
 		}
-		QName name = new QName(ns, local);
-		return name;
+		return new QName(ns, local);
 	}
 
 	@Override
@@ -261,7 +258,7 @@ public class ExpandPropertyReport implements Report {
 	private void replaceHrefs(String host, PropFindResponseList propFindResponseList, Property prop) throws URISyntaxException, NotAuthorizedException, BadRequestException {		
 		for (PropFindResponse r : propFindResponseList) {
 			Set<Entry<QName, ValueAndType>> set = r.getKnownProperties().entrySet();
-			set = new HashSet<Entry<QName, ValueAndType>>(set);
+			set = new HashSet<>(set);
 			for (Entry<QName, ValueAndType> p : set) {
 				Object val = p.getValue().getValue();
 				QName name = p.getKey();

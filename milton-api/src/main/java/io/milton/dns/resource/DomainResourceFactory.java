@@ -36,7 +36,7 @@ public interface DomainResourceFactory {
 	 * @return
 	 * @throws NonAuthoritativeException
 	 */
-	public DomainResource getDomainResource(String domainName) throws NonAuthoritativeException;
+    DomainResource getDomainResource(String domainName) throws NonAuthoritativeException;
 	/*
 	 * Takes a String rather than a Name, because implementations may be part of
 	 * a project that uses its own name class

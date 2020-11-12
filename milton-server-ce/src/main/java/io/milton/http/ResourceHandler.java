@@ -30,6 +30,6 @@ import io.milton.http.exceptions.NotAuthorizedException;
  */
 public interface ResourceHandler extends Handler {
 
-    public void processResource( HttpManager manager, Request request, Response response, Resource r ) throws NotAuthorizedException, ConflictException, BadRequestException;
+    void processResource(HttpManager manager, Request request, Response response, Resource r) throws NotAuthorizedException, ConflictException, BadRequestException;
 
 }

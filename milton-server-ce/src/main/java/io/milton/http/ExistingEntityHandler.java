@@ -31,6 +31,6 @@ import io.milton.http.exceptions.NotFoundException;
  */
 public interface ExistingEntityHandler extends ResourceHandler {
 
-    public void processExistingResource( HttpManager manager, Request request, Response response, Resource resource ) throws NotAuthorizedException, BadRequestException, ConflictException, NotFoundException;
+    void processExistingResource(HttpManager manager, Request request, Response response, Resource resource) throws NotAuthorizedException, BadRequestException, ConflictException, NotFoundException;
 
 }

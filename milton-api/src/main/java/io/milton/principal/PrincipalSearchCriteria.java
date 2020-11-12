@@ -33,9 +33,9 @@ public class PrincipalSearchCriteria {
         ANY("anyof"),
         ALL("allof"),;
 
-        private String code;
+        private final String code;
 
-        private TestType(String code)
+        TestType(String code)
         {
             this.code = code;
         }
@@ -61,7 +61,7 @@ public class PrincipalSearchCriteria {
         STARTSWITH("starts-with"),
         ENDSWITH("ends-with");
 
-        String code;
+        final String code;
 
         MatchType(String code) {
             this.code = code;

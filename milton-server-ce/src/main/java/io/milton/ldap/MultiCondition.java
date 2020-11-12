@@ -36,7 +36,7 @@ public class MultiCondition implements Condition {
 
 	protected MultiCondition(Operator operator, Condition... conditions) {
 		this.operator = operator;
-		this.conditions = new ArrayList<Condition>();
+		this.conditions = new ArrayList<>();
 		for (Condition condition : conditions) {
 			if (condition != null) {
 				this.conditions.add(condition);

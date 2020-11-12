@@ -29,7 +29,6 @@ import io.milton.http.ResourceFactory;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
-import io.milton.http.webdav.Dest;
 import io.milton.resource.CollectionResource;
 import io.milton.resource.CopyableResource;
 import io.milton.resource.PostableResource;

@@ -94,14 +94,8 @@ public class GetAnnotationHandler extends AbstractAnnotationHandler {
 				}
 			}
 			out.flush();
-		} catch(IOException e) {
+		} catch(IOException | NotFoundException | BadRequestException | NotAuthorizedException e) {
 			throw e;			
-		} catch(NotAuthorizedException e) {
-			throw e;			
-		} catch(BadRequestException e) {
-			throw e;			
-		} catch(NotFoundException e) {
-			throw e;						
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

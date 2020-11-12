@@ -34,7 +34,7 @@ import java.util.List;
  */
 public interface CollectionResource extends Resource {
 
-    public Resource child(String childName) throws NotAuthorizedException, BadRequestException;
+    Resource child(String childName) throws NotAuthorizedException, BadRequestException;
 	
     List<? extends Resource> getChildren() throws NotAuthorizedException, BadRequestException;
 }

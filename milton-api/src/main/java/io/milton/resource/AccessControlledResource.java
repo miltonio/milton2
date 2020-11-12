@@ -76,7 +76,7 @@ import java.util.Map;
 public interface AccessControlledResource extends Resource {
   
     
-    public enum Priviledge {
+    enum Priviledge {
         /**
          * READ the content of resources, but this does not permit reading PROPFIND (milton extension)
          */
@@ -104,9 +104,9 @@ public interface AccessControlledResource extends Resource {
         UNBIND(Collections.EMPTY_LIST),
         ALL(Arrays.asList(READ, WRITE, BIND, UNBIND));
         
-        public List<Priviledge> contains;
+        public final List<Priviledge> contains;
 
-        private Priviledge(List<Priviledge>contains) {
+        Priviledge(List<Priviledge> contains) {
             this.contains = contains;
         }               
     }
@@ -115,13 +115,13 @@ public interface AccessControlledResource extends Resource {
      * Just an empty list which conveys no permissions. This is an appropriate value
      * to return from ACL methods when you want to deny access
      */
-    public final static List<AccessControlledResource.Priviledge> NONE = Arrays.asList();
+    List<AccessControlledResource.Priviledge> NONE = Collections.emptyList();
     
-    public final static List<AccessControlledResource.Priviledge> READ_WRITE = Arrays.asList(Priviledge.READ, Priviledge.WRITE);
+    List<AccessControlledResource.Priviledge> READ_WRITE = Arrays.asList(Priviledge.READ, Priviledge.WRITE);
     
-    public final static List<AccessControlledResource.Priviledge> READ_CONTENT = Arrays.asList(Priviledge.READ_CONTENT);
+    List<AccessControlledResource.Priviledge> READ_CONTENT = Collections.singletonList(Priviledge.READ_CONTENT);
     
-    public final static List<AccessControlledResource.Priviledge> READ_BROWSE = Arrays.asList(Priviledge.READ_CONTENT, Priviledge.READ_PROPERTIES);
+    List<AccessControlledResource.Priviledge> READ_BROWSE = Arrays.asList(Priviledge.READ_CONTENT, Priviledge.READ_PROPERTIES);
     
 
     /**

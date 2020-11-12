@@ -180,9 +180,8 @@ void
 rrToWire(DNSOutput out, Compression c, boolean canonical) {
 	if (options == null)
 		return;
-	Iterator it = options.iterator();
-	while (it.hasNext()) {
-		EDNSOption option = (EDNSOption) it.next();
+	for (Object o : options) {
+		EDNSOption option = (EDNSOption) o;
 		option.toWire(out);
 	}
 }
@@ -206,8 +205,8 @@ getOptions(int code) {
 	if (options == null)
 		return Collections.EMPTY_LIST;
 	List list = Collections.EMPTY_LIST;
-	for (Iterator it = options.iterator(); it.hasNext(); ) {
-		EDNSOption opt = (EDNSOption) it.next();
+	for (Object option : options) {
+		EDNSOption opt = (EDNSOption) option;
 		if (opt.getCode() == code) {
 			if (list == Collections.EMPTY_LIST)
 				list = new ArrayList();

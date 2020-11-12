@@ -65,9 +65,9 @@ public class ITip {
         RS_ERROR_51("5.1", "Service unavailable.", "ATTENDEE property value MAY be specified."),
         RS_ERROR_52("5.2", "Invalid calendar service.", "ATTENDEE property value MAY be specified."),
         RS_ERROR_53("5.3", "No scheduling support for user.", "ATTENDEE property value MAY be specified");
-        public String code;
-        public String description;
-        public String longerDesc;
+        public final String code;
+        public final String description;
+        public final String longerDesc;
 
         StatusResponse(String code, String description, String longerDesc) {
             this.code = code;

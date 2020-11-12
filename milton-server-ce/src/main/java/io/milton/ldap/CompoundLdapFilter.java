@@ -34,7 +34,7 @@ import java.util.Set;
  */
 public class CompoundLdapFilter implements LdapFilter {
 	private final Conditions conditions;
-	private final Set<LdapFilter> criteria = new HashSet<LdapFilter>();
+	private final Set<LdapFilter> criteria = new HashSet<>();
 	private final int type;
 
 	CompoundLdapFilter(Conditions conditions, int filterType) {
@@ -179,7 +179,7 @@ public class CompoundLdapFilter implements LdapFilter {
 		}
 		if ((persons == null) && !isFullSearch()) {
 			// return an empty map (indicating no results were found)
-			return new ArrayList<LdapContact>();
+			return new ArrayList<>();
 		}
 		return persons;
 	}

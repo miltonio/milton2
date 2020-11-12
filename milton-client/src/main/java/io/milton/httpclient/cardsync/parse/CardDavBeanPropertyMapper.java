@@ -49,7 +49,7 @@ public class CardDavBeanPropertyMapper {
 
     public CardDavBeanPropertyMapper(PropertyAccessor propertyAccessor) {
         this.propertyAccessor = propertyAccessor;
-        mapOfMappers = new HashMap<Class, Mapper>();
+        mapOfMappers = new HashMap<>();
         addMapper(Uid.class, new UidMapper());
         addMapper(Description.class, new GivenNameMapper());
         addMapper(EndDate.class, new LastNameMapper());
@@ -135,11 +135,10 @@ public class CardDavBeanPropertyMapper {
 
         VCardWriter writer = new VCardWriter();
         writer.setVCard(card);
-        String text = writer.buildVCardString();
-        return text;
+        return writer.buildVCardString();
     }
 
-    public abstract class Mapper {
+    public abstract static class Mapper {
 
         abstract void mapToBean(VCard card, Object bean, PropertyDescriptor pd);
 

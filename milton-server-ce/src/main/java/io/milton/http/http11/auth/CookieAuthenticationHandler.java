@@ -54,7 +54,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 	private String userUrlAttName = "userUrl";
 	private boolean useLongLivedCookies = true;
 	private final List<String> keys;
-	private String keepLoggedInParamName = "keepLoggedIn";
+	private final String keepLoggedInParamName = "keepLoggedIn";
 
 	public CookieAuthenticationHandler(NonceProvider nonceProvider, List<AuthenticationHandler> handlers, ResourceFactory principalResourceFactory, List<String> keys) {
 		this.nonceProvider = nonceProvider;
@@ -90,7 +90,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 			}
 		}
 
-		List<AuthenticationHandler> supportingHandlers = new ArrayList<AuthenticationHandler>();
+		List<AuthenticationHandler> supportingHandlers = new ArrayList<>();
 		for (AuthenticationHandler hnd : handlers) {
 			if (hnd.supports(r, request)) {
 				log.info("Found child handler who supports this request {}", hnd);
@@ -164,10 +164,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 					try {
 						r = principalResourceFactory.getResource(host, userUrl);
 						log.trace("found current user: " + r);
-					} catch (NotAuthorizedException ex) {
-						log.error("Couldnt check userUrl in cookie", ex);
-						r = null;
-					} catch (BadRequestException ex) {
+					} catch (NotAuthorizedException | BadRequestException ex) {
 						log.error("Couldnt check userUrl in cookie", ex);
 						r = null;
 					}
@@ -577,9 +574,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 	private String getParamVal(Request request, String name) {
 		if (request.getParams() != null) {
 			String v = request.getParams().get(name);
-			if (v != null) {
-				return v;
-			}
+			return v;
 		}
 		return null;
 	}

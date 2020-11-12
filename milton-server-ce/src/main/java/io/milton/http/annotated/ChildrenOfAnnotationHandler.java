@@ -36,11 +36,11 @@ public class ChildrenOfAnnotationHandler extends AbstractAnnotationHandler {
 		super(outer, ChildrenOf.class, Method.PROPFIND);
 	}
 
-	public Set<AnnoResource> execute(AnnoCollectionResource parent, boolean isChildLookup) throws NotAuthorizedException, BadRequestException, NotFoundException, Exception {
-		Set<AnnoResource> result = new HashSet<AnnoResource>();
+	public Set<AnnoResource> execute(AnnoCollectionResource parent, boolean isChildLookup) throws Exception {
+		Set<AnnoResource> result = new HashSet<>();
 		List<ControllerMethod> candidateMethods = getMethods(parent.source.getClass());
 		// Find any override methods
-		Set<Class> overrideSourceTypes = new HashSet<Class>();
+		Set<Class> overrideSourceTypes = new HashSet<>();
 		for (ControllerMethod cm : candidateMethods) {
 			ChildrenOf anno = (ChildrenOf) cm.anno;
 			if (anno.override()) {
@@ -67,11 +67,7 @@ public class ChildrenOfAnnotationHandler extends AbstractAnnotationHandler {
 					Object o = invoke(cm, parent);
 					annoResourceFactory.createAndAppend(result, o, parent, cm);
 				}
-			} catch (NotAuthorizedException e) {
-				throw e;
-			} catch (BadRequestException e) {
-				throw e;
-			} catch (NotFoundException e) {
+			} catch (NotAuthorizedException | NotFoundException | BadRequestException e) {
 				throw e;
 			} catch (Exception e) {
 				throw new RuntimeException(e);

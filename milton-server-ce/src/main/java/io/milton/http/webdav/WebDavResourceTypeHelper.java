@@ -24,6 +24,7 @@ import io.milton.resource.LockableResource;
 import io.milton.resource.Resource;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import javax.xml.namespace.QName;
 import org.slf4j.Logger;
@@ -40,7 +41,7 @@ public class WebDavResourceTypeHelper implements ResourceTypeHelper {
 	@Override
     public List<QName> getResourceTypes( Resource r ) {
         if( r instanceof CollectionResource ) {
-            ArrayList<QName> list = new ArrayList<QName>();
+            ArrayList<QName> list = new ArrayList<>();
             QName qn = new QName( WebDavProtocol.NS_DAV.getName(), "collection" );
             list.add( qn );
             return list;
@@ -54,9 +55,9 @@ public class WebDavResourceTypeHelper implements ResourceTypeHelper {
 	@Override
     public List<String> getSupportedLevels( Resource r ) {
         if( r instanceof LockableResource ) {
-            return new ArrayList<String> (Arrays.asList( "1", "2" ));
+            return new ArrayList<>(Arrays.asList("1", "2"));
         } else {
-            return new ArrayList<String> (Arrays.asList( "1" ));
+            return new ArrayList<>(Collections.singletonList("1"));
         }
     }
 }

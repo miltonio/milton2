@@ -72,11 +72,7 @@ public class ChildOfAnnotationHandler extends AbstractAnnotationHandler {
 				}
 			}
 		
-		} catch (NotAuthorizedException e) {
-			throw e;
-		} catch(BadRequestException e) {
-			throw e;
-		} catch(NotFoundException e) {
+		} catch (NotAuthorizedException | NotFoundException | BadRequestException e) {
 			throw e;
 		} catch(Exception e ) {
 			throw new RuntimeException(e);

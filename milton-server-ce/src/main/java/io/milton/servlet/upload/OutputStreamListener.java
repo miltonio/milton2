@@ -30,8 +30,8 @@ package io.milton.servlet.upload;
 
 public interface OutputStreamListener
 {
-    public void start();
-    public void bytesRead(int bytesRead);
-    public void error(String message);
-    public void done();
+    void start();
+    void bytesRead(int bytesRead);
+    void error(String message);
+    void done();
 }

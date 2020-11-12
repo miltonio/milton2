@@ -64,13 +64,7 @@ public class DefaultMiltonConfigurator implements MiltonConfigurator {
 			Class builderClass = Class.forName("io.milton.ent.config.HttpManagerBuilderEnt");
 			builder = (HttpManagerBuilder) builderClass.newInstance();
 			log.info("Using enterprise builder: " + builder.getClass());
-		} catch (InstantiationException ex) {
-			log.info("Couldnt instantiate enterprise builder, DAV level 2 and beyond features will not be available");
-			builder = new HttpManagerBuilder();
-		} catch (IllegalAccessException ex) {
-			log.info("Couldnt instantiate enterprise builder, DAV level 2 and beyond features will not be available");
-			builder = new HttpManagerBuilder();
-		} catch (ClassNotFoundException ex) {
+		} catch (InstantiationException | ClassNotFoundException | IllegalAccessException ex) {
 			log.info("Couldnt instantiate enterprise builder, DAV level 2 and beyond features will not be available");
 			builder = new HttpManagerBuilder();
 		}
@@ -80,7 +74,7 @@ public class DefaultMiltonConfigurator implements MiltonConfigurator {
 	public HttpManager configure(Config config) throws ServletException {
 
 		log.info("Listing all config parameters:");
-		Map<String, String> props = new HashMap<String, String>();
+		Map<String, String> props = new HashMap<>();
 		for (String s : config.getInitParameterNames()) {
 			String val = config.getInitParameter(s);
 			log.info(" " + s + " = " + val);
@@ -123,7 +117,7 @@ public class DefaultMiltonConfigurator implements MiltonConfigurator {
 				String filterClass = config.getInitParameter(paramName);
 				Filter f = instantiate(filterClass);
 				if (filters == null) {
-					filters = new ArrayList<Filter>();
+					filters = new ArrayList<>();
 				}
 				filters.add(f);
 			}
@@ -136,9 +130,7 @@ public class DefaultMiltonConfigurator implements MiltonConfigurator {
 			ConvertUtilsBean2 convertUtilsBean = new ConvertUtilsBean2();
 			BeanUtilsBean bub = new BeanUtilsBean(convertUtilsBean);
 			bub.populate(builder, props);
-		} catch (IllegalAccessException e) {
-			throw new ServletException(e);
-		} catch (InvocationTargetException e) {
+		} catch (IllegalAccessException | InvocationTargetException e) {
 			throw new ServletException(e);
 		}
 
@@ -154,7 +146,7 @@ public class DefaultMiltonConfigurator implements MiltonConfigurator {
 
 
 		build();
-		initables = new ArrayList<Initable>();
+		initables = new ArrayList<>();
 
 		checkAddInitable(initables, builder.getAuthenticationHandlers());
 		checkAddInitable(initables, builder.getMainResourceFactory());
@@ -191,7 +183,7 @@ public class DefaultMiltonConfigurator implements MiltonConfigurator {
 		if (authHandlers == null) {
 			return;
 		}
-		List<AuthenticationHandler> list = new ArrayList<AuthenticationHandler>();
+		List<AuthenticationHandler> list = new ArrayList<>();
 		for (String authHandlerClassName : authHandlers) {
 			Object o = instantiate(authHandlerClassName);
 			if (o instanceof AuthenticationHandler) {
@@ -209,7 +201,7 @@ public class DefaultMiltonConfigurator implements MiltonConfigurator {
 		if (authHandlers == null) {
 			return;
 		}
-		List<AuthenticationHandler> list = new ArrayList<AuthenticationHandler>();
+		List<AuthenticationHandler> list = new ArrayList<>();
 		for (String authHandlerClassName : authHandlers) {
 			Object o = instantiate(authHandlerClassName);
 			if (o instanceof AuthenticationHandler) {
@@ -233,8 +225,7 @@ public class DefaultMiltonConfigurator implements MiltonConfigurator {
 				// not from the parent. So if not found on parent lets try local
 				c = Class.forName(className, true, Thread.currentThread().getContextClassLoader());
 			}
-			T rf = (T) c.newInstance();
-			return rf;
+			return (T) c.newInstance();
 		} catch (Throwable ex) {
 			throw new ServletException("Failed to instantiate: " + className, ex);
 		}
@@ -245,7 +236,7 @@ public class DefaultMiltonConfigurator implements MiltonConfigurator {
 			return null;
 		}
 		String[] arr = initParameter.split(",");
-		List<String> list = new ArrayList<String>();
+		List<String> list = new ArrayList<>();
 		for (String s : arr) {
 			s = s.trim();
 			if (s.length() > 0) {

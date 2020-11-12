@@ -22,8 +22,7 @@ public class SsoAuthenticationHandler implements AuthenticationHandler {
 
     @Override
     public boolean supports(Resource r, Request request) {
-        boolean b = request.getAttributes().get("_sso_user") != null;
-        return b;
+        return request.getAttributes().get("_sso_user") != null;
     }
 
     @Override

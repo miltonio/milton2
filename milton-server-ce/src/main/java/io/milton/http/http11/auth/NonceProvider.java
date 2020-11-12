@@ -37,7 +37,7 @@ public interface NonceProvider {
 
    
 
-    public enum NonceValidity {
+    enum NonceValidity {
 
         OK,
         EXPIRED,

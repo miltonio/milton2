@@ -19,7 +19,6 @@
 
 package io.milton.http.values;
 
-import io.milton.common.Utils;
 import io.milton.http.XmlWriter;
 import java.util.Map;
 

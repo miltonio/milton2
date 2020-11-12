@@ -28,10 +28,10 @@ import junit.framework.TestCase;
 public class DigestGeneratorTest extends TestCase {
 
 	DigestGenerator generator;
-	String password = "Circle Of Life";
-	String user = "Mufasa";
-	String realm = "testrealm@host.com";
-	String uri = "/dir/index.html";
+	final String password = "Circle Of Life";
+	final String user = "Mufasa";
+	final String realm = "testrealm@host.com";
+	final String uri = "/dir/index.html";
 
 	@Override
 	protected void setUp() throws Exception {

@@ -18,7 +18,6 @@ package io.milton.servlet;
 
 import io.milton.common.ContentTypeUtils;
 import io.milton.http.Auth;
-import io.milton.http.LockToken;
 import io.milton.http.Range;
 import io.milton.http.Request;
 import io.milton.resource.GetableResource;
@@ -113,7 +112,6 @@ public class UrlResource implements GetableResource {
 
 	@Override
 	public Long getMaxAgeSeconds(Auth auth) {
-		Long ll = 315360000l; // immutable
-		return ll;
+        return 315360000l;
 	}
 }

@@ -336,7 +336,7 @@ _nextRecord() throws IOException {
 			continue;
 		else if (token.type == Tokenizer.EOF)
 			return null;
-		else if (((String) token.value).charAt(0) == '$') {
+		else if (token.value.charAt(0) == '$') {
 			s = token.value;
 
 			if (s.equalsIgnoreCase("$ORIGIN")) {

@@ -56,14 +56,14 @@ public class HandlerHelper {
 
 	public HandlerHelper(AuthenticationService authenticationService) {
 		this.authenticationService = authenticationService;
-		this.storageCheckers = new ArrayList<StorageChecker>();
+		this.storageCheckers = new ArrayList<>();
 		storageCheckers.add(new DefaultStorageChecker());
 		this.authorisationListener = null;
 	}
 
 	public HandlerHelper(AuthenticationService authenticationService, AuthorisationListener authorisationListener) {
 		this.authenticationService = authenticationService;
-		this.storageCheckers = new ArrayList<StorageChecker>();
+		this.storageCheckers = new ArrayList<>();
 		storageCheckers.add(new DefaultStorageChecker());
 		this.authorisationListener = authorisationListener;
 	}
@@ -181,7 +181,7 @@ public class HandlerHelper {
 	}
 
 	public boolean isLocked(Resource inResource) {
-		if (inResource == null || !(inResource instanceof LockableResource)) {
+		if (!(inResource instanceof LockableResource)) {
 			return false;
 		}
 		LockableResource lr = (LockableResource) inResource;
@@ -197,7 +197,7 @@ public class HandlerHelper {
 	 * @return
 	 */
 	public boolean isLockedOut(Request inRequest, Resource inResource) {
-		if (inResource == null || !(inResource instanceof LockableResource)) {
+		if (!(inResource instanceof LockableResource)) {
 			return false;
 		}
 		LockableResource lr = (LockableResource) inResource;

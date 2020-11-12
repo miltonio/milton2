@@ -115,49 +115,49 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	/**
 	 * Replace with a suitable cluster enabled Map for cluster support
 	 */
-	private Map<String, List<LockHolder>> mapOfTempResources = new ConcurrentHashMap<String, List<LockHolder>>();
-	private final Map<Class, AnnotationHandler> mapOfAnnotationHandlers = new HashMap<Class, AnnotationHandler>(); // keyed on annotation class
-	private final Map<Method, AnnotationHandler> mapOfAnnotationHandlersByMethod = new EnumMap<Method, AnnotationHandler>(Method.class); // keyed on http method
-	RootAnnotationHandler rootAnnotationHandler = new RootAnnotationHandler(this);
-	GetAnnotationHandler getAnnotationHandler = new GetAnnotationHandler(this);
-	PostAnnotationHandler postAnnotationHandler = new PostAnnotationHandler(this);
-	ChildrenOfAnnotationHandler childrenOfAnnotationHandler = new ChildrenOfAnnotationHandler(this);
-	ChildOfAnnotationHandler childOfAnnotationHandler = new ChildOfAnnotationHandler(this);
-	DisplayNameAnnotationHandler displayNameAnnotationHandler = new DisplayNameAnnotationHandler(this);
-	DisplayNameSetterAnnotationHandler displayNameSetterAnnotationHandler = new DisplayNameSetterAnnotationHandler(this);
-	MakeCollectionAnnotationHandler makCollectionAnnotationHandler = new MakeCollectionAnnotationHandler(this);
-	MakeCalendarAnnotationHandler makeCalendarAnnotationHandler = new MakeCalendarAnnotationHandler(this);
-	MoveAnnotationHandler moveAnnotationHandler = new MoveAnnotationHandler(this);
-	DeleteAnnotationHandler deleteAnnotationHandler = new DeleteAnnotationHandler(this);
-	CopyAnnotationHandler copyAnnotationHandler = new CopyAnnotationHandler(this);
-	PutChildAnnotationHandler putChildAnnotationHandler = new PutChildAnnotationHandler(this);
-	UsersAnnotationHandler usersAnnotationHandler = new UsersAnnotationHandler(this);
-	AuthenticateAnnotationHandler authenticateAnnotationHandler = new AuthenticateAnnotationHandler(this);
-	AccessControlListAnnotationHandler accessControlListAnnotationHandler = new AccessControlListAnnotationHandler(this);
-	CTagAnnotationHandler cTagAnnotationHandler = new CTagAnnotationHandler(this);
-	ICalDataAnnotationHandler iCalDataAnnotationHandler = new ICalDataAnnotationHandler(this);
-	CalendarsAnnotationHandler calendarsAnnotationHandler = new CalendarsAnnotationHandler(this);
-	AddressBooksAnnotationHandler addressBooksAnnotationHandler = new AddressBooksAnnotationHandler(this);
-	ContactDataAnnotationHandler contactDataAnnotationHandler = new ContactDataAnnotationHandler(this);
-	PrincipalSearchAnnotationHandler principalSearchAnnotationHandler = new PrincipalSearchAnnotationHandler(this);
-	CommonPropertyAnnotationHandler<String> nameAnnotationHandler = new CommonPropertyAnnotationHandler(Name.class, this, "name", "fileName");
-	CommonPropertyAnnotationHandler<String> emailAnnotationHandler = new CommonPropertyAnnotationHandler(Email.class, this, "email");
-	CommonPropertyAnnotationHandler<SupportedCalendarComponentListsSet> supportedComponentSets = new CommonPropertyAnnotationHandler(SupportedComponentSets.class, this, "supportedComponentSets");
-	CommonPropertyAnnotationHandler<String> realmAnnotationHandler = new CommonPropertyAnnotationHandler(Realm.class, this, "realm");
-	CommonPropertyAnnotationHandler<Date> modifiedDateAnnotationHandler = new CommonPropertyAnnotationHandler<Date>(ModifiedDate.class, this, "modifiedDate");
-	CommonPropertyAnnotationHandler<Date> createdDateAnnotationHandler = new CommonPropertyAnnotationHandler<Date>(CreatedDate.class, this);
-	ContentTypeAnnotationHandler contentTypeAnnotationHandler = new ContentTypeAnnotationHandler(this, "contentType");
-	CommonPropertyAnnotationHandler<Long> contentLengthAnnotationHandler = new CommonPropertyAnnotationHandler<Long>(ContentLength.class, this, "contentLength");
-	CommonPropertyAnnotationHandler<Long> maxAgeAnnotationHandler = new CommonPropertyAnnotationHandler<Long>(MaxAge.class, this, "maxAge");
-	CommonPropertyAnnotationHandler<String> uniqueIdAnnotationHandler = new CommonPropertyAnnotationHandler<String>(UniqueId.class, this, "id");
-	CommonPropertyAnnotationHandler<String> calendarColorAnnotationHandler = new CommonPropertyAnnotationHandler<String>(CalendarColor.class, this, "color");
-	CommonPropertyAnnotationHandler<String> calendarOrderAnnotationHandler = new CommonPropertyAnnotationHandler<String>(CalendarOrder.class, this, "order");
-	CommonPropertyAnnotationHandler<String> calendarUserTypeAnnotationHandler = new CommonPropertyAnnotationHandler<String>(CalendarUserType.class, this, "calendarUserType", "cuType");
-	CalendarDateRangeQueryAnnotationHandler calendarDateRangeQueryAnnotationHandler = new CalendarDateRangeQueryAnnotationHandler(this);
-	FreeBusyQueryAnnotationHandler freeBusyQueryAnnotationHandler = new FreeBusyQueryAnnotationHandler(this);
-	CalendarInvitationsAnnotationHandler calendarInvitationsAnnotationHandler = new CalendarInvitationsAnnotationHandler(this);
-	CalendarInvitationsCTagAnnotationHandler calendarInvitationsCTagAnnotationHandler = new CalendarInvitationsCTagAnnotationHandler(this);
-	CommonPropertyAnnotationHandler<Boolean> directoryGatewayAnnotationHandler = new CommonPropertyAnnotationHandler(DirectoryGateway.class, this, "directoryGateway");
+	private Map<String, List<LockHolder>> mapOfTempResources = new ConcurrentHashMap<>();
+	private final Map<Class, AnnotationHandler> mapOfAnnotationHandlers = new HashMap<>(); // keyed on annotation class
+	private final Map<Method, AnnotationHandler> mapOfAnnotationHandlersByMethod = new EnumMap<>(Method.class); // keyed on http method
+	final RootAnnotationHandler rootAnnotationHandler = new RootAnnotationHandler(this);
+	final GetAnnotationHandler getAnnotationHandler = new GetAnnotationHandler(this);
+	final PostAnnotationHandler postAnnotationHandler = new PostAnnotationHandler(this);
+	final ChildrenOfAnnotationHandler childrenOfAnnotationHandler = new ChildrenOfAnnotationHandler(this);
+	final ChildOfAnnotationHandler childOfAnnotationHandler = new ChildOfAnnotationHandler(this);
+	final DisplayNameAnnotationHandler displayNameAnnotationHandler = new DisplayNameAnnotationHandler(this);
+	final DisplayNameSetterAnnotationHandler displayNameSetterAnnotationHandler = new DisplayNameSetterAnnotationHandler(this);
+	final MakeCollectionAnnotationHandler makCollectionAnnotationHandler = new MakeCollectionAnnotationHandler(this);
+	final MakeCalendarAnnotationHandler makeCalendarAnnotationHandler = new MakeCalendarAnnotationHandler(this);
+	final MoveAnnotationHandler moveAnnotationHandler = new MoveAnnotationHandler(this);
+	final DeleteAnnotationHandler deleteAnnotationHandler = new DeleteAnnotationHandler(this);
+	final CopyAnnotationHandler copyAnnotationHandler = new CopyAnnotationHandler(this);
+	final PutChildAnnotationHandler putChildAnnotationHandler = new PutChildAnnotationHandler(this);
+	final UsersAnnotationHandler usersAnnotationHandler = new UsersAnnotationHandler(this);
+	final AuthenticateAnnotationHandler authenticateAnnotationHandler = new AuthenticateAnnotationHandler(this);
+	final AccessControlListAnnotationHandler accessControlListAnnotationHandler = new AccessControlListAnnotationHandler(this);
+	final CTagAnnotationHandler cTagAnnotationHandler = new CTagAnnotationHandler(this);
+	final ICalDataAnnotationHandler iCalDataAnnotationHandler = new ICalDataAnnotationHandler(this);
+	final CalendarsAnnotationHandler calendarsAnnotationHandler = new CalendarsAnnotationHandler(this);
+	final AddressBooksAnnotationHandler addressBooksAnnotationHandler = new AddressBooksAnnotationHandler(this);
+	final ContactDataAnnotationHandler contactDataAnnotationHandler = new ContactDataAnnotationHandler(this);
+	final PrincipalSearchAnnotationHandler principalSearchAnnotationHandler = new PrincipalSearchAnnotationHandler(this);
+	final CommonPropertyAnnotationHandler<String> nameAnnotationHandler = new CommonPropertyAnnotationHandler(Name.class, this, "name", "fileName");
+	final CommonPropertyAnnotationHandler<String> emailAnnotationHandler = new CommonPropertyAnnotationHandler(Email.class, this, "email");
+	final CommonPropertyAnnotationHandler<SupportedCalendarComponentListsSet> supportedComponentSets = new CommonPropertyAnnotationHandler(SupportedComponentSets.class, this, "supportedComponentSets");
+	final CommonPropertyAnnotationHandler<String> realmAnnotationHandler = new CommonPropertyAnnotationHandler(Realm.class, this, "realm");
+	final CommonPropertyAnnotationHandler<Date> modifiedDateAnnotationHandler = new CommonPropertyAnnotationHandler<>(ModifiedDate.class, this, "modifiedDate");
+	final CommonPropertyAnnotationHandler<Date> createdDateAnnotationHandler = new CommonPropertyAnnotationHandler<>(CreatedDate.class, this);
+	final ContentTypeAnnotationHandler contentTypeAnnotationHandler = new ContentTypeAnnotationHandler(this, "contentType");
+	final CommonPropertyAnnotationHandler<Long> contentLengthAnnotationHandler = new CommonPropertyAnnotationHandler<>(ContentLength.class, this, "contentLength");
+	final CommonPropertyAnnotationHandler<Long> maxAgeAnnotationHandler = new CommonPropertyAnnotationHandler<>(MaxAge.class, this, "maxAge");
+	final CommonPropertyAnnotationHandler<String> uniqueIdAnnotationHandler = new CommonPropertyAnnotationHandler<>(UniqueId.class, this, "id");
+	final CommonPropertyAnnotationHandler<String> calendarColorAnnotationHandler = new CommonPropertyAnnotationHandler<>(CalendarColor.class, this, "color");
+	final CommonPropertyAnnotationHandler<String> calendarOrderAnnotationHandler = new CommonPropertyAnnotationHandler<>(CalendarOrder.class, this, "order");
+	final CommonPropertyAnnotationHandler<String> calendarUserTypeAnnotationHandler = new CommonPropertyAnnotationHandler<>(CalendarUserType.class, this, "calendarUserType", "cuType");
+	final CalendarDateRangeQueryAnnotationHandler calendarDateRangeQueryAnnotationHandler = new CalendarDateRangeQueryAnnotationHandler(this);
+	final FreeBusyQueryAnnotationHandler freeBusyQueryAnnotationHandler = new FreeBusyQueryAnnotationHandler(this);
+	final CalendarInvitationsAnnotationHandler calendarInvitationsAnnotationHandler = new CalendarInvitationsAnnotationHandler(this);
+	final CalendarInvitationsCTagAnnotationHandler calendarInvitationsCTagAnnotationHandler = new CalendarInvitationsCTagAnnotationHandler(this);
+	final CommonPropertyAnnotationHandler<Boolean> directoryGatewayAnnotationHandler = new CommonPropertyAnnotationHandler(DirectoryGateway.class, this, "directoryGateway");
 
 	public AnnotationResourceFactory() {
 
@@ -388,10 +388,8 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 			}
 			url = url.replaceFirst(c, "");
 			//log.debug("stripped context: " + url);
-			return url;
-		} else {
-			return url;
 		}
+		return url;
 	}
 
 	public Collection<Object> getControllers() {
@@ -687,7 +685,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		synchronized (this) {
 			List<LockHolder> list = mapOfTempResources.get(parentKey);
 			if (list == null) {
-				list = new CopyOnWriteArrayList<LockHolder>();
+				list = new CopyOnWriteArrayList<>();
 				mapOfTempResources.put(parentKey, list);
 			}
 			list.add(r);
@@ -731,7 +729,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	public void removeLockHolder(AnnoCollectionResource parent, String name) {
 		List<LockHolder> list = getTempResourcesForParent(parent);
 		Iterator<LockHolder> it = list.iterator();
-		List<LockHolder> toRemove = new ArrayList<LockHolder>();
+		List<LockHolder> toRemove = new ArrayList<>();
 		while (it.hasNext()) {
 			LockHolder o = it.next();
 			if (o.getName().equals(name)) {
@@ -834,7 +832,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 		return null;
 	}
 
-	public class AnnotationsDisplayNameFormatter implements DisplayNameFormatter {
+	public static class AnnotationsDisplayNameFormatter implements DisplayNameFormatter {
 
 		private final DisplayNameFormatter wrapped;
 

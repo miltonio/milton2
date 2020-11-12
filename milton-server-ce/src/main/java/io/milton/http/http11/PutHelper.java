@@ -187,8 +187,7 @@ public class PutHelper {
             }
         }
 
-        CollectionResource parent = findNearestParent( manager, host, path.getParent() );
-        return parent;
+        return findNearestParent( manager, host, path.getParent() );
     }
 
     /**

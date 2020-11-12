@@ -79,7 +79,7 @@ public class FsFileResource extends FsResource implements CopyableResource, Dele
         String mime = ContentTypeUtils.findContentTypes(this.file);
         String s = ContentTypeUtils.findAcceptableContentType(mime, preferredList);
         if (log.isTraceEnabled()) {
-            log.trace("getContentType: preferred: {} mime: {} selected: {}", new Object[]{preferredList, mime, s});
+            log.trace("getContentType: preferred: {} mime: {} selected: {}", preferredList, mime, s);
         }
         return s;
     }
@@ -104,9 +104,7 @@ public class FsFileResource extends FsResource implements CopyableResource, Dele
             out.flush();
         } catch (FileNotFoundException e) {
             throw new NotFoundException("Couldnt locate content");
-        } catch (ReadingException e) {
-            throw new IOException(e);
-        } catch (WritingException e) {
+        } catch (ReadingException | WritingException e) {
             throw new IOException(e);
         } finally {
             IOUtils.closeQuietly(in);

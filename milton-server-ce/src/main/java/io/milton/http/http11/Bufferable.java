@@ -25,7 +25,7 @@ package io.milton.http.http11;
  * @author brad
  */
 public interface Bufferable {
-	public DefaultHttp11ResponseHandler.BUFFERING getBuffering() ;
+	DefaultHttp11ResponseHandler.BUFFERING getBuffering() ;
 
-	public void setBuffering(DefaultHttp11ResponseHandler.BUFFERING buffering);
+	void setBuffering(DefaultHttp11ResponseHandler.BUFFERING buffering);
 }

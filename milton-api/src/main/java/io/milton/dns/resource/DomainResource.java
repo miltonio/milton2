@@ -29,13 +29,13 @@ public interface DomainResource {
 	 * 
 	 * @return
 	 */
-	public String getName();
+    String getName();
 	
 	/**
 	 * Return all the resource records associated with this domain
 	 * @return
 	 */
-	public List<DomainResourceRecord> getRecords();
+    List<DomainResourceRecord> getRecords();
 	
 	//public boolean isZone();
 	//public List<RRset> getAllRecords();

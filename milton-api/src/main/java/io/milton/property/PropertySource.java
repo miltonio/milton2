@@ -35,14 +35,14 @@ import javax.xml.namespace.QName;
  */
 public interface PropertySource {
 
-    public enum PropertyAccessibility {
+    enum PropertyAccessibility {
 
         UNKNOWN,
         READ_ONLY,
         WRITABLE
     }
 
-    public static class PropertyMetaData {
+    class PropertyMetaData {
 
         private final PropertyAccessibility accessibility;
         private final Class valueType;
@@ -93,7 +93,7 @@ public interface PropertySource {
 	 * @param name
 	 * @param value
 	 * @param r
-	 * @throws com.bradmcevoy.property.PropertySource.PropertySetException
+	 * @throws io.milton.property.PropertySource.PropertySetException
 	 * @throws NotAuthorizedException 
 	 */
     void setProperty( QName name, Object value, Resource r ) throws PropertySetException, NotAuthorizedException;
@@ -136,11 +136,11 @@ public interface PropertySource {
     /**
      * Exception from setting a field
      */
-    public class PropertySetException extends RuntimeException {
+    class PropertySetException extends RuntimeException {
 
         private static final long serialVersionUID = 1L;
-        private Response.Status status;
-        private String notes;
+        private final Response.Status status;
+        private final String notes;
 
         public PropertySetException( Status status, String notes ) {
             this.status = status;

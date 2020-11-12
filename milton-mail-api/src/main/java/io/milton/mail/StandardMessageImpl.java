@@ -34,14 +34,14 @@ public class StandardMessageImpl implements StandardMessage {
 
     private MailboxAddress from;
     private MailboxAddress replyTo;
-    private List<MailboxAddress> to = new ArrayList<MailboxAddress>();
-    private List<MailboxAddress> cc = new ArrayList<MailboxAddress>();
-    private List<MailboxAddress> bcc = new ArrayList<MailboxAddress>();
+    private List<MailboxAddress> to = new ArrayList<>();
+    private List<MailboxAddress> cc = new ArrayList<>();
+    private List<MailboxAddress> bcc = new ArrayList<>();
     private String subject;
     private String html;
     private String text;
-    private List<Attachment> attachments = new ArrayList<Attachment>();
-    private List<StandardMessage> attachedMessages = new ArrayList<StandardMessage>();
+    private final List<Attachment> attachments = new ArrayList<>();
+    private List<StandardMessage> attachedMessages = new ArrayList<>();
     private int size;
     private String disposition;
     private String encoding;
@@ -204,8 +204,7 @@ public class StandardMessageImpl implements StandardMessage {
      */
     @Override
     public StandardMessageImpl instantiateAttachedMessage() {
-        StandardMessageImpl sub = new StandardMessageImpl();
-        return sub;
+        return new StandardMessageImpl();
     }
 
     @Override

@@ -28,13 +28,12 @@ class TlsDisabledSmtpServer extends SMTPServer {
 
     
     protected CommandHandler createCommandHandler() {
-        ArrayList<Command> availableCommands = new ArrayList<Command>();
+        ArrayList<Command> availableCommands = new ArrayList<>();
         for (CommandRegistry registry : CommandRegistry.values()) {
             if (!(registry.getCommand() instanceof StartTLSCommand)) {
                 availableCommands.add(registry.getCommand());
             }
         }
-        CommandHandler cmd = new CommandHandler(availableCommands);
-        return cmd;
+        return new CommandHandler(availableCommands);
     }
 }

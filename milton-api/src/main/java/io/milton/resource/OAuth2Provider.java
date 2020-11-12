@@ -23,7 +23,7 @@ import java.util.Collection;
  */
 public interface OAuth2Provider {
 
-    public static enum OAuth2AccessTokenType {
+    enum OAuth2AccessTokenType {
         BEARER,
         REQUEST_PARAM,
         BODY

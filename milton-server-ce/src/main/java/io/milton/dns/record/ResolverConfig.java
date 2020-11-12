@@ -82,16 +82,16 @@ ResolverConfig() {
 	if (servers == null || searchlist == null) {
 		String OS = System.getProperty("os.name");
 		String vendor = System.getProperty("java.vendor");
-		if (OS.indexOf("Windows") != -1) {
-			if (OS.indexOf("95") != -1 ||
-			    OS.indexOf("98") != -1 ||
-			    OS.indexOf("ME") != -1)
+		if (OS.contains("Windows")) {
+			if (OS.contains("95") ||
+					OS.contains("98") ||
+					OS.contains("ME"))
 				find95();
 			else
 				findNT();
-		} else if (OS.indexOf("NetWare") != -1) {
+		} else if (OS.contains("NetWare")) {
 			findNetware();
-		} else if (vendor.indexOf("Android") != -1) {
+		} else if (vendor.contains("Android")) {
 			findAndroid();
 		} else {
 			findUnix();
@@ -223,15 +223,11 @@ findSunJVM() {
 		return false;
 
 	if (lserver_tmp.size() > 0) {
-		Iterator it = lserver_tmp.iterator();
-		while (it.hasNext())
-			addServer((String) it.next(), lserver);
+		for (Object o : lserver_tmp) addServer((String) o, lserver);
 	}
 
 	if (lsearch_tmp.size() > 0) {
-		Iterator it = lsearch_tmp.iterator();
-		while (it.hasNext())
-			addSearch((String) it.next(), lsearch);
+		for (Object o : lsearch_tmp) addSearch((String) o, lsearch);
 	}
 	configureFromLists(lserver, lsearch);
 	return true;
@@ -343,12 +339,12 @@ findWin(InputStream in, Locale locale) {
 				continue;
 			}
 			String s = st.nextToken();
-			if (line.indexOf(":") != -1) {
+			if (line.contains(":")) {
 				readingServers = false;
 				readingSearches = false;
 			}
 			
-			if (line.indexOf(host_name) != -1) {
+			if (line.contains(host_name)) {
 				while (st.hasMoreTokens())
 					s = st.nextToken();
 				Name name;
@@ -361,7 +357,7 @@ findWin(InputStream in, Locale locale) {
 				if (name.labels() == 1)
 					continue;
 				addSearch(s, lsearch);
-			} else if (line.indexOf(primary_dns_suffix) != -1) {
+			} else if (line.contains(primary_dns_suffix)) {
 				while (st.hasMoreTokens())
 					s = st.nextToken();
 				if (s.equals(":"))
@@ -369,7 +365,7 @@ findWin(InputStream in, Locale locale) {
 				addSearch(s, lsearch);
 				readingSearches = true;
 			} else if (readingSearches ||
-				   line.indexOf(dns_suffix) != -1)
+					line.contains(dns_suffix))
 			{
 				while (st.hasMoreTokens())
 					s = st.nextToken();
@@ -378,7 +374,7 @@ findWin(InputStream in, Locale locale) {
 				addSearch(s, lsearch);
 				readingSearches = true;
 			} else if (readingServers ||
-				   line.indexOf(dns_servers) != -1)
+					line.contains(dns_servers))
 			{
 				while (st.hasMoreTokens())
 					s = st.nextToken();
@@ -474,7 +470,7 @@ findAndroid() {
 		while ((line = br.readLine()) != null ) { 
 			StringTokenizer t = new StringTokenizer(line, ":");
 			String name = t.nextToken();
-			if (name.indexOf( "net.dns" ) > -1) {
+			if (name.contains("net.dns")) {
 				String v = t.nextToken();
 				v = v.replaceAll("[ \\[\\]]", "");
 				if ((v.matches(re1) || v.matches(re2)) &&

@@ -47,7 +47,7 @@ public class WebDavLevel2Protocol implements HttpExtension, PropertySource {
         propertyMap.add(new SupportedLockPropertyWriter());
         propertyMap.add(new LockDiscoveryPropertyWriter());
 
-        handlers = new HashSet<Handler>();
+        handlers = new HashSet<>();
         handlers.add(new LockHandler(responseHandler, handlerHelper));
         handlers.add(new UnlockHandler(resourceHandlerHelper, responseHandler));        
     }
@@ -68,8 +68,7 @@ public class WebDavLevel2Protocol implements HttpExtension, PropertySource {
 
     @Override
     public Object getProperty(QName name, Resource r) {
-        Object o = propertyMap.getProperty(name, r);
-        return o;
+        return propertyMap.getProperty(name, r);
     }
 
     @Override
@@ -111,7 +110,7 @@ public class WebDavLevel2Protocol implements HttpExtension, PropertySource {
 
 
 //    <D:supportedlock/><D:lockdiscovery/>
-    class LockDiscoveryPropertyWriter implements StandardProperty<LockToken> {
+static class LockDiscoveryPropertyWriter implements StandardProperty<LockToken> {
 
         @Override
         public LockToken getValue(PropFindableResource res) {
@@ -119,8 +118,7 @@ public class WebDavLevel2Protocol implements HttpExtension, PropertySource {
                 return null;
             }
             LockableResource lr = (LockableResource) res;
-            LockToken token = lr.getCurrentLock();
-            return token;
+            return lr.getCurrentLock();
         }
 
         @Override
@@ -134,7 +132,7 @@ public class WebDavLevel2Protocol implements HttpExtension, PropertySource {
         }
     }
 
-    class SupportedLockPropertyWriter implements StandardProperty<SupportedLocks> {
+    static class SupportedLockPropertyWriter implements StandardProperty<SupportedLocks> {
 
         @Override
         public SupportedLocks getValue(PropFindableResource res) {

@@ -80,23 +80,21 @@ public class DigestGenerator {
 
     public String encodePasswordInA1Format( String username, String realm, String password ) {
         String a1 = username + ":" + realm + ":" + password;
-        String a1Md5 = DigestUtils.md5Hex( a1 );
 
-        return a1Md5;
+        return DigestUtils.md5Hex( a1 );
     }
 
     String encodeMethodAndUri( String httpMethod, String uri ) {
         String a2 = httpMethod + ":" + uri;
-        String a2Md5 = DigestUtils.md5Hex( a2 );
-        return a2Md5;
+        return DigestUtils.md5Hex( a2 );
     }
 
     public String md5( String... ss ) {
-        String d = "";
+        StringBuilder d = new StringBuilder();
         for( int i = 0; i < ss.length; i++ ) {
-            if( i > 0 ) d += ":";
-            d = d + ss[i];
+            if( i > 0 ) d.append(":");
+            d.append(ss[i]);
         }
-        return DigestUtils.md5Hex( d );
+        return DigestUtils.md5Hex(d.toString());
     }
 }

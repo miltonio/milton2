@@ -20,8 +20,8 @@ public class MockMailSender implements MailSender{
     private final static Logger log = LoggerFactory.getLogger(MockMailSender.class);
 
     private boolean isStarted;
-    private final List<SentMessage> sentMessages  = new ArrayList<SentMessage>();
-    private final List<MimeMessage> sentMimeMessages = new ArrayList<MimeMessage>();
+    private final List<SentMessage> sentMessages  = new ArrayList<>();
+    private final List<MimeMessage> sentMimeMessages = new ArrayList<>();
 
     public MockMailSender() {
     }
@@ -83,7 +83,7 @@ public class MockMailSender implements MailSender{
 
     
 
-    public class SentMessage {
+    public static class SentMessage {
         public final String fromAddress;
         public final String fromPersonal;
         public final List<String> to;

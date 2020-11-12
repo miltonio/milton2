@@ -50,12 +50,8 @@ public class MakeCollectionAnnotationHandler extends AbstractAnnotationHandler {
 				throw new RuntimeException("Method returned null object or void: " + cm.controller.getClass() + "::" + cm.method.getName() + " - should return newly created object");
 			}
 			return o;
-		} catch(NotAuthorizedException e) {
+		} catch(NotAuthorizedException | ConflictException | BadRequestException e) {
 			throw e;			
-		} catch(BadRequestException e) {
-			throw e;			
-		} catch(ConflictException e) {
-			throw e;				
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

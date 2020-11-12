@@ -3,16 +3,9 @@
  */
 package io.milton.http.webdav2;
 
-import io.milton.http.HttpManager;
 import io.milton.resource.Resource;
 import io.milton.resource.LockingCollectionResource;
 import io.milton.resource.LockableResource;
-import io.milton.http.LockResult;
-import io.milton.http.ResourceHandler;
-import io.milton.http.LockToken;
-import io.milton.http.HandlerHelper;
-import io.milton.http.LockTimeout;
-import io.milton.http.LockInfo;
 import io.milton.common.Path;
 import io.milton.http.Request.Method;
 import io.milton.http.Response.Status;
@@ -162,9 +155,7 @@ public class LockHandler implements ResourceHandler {
             LockInfo lockInfo;
             try {
                 lockInfo = LockInfoSaxHandler.parseLockInfo(request);
-            } catch (SAXException ex) {
-                throw new RuntimeException("Exception reading request body", ex);
-            } catch (IOException ex) {
+            } catch (SAXException | IOException ex) {
                 throw new RuntimeException("Exception reading request body", ex);
             }
 
@@ -194,9 +185,7 @@ public class LockHandler implements ResourceHandler {
         LockInfo lockInfo;
         try {
             lockInfo = LockInfoSaxHandler.parseLockInfo(request);
-        } catch (SAXException ex) {
-            throw new RuntimeException("Exception reading request body", ex);
-        } catch (IOException ex) {
+        } catch (SAXException | IOException ex) {
             throw new RuntimeException("Exception reading request body", ex);
         }
 

@@ -142,7 +142,7 @@ public class SimpleLockManager implements LockManager {
 		if (curLock == null || curLock.token == null) {
 
 			log.warn("attempt to refresh missing token/etaqg: " + tokenId + " on resource: " + resource.getName() + " will create a new lock");
-			LockTimeout timeout = new LockTimeout(60 * 60l);
+			LockTimeout timeout = new LockTimeout(60 * 60L);
 			String lockedByUser = null;
 			Auth auth = HttpManager.request().getAuthorization();
 			if (auth != null) {
@@ -270,8 +270,7 @@ public class SimpleLockManager implements LockManager {
 
 		@Override
 		public String toString() {
-			String s = SimpleLockManager.toString(this);
-			return s;
+            return SimpleLockManager.toString(this);
 		}
 
 	}

@@ -20,7 +20,6 @@ package io.milton.ftp;
 import io.milton.common.BufferingOutputStream;
 import io.milton.common.Path;
 import io.milton.http.Auth;
-import io.milton.resource.ReplaceableResource;
 import io.milton.http.Request.Method;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.ConflictException;
@@ -135,9 +134,7 @@ public class MiltonFtpFile implements FtpFile {
             } else {
                 return false;
             }
-        } catch (NotAuthorizedException ex) {
-            throw new RuntimeException(ex);
-        } catch (BadRequestException ex) {
+        } catch (NotAuthorizedException | BadRequestException ex) {
             throw new RuntimeException(ex);
         }
     }
@@ -268,9 +265,7 @@ public class MiltonFtpFile implements FtpFile {
                     log.error( "can't move", ex );
                     return false;
                 }
-            } catch( NotAuthorizedException ex ) {
-                throw new RuntimeException(ex);
-            } catch (BadRequestException ex) {
+            } catch( NotAuthorizedException | BadRequestException ex ) {
                 throw new RuntimeException(ex);
             }
         } else {
@@ -282,16 +277,14 @@ public class MiltonFtpFile implements FtpFile {
     @Override
     public List<FtpFile> listFiles() {
         log.debug( "listfiles" );
-        List<FtpFile> list = new ArrayList<FtpFile>();
+        List<FtpFile> list = new ArrayList<>();
         if( r instanceof CollectionResource ) {
             try {
                 CollectionResource cr = (CollectionResource) r;
                 for( Resource child : cr.getChildren() ) {
                     list.add( ftpFactory.wrap( path.child( child.getName() ), child ) );
                 }
-            } catch (NotAuthorizedException ex) {
-                throw new RuntimeException(ex);
-            } catch (BadRequestException ex) {
+            } catch (NotAuthorizedException | BadRequestException ex) {
                 throw new RuntimeException(ex);
             }
         }
@@ -305,19 +298,11 @@ public class MiltonFtpFile implements FtpFile {
         if( r instanceof ReplaceableResource ) {
             log.debug( "resource is replaceable" );
             final ReplaceableResource rr = (ReplaceableResource) r;
-            Runnable runnable = new Runnable() {
-
-                @Override
-                public void run() {
-                    try {
-                        rr.replaceContent(out.getInputStream(), out.getSize());
-                    } catch (BadRequestException ex) {
-                        throw new RuntimeException(ex);
-                    } catch (ConflictException ex) {
-                        throw new RuntimeException(ex);
-                    } catch (NotAuthorizedException ex) {
-                        throw new RuntimeException(ex);
-                    }
+            Runnable runnable = () -> {
+                try {
+                    rr.replaceContent(out.getInputStream(), out.getSize());
+                } catch (BadRequestException | NotAuthorizedException | ConflictException ex) {
+                    throw new RuntimeException(ex);
                 }
             };
             out.setOnClose( runnable );
@@ -326,9 +311,7 @@ public class MiltonFtpFile implements FtpFile {
             CollectionResource col;
             try {
                 col = getParent();
-            } catch (NotAuthorizedException ex) {
-                throw new RuntimeException(ex);
-            } catch (BadRequestException ex) {
+            } catch (NotAuthorizedException | BadRequestException ex) {
                 throw new RuntimeException(ex);
             }
             if( col == null ) {
@@ -336,21 +319,11 @@ public class MiltonFtpFile implements FtpFile {
             } else if( col instanceof PutableResource ) {
                 final PutableResource putableResource = (PutableResource) col;
                 final String newName = path.getName();
-                Runnable runnable = new Runnable() {
-
-                    @Override
-                    public void run() {
-                        try {
-                            putableResource.createNew( newName, out.getInputStream(), out.getSize(), null );
-                        } catch( BadRequestException ex ) {
-                            throw new RuntimeException( ex );
-                        } catch( NotAuthorizedException ex ) {
-                            throw new RuntimeException( ex );
-                        } catch( ConflictException ex ) {
-                            throw new RuntimeException( ex );
-                        } catch( IOException ex ) {
-                            throw new RuntimeException( ex );
-                        }
+                Runnable runnable = () -> {
+                    try {
+                        putableResource.createNew( newName, out.getInputStream(), out.getSize(), null );
+                    } catch( BadRequestException | IOException | ConflictException | NotAuthorizedException ex ) {
+                        throw new RuntimeException( ex );
                     }
                 };
                 out.setOnClose( runnable );

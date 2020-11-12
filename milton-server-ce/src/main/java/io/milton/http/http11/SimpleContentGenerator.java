@@ -76,13 +76,10 @@ public class SimpleContentGenerator implements ContentGenerator {
 				template = getUnknown();
 		}
 		final String finalTemplate = applyTemplates(template, request);
-        response.setEntity(new Response.Entity() {
-            @Override
-            public void write(Response response, OutputStream outputStream) throws Exception {
-				outputStream.write(finalTemplate.getBytes("UTF-8"));
-                outputStream.flush();
-            }
-        });
+        response.setEntity((response1, outputStream) -> {
+			outputStream.write(finalTemplate.getBytes("UTF-8"));
+			outputStream.flush();
+		});
 	}
 
 	private String applyTemplates(String template, Request request) {

@@ -60,7 +60,7 @@ public class PathTest extends TestCase {
 
     public void testAbsolute() {
         Path path = Path.path("/a/b/c");
-        assertEquals(false,path.isRelative());
+        assertFalse(path.isRelative());
     }
 
     public void testRelative() {
@@ -68,7 +68,7 @@ public class PathTest extends TestCase {
         assertEquals( 1,p1.getLength());
 
         Path path = Path.path("b/c");
-        assertEquals(true,path.isRelative());
+        assertTrue(path.isRelative());
     }
 
     public void testDoubleSlash() {

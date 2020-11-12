@@ -45,11 +45,11 @@ public class CalendarDateRangeQueryAnnotationHandler extends AbstractAnnotationH
 			if (cm == null) {
 				return null;
 			} else {
-				List<AnnoResource> result = new ArrayList<AnnoResource>();
+				List<AnnoResource> result = new ArrayList<>();
 				Object[] args = annoResourceFactory.buildInvokeArgs(parent, cm.method, start, finish);
 				Object eventSources = invoke(cm, parent, args);
 				annoResourceFactory.createAndAppend(result, eventSources, parent, cm);	 
-				List<ICalResource> list = new ArrayList<ICalResource>();
+				List<ICalResource> list = new ArrayList<>();
 				for( AnnoResource r : result ) {
 					if( r instanceof ICalResource) {
 						list.add((ICalResource) r);
@@ -57,10 +57,8 @@ public class CalendarDateRangeQueryAnnotationHandler extends AbstractAnnotationH
 				}
 				return list;
 			}
-		} catch (NotAuthorizedException e) {
+		} catch (NotAuthorizedException | BadRequestException e) {
 			throw e;
-		} catch (BadRequestException e) {
-			throw e;	
 		} catch (Exception e) {
 			throw new RuntimeException("Exception executing " + getClass() + " - " + source.getClass(), e);
 		}

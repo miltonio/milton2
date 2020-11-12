@@ -39,12 +39,12 @@ public class FsMemoryLockManager implements LockManager {
     /**
      * maps current locks by the file associated with the resource
      */
-    Map<File, CurrentLock> locksByFile;
-    Map<String, CurrentLock> locksByToken;
+    final Map<File, CurrentLock> locksByFile;
+    final Map<String, CurrentLock> locksByToken;
 
     public FsMemoryLockManager() {
-        locksByFile = new HashMap<File, CurrentLock>();
-        locksByToken = new HashMap<String, CurrentLock>();
+        locksByFile = new HashMap<>();
+        locksByToken = new HashMap<>();
     }
 
     @Override
@@ -56,7 +56,7 @@ public class FsMemoryLockManager implements LockManager {
         }
 
         LockToken newToken = new LockToken( UUID.randomUUID().toString(), lockInfo, timeout );
-        CurrentLock newLock = new CurrentLock( resource.getFile(), newToken, lockInfo.lockedByUser );
+        CurrentLock newLock = new CurrentLock(resource.getFile(), newToken, lockInfo.lockedByUser);
         locksByFile.put( resource.getFile(), newLock );
         locksByToken.put( newToken.tokenId, newLock );
         return LockResult.success( newToken );
@@ -125,7 +125,7 @@ public class FsMemoryLockManager implements LockManager {
         return token;
     }
 
-    class CurrentLock {
+    static class CurrentLock {
 
         final File file;
         final LockToken token;

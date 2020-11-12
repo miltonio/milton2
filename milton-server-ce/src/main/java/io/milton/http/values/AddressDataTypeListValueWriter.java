@@ -34,8 +34,7 @@ public class AddressDataTypeListValueWriter implements ValueWriter {
 
 	@Override
 	public boolean supports(String nsUri, String localName, Class c) {
-		boolean b = AddressDataTypeList.class.isAssignableFrom(c);
-		return b;
+		return AddressDataTypeList.class.isAssignableFrom(c);
 	}
 
 	@Override

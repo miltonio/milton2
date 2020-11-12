@@ -18,7 +18,6 @@ package io.milton.http.http11;
 
 import io.milton.http.Request;
 import io.milton.resource.Resource;
-import static junit.framework.Assert.assertFalse;
 import junit.framework.TestCase;
 
 import static org.easymock.classextension.EasyMock.*;

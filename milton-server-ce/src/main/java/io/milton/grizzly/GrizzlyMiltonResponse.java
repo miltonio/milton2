@@ -5,7 +5,7 @@ package io.milton.grizzly;
 import io.milton.http.AbstractResponse;
 import io.milton.http.BeanCookie;
 import io.milton.http.Cookie;
-import io.milton.servlet.ServletResponse;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collections;
@@ -25,7 +25,7 @@ public class GrizzlyMiltonResponse extends AbstractResponse {
     private static final Logger log = LoggerFactory.getLogger(GrizzlyMiltonResponse.class);
     
     private final Response r;
-    private final Map<String, String> headers = new HashMap<String, String>();
+    private final Map<String, String> headers = new HashMap<>();
 
     public GrizzlyMiltonResponse(Response response) {
         this.r = response;
@@ -82,7 +82,7 @@ public class GrizzlyMiltonResponse extends AbstractResponse {
 		try {
 			r.sendError(status.code, message);
         }catch(java.lang.IllegalStateException e) {
-            log.error("Failed to send error, response already commited", e.getMessage());
+            log.error("Failed to send error, response already commited", e);
 		} catch (IOException ex) {
 			log.error("Failed to send error", ex);
 		}

@@ -30,7 +30,7 @@ public interface UserService {
      *
      * @param name
      */
-    public void delete( String name );
+    void delete(String name);
 
     /**
      * * don't need it
@@ -38,14 +38,14 @@ public interface UserService {
      * @param name
      * @return
      */
-    public boolean doesExist( String name );
+    boolean doesExist(String name);
 
     /**
      * * don't need it
      *
      * @return
      */
-    public String[] getAllUserNames();
+    String[] getAllUserNames();
 
     /**
      *
@@ -53,12 +53,12 @@ public interface UserService {
      * @param domain - the domain to login into
      * @return
      */
-    public MiltonUser getUserByName( String name, String domain );
+    MiltonUser getUserByName(String name, String domain);
 
     /**
      * Save the user. You don't need to implement this
      * @param user
      */
-    public void save( MiltonUser user );
+    void save(MiltonUser user);
 
 }

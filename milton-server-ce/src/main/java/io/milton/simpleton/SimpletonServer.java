@@ -51,7 +51,7 @@ public class SimpletonServer implements Container {
 
     public SimpletonServer(HttpManager httpManager, Http11ResponseHandler responseHandler, int capacity, int numThreads) {
 		this.httpManager = httpManager;
-        dispatchStage = new Stage<Task>("dispatchStage", capacity, numThreads, false);
+        dispatchStage = new Stage<>("dispatchStage", capacity, numThreads, false);
         this.responseHandler = responseHandler;
         thMonitor = new Thread(new TaskMonitor());
     }

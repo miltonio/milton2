@@ -29,8 +29,8 @@ package io.milton.common;
  * @author nabil.shams
  */
 public class InternationalizedString{
-        private String language;
-        private String value;
+        private final String language;
+        private final String value;
         public InternationalizedString(String language, String value){
             this.language = language;
             this.value = value;

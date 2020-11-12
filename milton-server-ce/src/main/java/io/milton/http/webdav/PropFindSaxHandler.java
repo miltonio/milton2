@@ -33,8 +33,8 @@ public class PropFindSaxHandler extends DefaultHandler {
 
     private static final Logger log = LoggerFactory.getLogger( PropFindSaxHandler.class );
 
-    private final Stack<QName> elementPath = new Stack<QName>();
-    private final Map<QName, String> attributes = new HashMap<QName, String>();
+    private final Stack<QName> elementPath = new Stack<>();
+    private final Map<QName, String> attributes = new HashMap<>();
     private final StringBuilder sb = new StringBuilder();
     private boolean inProp;
     private boolean allProp;

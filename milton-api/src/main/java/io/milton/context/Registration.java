@@ -29,12 +29,12 @@ import java.util.Stack;
         private List<String> keyIds;
         private List<Class> keyClasses;
         private boolean removing;
-        private WeakReference<Context> refParent;
+        private final WeakReference<Context> refParent;
         
         public Registration(T o,RemovalCallback callBack, Context parent ) {
             item = o;
             this.callBack = callBack;
-            refParent = new WeakReference<Context>(parent);
+            refParent = new WeakReference<>(parent);
         }
         
         private Context context() {
@@ -42,17 +42,17 @@ import java.util.Stack;
         }
         
         public void addDependent(Registration rm) {
-            if( dependents == null ) dependents = new Stack<Registration>();
+            if( dependents == null ) dependents = new Stack<>();
             dependents.add( 0,rm );
         }
         
         public void addKey(String id) {
-            if( keyIds == null ) keyIds = new ArrayList<String>();
+            if( keyIds == null ) keyIds = new ArrayList<>();
             keyIds.add(id);
         }
         
         public void addKey(Class c ) {
-            if( keyClasses == null ) keyClasses = new ArrayList<Class>();
+            if( keyClasses == null ) keyClasses = new ArrayList<>();
             keyClasses.add(c);            
         }
         

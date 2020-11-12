@@ -94,7 +94,7 @@ public class Name implements Comparable, Serializable {
     private static final DecimalFormat byteFormat = new DecimalFormat();
 
     /* Used to efficiently convert bytes to lowercase */
-    private static final byte lowercase[] = new byte[256];
+    private static final byte[] lowercase = new byte[256];
 
     /* Used in wildcard names. */
     private static final Name wild;
@@ -119,7 +119,7 @@ public class Name implements Comparable, Serializable {
     private Name() {
     }
 
-    private final void setoffset(int n, int offset) {
+    private void setoffset(int n, int offset) {
         if (n >= MAXOFFSETS) {
             return;
         }
@@ -128,7 +128,7 @@ public class Name implements Comparable, Serializable {
         offsets |= ((long) offset << shift);
     }
 
-    private final int offset(int n) {
+    private int offset(int n) {
         if (n == 0 && getlabels() == 0) {
             return 0;
         }
@@ -147,16 +147,16 @@ public class Name implements Comparable, Serializable {
         }
     }
 
-    private final void setlabels(int labels) {
+    private void setlabels(int labels) {
         offsets &= ~(0xFF);
         offsets |= labels;
     }
 
-    private final int getlabels() {
+    private int getlabels() {
         return (int) (offsets & 0xFF);
     }
 
-    private static final void copy(Name src, Name dst) {
+    private static void copy(Name src, Name dst) {
         if (src.offset(0) == 0) {
             dst.name = src.name;
             dst.offsets = src.offsets;
@@ -173,7 +173,7 @@ public class Name implements Comparable, Serializable {
         }
     }
 
-    private final void append(byte[] array, int start, int n) throws NameTooLongException {
+    private void append(byte[] array, int start, int n) throws NameTooLongException {
         int length = (name == null ? 0 : (name.length - offset(0)));
         int alength = 0;
         for (int i = 0, pos = start; i < n; i++) {
@@ -211,7 +211,7 @@ public class Name implements Comparable, Serializable {
         return new TextParseException("'" + str + "': " + message);
     }
 
-    private final void appendFromString(String fullName, byte[] array, int start, int n)
+    private void appendFromString(String fullName, byte[] array, int start, int n)
             throws TextParseException {
         try {
             append(array, start, n);
@@ -220,7 +220,7 @@ public class Name implements Comparable, Serializable {
         }
     }
 
-    private final void appendSafe(byte[] array, int start, int n) {
+    private void appendSafe(byte[] array, int start, int n) {
         try {
             append(array, start, n);
         } catch (NameTooLongException e) {
@@ -793,7 +793,7 @@ public class Name implements Comparable, Serializable {
         }
     }
 
-    private final boolean equals(byte[] b, int bpos) {
+    private boolean equals(byte[] b, int bpos) {
         int labels = labels();
         for (int i = 0, pos = offset(0); i < labels; i++) {
             if (name[pos] != b[bpos]) {
@@ -821,7 +821,7 @@ public class Name implements Comparable, Serializable {
         if (arg == this) {
             return true;
         }
-        if (arg == null || !(arg instanceof Name)) {
+        if (!(arg instanceof Name)) {
             return false;
         }
         Name d = (Name) arg;
@@ -874,7 +874,7 @@ public class Name implements Comparable, Serializable {
 
         int labels = labels();
         int alabels = arg.labels();
-        int compares = labels > alabels ? alabels : labels;
+        int compares = Math.min(labels, alabels);
 
         for (int i = 1; i <= compares; i++) {
             int start = offset(labels - i);

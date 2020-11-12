@@ -29,5 +29,5 @@ import io.milton.zsync.MetaFileMaker.MetaData;
  */
 public interface ZSyncResource extends Resource {
 
-    public MetaData getZSyncMetaData();
+    MetaData getZSyncMetaData();
 }

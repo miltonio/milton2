@@ -155,9 +155,9 @@ public class Configuration implements Cloneable, java.io.Serializable {
       this.blockLength = that.blockLength;
       this.doRunLength = that.doRunLength;
       this.strongSumLength = that.strongSumLength;
-      this.checksumSeed = (byte[]) (that.checksumSeed != null
+      this.checksumSeed = that.checksumSeed != null
          ? that.checksumSeed.clone()
-         : null);
+         : null;
       this.chunkSize = that.chunkSize;
    }
 

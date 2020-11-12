@@ -120,13 +120,11 @@ public class PropPatchHandler implements ExistingEntityHandler, PropertyHandler 
             PropFindResponse resp = doPropPatch( request, resource);
 
             manager.getEventManager().fireEvent( new PropPatchEvent( resource, resp ) );
-            List<PropFindResponse> responses = new ArrayList<PropFindResponse>();
+            List<PropFindResponse> responses = new ArrayList<>();
             responses.add( resp );
             responseHandler.respondPropFind( responses, response, request, resource );
         } catch( NotAuthorizedException e ) {
             responseHandler.respondUnauthorised( resource, response, request );
-        } catch( WritingException ex ) {
-            throw new RuntimeException( ex );
         } catch( ReadingException ex ) {
             throw new RuntimeException( ex );
         } catch( IOException ex ) {
@@ -152,12 +150,11 @@ public class PropPatchHandler implements ExistingEntityHandler, PropertyHandler 
         }
         String href = request.getAbsoluteUrl();
 		href = DefaultPropFindPropertyBuilder.fixUrlForWindows(href);
-        PropFindResponse resp = propPatchSetter.setProperties(href, parseResult, resource);
-        return resp;
+        return propPatchSetter.setProperties(href, parseResult, resource);
     }
 
     private Set<QName> getAllFields( PropPatchParseResult parseResult ) {
-        Set<QName> set = new HashSet<QName>();
+        Set<QName> set = new HashSet<>();
         if( parseResult.getFieldsToRemove() != null ) {
             set.addAll( parseResult.getFieldsToRemove() );
         }
@@ -205,11 +202,11 @@ public class PropPatchHandler implements ExistingEntityHandler, PropertyHandler 
         /**
          * fields to remove
          */
-        public final List<Field> removeFields = new ArrayList<Field>();
+        public final List<Field> removeFields = new ArrayList<>();
         /**
          * fields to set to a value
          */
-        public final List<SetField> setFields = new ArrayList<PropPatchHandler.SetField>();
+        public final List<SetField> setFields = new ArrayList<>();
 
         private int size() {
             return removeFields.size() + setFields.size();
@@ -217,7 +214,7 @@ public class PropPatchHandler implements ExistingEntityHandler, PropertyHandler 
 
 		@Override
         public Iterator<Field> iterator() {
-            List<Field> list = new ArrayList<Field>( removeFields );
+            List<Field> list = new ArrayList<>(removeFields);
             list.addAll( setFields );
             return list.iterator();
         }

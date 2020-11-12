@@ -92,8 +92,8 @@ public class JsonPropFindHandler {
         } else {
             // use propfind handler
             String sFields = params.get("fields");
-            Set<QName> fields = new HashSet<QName>();
-            Map<QName, String> aliases = new HashMap<QName, String>();
+            Set<QName> fields = new HashSet<>();
+            Map<QName, String> aliases = new HashMap<>();
             if (sFields != null && sFields.length() > 0) {
                 arr = sFields.split(",");
                 for (String s : arr) {
@@ -129,7 +129,7 @@ public class JsonPropFindHandler {
     }
 	
 	private Set<Property> toProperties(Set<QName> set) {
-		Set<Property> props = new HashSet<Property>();
+		Set<Property> props = new HashSet<>();
 		for(QName n : set ) {
 			props.add(new Property(n, null));
 		}
@@ -183,7 +183,7 @@ public class JsonPropFindHandler {
     }
 
     private List<SimpleResource> toSimpleList(List<? extends Resource> list) {
-        List<SimpleResource> simpleList = new ArrayList<SimpleResource>(list.size());
+        List<SimpleResource> simpleList = new ArrayList<>(list.size());
         for (Resource r : list) {
             simpleList.add(toSimple(r));
         }
@@ -212,14 +212,13 @@ public class JsonPropFindHandler {
             ValueAndType prop;
             QName qnWhere = parseQName(where);
             Iterator<PropFindResponse> it = results.iterator();
-            boolean removeValue = negate;
             while (it.hasNext()) {
                 PropFindResponse result = it.next();
                 boolean isTrue = eval(qnWhere, result);
                 // eg !iscollection for a folder -> false == false = true, so remove
                 // eg !iscollection for a file -> true == false = false, dont remove
                 // eg iscollection for a folder -> false == true = false, so dont remove
-                if (isTrue == removeValue) {
+                if (isTrue == negate) {
                     it.remove();
                 }
             }
@@ -241,9 +240,8 @@ public class JsonPropFindHandler {
         ValueAndType prop = result.getKnownProperties().get(qnWhere);
         if (prop != null) {
             Object val = prop.getValue();
-            if (val != null && val instanceof Boolean) {
-                Boolean b = (Boolean) val;
-                return b;
+            if (val instanceof Boolean) {
+                return (Boolean) val;
             } else {
                 return false;
             }
@@ -253,7 +251,7 @@ public class JsonPropFindHandler {
 
     }
 
-    public class SimpleResource {
+    public static class SimpleResource {
 
         private final Resource r;
 
@@ -270,13 +268,13 @@ public class JsonPropFindHandler {
         }
     }
 
-    class Helper {
+    static class Helper {
 
         private List<Map<String, Object>> toMap(List<PropFindResponse> props, Map<QName, String> aliases) {
-            List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+            List<Map<String, Object>> list = new ArrayList<>();
             Object val;
             for (PropFindResponse prop : props) {
-                Map<String, Object> map = new HashMap<String, Object>();
+                Map<String, Object> map = new HashMap<>();
                 list.add(map);
                 for (Entry<QName, ValueAndType> p : prop.getKnownProperties().entrySet()) {
                     String name = aliases.get(p.getKey());

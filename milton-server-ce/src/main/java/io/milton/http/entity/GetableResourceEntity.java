@@ -31,10 +31,10 @@ import java.util.Map;
 public class GetableResourceEntity implements Response.Entity {
 
 	private static final Logger log = LoggerFactory.getLogger(GetableResourceEntity.class);
-	private GetableResource resource;
-	private Range range;
-	private Map<String, String> params;
-	private String contentType;
+	private final GetableResource resource;
+	private final Range range;
+	private final Map<String, String> params;
+	private final String contentType;
 
 	public GetableResourceEntity(GetableResource resource, Map<String, String> params, String contentType) {
 		this(resource, null, params, contentType);

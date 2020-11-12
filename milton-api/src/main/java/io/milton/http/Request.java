@@ -44,7 +44,7 @@ public interface Request {
         NO_TRANSFORM("no-transform"),
         ONLY_IF_CACHED("only-if-cached"),
         CACHE_EXT("cache-extension");
-        public String code;
+        public final String code;
 
         CacheControlRequest(String code) {
             this.code = code;
@@ -83,7 +83,7 @@ public interface Request {
          */
         X_EXPECTED_ENTITY_LENGTH("X-Expected-Entity-Length"),
         AUTHORIZATION("Authorization");
-        public String code;
+        public final String code;
 
         Header(String code) {
             this.code = code;
@@ -110,14 +110,14 @@ public interface Request {
         ACL("ACL", true),
         CONNECT("CONNECT", true),
         REPORT("REPORT", false);
-        public String code;
-        public boolean isWrite;
+        public final String code;
+        public final boolean isWrite;
 
         Method(String code, boolean isWrite) {
             this.code = code;
             this.isWrite = isWrite;
         }
-    };
+    }
 
     Map<String, String> getHeaders();
 

@@ -81,8 +81,7 @@ public class LockMethod extends HttpEntityEnclosingRequestBase {
             in = entity.getContent();
 //        IOUtils.copy( in, out );
 //        String xml = out.toString();
-            Document document = Host.getJDomDocument(in);
-            return document;
+            return Host.getJDomDocument(in);
         } catch (JDOMException ex) {
             throw new RuntimeException(ex);
         } finally {

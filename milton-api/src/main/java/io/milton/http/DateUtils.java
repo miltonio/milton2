@@ -52,7 +52,7 @@ public class DateUtils {
      */
     public static final String PATTERN_RESPONSE_HEADER = "E, dd MMM yyyy HH:mm:ss z";
     //public static final String PATTERN_RESPONSE_HEADER = "E MMM yyyy H:m:s z";
-    private static final ThreadLocal<DateFormat> thHeaderDateFormat = new ThreadLocal<DateFormat>();
+    private static final ThreadLocal<DateFormat> thHeaderDateFormat = new ThreadLocal<>();
     /**
      * Date format pattern used to parse HTTP date headers in RFC 1123 format.
      */
@@ -83,7 +83,7 @@ public class DateUtils {
      */
     public static final String PATTERN_ASCTIME2 = "EEE MMM yyyy HH:mm:ss zzz";
     private static final Collection<String> DEFAULT_PATTERNS = Arrays.asList(
-            new String[]{PATTERN_ASCTIME, PATTERN_ASCTIME2, PATTERN_RFC1036, PATTERN_RFC1123, PATTERN_RFC1123_NOSECS, PATTERN_WEBDAV});
+            PATTERN_ASCTIME, PATTERN_ASCTIME2, PATTERN_RFC1036, PATTERN_RFC1123, PATTERN_RFC1123_NOSECS, PATTERN_WEBDAV);
     private static final Date DEFAULT_TWO_DIGIT_YEAR_START;
 
     static {
@@ -231,10 +231,8 @@ public class DateUtils {
         }
 
         SimpleDateFormat dateParser = null;
-        Iterator<String> formatIter = dateFormats.iterator();
 
-        while (formatIter.hasNext()) {
-            String format = formatIter.next();
+        for (String format : dateFormats) {
             if (dateParser == null) {
                 dateParser = new SimpleDateFormat(format, Locale.US);
                 dateParser.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -243,8 +241,7 @@ public class DateUtils {
                 dateParser.applyPattern(format);
             }
             try {
-                Date dt = dateParser.parse(dateValue);
-                return dt;
+                return dateParser.parse(dateValue);
             } catch (ParseException pe) {
                 // ignore this exception, we will try the next format
             }
@@ -268,26 +265,23 @@ public class DateUtils {
      */
     public static String formatDate(Calendar cal) {
         // 2005-03-30T05:18:33Z
-        StringBuilder sb = new StringBuilder();
-        sb.append(cal.get(Calendar.YEAR)).append("");
-        sb.append('-');
-        sb.append(pad2(cal.get(Calendar.MONTH) + 1));
-        sb.append('-');
-        sb.append(pad2(cal.get(Calendar.DAY_OF_MONTH)));
+        //        log.debug(date.toString() + " -> " + s);
+        return cal.get(Calendar.YEAR) + "" +
+                '-' +
+                pad2(cal.get(Calendar.MONTH) + 1) +
+                '-' +
+                pad2(cal.get(Calendar.DAY_OF_MONTH)) +
 //        sb.append('-');
 //        sb.append( pad2(cal.get(Calendar.DAY_OF_MONTH)) );
 //        sb.append('-');
 //        sb.append( pad2(cal.get(Calendar.MONTH)) );
-        sb.append('T');
-        sb.append(pad2(cal.get(Calendar.HOUR_OF_DAY)));
-        sb.append(':');
-        sb.append(pad2(cal.get(Calendar.MINUTE)));
-        sb.append(':');
-        sb.append(pad2(cal.get(Calendar.SECOND)));
-        sb.append('Z');
-        String s = sb.toString();
-//        log.debug(date.toString() + " -> " + s);
-        return s;
+                'T' +
+                pad2(cal.get(Calendar.HOUR_OF_DAY)) +
+                ':' +
+                pad2(cal.get(Calendar.MINUTE)) +
+                ':' +
+                pad2(cal.get(Calendar.SECOND)) +
+                'Z';
     }
 
     public static String formatForHeader(Date date) {

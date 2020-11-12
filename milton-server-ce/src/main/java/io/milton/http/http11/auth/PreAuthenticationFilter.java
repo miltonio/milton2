@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
 public class PreAuthenticationFilter implements Filter {
 
     private static final Logger log = LoggerFactory.getLogger( PreAuthenticationFilter.class );
-    private static final ThreadLocal<Request> tlRequest = new ThreadLocal<Request>();
+    private static final ThreadLocal<Request> tlRequest = new ThreadLocal<>();
     private final Http11ResponseHandler responseHandler;
     private final List<AuthenticationHandler> authenticationHandlers;
 
@@ -60,14 +60,14 @@ public class PreAuthenticationFilter implements Filter {
 
     public PreAuthenticationFilter( Http11ResponseHandler responseHandler, SecurityManager securityManager ) {
         this.responseHandler = responseHandler;
-        this.authenticationHandlers = new ArrayList<AuthenticationHandler>();
+        this.authenticationHandlers = new ArrayList<>();
         authenticationHandlers.add( new SecurityManagerBasicAuthHandler( securityManager ) );
         authenticationHandlers.add( new SecurityManagerDigestAuthenticationHandler( securityManager ) );
     }
 
     public PreAuthenticationFilter( Http11ResponseHandler responseHandler, SecurityManager securityManager, NonceProvider np) {
         this.responseHandler = responseHandler;
-        this.authenticationHandlers = new ArrayList<AuthenticationHandler>();
+        this.authenticationHandlers = new ArrayList<>();
         authenticationHandlers.add( new SecurityManagerBasicAuthHandler( securityManager ) );
         authenticationHandlers.add( new SecurityManagerDigestAuthenticationHandler( np, securityManager ) );
     }
@@ -133,7 +133,7 @@ public class PreAuthenticationFilter implements Filter {
      * @return - a list of http challenges
      */
     public List<String> getChallenges( Request request ) {
-        List<String> challenges = new ArrayList<String>();
+        List<String> challenges = new ArrayList<>();
 
         for( AuthenticationHandler h : authenticationHandlers ) {
             h.appendChallenges(null, request, challenges);            

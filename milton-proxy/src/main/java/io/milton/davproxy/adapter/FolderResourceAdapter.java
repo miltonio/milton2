@@ -62,11 +62,7 @@ public class FolderResourceAdapter extends AbstractRemoteAdapter implements IFol
         Folder newRemoteFolder;
         try {
             newRemoteFolder = folder.createFolder(newName);
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        } catch (NotFoundException ex) {
-            throw new RuntimeException(ex);
-        } catch (HttpException ex) {
+        } catch (IOException | HttpException | NotFoundException ex) {
             throw new RuntimeException(ex);
         }
         return new FolderResourceAdapter(newRemoteFolder, getSecurityManager(), newName, contentGenerator, remoteManager);
@@ -86,9 +82,7 @@ public class FolderResourceAdapter extends AbstractRemoteAdapter implements IFol
     public List<? extends Resource> getChildren() throws NotAuthorizedException, BadRequestException {
         try {
             return remoteManager.getChildren(getHostName(), folder);
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        } catch (HttpException ex) {
+        } catch (IOException | HttpException ex) {
             throw new RuntimeException(ex);
         }
     }
@@ -99,9 +93,7 @@ public class FolderResourceAdapter extends AbstractRemoteAdapter implements IFol
         try {
             File newFile = folder.upload(newName, inputStream, length, null);
             return new FileResourceAdapter(newFile, getSecurityManager(), getHostName(), remoteManager);
-        } catch (HttpException ex) {
-            throw new RuntimeException(ex);
-        } catch (NotFoundException ex) {
+        } catch (HttpException | NotFoundException ex) {
             throw new RuntimeException(ex);
         }
     }
@@ -153,9 +145,7 @@ public class FolderResourceAdapter extends AbstractRemoteAdapter implements IFol
             folder.delete();
         } catch (NotFoundException ex) {
             return; // ok, not there to delete
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        } catch (HttpException ex) {
+        } catch (IOException | HttpException ex) {
             throw new RuntimeException(ex);
         }
     }

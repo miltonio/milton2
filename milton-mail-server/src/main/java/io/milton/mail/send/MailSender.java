@@ -17,9 +17,9 @@ import javax.mail.internet.MimeMessage;
  */
 public interface MailSender {
     
-    public void start();
+    void start();
 
-    public void stop();
+    void stop();
     
     /**
      * 
@@ -30,20 +30,20 @@ public interface MailSender {
      * @param subject
      * @param text
      */
-    public void sendMail(String fromAddress, String fromPersonal, List<String> to, String replyTo, String subject, String text);
+    void sendMail(String fromAddress, String fromPersonal, List<String> to, String replyTo, String subject, String text);
 
     /**
      *
      * @return - a mail session object suitable for constructing and sending messages
      */
-    public Session getSession();
+    Session getSession();
     
     /**
      * Sends a message, assuming it was constructed using this MailSender's getSession
      * 
      * @param mm
      */
-    public void sendMail(MimeMessage mm);
+    void sendMail(MimeMessage mm);
 
     /**
      * Sends the given standard message. This will usually be firt converted
@@ -51,7 +51,7 @@ public interface MailSender {
      * 
      * @param mm
      */
-    public void sendMail(StandardMessage sm);
+    void sendMail(StandardMessage sm);
 
     /**
      * create a new message which is a logical clone of the one given
@@ -59,12 +59,12 @@ public interface MailSender {
      * @param mm
      * @return
      */
-    public MimeMessage newMessage(MimeMessage mm);
+    MimeMessage newMessage(MimeMessage mm);
 
     /**
      * create a new mimemessage on the current session
      *
      * @return
      */
-    public MimeMessage newMessage();
+    MimeMessage newMessage();
 }

@@ -24,9 +24,9 @@ import java.util.Map;
  * @author brad
  */
 public class ModelAndView {
-    private Map<String,Object> model;
+    private final Map<String,Object> model;
     
-    private View view;
+    private final View view;
 
     public ModelAndView(Map<String, Object> model, View view) {
         this.model = model;
@@ -35,7 +35,7 @@ public class ModelAndView {
 
     public ModelAndView(String template) {
         view = new View(template);
-        this.model = new HashMap<String, Object>();
+        this.model = new HashMap<>();
     }    
     
     public ModelAndView(Map<String, Object> model, String template) {
@@ -45,7 +45,7 @@ public class ModelAndView {
 
     public ModelAndView(String modelObjectName, Object modelObject, String template) {
         view = new View(template);
-        this.model = new HashMap<String, Object>();
+        this.model = new HashMap<>();
         model.put(modelObjectName, modelObject);
     }
     

@@ -29,7 +29,7 @@ public class ServletRequestTest extends TestCase{
     
     public void test() {
         String qs = "Command=FileUpload&Type=Image&CurrentFolder=%2Fusers%2F";
-        Map<String,String> map = new HashMap<String,String>();
+        Map<String,String> map = new HashMap<>();
         ServletRequest.parseQueryString(map,qs);
         assertEquals(3,map.size());
         check(map,"Command","FileUpload");

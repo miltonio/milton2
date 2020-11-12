@@ -36,34 +36,14 @@ import org.slf4j.LoggerFactory;
  */
 public class Formatter {
 
-    private static Logger log = LoggerFactory.getLogger(Formatter.class);
+    private static final Logger log = LoggerFactory.getLogger(Formatter.class);
     
     public static final String CHECKBOX_SUFFIX = "_checkbox";
     
-    public static ThreadLocal<DateFormat> tlSdfUkShort = new ThreadLocal<DateFormat>() {
-        @Override
-        protected DateFormat initialValue() {
-            return new SimpleDateFormat("dd/MM/yyyy");
-        }
-    };
-    public static ThreadLocal<DateFormat> tlSdfUkLong = new ThreadLocal<DateFormat>() {
-        @Override
-        protected DateFormat initialValue() {
-            return new SimpleDateFormat("dd MMMM yyyy");
-        }
-    };
-    public static final ThreadLocal<DateFormat> sdfDateOnly = new ThreadLocal<DateFormat>() {
-        @Override
-        protected DateFormat initialValue() {
-            return new SimpleDateFormat("dd/MM/yyyy");
-        }
-    };
-    public static final ThreadLocal<DateFormat> sdfDateAndTime = new ThreadLocal<DateFormat>() {
-        @Override
-        protected DateFormat initialValue() {
-            return new SimpleDateFormat("dd/MM/yyyy HH:mm");
-        }
-    };
+    public static ThreadLocal<DateFormat> tlSdfUkShort = ThreadLocal.withInitial(() -> new SimpleDateFormat("dd/MM/yyyy"));
+    public static ThreadLocal<DateFormat> tlSdfUkLong = ThreadLocal.withInitial(() -> new SimpleDateFormat("dd MMMM yyyy"));
+    public static final ThreadLocal<DateFormat> sdfDateOnly = ThreadLocal.withInitial(() -> new SimpleDateFormat("dd/MM/yyyy"));
+    public static final ThreadLocal<DateFormat> sdfDateAndTime = ThreadLocal.withInitial(() -> new SimpleDateFormat("dd/MM/yyyy HH:mm"));
     
 
 
@@ -174,7 +154,7 @@ public class Formatter {
     public Long toLong(Object oVal, boolean withNulls) {
         Long limit;
         if (oVal == null) {
-            limit = withNulls ? null : 0l;
+            limit = withNulls ? null : 0L;
         } else if (oVal instanceof Long) {
             limit = (Long) oVal;
         } else if (oVal instanceof Integer) {
@@ -191,11 +171,11 @@ public class Formatter {
             return bd.longValue();
         } else if (oVal instanceof Boolean) {
             Boolean bb = (Boolean) oVal;
-            return bb ? 1l : 0l;
+            return bb ? 1L : 0L;
         } else if (oVal instanceof String) {
             String s = (String) oVal;
             if (s.length() == 0) {
-                limit = withNulls ? null : 0l;
+                limit = withNulls ? null : 0L;
             } else {
                 if (s.equals("true") || s.equals("false")) {
                     Boolean b = Boolean.parseBoolean(s);
@@ -216,7 +196,7 @@ public class Formatter {
     }
 
     public int getYear(Object o) {
-        if (o == null || !(o instanceof Date)) {
+        if (!(o instanceof Date)) {
             return 0;
         }
         Date dt = (Date) o;
@@ -227,7 +207,7 @@ public class Formatter {
     }
 
     public int getMonth(Object o) {
-        if (o == null || !(o instanceof Date)) {
+        if (!(o instanceof Date)) {
             return 0;
         }
         Date dt = (Date) o;
@@ -238,7 +218,7 @@ public class Formatter {
     }
 
     public int getDayOfMonth(Object o) {
-        if (o == null || !(o instanceof Date)) {
+        if (!(o instanceof Date)) {
             return 0;
         }
         Date dt = (Date) o;
@@ -590,9 +570,8 @@ public class Formatter {
         }
     }
 
-    public String checkbox(String name, Object oChecked) {          
-        String s = checkbox(null, name, oChecked, "true");
-        return s;
+    public String checkbox(String name, Object oChecked) {
+        return checkbox(null, name, oChecked, "true");
     }
 
     public String checkbox(String id, String name, Object oChecked) {

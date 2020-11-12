@@ -38,7 +38,7 @@ public class ProxyLogServer extends ProxyServer {
         pc.go();
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         String targetHost = args[0];
         Integer targetPort = new Integer(args[1]);
         Integer listenPort = new Integer(args[2]);

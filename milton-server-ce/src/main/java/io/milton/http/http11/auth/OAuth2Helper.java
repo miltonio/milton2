@@ -68,10 +68,8 @@ public class OAuth2Helper {
 					.buildQueryMessage();
 
 			return new URL(oAuthRequest.getLocationUri());
-		} catch (OAuthSystemException oAuthSystemException) {
+		} catch (OAuthSystemException | MalformedURLException oAuthSystemException) {
 			throw new RuntimeException(oAuthSystemException);
-		} catch (MalformedURLException malformedURLException) {
-			throw new RuntimeException(malformedURLException);
 		}
 
 	}
@@ -83,8 +81,7 @@ public class OAuth2Helper {
 			sb.append(returnUrl);
 		}
 		byte[] arr = Base64.encode(sb.toString().getBytes());
-		String encoded = new String(arr);
-		return encoded;
+		return new String(arr);
 	}
 
 	public static Pair<String, String> parseState(String encoded) {
@@ -99,7 +96,7 @@ public class OAuth2Helper {
 			p = decoded;
 			r = null;
 		}
-		return new Pair<String, String>(p, r);
+		return new Pair<>(p, r);
 	}
 
 	private final NonceProvider nonceProvider;
@@ -196,12 +193,12 @@ public class OAuth2Helper {
 			String userID = (String) responseMap.get("id");
 			String userName = (String) responseMap.get("username");
 			String message = (String) responseMap.get("message");
-			Integer status = -1;
+			int status = -1;
 			Object errCode = responseMap.get("status");
 			if (errCode instanceof Integer) {
 				status = (Integer) errCode;
 			} else if (errCode instanceof String) {
-				status = Integer.valueOf((String) errCode);
+				status = Integer.parseInt((String) errCode);
 			}
 
 			if (status >= 400) {

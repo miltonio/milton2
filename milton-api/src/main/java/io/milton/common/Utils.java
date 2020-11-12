@@ -29,6 +29,7 @@ import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -110,8 +111,7 @@ public class Utils {
     }
 
     public static String getProtocol(String url) {
-        String protocol = url.substring(0, url.indexOf(":"));
-        return protocol;
+        return url.substring(0, url.indexOf(":"));
     }
 
     public static String escapeXml(String s) {
@@ -160,8 +160,8 @@ public class Utils {
             daten = str.getBytes();
         }
         int length = daten.length;
-        for (int i = 0; i < length; i++) {
-            char c = (char) (daten[i] & 0xFF);
+        for (byte b : daten) {
+            char c = (char) (b & 0xFF);
             switch (c) {
                 case '-':
                 case '_':
@@ -192,7 +192,7 @@ public class Utils {
 
         String ns = normalize(s);
         ByteBuffer bb = null;
-        bb = Charset.forName("UTF-8").encode(CharBuffer.wrap(ns));
+        bb = StandardCharsets.UTF_8.encode(CharBuffer.wrap(ns));
 
         StringBuilder sb = new StringBuilder();
         while (bb.hasRemaining()) {
@@ -294,19 +294,19 @@ public class Utils {
         if (list == null || list.isEmpty()) {
             return null;
         }
-        String res = "";
+        StringBuilder res = new StringBuilder();
         Iterator<String> it = list.iterator();
         while (it.hasNext()) {
-            res += it.next();
+            res.append(it.next());
             if (it.hasNext()) {
                 if (addSpace) {
-                    res += ", ";
+                    res.append(", ");
                 } else {
-                    res += ",";
+                    res.append(",");
                 }
             }
         }
-        return res;
+        return res.toString();
     }
 
     public static String stripServer(String href) {
@@ -352,11 +352,7 @@ public class Utils {
      * @return
      */
     public static long withMax(long n, long max) {
-        if (n > max) {
-            return max;
-        } else {
-            return n;
-        }
+        return Math.min(n, max);
     }
 
     /**
@@ -379,7 +375,6 @@ public class Utils {
         String sDest = destinationHeader;
         URI destUri = URI.create(sDest);
         sDest = destUri.getPath();
-        Dest dest = new Dest(destUri.getHost(), sDest);
-        return dest;
+        return new Dest(destUri.getHost(), sDest);
     }
 }

@@ -41,7 +41,7 @@ public class CalendarInvitationsAnnotationHandler extends AbstractAnnotationHand
 	}
 
 	public List<ICalResource> getCalendarInvitations(AnnoPrincipalResource parent) {
-		List<ICalResource> invitations = new ArrayList<ICalResource>();
+		List<ICalResource> invitations = new ArrayList<>();
 		Object source = parent.getSource();
 		for (ControllerMethod cm : getMethods(source.getClass())) {
 			try {

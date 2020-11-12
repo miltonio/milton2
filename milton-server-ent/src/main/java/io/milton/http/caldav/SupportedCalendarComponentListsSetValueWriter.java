@@ -21,8 +21,7 @@ public class SupportedCalendarComponentListsSetValueWriter implements ValueWrite
     
     @Override
     public boolean supports(String nsUri, String localName, Class c) {
-        boolean b = SupportedCalendarComponentListsSet.class.isAssignableFrom(c);
-        return b;
+        return SupportedCalendarComponentListsSet.class.isAssignableFrom(c);
     }
 
     @Override

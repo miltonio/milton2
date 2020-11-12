@@ -65,7 +65,7 @@ public class ReportUtils {
 	}
 
 	public static List<Element> findAll(Element root, String name, Namespace ns) {
-		List<Element> list = new ArrayList<Element>();
+		List<Element> list = new ArrayList<>();
 		_findAll(root, name, ns, list);
 		return list;
 	}
@@ -115,7 +115,7 @@ public class ReportUtils {
 			throw new RuntimeException("No prop element");
 		}
 
-		Set<QName> set = new HashSet<QName>();
+		Set<QName> set = new HashSet<>();
 		for (Object o : elProp.getChildren()) {
 			if (o instanceof Element) {
 				Element el = (Element) o;

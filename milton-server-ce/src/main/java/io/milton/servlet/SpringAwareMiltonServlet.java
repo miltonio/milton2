@@ -90,8 +90,8 @@ public class SpringAwareMiltonServlet implements Servlet{
     
     private ServletContext servletContext;
     
-    private static final ThreadLocal<HttpServletRequest> originalRequest = new ThreadLocal<HttpServletRequest>();
-    private static final ThreadLocal<HttpServletResponse> originalResponse = new ThreadLocal<HttpServletResponse>();
+    private static final ThreadLocal<HttpServletRequest> originalRequest = new ThreadLocal<>();
+    private static final ThreadLocal<HttpServletResponse> originalResponse = new ThreadLocal<>();
 
     public static HttpServletRequest request() {
         return originalRequest.get();
@@ -104,9 +104,7 @@ public class SpringAwareMiltonServlet implements Servlet{
     public static void forward(String url) {
         try {
             request().getRequestDispatcher(url).forward(originalRequest.get(),originalResponse.get());
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        } catch (ServletException ex) {
+        } catch (IOException | ServletException ex) {
             throw new RuntimeException(ex);
         }
     }

@@ -77,7 +77,7 @@ public class File extends Resource {
     }
 
     @Override
-    public java.io.File downloadTo(java.io.File destFolder, ProgressListener listener) throws FileNotFoundException, IOException, HttpException, CancelledException {
+    public java.io.File downloadTo(java.io.File destFolder, ProgressListener listener) throws IOException, HttpException {
         if (!destFolder.exists()) {
             throw new FileNotFoundException(destFolder.getAbsolutePath());
         }
@@ -122,21 +122,15 @@ public class File extends Resource {
         }
         final long[] bytesArr = new long[1];
         try {
-            host().doGet(encodedUrl(), new StreamReceiver() {
-
-                @Override
-                public void receive(InputStream in) throws IOException {
-                    if (listener != null && listener.isCancelled()) {
-                        throw new RuntimeException("Download cancelled");
-                    }
-                    try {
-                        long bytes = Utils.write(in, out, listener);
-                        bytesArr[0] = bytes;
-                    } catch (CancelledException cancelled) {
-                        throw cancelled;
-                    } catch (IOException ex) {
-                        throw ex;
-                    }
+            host().doGet(encodedUrl(), in -> {
+                if (listener != null && listener.isCancelled()) {
+                    throw new RuntimeException("Download cancelled");
+                }
+                try {
+                    long bytes = Utils.write(in, out, listener);
+                    bytesArr[0] = bytes;
+                } catch (IOException cancelled) {
+                    throw cancelled;
                 }
             }, rangeList, listener);
         } catch (CancelledException e) {

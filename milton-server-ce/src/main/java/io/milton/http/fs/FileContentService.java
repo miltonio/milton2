@@ -30,6 +30,6 @@ import java.io.InputStream;
  * @author brad
  */
 public interface FileContentService {
-	void setFileContent(File file, InputStream in) throws FileNotFoundException, IOException;
+	void setFileContent(File file, InputStream in) throws IOException;
 	InputStream getFileContent(File file) throws FileNotFoundException;
 }

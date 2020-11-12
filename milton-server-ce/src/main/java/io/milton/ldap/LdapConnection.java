@@ -18,7 +18,6 @@
 package io.milton.ldap;
 
 import io.milton.http.webdav.PropFindPropertyBuilder;
-import io.milton.property.PropertySource;
 import com.sun.jndi.ldap.Ber;
 import com.sun.jndi.ldap.BerDecoder;
 import io.milton.common.LogUtils;
@@ -30,7 +29,6 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.security.auth.callback.*;
@@ -203,15 +201,11 @@ public class LdapConnection extends Thread {
 
     protected void handleRequest(final byte[] inbuf, final int offset) throws IOException {
         try {
-            txManager.tx(new Runnable() {
-
-                @Override
-                public void run() {
-                    try {
-                        _handleRequest(inbuf, offset);
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
-                    }
+            txManager.tx(() -> {
+                try {
+                    _handleRequest(inbuf, offset);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
                 }
             });
         } catch (Throwable e) {
@@ -244,26 +238,22 @@ public class LdapConnection extends Thread {
                     String mechanism = reqBer.parseString(responseHandler.isLdapV3());
 
                     byte[] serverResponse;
-                    CallbackHandler callbackHandler = new CallbackHandler() {
-
-                        @Override
-                        public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
-                            // look for username in callbacks
-                            for (Callback callback : callbacks) {
-                                if (callback instanceof NameCallback) {
-                                    userName = ((NameCallback) callback).getDefaultName();
-                                    // get password from session pool
-                                    password = userFactory.getUserPassword(userName);
-                                }
+                    CallbackHandler callbackHandler = callbacks -> {
+                        // look for username in callbacks
+                        for (Callback callback : callbacks) {
+                            if (callback instanceof NameCallback) {
+                                userName = ((NameCallback) callback).getDefaultName();
+                                // get password from session pool
+                                password = userFactory.getUserPassword(userName);
                             }
-                            // handle other callbacks
-                            for (Callback callback : callbacks) {
-                                if (callback instanceof AuthorizeCallback) {
-                                    ((AuthorizeCallback) callback).setAuthorized(true);
-                                } else if (callback instanceof PasswordCallback) {
-                                    if (password != null) {
-                                        ((PasswordCallback) callback).setPassword(password.toCharArray());
-                                    }
+                        }
+                        // handle other callbacks
+                        for (Callback callback : callbacks) {
+                            if (callback instanceof AuthorizeCallback) {
+                                ((AuthorizeCallback) callback).setAuthorized(true);
+                            } else if (callback instanceof PasswordCallback) {
+                                if (password != null) {
+                                    ((PasswordCallback) callback).setPassword(password.toCharArray());
                                 }
                             }
                         }
@@ -283,7 +273,7 @@ public class LdapConnection extends Thread {
 						}
 
                     } else {
-                        Map<String, String> properties = new HashMap<String, String>();
+                        Map<String, String> properties = new HashMap<>();
                         properties.put("javax.security.sasl.qop", "auth,auth-int");
                         saslServer = Sasl.createSaslServer(mechanism, "ldap", client.getLocalAddress().getHostAddress(), properties, callbackHandler);
                         serverResponse = saslServer.evaluateResponse(EMPTY_BYTE_ARRAY);
@@ -295,7 +285,7 @@ public class LdapConnection extends Thread {
                     password = reqBer.parseStringWithTag(Ber.ASN_CONTEXT, responseHandler.isLdapV3(), null);
 
                     if (userName.length() > 0 && password.length() > 0) {
-                        log.debug("LOG_LDAP_REQ_BIND_USER", currentMessageId, userName);
+                        LogUtils.debug(log, "LOG_LDAP_REQ_BIND_USER", currentMessageId, userName);
                         try {
                             user = userFactory.getUser(userName, password);
                             LogUtils.debug(log, "LOG_LDAP_REQ_BIND_SUCCESS");
@@ -312,7 +302,7 @@ public class LdapConnection extends Thread {
                 }
 
             } else if (requestOperation == Ldap.LDAP_REQ_UNBIND) {
-                log.debug("LOG_LDAP_REQ_UNBIND", currentMessageId);
+                LogUtils.debug(log, "LOG_LDAP_REQ_UNBIND", currentMessageId);
                 if (user != null) {
                     user = null;
                 }

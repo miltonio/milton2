@@ -78,9 +78,7 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
             } else {
                 log.warn("Unknown content type: " + o.getClass() + ". expected string or MimeMultipart");
             }
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        } catch (MessagingException ex) {
+        } catch (IOException | MessagingException ex) {
             throw new RuntimeException(ex);
         }
     }
@@ -146,9 +144,7 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
             }
             in = bp.getInputStream();
             sm.addAttachment(name, ct, contentId, bp.getDisposition(), in);
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        } catch (MessagingException ex) {
+        } catch (IOException | MessagingException ex) {
             throw new RuntimeException(ex);
         } finally {
             Utils.close(in);
@@ -157,7 +153,7 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
 
     Map<String, String> findHeaders(MimeMessage mm) {
         try {
-            Map<String, String> map = new HashMap<String, String>();
+            Map<String, String> map = new HashMap<>();
             Enumeration en = mm.getAllHeaders();
             while (en.hasMoreElements()) {
                 Object o = en.nextElement();
@@ -403,7 +399,7 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
         if (sm.getAttachments() == null) {
             return null;
         }
-        List<Attachment> list = new ArrayList<Attachment>();
+        List<Attachment> list = new ArrayList<>();
         for (Attachment att : sm.getAttachments()) {
             if (isInline(att)) {
                 list.add(att);
@@ -464,9 +460,7 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
             }
             log.debug("getStringContent: " + text);
             return text;
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        } catch (MessagingException ex) {
+        } catch (IOException | MessagingException ex) {
             throw new RuntimeException(ex);
         }
     }
@@ -474,7 +468,7 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
     List<MailboxAddress> findRecips(MimeMessage mm, RecipientType type) {
         try {
             Address[] recips = mm.getRecipients(type);
-            List<MailboxAddress> list = new ArrayList<MailboxAddress>();
+            List<MailboxAddress> list = new ArrayList<>();
             if (recips != null) {
                 for (Address a : recips) {
                     MailboxAddress mba = MailboxAddress.parse(a.toString());
@@ -519,7 +513,7 @@ public class StandardMessageFactoryImpl implements StandardMessageFactory {
         return att.getContentId() != null && att.getContentId().length() > 2;
     }
 
-    public class AttachmentReadingDataSource implements DataSource {
+    public static class AttachmentReadingDataSource implements DataSource {
 
         final Attachment att;
 

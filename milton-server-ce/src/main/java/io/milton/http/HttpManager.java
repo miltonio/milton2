@@ -48,9 +48,9 @@ public class HttpManager {
 
 	private static final Logger log = LoggerFactory.getLogger(HttpManager.class);
 
-	private static final ThreadLocal<Request> tlRequest = new ThreadLocal<Request>();
-	private static final ThreadLocal<Response> tlResponse = new ThreadLocal<Response>();
-	private static final Map<Thread, RequestInfo> mapOfRequestsByThread = new ConcurrentHashMap<Thread, RequestInfo>();
+	private static final ThreadLocal<Request> tlRequest = new ThreadLocal<>();
+	private static final ThreadLocal<Response> tlResponse = new ThreadLocal<>();
+	private static final Map<Thread, RequestInfo> mapOfRequestsByThread = new ConcurrentHashMap<>();
 
 	public static RequestInfo getRequestDataForThread(Thread th) {
 		return mapOfRequestsByThread.get(th);
@@ -69,7 +69,7 @@ public class HttpManager {
 	}
 	private final ProtocolHandlers handlers;
 	private final List<Filter> filters;
-	private final List<EventListener> eventListeners = new ArrayList<EventListener>();
+	private final List<EventListener> eventListeners = new ArrayList<>();
 	private final ResourceFactory resourceFactory;
 	private final Http11ResponseHandler responseHandler;
 	private final EventManager eventManager;
@@ -101,7 +101,7 @@ public class HttpManager {
 	}
 
 	private void initHandlers() {
-		this.methodHandlers = new ConcurrentHashMap<String, Handler>();
+		this.methodHandlers = new ConcurrentHashMap<>();
 		for (HttpExtension ext : handlers) {
 			for (Handler h : ext.getHandlers()) {
 				for (String m : h.getMethods()) {
@@ -162,11 +162,7 @@ public class HttpManager {
 					log.info(request.getMethod() + " :: " + host + "//" + request.getAbsolutePath() + " finished " + tm + "ms, Status:" + response.getStatus() + ", Length:" + response.getContentLength());
 				}
 				fireResponseEvent(request, response, tm);
-			} catch (ConflictException ex) {
-				log.warn("exception thrown from event handler after response is complete", ex);
-			} catch (BadRequestException ex) {
-				log.warn("exception thrown from event handler after response is complete", ex);
-			} catch (NotAuthorizedException ex) {
+			} catch (ConflictException | NotAuthorizedException | BadRequestException ex) {
 				log.warn("exception thrown from event handler after response is complete", ex);
 			}
 		} finally {
@@ -228,8 +224,7 @@ public class HttpManager {
 	}
 
 	public List<Filter> getFilters() {
-		ArrayList<Filter> col = new ArrayList<Filter>(filters);
-		return col;
+		return new ArrayList<Filter>(filters);
 	}
 
 	public Collection<Handler> getAllHandlers() {
@@ -272,12 +267,10 @@ public class HttpManager {
 	}
 
 	public List<CustomPostHandler> getCustomPostHandlers() {
-		List<CustomPostHandler> list = new ArrayList<CustomPostHandler>();
+		List<CustomPostHandler> list = new ArrayList<>();
 		for (HttpExtension p : this.handlers) {
 			if (p.getCustomPostHandlers() != null) {
-				for (CustomPostHandler h : p.getCustomPostHandlers()) {
-					list.add(h);
-				}
+				list.addAll(p.getCustomPostHandlers());
 			}
 		}
 		return list;
@@ -297,7 +290,7 @@ public class HttpManager {
 		return entityTransport;
 	}
 
-	public class RequestInfo {
+	public static class RequestInfo {
 
 		private final Method method;
 		private final String url;

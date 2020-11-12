@@ -47,9 +47,9 @@ import org.slf4j.LoggerFactory;
 public class MiltonServlet implements Servlet {
 
     private final Logger log = LoggerFactory.getLogger(MiltonServlet.class);
-    private static final ThreadLocal<HttpServletRequest> originalRequest = new ThreadLocal<HttpServletRequest>();
-    private static final ThreadLocal<HttpServletResponse> originalResponse = new ThreadLocal<HttpServletResponse>();
-    private static final ThreadLocal<ServletConfig> tlServletConfig = new ThreadLocal<ServletConfig>();
+    private static final ThreadLocal<HttpServletRequest> originalRequest = new ThreadLocal<>();
+    private static final ThreadLocal<HttpServletResponse> originalResponse = new ThreadLocal<>();
+    private static final ThreadLocal<ServletConfig> tlServletConfig = new ThreadLocal<>();
 
     public static HttpServletRequest request() {
         return originalRequest.get();
@@ -71,9 +71,7 @@ public class MiltonServlet implements Servlet {
     public static void forward(String url) {
         try {
             request().getRequestDispatcher(url).forward(originalRequest.get(), originalResponse.get());
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        } catch (ServletException ex) {
+        } catch (IOException | ServletException ex) {
             throw new RuntimeException(ex);
         }
     }

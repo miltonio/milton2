@@ -32,5 +32,5 @@ import java.util.List;
  */
 public interface AddressBookQuerySearchableResource
 {
-	public List<? extends Resource> getChildren( PrincipalSearchCriteria crit ) throws NotAuthorizedException, BadRequestException;
+	List<? extends Resource> getChildren(PrincipalSearchCriteria crit) throws NotAuthorizedException, BadRequestException;
 }

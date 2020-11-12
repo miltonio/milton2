@@ -32,7 +32,7 @@ public class MultipleResourceFactory implements ResourceFactory {
 	protected Map<String, ResourceFactory> mapOfFactoriesByHost;
 
 	public MultipleResourceFactory() {
-		factories = new ArrayList<ResourceFactory>();
+		factories = new ArrayList<>();
 	}
 
 	public MultipleResourceFactory(List<ResourceFactory> factories) {

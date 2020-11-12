@@ -89,7 +89,7 @@ public class FtpRequest extends AbstractRequest{
     }
 
     public List<Cookie> getCookies() {
-        return new ArrayList<Cookie>();
+        return new ArrayList<>();
     }
 
     public String getRemoteAddr() {

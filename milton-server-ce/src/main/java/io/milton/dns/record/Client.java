@@ -10,7 +10,7 @@ import java.nio.channels.*;
 
 class Client {
 
-protected long endTime;
+protected final long endTime;
 protected SelectionKey key;
 
 protected

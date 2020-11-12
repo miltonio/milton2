@@ -50,8 +50,7 @@ public class ContentTypeUtils {
     public static String findAcceptableContentTypeForName(String name, String accepts) {
         String canProvide = findContentTypes(name);
         List<String> canProvideList = toList(canProvide);
-        String s = contentTypeService.getPreferedMimeType(accepts, canProvideList);
-        return s;
+        return contentTypeService.getPreferedMimeType(accepts, canProvideList);
     }
 
     private static String buildContentTypeText(List<String> mimeTypes) {
@@ -59,7 +58,7 @@ public class ContentTypeUtils {
     }
 
     public static List<String> toList(String s) {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         if (s != null) {
             for (String x : s.split(",")) {
                 x = x.trim();

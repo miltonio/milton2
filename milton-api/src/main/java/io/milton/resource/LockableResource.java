@@ -45,7 +45,7 @@ public interface LockableResource extends Resource {
      * @return - a result containing the token representing the lock if succesful,
      * otherwise a failure reason code
      */
-    public LockResult lock(LockTimeout timeout, LockInfo lockInfo) throws NotAuthorizedException, PreConditionFailedException, LockedException;
+    LockResult lock(LockTimeout timeout, LockInfo lockInfo) throws NotAuthorizedException, PreConditionFailedException, LockedException;
     
     /**
      * Renew the lock and return new lock info
@@ -55,7 +55,7 @@ public interface LockableResource extends Resource {
      * @throws io.milton.http.exceptions.NotAuthorizedException
      * @throws io.milton.http.exceptions.PreConditionFailedException
      */
-    public LockResult refreshLock(String token) throws NotAuthorizedException, PreConditionFailedException;
+    LockResult refreshLock(String token) throws NotAuthorizedException, PreConditionFailedException;
 
     /**
      * If the resource is currently locked, and the tokenId  matches the current
@@ -63,11 +63,11 @@ public interface LockableResource extends Resource {
      *
      * @param tokenId
      */
-    public void unlock(String tokenId) throws NotAuthorizedException, PreConditionFailedException;
+    void unlock(String tokenId) throws NotAuthorizedException, PreConditionFailedException;
 
     /**
      *
      * @return - the current lock, if the resource is locked, or null
      */
-    public LockToken getCurrentLock();
+    LockToken getCurrentLock();
 }

@@ -107,7 +107,7 @@ public class FckFileManagerResource extends FckCommon implements GetableResource
      *
      * fckconfig.js -> FCKConfig.LinkUploadURL
      */
-    abstract class FckParams {
+    abstract static class FckParams {
 
         CollectionResource target;   // from params
         final Map<String, String> params;
@@ -119,11 +119,11 @@ public class FckFileManagerResource extends FckCommon implements GetableResource
 
     class FckGetParams extends FckParams {
 
-        String command;
-        String resourceType;
+        final String command;
+        final String resourceType;
         String sFolder;
-        String serverPath;
-        String newFolderName;
+        final String serverPath;
+        final String newFolderName;
 		private final XmlWriter writer;
 		private final OutputStream out;
 
@@ -158,17 +158,22 @@ public class FckFileManagerResource extends FckCommon implements GetableResource
                 throw new BadRequestException( "Path not found: " + sFolder );
             }
             try {
-                if( command.equals( "GetFolders" ) ) {
-                    processGetFoldersCommand( false );
-                } else if( command.equals( "GetFoldersAndFiles" ) ) {
-                    processGetFoldersCommand( true );
-                } else if( command.equals( "CreateFolder" ) ) {
-                    processCreateFolderCommand();
-                } else if( command.equals( "FileUpload" ) ) {
-                    processUploadFolderCommand();
-                } else {
-                    log.warn( "Unknown command: " + command );
-                    throw new ConflictException( target );
+                switch (command) {
+                    case "GetFolders":
+                        processGetFoldersCommand(false);
+                        break;
+                    case "GetFoldersAndFiles":
+                        processGetFoldersCommand(true);
+                        break;
+                    case "CreateFolder":
+                        processCreateFolderCommand();
+                        break;
+                    case "FileUpload":
+                        processUploadFolderCommand();
+                        break;
+                    default:
+                        log.warn("Unknown command: " + command);
+                        throw new ConflictException(target);
                 }
             } finally {
                 writer.flush();
@@ -367,11 +372,7 @@ public class FckFileManagerResource extends FckCommon implements GetableResource
                 Resource newRes = putable.createNew( name, f.getInputStream(), size, null );
             } catch( ConflictException ex ) {
                 throw ex;
-            } catch( NotAuthorizedException ex ) {
-                throw new RuntimeException( ex );
-            } catch( BadRequestException ex ) {
-                throw new RuntimeException( ex );
-            } catch( IOException ex ) {
+            } catch( NotAuthorizedException | IOException | BadRequestException ex ) {
                 throw new RuntimeException( ex );
             }
 

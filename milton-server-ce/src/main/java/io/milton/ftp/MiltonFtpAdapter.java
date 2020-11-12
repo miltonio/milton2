@@ -22,7 +22,6 @@ import io.milton.common.Service;
 import io.milton.http.ResourceFactory;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
-import io.milton.resource.CollectionResource;
 import io.milton.resource.Resource;
 import org.apache.ftpserver.FtpServer;
 import org.apache.ftpserver.FtpServerFactory;
@@ -146,9 +145,7 @@ public class MiltonFtpAdapter implements FileSystemFactory, Service {
         Resource root;
         try {
             root = resourceFactory.getResource( mu.domain, "/" );
-        } catch (NotAuthorizedException ex) {
-            throw new FtpException(ex);
-        } catch (BadRequestException ex) {
+        } catch (NotAuthorizedException | BadRequestException ex) {
             throw new FtpException(ex);
         }
         return new MiltonFsView( Path.root, mu.domain, resourceFactory, (MiltonUser) user );

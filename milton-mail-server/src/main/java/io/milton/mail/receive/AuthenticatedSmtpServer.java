@@ -115,22 +115,19 @@ public class AuthenticatedSmtpServer extends SubethaSmtpServer {
             return false;
         }
         final AcceptEvent event = new AcceptEvent(sFrom, sRecipient);
-        Filter terminal = new Filter() {
-
-            public void doEvent(FilterChain chain, Event e) {
-                MailboxAddress from = MailboxAddress.parse(event.getFrom());
-                Mailbox fromMailbox = resourceFactory.getMailbox(from);
-                if (fromMailbox != null && !fromMailbox.isEmailDisabled() ) {
-                    event.setAccept(true);
-                    return ;
-                }
-                MailboxAddress recip = MailboxAddress.parse(event.getRecipient());
-                Mailbox recipMailbox = resourceFactory.getMailbox(recip);
-
-                boolean b = (recipMailbox != null && !recipMailbox.isEmailDisabled());
-                log.debug("accept email from: " + event.getFrom() + " to: " + event.getRecipient() + "?" + b);
-                event.setAccept(b);
+        Filter terminal = (chain, e) -> {
+            MailboxAddress from = MailboxAddress.parse(event.getFrom());
+            Mailbox fromMailbox = resourceFactory.getMailbox(from);
+            if (fromMailbox != null && !fromMailbox.isEmailDisabled() ) {
+                event.setAccept(true);
+                return ;
             }
+            MailboxAddress recip = MailboxAddress.parse(event.getRecipient());
+            Mailbox recipMailbox = resourceFactory.getMailbox(recip);
+
+            boolean b = (recipMailbox != null && !recipMailbox.isEmailDisabled());
+            log.debug("accept email from: " + event.getFrom() + " to: " + event.getRecipient() + "?" + b);
+            event.setAccept(b);
         };
         FilterChain chain = new FilterChain(filters, terminal);
         chain.doEvent(event);
@@ -143,33 +140,30 @@ public class AuthenticatedSmtpServer extends SubethaSmtpServer {
      * 
      */
     @Override
-    public void deliver(String sFrom, String sRecipient, final InputStream data) throws TooMuchDataException, IOException {
+    public void deliver(String sFrom, String sRecipient, final InputStream data) throws IOException {
         log.debug("deliver email from: " + sFrom + " to: " + sRecipient);
         log.debug("email from: " + sFrom + " to: " + sRecipient);
         final DeliverEvent event = new DeliverEvent(sFrom, sRecipient, data);
-        Filter terminal = new Filter() {
+        Filter terminal = (chain, e) -> {
+            MailboxAddress from = MailboxAddress.parse(event.getFrom());
+            MailboxAddress recip = MailboxAddress.parse(event.getRecipient());
 
-            public void doEvent(FilterChain chain, Event e) {
-                MailboxAddress from = MailboxAddress.parse(event.getFrom());
-                MailboxAddress recip = MailboxAddress.parse(event.getRecipient());
+            MimeMessage mm = parseInput(data);
 
-                MimeMessage mm = parseInput(data);
-
-                Mailbox recipMailbox = resourceFactory.getMailbox(recip);
-                if (recipMailbox != null && !recipMailbox.isEmailDisabled()) {
-                    log.debug("recipient is known to us, so store: " + recip);
-                    storeMail(recipMailbox,mm);
+            Mailbox recipMailbox = resourceFactory.getMailbox(recip);
+            if (recipMailbox != null && !recipMailbox.isEmailDisabled()) {
+                log.debug("recipient is known to us, so store: " + recip);
+                storeMail(recipMailbox,mm);
+            } else {
+                Mailbox fromMailbox = resourceFactory.getMailbox(from);
+                if (fromMailbox != null && !fromMailbox.isEmailDisabled() ) {
+                    log.debug("known from address, so will transmit: from: " + from);
+                    mailSender.sendMail(mm);
                 } else {
-                    Mailbox fromMailbox = resourceFactory.getMailbox(from);
-                    if (fromMailbox != null && !fromMailbox.isEmailDisabled() ) {
-                        log.debug("known from address, so will transmit: from: " + from);
-                        mailSender.sendMail(mm);
-                    } else {
-                        throw new NullPointerException("Neither from address nor recipient are known to us. Will not store or send: from: " + event.getFrom() + " to: " + event.getRecipient());
-                    }
+                    throw new NullPointerException("Neither from address nor recipient are known to us. Will not store or send: from: " + event.getFrom() + " to: " + event.getRecipient());
                 }
-
             }
+
         };
         FilterChain chain = new FilterChain(filters, terminal);
         chain.doEvent(event);
@@ -191,15 +185,12 @@ public class AuthenticatedSmtpServer extends SubethaSmtpServer {
 
         public AuthenticationHandler create() {
             PluginAuthenticationHandler ret = new PluginAuthenticationHandler();
-            UsernamePasswordValidator validator = new UsernamePasswordValidator() {
-
-                public void login(String username, String password) throws LoginFailedException {
-                    boolean loginOk = doLogin(username, password);
-                    if (!loginOk) {
-                        throw new LoginFailedException("authentication failed");
-                    }
-
+            UsernamePasswordValidator validator = (username, password) -> {
+                boolean loginOk = doLogin(username, password);
+                if (!loginOk) {
+                    throw new LoginFailedException("authentication failed");
                 }
+
             };
             ret.addPlugin(new PlainAuthenticationHandler(validator));
             ret.addPlugin(new LoginAuthenticationHandler(validator));
@@ -209,12 +200,7 @@ public class AuthenticatedSmtpServer extends SubethaSmtpServer {
 
     public boolean doLogin(String username, String password) {
         final LoginEvent event = new LoginEvent(username, password);
-        Filter terminal = new Filter() {
-
-            public void doEvent(FilterChain chain, Event e) {
-                event.setLoginSuccessful( _doLogin(event.getUsername(), event.getPassword()) );
-            }
-        };
+        Filter terminal = (chain, e) -> event.setLoginSuccessful( _doLogin(event.getUsername(), event.getPassword()) );
         FilterChain chain = new FilterChain(filters, terminal);
         chain.doEvent(event);
         return event.isLoginSuccessful();

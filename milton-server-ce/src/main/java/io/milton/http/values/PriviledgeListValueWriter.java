@@ -40,7 +40,7 @@ public class PriviledgeListValueWriter implements ValueWriter {
 	private static final Map<Priviledge, String> priviledgeToStringMap = PriviledgeListValueWriter.initPriviledgeToStringMap();
 
 	private static Map<Priviledge, String> initPriviledgeToStringMap() {
-		Map<Priviledge, String> map = new EnumMap<Priviledge, String>(Priviledge.class);
+		Map<Priviledge, String> map = new EnumMap<>(Priviledge.class);
 		map.put(Priviledge.READ, "read");
 		map.put(Priviledge.WRITE, "write");
 		map.put(Priviledge.READ_ACL, "read-acl");

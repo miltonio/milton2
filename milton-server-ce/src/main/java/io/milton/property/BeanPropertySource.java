@@ -72,8 +72,7 @@ public class BeanPropertySource implements PropertySource {
 			return pd.getReadMethod().invoke(bean, NOARGS);
 		} catch (Exception ex) {
 			if (ex.getCause() instanceof NotAuthorizedException) {
-				NotAuthorizedException na = (NotAuthorizedException) ex.getCause();
-				throw na;
+				throw (NotAuthorizedException) ex.getCause();
 			} else {
 				throw new RuntimeException(name.toString(), ex);
 			}
@@ -99,11 +98,9 @@ public class BeanPropertySource implements PropertySource {
 			throw e;
 		} catch (Exception ex) {
 			if (ex.getCause() instanceof NotAuthorizedException) {
-				NotAuthorizedException na = (NotAuthorizedException) ex.getCause();
-				throw na;
+				throw (NotAuthorizedException) ex.getCause();
 			} else if (ex.getCause() instanceof PropertySetException) {
-				PropertySetException na = (PropertySetException) ex.getCause();
-				throw na;
+				throw (PropertySetException) ex.getCause();
 			} else {
 				if (value == null) {
 					log.error("Exception setting property: " + name.toString() + " to null");
@@ -128,11 +125,11 @@ public class BeanPropertySource implements PropertySource {
 
 		BeanPropertyResource anno = getAnnotation(bean);
 		if (anno == null) {
-			log.debug(" no annotation: ", bean.getClass().getCanonicalName());
+			log.debug(" no annotation: {}", bean.getClass().getCanonicalName());
 			return PropertyMetaData.UNKNOWN;
 		}
 		if (!name.getNamespaceURI().equals(anno.value())) {
-			log.debug("different namespace", anno.value(), name.getNamespaceURI());
+			log.debug("different namespace {} - {}", anno.value(), name.getNamespaceURI());
 			return PropertyMetaData.UNKNOWN;
 		}
 
@@ -189,7 +186,7 @@ public class BeanPropertySource implements PropertySource {
 			return null;
 		}
 		PropertyDescriptor[] pds = PropertyUtils.getPropertyDescriptors(bean);
-		List<QName> list = new ArrayList<QName>();
+		List<QName> list = new ArrayList<>();
 		for (PropertyDescriptor pd : pds) {
 			if (pd.getReadMethod() != null) {
 				list.add(new QName(anno.value(), pd.getName()));
@@ -206,11 +203,8 @@ public class BeanPropertySource implements PropertySource {
 
 	public PropertyDescriptor getPropertyDescriptor(Object r, String name) {
 		try {
-			PropertyDescriptor pd = PropertyUtils.getPropertyDescriptor(r, name);
-			return pd;
-		} catch (IllegalAccessException ex) {
-			throw new RuntimeException(ex);
-		} catch (InvocationTargetException ex) {
+			return PropertyUtils.getPropertyDescriptor(r, name);
+		} catch (IllegalAccessException | InvocationTargetException ex) {
 			throw new RuntimeException(ex);
 		} catch (NoSuchMethodException ex) {
 			return null;

@@ -36,6 +36,6 @@ public interface RangeLoader {
 	 * @return
 	 * @throws Exception 
 	 */
-	public byte[] get(List<Range> rangeList) throws Exception;
+    byte[] get(List<Range> rangeList) throws Exception;
 	
 }

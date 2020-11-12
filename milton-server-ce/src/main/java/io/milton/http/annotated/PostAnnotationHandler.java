@@ -75,24 +75,16 @@ public class PostAnnotationHandler extends AbstractAnnotationHandler {
 				dataBinder.populate(source, params, tz);
 				resource.setNameOverride(null); // clear the name set by new object handling so created name will be returned
 			}
-		} catch (IllegalAccessException e) {
-			log.warn("Exception running DataBinder:", e);
-			return JsonResult.error(e.getMessage());
-		} catch (InvocationTargetException e) {
+		} catch (IllegalAccessException | InvocationTargetException e) {
 			log.warn("Exception running DataBinder:", e);
 			return JsonResult.error(e.getMessage());
 		}
 
 		try {
 			Object[] args = annoResourceFactory.buildInvokeArgs(resource, cm.method, params);
-			Object result = cm.method.invoke(cm.controller, args);
-			return result;
-		} catch (NotAuthorizedException e) {
+            return cm.method.invoke(cm.controller, args);
+		} catch (NotAuthorizedException | ConflictException | BadRequestException e) {
 			throw e;
-		} catch (BadRequestException e) {
-			throw e;
-		} catch (ConflictException e) {
-			throw e;				
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -100,7 +92,6 @@ public class PostAnnotationHandler extends AbstractAnnotationHandler {
 
 	public ControllerMethod getPostMethod(AnnoResource resource, Request request, Map<String, String> params) {
 		Object source = resource.getSource();
-		ControllerMethod cm = getBestMethod(source.getClass(), null, params, null);
-		return cm;
+        return getBestMethod(source.getClass(), null, params, null);
 	}
 }

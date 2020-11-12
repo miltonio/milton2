@@ -139,17 +139,14 @@ SHA-1: 5944ec77b9b0f2d6b8212d142970117f5801430a
 		URL+=h.url;                   //new url
         HashLengths+=(h.hashLengths[0]+","+h.hashLengths[1]+","+h.hashLengths[2]);
         SHA1+=h.sha1;
-		
-        StringBuilder sb = new StringBuilder("");
-        sb.append(Version).append("\n");
-        sb.append(MTime).append("\n");
-        sb.append(Blocksize).append("\n");
-        sb.append(Length).append("\n");
-        sb.append(HashLengths).append("\n");
-        sb.append(URL).append("\n");
-        sb.append(SHA1).append("\n\n");
-        String header = sb.toString();
-        return header;
+
+        return "" + Version + "\n" +
+                MTime + "\n" +
+                Blocksize + "\n" +
+                Length + "\n" +
+                HashLengths + "\n" +
+                URL + "\n" +
+                SHA1 + "\n\n";
 		
 	}
 

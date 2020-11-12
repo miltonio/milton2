@@ -52,7 +52,7 @@ public class PartialGetHelper {
 		if (rangeHeader.startsWith("bytes=")) {
 			rangeHeader = rangeHeader.substring(6);
 			String[] arr = rangeHeader.split(",");
-			List<Range> list = new ArrayList<Range>();
+			List<Range> list = new ArrayList<>();
 			for (String s : arr) {
 				Range r = Range.parse(s);
 				list.add(r);

@@ -30,8 +30,6 @@
 package io.milton.dns.record;
 
 import io.milton.dns.Name;
-import io.milton.dns.record.DNSSEC.Algorithm;
-import io.milton.dns.record.DNSSEC.DNSSECException;
 
 import java.io.*;
 import java.security.PublicKey;

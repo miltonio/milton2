@@ -115,12 +115,10 @@ public class LoginResponseHandler extends AbstractWrappingResponseHandler {
 		Resource rLogin;
 		try {
 			rLogin = resourceFactory.getResource(request.getHostHeader(), loginPage);
-		} catch (NotAuthorizedException e) {
+		} catch (NotAuthorizedException | BadRequestException e) {
 			throw new RuntimeException(e);
-		} catch (BadRequestException ex) {
-			throw new RuntimeException(ex);
 		}
-		if (rLogin == null || !(rLogin instanceof GetableResource)) {
+		if (!(rLogin instanceof GetableResource)) {
 			log.info("Couldnt find login resource: " + request.getHostHeader() + loginPage + " with resource factory: " + resourceFactory.getClass());
 			wrapped.respondUnauthorised(resource, response, request);
 		} else {
@@ -141,19 +139,7 @@ public class LoginResponseHandler extends AbstractWrappingResponseHandler {
 				response.getOutputStream().flush();
 				//wrapped.respondContent(gr, response, request, null);
 
-			} catch (NotAuthorizedException ex) {
-				response.setStatus(Response.Status.SC_INTERNAL_SERVER_ERROR);
-				response.close();
-				log.error("Exception generating login page", ex);
-			} catch (BadRequestException ex) {
-				response.setStatus(Response.Status.SC_INTERNAL_SERVER_ERROR);
-				response.close();
-				log.error("Exception generating login page", ex);
-			} catch (NotFoundException ex) {
-				response.setStatus(Response.Status.SC_INTERNAL_SERVER_ERROR);
-				response.close();
-				log.error("Exception generating login page", ex);
-			} catch(IOException ex) {
+			} catch (NotAuthorizedException | IOException | NotFoundException | BadRequestException ex) {
 				response.setStatus(Response.Status.SC_INTERNAL_SERVER_ERROR);
 				response.close();
 				log.error("Exception generating login page", ex);

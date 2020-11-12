@@ -41,7 +41,7 @@ public class HttpResult {
 
     public Map<String, String> getHeaders() {
         if( headers == null ) {
-            headers = new LinkedHashMap<String, String>();
+            headers = new LinkedHashMap<>();
             for( Pair<String,String> p : allHeaders) {
                 headers.put(p.getObject1(), p.getObject2());
             }
@@ -54,7 +54,7 @@ public class HttpResult {
     }
 
     public List<String> getHeaderValues(String name) {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         for( Pair<String, String> h : allHeaders) {
             if( h.getObject1().equals(name)) {
                 list.add(h.getObject2());

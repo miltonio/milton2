@@ -36,7 +36,7 @@ public class PropFindResponse {
     private final String name;
     private final String href;
     private final boolean collection;
-    private Map<QName, Object> properties = new HashMap<QName, Object>();
+    private final Map<QName, Object> properties = new HashMap<>();
 
     public PropFindResponse(Date serverDate, Element elResponse) {
         href = RespUtils.asString(elResponse, "href").trim();
@@ -189,7 +189,7 @@ public class PropFindResponse {
                         if (st != null && st.contains("200")) {
                             Element elProps = propStat.getChild("prop", RespUtils.NS_DAV);
                             if (elProps != null) {
-                                List<Element> list = new ArrayList<Element>();
+                                List<Element> list = new ArrayList<>();
                                 for (Object oProp : elProps.getChildren()) {
                                     if (oProp instanceof Element) {
                                         Element elProp = (Element) oProp;

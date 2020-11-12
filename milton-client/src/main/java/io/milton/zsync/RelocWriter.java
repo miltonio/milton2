@@ -49,7 +49,7 @@ public class RelocWriter {
 		this.first = true;
 	}
 
-	public void add(RelocateRange reloc) throws UnsupportedEncodingException, IOException {
+	public void add(RelocateRange reloc) throws IOException {
 		String relocString = reloc.getRelocation();
 		if (!first) {
 			relocString = ", " + relocString;

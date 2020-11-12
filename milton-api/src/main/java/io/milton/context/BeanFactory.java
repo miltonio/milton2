@@ -75,19 +75,19 @@ public class BeanFactory implements Factory {
     }
 
     public String getKeyClasses() {
-        String s = "";
-        for( Class c : keyClasses ) {
-            s = s + c.getCanonicalName() + ",";
+        StringBuilder s = new StringBuilder();
+        for( Class<?> c : keyClasses ) {
+            s.append(c.getCanonicalName()).append(",");
         }
-        return s;
+        return s.toString();
     }
 
     public void setKeyClasses(String keyClasses) {
         String[] arr = keyClasses.split(",");
-        List<Class> list = new ArrayList<Class>();
+        List<Class<?>> list = new ArrayList<>();
         for( String s : arr) {
             try {
-                Class i = Class.forName(s);
+                Class<?> i = Class.forName(s);
                 list.add(i);
             } catch (ClassNotFoundException ex) {
                 throw new RuntimeException(s, ex);
@@ -112,9 +112,7 @@ public class BeanFactory implements Factory {
     private Object instantiateBean() {
         try {
             return beanClass.newInstance();
-        } catch (InstantiationException ex) {
-            throw new RuntimeException(ex);
-        } catch (IllegalAccessException ex) {
+        } catch (InstantiationException | IllegalAccessException ex) {
             throw new RuntimeException(ex);
         }
     }

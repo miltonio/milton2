@@ -41,14 +41,14 @@ public class DavProxyConfigurator implements MiltonConfigurator{
         String realm = config.getInitParameter("realm");
         String userName = config.getInitParameter("userName");
         String password = config.getInitParameter("password");
-        Map<String,String> userNamesAndPasswords = new HashMap<String, String>();
+        Map<String,String> userNamesAndPasswords = new HashMap<>();
         userNamesAndPasswords.put(userName, password);
         FolderHtmlContentGenerator cg = new FolderHtmlContentGenerator();
         SimpleSecurityManager securityManager = new SimpleSecurityManager(realm, userNamesAndPasswords);
         securityManager.setDigestGenerator(new DigestGenerator());
         RemoteManager remoteManager = new RemoteManager(securityManager, cg);        
         
-        Map<String, HostBuilder> davRoots = new HashMap<String, HostBuilder>();
+        Map<String, HostBuilder> davRoots = new HashMap<>();
         for( String s : config.getInitParameterNames()) {
             if( s.startsWith("server.")) {
                 String serverConnect = config.getInitParameter(s);

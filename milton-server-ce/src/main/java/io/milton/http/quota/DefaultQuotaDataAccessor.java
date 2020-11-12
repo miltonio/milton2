@@ -34,8 +34,7 @@ public class DefaultQuotaDataAccessor implements QuotaDataAccessor {
     public Long getQuotaAvailable( Resource res ) {
         if( res instanceof QuotaResource ) {
             QuotaResource quotaRes = (QuotaResource) res;
-            Long l = quotaRes.getQuotaAvailable();
-            return l;
+            return quotaRes.getQuotaAvailable();
         } else {
             return null;
         }
@@ -45,8 +44,7 @@ public class DefaultQuotaDataAccessor implements QuotaDataAccessor {
     public Long getQuotaUsed( Resource res ) {
         if( res instanceof QuotaResource ) {
             QuotaResource quotaRes = (QuotaResource) res;
-            Long l = quotaRes.getQuotaUsed();
-            return l;
+            return quotaRes.getQuotaUsed();
         } else {
             return null;
         }

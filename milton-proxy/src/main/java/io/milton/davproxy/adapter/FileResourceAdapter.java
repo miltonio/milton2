@@ -66,9 +66,7 @@ public class FileResourceAdapter extends AbstractRemoteAdapter implements FileRe
     public void sendContent(OutputStream out, Range range, Map<String, String> params, String contentType) throws IOException, NotAuthorizedException, BadRequestException {
         try {
             file.download(out, null);
-        } catch (HttpException ex) {
-            throw new RuntimeException(ex);
-        } catch (CancelledException ex) {
+        } catch (HttpException | CancelledException ex) {
             throw new RuntimeException(ex);
         }
     }
@@ -109,11 +107,7 @@ public class FileResourceAdapter extends AbstractRemoteAdapter implements FileRe
     public void replaceContent(InputStream in, Long length) throws BadRequestException, ConflictException, NotAuthorizedException {
         try {
             file.setContent(in, length, null);
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        } catch (HttpException ex) {
-            throw new RuntimeException(ex);
-        } catch (NotFoundException ex) {
+        } catch (IOException | NotFoundException | HttpException ex) {
             throw new RuntimeException(ex);
         }
     }
@@ -124,9 +118,7 @@ public class FileResourceAdapter extends AbstractRemoteAdapter implements FileRe
             file.delete();
         } catch (NotFoundException ex) {
             // ok, not there to delete
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        } catch (HttpException ex) {
+        } catch (IOException | HttpException ex) {
             throw new RuntimeException(ex);
         }
     }

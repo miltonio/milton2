@@ -82,7 +82,8 @@ public class Auth {
         NTLM,
         OAUTH,
         BEARER
-    };
+    }
+
     private Scheme scheme;
     private String user;
     private String password;

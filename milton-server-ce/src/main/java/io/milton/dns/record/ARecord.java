@@ -51,14 +51,14 @@ public class ARecord extends Record {
         return new ARecord();
     }
 
-    private static final int fromArray(byte[] array) {
+    private static int fromArray(byte[] array) {
         return (((array[0] & 0xFF) << 24)
                 | ((array[1] & 0xFF) << 16)
                 | ((array[2] & 0xFF) << 8)
                 | (array[3] & 0xFF));
     }
 
-    private static final byte[] toArray(int addr) {
+    private static byte[] toArray(int addr) {
         byte[] bytes = new byte[4];
         bytes[0] = (byte) ((addr >>> 24) & 0xFF);
         bytes[1] = (byte) ((addr >>> 16) & 0xFF);

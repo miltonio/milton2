@@ -21,7 +21,6 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,9 +47,9 @@ public class Stage<V extends Runnable> implements Runnable, Closeable{
         this.capacity = capacity;
         this.blockOnAdd = blockOnAdd;
         this.maxThreads = maxThreads;
-        queue = new LinkedBlockingQueue<V>(capacity);
+        queue = new LinkedBlockingQueue<>(capacity);
 //        admissionControl = new LinkedBlockingQueue<V>(capacity);
-        threads = new ArrayList<Thread>();
+        threads = new ArrayList<>();
         for( int i=0; i<maxThreads; i++) {
             addThread();
         }

@@ -110,7 +110,7 @@ public class MiltonListener extends AbstractListener{
                     filter.setSubnetBlacklist(getBlockedSubnets());
                 } else {
                     // an empty list clears the blocked addresses
-                    filter.setSubnetBlacklist(new ArrayList<Subnet>());
+                    filter.setSubnetBlacklist(new ArrayList<>());
                 }
 
             }
@@ -139,7 +139,7 @@ public class MiltonListener extends AbstractListener{
             acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE,
                     getIdleTimeout());
             // Decrease the default receiver buffer size
-            ((SocketSessionConfig) acceptor.getSessionConfig())
+            acceptor.getSessionConfig()
                     .setReceiveBufferSize(512);
 
             MdcInjectionFilter mdcFilter = new MdcInjectionFilter();
@@ -285,7 +285,7 @@ public class MiltonListener extends AbstractListener{
     public synchronized Set<FtpIoSession> getActiveSessions() {
         Map<Long, IoSession> sessions = acceptor.getManagedSessions();
 
-        Set<FtpIoSession> ftpSessions = new HashSet<FtpIoSession>();
+        Set<FtpIoSession> ftpSessions = new HashSet<>();
         for (IoSession session : sessions.values()) {
             ftpSessions.add(new FtpIoSession(session, context));
         }

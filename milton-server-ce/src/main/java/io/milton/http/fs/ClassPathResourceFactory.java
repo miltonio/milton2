@@ -18,10 +18,8 @@
  */
 package io.milton.http.fs;
 
-import io.milton.http.ResourceFactory;
 import io.milton.resource.DigestResource;
 import io.milton.resource.PostableResource;
-import io.milton.http.Range;
 import io.milton.resource.GetableResource;
 import io.milton.common.ContentTypeUtils;
 import io.milton.common.Path;
@@ -52,7 +50,7 @@ public class ClassPathResourceFactory implements ResourceFactory {
 
 	private static final Logger log = LoggerFactory.getLogger(ClassPathResourceFactory.class);
 	private String basePath;
-	private Long maxAgeSeconds = 60 * 60 * 24 * 7l;
+	private Long maxAgeSeconds = 60 * 60 * 24 * 7L;
 	private io.milton.http.SecurityManager securityManager;
 	private Date modifiedDate = new Date();
 
@@ -167,7 +165,7 @@ public class ClassPathResourceFactory implements ResourceFactory {
 			String mime = ContentTypeUtils.findContentTypes(path.getName());
 			String s = ContentTypeUtils.findAcceptableContentType(mime, preferredList);
 			if (log.isTraceEnabled()) {
-				log.trace("getContentType: preferred: {} mime: {} selected: {}", new Object[]{preferredList, mime, s});
+				log.trace("getContentType: preferred: {} mime: {} selected: {}", preferredList, mime, s);
 			}
 			return s;
 		}

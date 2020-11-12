@@ -187,7 +187,7 @@ public class SetResponse {
 			return null;
 		}
 		List l = (List) data;
-		return (RRset[]) l.toArray(new RRset[l.size()]);
+		return (RRset[]) l.toArray(new RRset[0]);
 	}
 
 	/**

@@ -127,149 +127,132 @@ update(InputStream in) throws IOException {
 				continue;
 			String operation = token.value;
 
-			if (operation.equals("server")) {
-				server = st.getString();
-				res = new SimpleResolver(server);
-				token = st.get();
-				if (token.isString()) {
-					String portstr = token.value;
-					res.setPort(Short.parseShort(portstr));
-				}
-			}
-
-			else if (operation.equals("key")) {
-				String keyname = st.getString();
-				String keydata = st.getString();
-				if (res == null)
+			switch (operation) {
+				case "server":
+					server = st.getString();
 					res = new SimpleResolver(server);
-				res.setTSIGKey(new TSIG(keyname, keydata));
+					token = st.get();
+					if (token.isString()) {
+						String portstr = token.value;
+						res.setPort(Short.parseShort(portstr));
+					}
+					break;
+				case "key":
+					String keyname = st.getString();
+					String keydata = st.getString();
+					if (res == null)
+						res = new SimpleResolver(server);
+					res.setTSIGKey(new TSIG(keyname, keydata));
+					break;
+				case "edns":
+					if (res == null)
+						res = new SimpleResolver(server);
+					res.setEDNS(st.getUInt16());
+					break;
+				case "port":
+					if (res == null)
+						res = new SimpleResolver(server);
+					res.setPort(st.getUInt16());
+					break;
+				case "tcp":
+					if (res == null)
+						res = new SimpleResolver(server);
+					res.setTCP(true);
+					break;
+				case "class":
+					String classStr = st.getString();
+					int newClass = DClass.value(classStr);
+					if (newClass > 0)
+						defaultClass = newClass;
+					else
+						print("Invalid class " + classStr);
+					break;
+				case "ttl":
+					defaultTTL = st.getTTL();
+					break;
+				case "origin":
+				case "zone":
+					zone = st.getName(Name.root);
+					break;
+				case "require":
+					doRequire(st);
+					break;
+				case "prohibit":
+					doProhibit(st);
+					break;
+				case "add":
+					doAdd(st);
+					break;
+				case "delete":
+					doDelete(st);
+					break;
+				case "glue":
+					doGlue(st);
+					break;
+				case "help":
+				case "?":
+					token = st.get();
+					if (token.isString())
+						help(token.value);
+					else
+						help(null);
+					break;
+				case "echo":
+					print(line == null ? "" : line.substring(4).trim());
+					break;
+				case "send":
+					sendUpdate();
+					query = newMessage();
+					break;
+				case "show":
+					print(query);
+					break;
+				case "clear":
+					query = newMessage();
+					break;
+				case "query":
+					doQuery(st);
+					break;
+				case "quit":
+				case "q":
+					if (log != null)
+						log.close();
+					for (Object input : inputs) {
+						BufferedReader tbr;
+						tbr = (BufferedReader) input;
+						tbr.close();
+					}
+					System.exit(0);
+				case "file":
+					doFile(st, inputs, istreams);
+					break;
+				case "log":
+					doLog(st);
+					break;
+				case "assert":
+					if (doAssert(st) == false)
+						return;
+					break;
+				case "sleep":
+					long interval = st.getUInt32();
+					try {
+						Thread.sleep(interval);
+					} catch (InterruptedException e) {
+					}
+					break;
+				case "date":
+					Date now = new Date();
+					token = st.get();
+					if (token.isString() &&
+							token.value.equals("-ms"))
+						print(Long.toString(now.getTime()));
+					else
+						print(now);
+					break;
+				default:
+					print("invalid keyword: " + operation);
+					break;
 			}
-
-			else if (operation.equals("edns")) {
-				if (res == null)
-					res = new SimpleResolver(server);
-				res.setEDNS(st.getUInt16());
-			}
-
-			else if (operation.equals("port")) {
-				if (res == null)
-					res = new SimpleResolver(server);
-				res.setPort(st.getUInt16());
-			}
-
-			else if (operation.equals("tcp")) {
-				if (res == null)
-					res = new SimpleResolver(server);
-				res.setTCP(true);
-			}
-
-			else if (operation.equals("class")) {
-				String classStr = st.getString();
-				int newClass = DClass.value(classStr);
-				if (newClass > 0)
-					defaultClass = newClass;
-				else
-					print("Invalid class " + classStr);
-			}
-
-			else if (operation.equals("ttl"))
-				defaultTTL = st.getTTL();
-
-			else if (operation.equals("origin") ||
-				 operation.equals("zone"))
-			{
-				zone = st.getName(Name.root);
-			}
-
-			else if (operation.equals("require"))
-				doRequire(st);
-
-			else if (operation.equals("prohibit"))
-				doProhibit(st);
-
-			else if (operation.equals("add"))
-				doAdd(st);
-
-			else if (operation.equals("delete"))
-				doDelete(st);
-
-			else if (operation.equals("glue"))
-				doGlue(st);
-
-			else if (operation.equals("help") ||
-				 operation.equals("?"))
-			{
-				token = st.get();
-				if (token.isString())
-					help(token.value);
-				else
-					help(null);
-			}
-
-			else if (operation.equals("echo"))
-				print(line == null ? "" : line.substring(4).trim());
-
-			else if (operation.equals("send")) {
-				sendUpdate();
-				query = newMessage();
-			}
-
-			else if (operation.equals("show")) {
-				print(query);
-			}
-
-			else if (operation.equals("clear"))
-				query = newMessage();
-
-			else if (operation.equals("query"))
-				doQuery(st);
-
-			else if (operation.equals("quit") ||
-				 operation.equals("q"))
-			{
-				if (log != null)
-					log.close();
-				Iterator it = inputs.iterator();
-				while (it.hasNext()) {
-					BufferedReader tbr;
-					tbr = (BufferedReader) it.next();
-					tbr.close();
-				}
-				System.exit(0);
-			}
-
-			else if (operation.equals("file"))
-				doFile(st, inputs, istreams);
-
-			else if (operation.equals("log"))
-				doLog(st);
-
-			else if (operation.equals("assert")) {
-				if (doAssert(st) == false)
-					return;
-			}
-
-			else if (operation.equals("sleep")) {
-				long interval = st.getUInt32();
-				try {
-					Thread.sleep(interval);
-				}
-				catch (InterruptedException e) {
-				}
-			}
-
-			else if (operation.equals("date")) {
-				Date now = new Date();
-				token = st.get();
-				if (token.isString() &&
-				    token.value.equals("-ms"))
-					print(Long.toString(now.getTime()));
-				else
-					print(now);
-			}
-
-			else
-				print("invalid keyword: " + operation);
 		}
 		catch (TextParseException tpe) {
 			System.out.println(tpe.getMessage());
@@ -298,14 +281,13 @@ sendUpdate() throws IOException {
 		int dclass = defaultClass;
 		if (updzone == null) {
 			Record [] recs = query.getSectionArray(Section.UPDATE);
-			for (int i = 0; i < recs.length; i++) {
+			for (Record rec : recs) {
 				if (updzone == null)
-					updzone = new Name(recs[i].getName(),
-							   1);
-				if (recs[i].getDClass() != DClass.NONE &&
-				    recs[i].getDClass() != DClass.ANY)
-				{
-					dclass = recs[i].getDClass();
+					updzone = new Name(rec.getName(),
+							1);
+				if (rec.getDClass() != DClass.NONE &&
+						rec.getDClass() != DClass.ANY) {
+					dclass = rec.getDClass();
 					break;
 				}
 			}
@@ -594,131 +576,162 @@ help(String topic) {
 	}
 	topic = topic.toLowerCase();
 
-	if (topic.equals("add"))
-		System.out.println(
-			"add <name> [ttl] [class] <type> <data>\n\n" +
-			"specify a record to be added\n");
-	else if (topic.equals("assert"))
-		System.out.println(
-			"assert <field> <value> [msg]\n\n" +
-			"asserts that the value of the field in the last\n" +
-			"response matches the value specified.  If not,\n" +
-			"the message is printed (if present) and the\n" +
-			"program exits.  The field may be any of <rcode>,\n" +
-			"<serial>, <tsig>, <qu>, <an>, <au>, or <ad>.\n");
-	else if (topic.equals("class"))
-		System.out.println(
-			"class <class>\n\n" +
-			"class of the zone to be updated (default: IN)\n");
-	else if (topic.equals("clear"))
-		System.out.println(
-			"clear\n\n" +
-			"clears the current update packet\n");
-	else if (topic.equals("date"))
-		System.out.println(
-			"date [-ms]\n\n" +
-			"prints the current date and time in human readable\n" +
-			"format or as the number of milliseconds since the\n" +
-			"epoch");
-	else if (topic.equals("delete"))
-		System.out.println(
-			"delete <name> [ttl] [class] <type> <data> \n" +
-			"delete <name> <type> \n" +
-			"delete <name>\n\n" +
-			"specify a record or set to be deleted, or that\n" +
-			"all records at a name should be deleted\n");
-	else if (topic.equals("echo"))
-		System.out.println(
-			"echo <text>\n\n" +
-			"prints the text\n");
-	else if (topic.equals("edns"))
-		System.out.println(
-			"edns <level>\n\n" +
-			"EDNS level specified when sending messages\n");
-	else if (topic.equals("file"))
-		System.out.println(
-			"file <file>\n\n" +
-			"opens the specified file as the new input source\n" +
-			"(- represents stdin)\n");
-	else if (topic.equals("glue"))
-		System.out.println(
-			"glue <name> [ttl] [class] <type> <data>\n\n" +
-			"specify an additional record\n");
-	else if (topic.equals("help"))
-		System.out.println(
-			"help\n" +
-			"help [topic]\n\n" +
-			"prints a list of commands or help about a specific\n" +
-			"command\n");
-	else if (topic.equals("key"))
-		System.out.println(
-			"key <name> <data>\n\n" +
-			"TSIG key used to sign messages\n");
-	else if (topic.equals("log"))
-		System.out.println(
-			"log <file>\n\n" +
-			"opens the specified file and uses it to log output\n");
-	else if (topic.equals("port"))
-		System.out.println(
-			"port <port>\n\n" +
-			"UDP/TCP port messages are sent to (default: 53)\n");
-	else if (topic.equals("prohibit"))
-		System.out.println(
-			"prohibit <name> <type> \n" +
-			"prohibit <name>\n\n" +
-			"require that a set or name is not present\n");
-	else if (topic.equals("query"))
-		System.out.println(
-			"query <name> [type [class]] \n\n" +
-			"issues a query\n");
-	else if (topic.equals("q") || topic.equals("quit"))
-		System.out.println(
-			"quit\n\n" +
-			"quits the program\n");
-	else if (topic.equals("require"))
-		System.out.println(
-			"require <name> [ttl] [class] <type> <data> \n" +
-			"require <name> <type> \n" +
-			"require <name>\n\n" +
-			"require that a record, set, or name is present\n");
-	else if (topic.equals("send"))
-		System.out.println(
-			"send\n\n" +
-			"sends and resets the current update packet\n");
-	else if (topic.equals("server"))
-		System.out.println(
-			"server <name> [port]\n\n" +
-			"server that receives send updates/queries\n");
-	else if (topic.equals("show"))
-		System.out.println(
-			"show\n\n" +
-			"shows the current update packet\n");
-	else if (topic.equals("sleep"))
-		System.out.println(
-			"sleep <milliseconds>\n\n" +
-			"pause for interval before next command\n");
-	else if (topic.equals("tcp"))
-		System.out.println(
-			"tcp\n\n" +
-			"TCP should be used to send all messages\n");
-	else if (topic.equals("ttl"))
-		System.out.println(
-			"ttl <ttl>\n\n" +
-			"default ttl of added records (default: 0)\n");
-	else if (topic.equals("zone") || topic.equals("origin"))
-		System.out.println(
-			"zone <zone>\n\n" +
-			"zone to update (default: .\n");
-	else if (topic.equals("#"))
-		System.out.println(
-			"# <text>\n\n" +
-			"a comment\n");
-	else
-		System.out.println ("Topic '" + topic + "' unrecognized\n");
+	switch (topic) {
+		case "add":
+			System.out.println(
+					"add <name> [ttl] [class] <type> <data>\n\n" +
+							"specify a record to be added\n");
+			break;
+		case "assert":
+			System.out.println(
+					"assert <field> <value> [msg]\n\n" +
+							"asserts that the value of the field in the last\n" +
+							"response matches the value specified.  If not,\n" +
+							"the message is printed (if present) and the\n" +
+							"program exits.  The field may be any of <rcode>,\n" +
+							"<serial>, <tsig>, <qu>, <an>, <au>, or <ad>.\n");
+			break;
+		case "class":
+			System.out.println(
+					"class <class>\n\n" +
+							"class of the zone to be updated (default: IN)\n");
+			break;
+		case "clear":
+			System.out.println(
+					"clear\n\n" +
+							"clears the current update packet\n");
+			break;
+		case "date":
+			System.out.println(
+					"date [-ms]\n\n" +
+							"prints the current date and time in human readable\n" +
+							"format or as the number of milliseconds since the\n" +
+							"epoch");
+			break;
+		case "delete":
+			System.out.println(
+					"delete <name> [ttl] [class] <type> <data> \n" +
+							"delete <name> <type> \n" +
+							"delete <name>\n\n" +
+							"specify a record or set to be deleted, or that\n" +
+							"all records at a name should be deleted\n");
+			break;
+		case "echo":
+			System.out.println(
+					"echo <text>\n\n" +
+							"prints the text\n");
+			break;
+		case "edns":
+			System.out.println(
+					"edns <level>\n\n" +
+							"EDNS level specified when sending messages\n");
+			break;
+		case "file":
+			System.out.println(
+					"file <file>\n\n" +
+							"opens the specified file as the new input source\n" +
+							"(- represents stdin)\n");
+			break;
+		case "glue":
+			System.out.println(
+					"glue <name> [ttl] [class] <type> <data>\n\n" +
+							"specify an additional record\n");
+			break;
+		case "help":
+			System.out.println(
+					"help\n" +
+							"help [topic]\n\n" +
+							"prints a list of commands or help about a specific\n" +
+							"command\n");
+			break;
+		case "key":
+			System.out.println(
+					"key <name> <data>\n\n" +
+							"TSIG key used to sign messages\n");
+			break;
+		case "log":
+			System.out.println(
+					"log <file>\n\n" +
+							"opens the specified file and uses it to log output\n");
+			break;
+		case "port":
+			System.out.println(
+					"port <port>\n\n" +
+							"UDP/TCP port messages are sent to (default: 53)\n");
+			break;
+		case "prohibit":
+			System.out.println(
+					"prohibit <name> <type> \n" +
+							"prohibit <name>\n\n" +
+							"require that a set or name is not present\n");
+			break;
+		case "query":
+			System.out.println(
+					"query <name> [type [class]] \n\n" +
+							"issues a query\n");
+			break;
+		case "q":
+		case "quit":
+			System.out.println(
+					"quit\n\n" +
+							"quits the program\n");
+			break;
+		case "require":
+			System.out.println(
+					"require <name> [ttl] [class] <type> <data> \n" +
+							"require <name> <type> \n" +
+							"require <name>\n\n" +
+							"require that a record, set, or name is present\n");
+			break;
+		case "send":
+			System.out.println(
+					"send\n\n" +
+							"sends and resets the current update packet\n");
+			break;
+		case "server":
+			System.out.println(
+					"server <name> [port]\n\n" +
+							"server that receives send updates/queries\n");
+			break;
+		case "show":
+			System.out.println(
+					"show\n\n" +
+							"shows the current update packet\n");
+			break;
+		case "sleep":
+			System.out.println(
+					"sleep <milliseconds>\n\n" +
+							"pause for interval before next command\n");
+			break;
+		case "tcp":
+			System.out.println(
+					"tcp\n\n" +
+							"TCP should be used to send all messages\n");
+			break;
+		case "ttl":
+			System.out.println(
+					"ttl <ttl>\n\n" +
+							"default ttl of added records (default: 0)\n");
+			break;
+		case "zone":
+		case "origin":
+			System.out.println(
+					"zone <zone>\n\n" +
+							"zone to update (default: .\n");
+			break;
+		case "#":
+			System.out.println(
+					"# <text>\n\n" +
+							"a comment\n");
+			break;
+		default:
+			System.out.println("Topic '" + topic + "' unrecognized\n");
+			break;
+	}
 }
 
 public static void
-main(String args[]) throws IOException {
+main(String[] args) throws IOException {
 
 	InputStream in = null;
 	if (args.length >= 1) {

@@ -30,7 +30,6 @@
 package io.milton.dns.record;
 
 import io.milton.dns.Name;
-import io.milton.dns.record.Tokenizer.Token;
 
 import java.io.*;
 import java.text.*;
@@ -45,7 +44,8 @@ public class LOCRecord extends Record {
 
 private static final long serialVersionUID = 9058224788126750409L;
 
-private static NumberFormat w2, w3;
+private static final NumberFormat w2;
+	private static final NumberFormat w3;
 
 private long size, hPrecision, vPrecision;
 private long latitude, longitude, altitude;

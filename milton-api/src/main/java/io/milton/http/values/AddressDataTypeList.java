@@ -28,6 +28,7 @@ import java.util.Arrays;
  * @author nabil.shams
  */
 public class AddressDataTypeList extends ArrayList<Pair<String, String>>{
+    @SafeVarargs
     public static AddressDataTypeList asList(Pair<String, String>... items) {
         AddressDataTypeList list = new AddressDataTypeList();
 		list.addAll(Arrays.asList(items));

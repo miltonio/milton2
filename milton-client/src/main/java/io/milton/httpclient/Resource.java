@@ -84,11 +84,11 @@ public abstract class Resource {
     public String displayName;
     private Date modifiedDate;
     private Date createdDate;
-    final List<ResourceListener> listeners = new ArrayList<ResourceListener>();
+    final List<ResourceListener> listeners = new ArrayList<>();
     private String lockOwner;
     private String lockToken;
 
-    public abstract java.io.File downloadTo(java.io.File destFolder, ProgressListener listener) throws FileNotFoundException, IOException, HttpException, Utils.CancelledException, NotAuthorizedException, BadRequestException;
+    public abstract java.io.File downloadTo(java.io.File destFolder, ProgressListener listener) throws IOException, HttpException, NotAuthorizedException, BadRequestException;
     private static long count = 0;
 
     public static long getCount() {
@@ -258,7 +258,7 @@ public abstract class Resource {
         if (this.parent != null) {
             this.parent.notifyOnChildRemoved(this);
         }
-        List<ResourceListener> l2 = new ArrayList<ResourceListener>(listeners);
+        List<ResourceListener> l2 = new ArrayList<>(listeners);
         for (ResourceListener l : l2) {
             l.onDeleted(this);
         }

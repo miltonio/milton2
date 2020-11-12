@@ -37,7 +37,7 @@ public class CDataValueWriter implements ValueWriter {
 		int idx = -1;
 		while ((idx = data.indexOf(cdEnd, offset)) >= 0) {
 			if (offset < idx) {
-				sb.append(data.substring(offset, idx));
+				sb.append(data, offset, idx);
 			}
 			sb.append("]]").append(cdEnd).append(cdStart).append(">");
 			offset = idx + cdEnd.length();

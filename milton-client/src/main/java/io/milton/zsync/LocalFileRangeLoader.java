@@ -51,8 +51,7 @@ public class LocalFileRangeLoader implements RangeLoader {
             writeRange(r, bout);
         }
         //int expectedLength = calcExpectedLength(rangeList);
-        byte[] bytes = bout.toByteArray();
-        return bytes;
+        return bout.toByteArray();
     }
 
     private void writeRange(Range r, ByteArrayOutputStream bout) {
@@ -63,15 +62,13 @@ public class LocalFileRangeLoader implements RangeLoader {
             bytesDownloaded += (r.getFinish() - r.getStart());
             RangeUtils.writeRange(bufIn, r, bout);
             //StreamUtils.readTo(bufIn, bout, true, false, r.getStart(), r.getFinish());						
-        } catch (FileNotFoundException ex) {
+        } catch (IOException ex) {
             throw new RuntimeException(ex);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-//		} catch(ReadingException e) {
+        }//		} catch(ReadingException e) {
 //			throw new RuntimeException(e);
 //		} catch(WritingException e) {
 //			throw new RuntimeException(e);
-        } finally {
+        finally {
             StreamUtils.close(fin);
         }
     }

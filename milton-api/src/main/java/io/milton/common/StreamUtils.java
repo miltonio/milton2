@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 
 public class StreamUtils {
 
-    private static Logger log = LoggerFactory.getLogger(StreamUtils.class);
+    private static final Logger log = LoggerFactory.getLogger(StreamUtils.class);
 
     private StreamUtils() {
     }

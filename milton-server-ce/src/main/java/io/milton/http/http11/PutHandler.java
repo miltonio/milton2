@@ -98,9 +98,9 @@ public class PutHandler implements Handler {
 	@Override
 	public void process(HttpManager manager, Request request, Response response) throws NotAuthorizedException, ConflictException, BadRequestException, NotFoundException {
 		// need a linked hash map to preserve ordering of params
-		Map<String, String> params = new LinkedHashMap<String, String>();
+		Map<String, String> params = new LinkedHashMap<>();
 
-		Map<String, FileItem> files = new HashMap<String, FileItem>();
+		Map<String, FileItem> files = new HashMap<>();
 
 		try {
 			request.parseRequestParameters(params, files);
@@ -194,7 +194,7 @@ public class PutHandler implements Handler {
 		}
 
 		ReplaceableResource replacee;
-		if (existingResource != null && existingResource instanceof ReplaceableResource) {
+		if (existingResource instanceof ReplaceableResource) {
 			replacee = (ReplaceableResource) existingResource;
 		} else {
 			replacee = null;
@@ -416,7 +416,7 @@ public class PutHandler implements Handler {
 			}
 
 		}
-		if (existingResource != null && existingResource instanceof ReplaceableResource) {
+		if (existingResource instanceof ReplaceableResource) {
 			replacee = (ReplaceableResource) existingResource;
 		} else {
 			replacee = null;

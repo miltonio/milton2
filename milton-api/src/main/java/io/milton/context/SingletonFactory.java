@@ -81,16 +81,16 @@ public class SingletonFactory implements Factory{
     }
 
     public String getKeyClasses() {
-        String s = "";
+        StringBuilder s = new StringBuilder();
         for( Class c : keyClasses ) {
-            s = s + c.getCanonicalName() + ",";
+            s.append(c.getCanonicalName()).append(",");
         }
-        return s;
+        return s.toString();
     }
 
     public void setBean( Object bean ) {
         this.bean = bean;
-        List<Class> list = new ArrayList<Class>();
+        List<Class> list = new ArrayList<>();
         list.add( bean.getClass());
         log.debug("setBean: " + bean.getClass().getCanonicalName());
         for(Class c :  this.bean.getClass().getInterfaces() ) {

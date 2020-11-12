@@ -55,12 +55,12 @@ public class NameAndAuthority {
             return new NameAndAuthority( user );
         } else {
             String name = user.substring( 0, pos );
-            String authority = user.substring( pos + 1, user.length() );
+            String authority = user.substring( pos + 1);
             pos = authority.indexOf( DELIM_AUTHORITY);
             if( pos < 0 ) {
                 return new NameAndAuthority( name, authority,authority );
             } else {
-                String domain = authority.substring( pos+1, authority.length());
+                String domain = authority.substring( pos+1);
                 authority = authority.substring( 0, pos);
                 return new NameAndAuthority( name, authority, domain );
             }

@@ -211,7 +211,7 @@ public class ZSyncResourceFactory implements ResourceFactory {
                 }
                 InputStream in = bufOut.getInputStream();
                 try {
-                    metaData = metaFileMaker.make(realPath, blocksize, fileLength == null ? 0 : fileLength.longValue(), r.getModifiedDate(), in);
+                    metaData = metaFileMaker.make(realPath, blocksize, fileLength == null ? 0 : fileLength, r.getModifiedDate(), in);
                 } finally {
                     StreamUtils.close(in);
                 }
@@ -219,7 +219,7 @@ public class ZSyncResourceFactory implements ResourceFactory {
             metaFileMaker.write(metaData, out);
         }
 
-        private void updateResourceContentActual(File mergedFile) throws FileNotFoundException, BadRequestException, ConflictException, NotAuthorizedException, IOException {
+        private void updateResourceContentActual(File mergedFile) throws BadRequestException, ConflictException, NotAuthorizedException, IOException {
             if (r instanceof ReplaceableResource) {
                 log.trace("updateResourceContentActual: " + mergedFile.getAbsolutePath() + ", resource is replaceable");
                 FileInputStream fin = null;

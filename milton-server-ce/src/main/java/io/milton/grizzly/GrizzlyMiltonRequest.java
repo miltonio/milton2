@@ -37,8 +37,8 @@ public class GrizzlyMiltonRequest extends  AbstractRequest  {
 
     private static final Logger log = LoggerFactory.getLogger(GrizzlyMiltonRequest.class);
 
-    private static final Map<Response.ContentType, String> contentTypes = new EnumMap<Response.ContentType, String>(Response.ContentType.class);
-    private static final Map<String, Response.ContentType> typeContents = new HashMap<String, Response.ContentType>();
+    private static final Map<Response.ContentType, String> contentTypes = new EnumMap<>(Response.ContentType.class);
+    private static final Map<String, Response.ContentType> typeContents = new HashMap<>();
 
     static {
         contentTypes.put(Response.ContentType.HTTP, Response.HTTP);
@@ -88,7 +88,7 @@ public class GrizzlyMiltonRequest extends  AbstractRequest  {
     @Override
     public Map<String, String> getHeaders() {
         if( mapOfHeaders == null ) {
-            mapOfHeaders = new HashMap<String, String>();
+            mapOfHeaders = new HashMap<>();
             for( String headerName : wrapped.getHeaderNames() ) {
                 String s = wrapped.getHeader(headerName);
                 mapOfHeaders.put(headerName, s);
@@ -261,7 +261,7 @@ public class GrizzlyMiltonRequest extends  AbstractRequest  {
 
     @Override
     public List<Cookie> getCookies() {
-        ArrayList<Cookie> list = new ArrayList<Cookie>();
+        ArrayList<Cookie> list = new ArrayList<>();
         if (wrapped.getCookies() != null) {
             for (org.glassfish.grizzly.http.Cookie c : wrapped.getCookies()) {
                 list.add(toBeanCookie(c));
@@ -343,7 +343,7 @@ public class GrizzlyMiltonRequest extends  AbstractRequest  {
 
 	protected Response.ContentType getRequestContentType() {
 		String s = wrapped.getContentType();
-		log.trace("request content type", s);
+		log.trace("request content type - {}", s);
 		if (s == null) {
 			return null;
 		}

@@ -14,7 +14,7 @@ private static final int EPHEMERAL_START = 1024;
 private static final int EPHEMERAL_STOP  = 65535;
 private static final int EPHEMERAL_RANGE  = EPHEMERAL_STOP - EPHEMERAL_START;
 
-private static SecureRandom prng = new SecureRandom();
+private static final SecureRandom prng = new SecureRandom();
 private static volatile boolean prng_initializing = true;
 
 /*
@@ -33,11 +33,10 @@ private static volatile boolean prng_initializing = true;
  * thread, and disable port randomization until it completes.
  */
 static {
-	new Thread(new Runnable() {
-			   public void run() {
-			   int n = prng.nextInt();
-			   prng_initializing = false;
-		   }}).start();
+	new Thread(() -> {
+	int n = prng.nextInt();
+	prng_initializing = false;
+}).start();
 }
 
 private boolean bound = false;

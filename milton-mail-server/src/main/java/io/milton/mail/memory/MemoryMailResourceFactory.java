@@ -15,7 +15,7 @@ public class MemoryMailResourceFactory implements MailResourceFactory{
     final Map<String,Mailbox> mailboxes;
 
     public MemoryMailResourceFactory() {
-        mailboxes = new HashMap<String, Mailbox>();
+        mailboxes = new HashMap<>();
     }
 
     public MemoryMailResourceFactory(Map<String, Mailbox> mailboxes) {

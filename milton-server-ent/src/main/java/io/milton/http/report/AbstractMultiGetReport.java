@@ -57,7 +57,7 @@ public abstract class AbstractMultiGetReport implements QualifiedReport {
         PropertiesRequest parseResult = PropertiesRequest.toProperties(props);
 
         // Generate the response
-        List<PropFindResponse> respProps = new ArrayList<PropFindResponse>();
+        List<PropFindResponse> respProps = new ArrayList<>();
 
         for (String href : hrefs) {
             if(!href.startsWith("/")) {
@@ -90,7 +90,7 @@ public abstract class AbstractMultiGetReport implements QualifiedReport {
     }
 
     private List<String> getHrefs(Document doc) {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         for (Object o : doc.getRootElement().getChildren()) {
             if (o instanceof Element) {
                 Element el = (Element) o;
@@ -112,7 +112,7 @@ public abstract class AbstractMultiGetReport implements QualifiedReport {
             throw new RuntimeException("No prop element");
         }
 
-        Set<QName> set = new HashSet<QName>();
+        Set<QName> set = new HashSet<>();
         for (Object o : elProp.getChildren()) {
             if (o instanceof Element) {
                 Element el = (Element) o;

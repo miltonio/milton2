@@ -11,5 +11,5 @@ package io.milton.sso;
  */
 public interface SsoSessionProvider {
 
-    public Object getUserTag(String firstComp);
+    Object getUserTag(String firstComp);
 }

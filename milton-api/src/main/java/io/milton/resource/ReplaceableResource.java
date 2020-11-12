@@ -32,6 +32,6 @@ import java.io.InputStream;
  */
 public interface ReplaceableResource extends Resource {
 
-    public void replaceContent(InputStream in, Long length) throws BadRequestException, ConflictException, NotAuthorizedException;
+    void replaceContent(InputStream in, Long length) throws BadRequestException, ConflictException, NotAuthorizedException;
 
 }

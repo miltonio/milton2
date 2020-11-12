@@ -74,8 +74,7 @@ public class CTagAnnotationHandler extends AbstractAnnotationHandler {
 				} else {
 					for (String nameProp : CTAG_PROP_NAMES) {
 						if (PropertyUtils.isReadable(source, nameProp)) {
-							Object oPropVal = PropertyUtils.getProperty(source, nameProp);
-							rawId = oPropVal;
+                            rawId = PropertyUtils.getProperty(source, nameProp);
 							if (log.isDebugEnabled()) {
 								log.debug("Got ctag from bean property:" + nameProp + "  ctag=" + rawId);
 							}

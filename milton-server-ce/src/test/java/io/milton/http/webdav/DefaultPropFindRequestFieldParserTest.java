@@ -33,7 +33,7 @@ public class DefaultPropFindRequestFieldParserTest extends TestCase {
 
     DefaultPropFindRequestFieldParser fieldParser;
 
-    String namespace = "http://ns.example.com/boxschema/";
+    final String namespace = "http://ns.example.com/boxschema/";
 
     @Override
     protected void setUp() throws Exception {

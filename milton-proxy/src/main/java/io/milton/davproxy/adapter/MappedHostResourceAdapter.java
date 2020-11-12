@@ -29,7 +29,6 @@ import io.milton.httpclient.File;
 import io.milton.httpclient.Folder;
 import io.milton.httpclient.Host;
 import io.milton.httpclient.HttpException;
-import io.milton.httpclient.Resource;
 import io.milton.resource.*;
 import java.io.IOException;
 import java.io.InputStream;
@@ -70,11 +69,7 @@ public class MappedHostResourceAdapter extends AbstractRemoteAdapter implements 
         Folder newRemoteFolder;
         try {
             newRemoteFolder = remoteHost.createFolder(newName);
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        } catch (NotFoundException ex) {
-            throw new RuntimeException(ex);
-        } catch (HttpException ex) {
+        } catch (IOException | HttpException | NotFoundException ex) {
             throw new RuntimeException(ex);
         }
         return new FolderResourceAdapter(newRemoteFolder, getSecurityManager(), newName, contentGenerator, remoteManager);
@@ -94,9 +89,7 @@ public class MappedHostResourceAdapter extends AbstractRemoteAdapter implements 
     public List<? extends io.milton.resource.Resource> getChildren() throws NotAuthorizedException, BadRequestException {
         try {
             return remoteManager.getChildren(hostName, remoteHost);
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        } catch (HttpException ex) {
+        } catch (IOException | HttpException ex) {
             throw new RuntimeException(ex);
         }
     }
@@ -106,9 +99,7 @@ public class MappedHostResourceAdapter extends AbstractRemoteAdapter implements 
         try {
             File newFile = remoteHost.upload(newName, inputStream, length, null);
             return new FileResourceAdapter(newFile, getSecurityManager(), hostName, remoteManager);
-        } catch (HttpException ex) {
-            throw new RuntimeException(ex);
-        } catch (NotFoundException ex) {
+        } catch (HttpException | NotFoundException ex) {
             throw new RuntimeException(ex);
         }
     }

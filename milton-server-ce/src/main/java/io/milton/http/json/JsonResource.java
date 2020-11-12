@@ -38,7 +38,7 @@ public abstract class JsonResource implements DigestResource {
 
     private static final Logger log = LoggerFactory.getLogger(JsonResource.class);
 	
-	public static String CONTENT_TYPE = "application/json; charset=utf-8";
+	public static final String CONTENT_TYPE = "application/json; charset=utf-8";
 	
     private final Resource wrappedResource;
     private final String name;

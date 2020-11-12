@@ -57,6 +57,6 @@ public interface  LockingCollectionResource extends CollectionResource, Lockable
      * @param lockInfo
      * @return
      */
-    public LockToken createAndLock(String name, LockTimeout timeout, LockInfo lockInfo) throws NotAuthorizedException;
+    LockToken createAndLock(String name, LockTimeout timeout, LockInfo lockInfo) throws NotAuthorizedException;
     
 }

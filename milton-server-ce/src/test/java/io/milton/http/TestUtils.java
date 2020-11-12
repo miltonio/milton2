@@ -64,7 +64,7 @@ public class TestUtils extends TestCase {
 
     }
 
-    class Res implements Resource {
+    static class Res implements Resource {
 
         final String name;
         final UUID id;
@@ -129,7 +129,7 @@ public class TestUtils extends TestCase {
     
     class ColRes extends Res implements CollectionResource {
 
-        public Map<String,Resource> children  = new HashMap<String,Resource>();
+        public final Map<String,Resource> children  = new HashMap<>();
 
         public ColRes(String name) {
             super(name);
@@ -139,7 +139,7 @@ public class TestUtils extends TestCase {
         
         
         public List<? extends Resource> getChildren() {
-            return new ArrayList<Resource>(children.values());
+            return new ArrayList<>(children.values());
         }
 
         

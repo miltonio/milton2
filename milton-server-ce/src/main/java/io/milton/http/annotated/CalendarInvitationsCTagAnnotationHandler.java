@@ -45,14 +45,10 @@ public class CalendarInvitationsCTagAnnotationHandler extends AbstractAnnotation
 			Object rawId;
 			try {
 				rawId = cm.method.invoke(cm.controller, source);
-			} catch (IllegalAccessException ex) {
+			} catch (IllegalAccessException | InvocationTargetException | IllegalArgumentException ex) {
 				throw new RuntimeException(ex);
-			} catch (IllegalArgumentException ex) {
-				throw new RuntimeException(ex);
-			} catch (InvocationTargetException ex) {
-				throw new RuntimeException(ex);
-			}			
-			if( rawId != null ) {
+			}
+            if( rawId != null ) {
 				ctag = rawId.toString();
 				if( ctag.length() == 0 ) {
 					ctag = null;

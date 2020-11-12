@@ -16,7 +16,6 @@
  */
 package io.milton.http.template;
 
-import io.milton.common.View;
 import java.io.OutputStream;
 import java.util.Map;
 

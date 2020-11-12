@@ -48,7 +48,7 @@ public class RemoteManager {
 
     public List<? extends io.milton.resource.Resource> getChildren(String hostName, io.milton.httpclient.Folder folder) throws IOException, HttpException, NotAuthorizedException, BadRequestException {
 
-        List<io.milton.resource.Resource> list = new ArrayList<Resource>();
+        List<io.milton.resource.Resource> list = new ArrayList<>();
         for (io.milton.httpclient.Resource r : folder.children()) {
             list.add(adapt(hostName, r));
         }
@@ -72,9 +72,7 @@ public class RemoteManager {
             } else {    // its possible to request a copy with a new name
                 remoteResource.copyTo(destRemoteFolder, destName);
             }
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        } catch (HttpException ex) {
+        } catch (IOException | HttpException ex) {
             throw new RuntimeException(ex);
         } catch (NotFoundException ex) {
             throw new BadRequestException("Remote resource does not exist", ex);
@@ -88,9 +86,7 @@ public class RemoteManager {
             } else {    // its possible to request a copy with a new name
                 remoteResource.moveTo(destRemoteFolder, destName);
             }
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        } catch (HttpException ex) {
+        } catch (IOException | HttpException ex) {
             throw new RuntimeException(ex);
         } catch (NotFoundException ex) {
             throw new BadRequestException("Remote resource does not exist", ex);

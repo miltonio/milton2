@@ -80,8 +80,8 @@ public class dig {
         }
 
         Record[] records = response.getSectionArray(Section.ANSWER);
-        for (int i = 0; i < records.length; i++) {
-            System.out.println(records[i]);
+        for (Record record : records) {
+            System.out.println(record);
         }
 
         System.out.print(";; done (");
@@ -91,7 +91,7 @@ public class dig {
         System.out.println(" additional)");
     }
 
-    public static void main(String argv[]) throws IOException {
+    public static void main(String[] argv) throws IOException {
         String server = null;
         int arg;
         Message query, response;

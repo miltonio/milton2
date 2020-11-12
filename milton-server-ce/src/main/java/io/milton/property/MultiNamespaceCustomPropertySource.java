@@ -66,7 +66,7 @@ public class MultiNamespaceCustomPropertySource implements PropertySource{
             MultiNamespaceCustomPropertyResource cpr = (MultiNamespaceCustomPropertyResource) r;
             return cpr.getAllPropertyNames();
         } else {
-            return new ArrayList<QName>();
+            return new ArrayList<>();
         }
 
     }

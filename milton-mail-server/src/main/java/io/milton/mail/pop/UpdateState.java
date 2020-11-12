@@ -9,7 +9,7 @@ public class UpdateState implements PopState {
 
     private final static Logger log = LoggerFactory.getLogger(UpdateState.class);
     
-    PopSession popSession;
+    final PopSession popSession;
 
     public UpdateState(PopSession popSession) {
         super();

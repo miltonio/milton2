@@ -36,7 +36,7 @@ public class PropertiesRequest {
 	private final Map<QName, Property> properties;
 
 	public static PropertiesRequest toProperties(Set<QName> set) {
-		Set<Property> props = new HashSet<Property>();
+		Set<Property> props = new HashSet<>();
 		for (QName n : set) {
 			props.add(new Property(n, null));
 		}
@@ -45,12 +45,12 @@ public class PropertiesRequest {
 
 	public PropertiesRequest() {
 		this.allProp = true;
-		this.properties = new HashMap<QName, Property>();
+		this.properties = new HashMap<>();
 	}
 
 	public PropertiesRequest(Collection<Property> set) {
 		this.allProp = false;
-		this.properties = new HashMap<QName, Property>();
+		this.properties = new HashMap<>();
 		for (Property p : set) {
 			properties.put(p.getName(), p);
 		}
@@ -83,7 +83,7 @@ public class PropertiesRequest {
 
 		public Property(QName name, Set<Property> nestedSet) {
 			this.name = name;
-			this.nested = new HashMap<QName, Property>();
+			this.nested = new HashMap<>();
 			if (nestedSet != null) {
 				for (Property p : nestedSet) {
 					nested.put(p.name, p);

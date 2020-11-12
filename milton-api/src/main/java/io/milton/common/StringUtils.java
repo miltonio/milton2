@@ -63,7 +63,7 @@ public abstract class StringUtils {
         if( collection == null ) {
             return null;
         }
-        return (String[]) collection.toArray( new String[collection.size()] );
+        return (String[]) collection.toArray(new String[0]);
     }
 
 	/**

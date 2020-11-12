@@ -28,7 +28,6 @@ import io.milton.http.values.Pair;
 import java.io.*;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -59,16 +58,16 @@ public class Utils {
      * @return
      */
     public static String buildEncodedUrl(Path path) {
-        String url = "";
+        StringBuilder url = new StringBuilder();
         String[] arr = path.getParts();
         for (int i = 0; i < arr.length; i++) {
             String s = arr[i];
             if (i > 0) {
-                url += "/";
+                url.append("/");
             }
-            url += io.milton.common.Utils.percentEncode(s);
+            url.append(io.milton.common.Utils.percentEncode(s));
         }
-        return url;
+        return url.toString();
     }
 
     /**
@@ -102,12 +101,11 @@ public class Utils {
             }
         }
         Header[] respHeaders = resp.getAllHeaders();
-        List<Pair<String,String>> allHeaders = new ArrayList<Pair<String, String>>();
+        List<Pair<String,String>> allHeaders = new ArrayList<>();
         for( Header h : respHeaders) {
             allHeaders.add(new Pair(h.getName(), h.getValue())); // TODO: should concatenate multi-valued headers
         }
-        HttpResult result = new HttpResult(resp.getStatusLine().getStatusCode(), allHeaders);
-        return result;
+        return new HttpResult(resp.getStatusLine().getStatusCode(), allHeaders);
     }
 
     public static void close(InputStream in) {

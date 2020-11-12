@@ -33,8 +33,8 @@ public class PropFindResponse {
     private final Response.Status status; 
 
     private final String href;
-    private Map<QName, ValueAndType> knownProperties;
-    private Map<Response.Status, List<NameAndError>> errorProperties;
+    private final Map<QName, ValueAndType> knownProperties;
+    private final Map<Response.Status, List<NameAndError>> errorProperties;
 
     public PropFindResponse(String href, Map<QName, ValueAndType> knownProperties, Map<Response.Status, List<NameAndError>> errorProperties) {
         super();

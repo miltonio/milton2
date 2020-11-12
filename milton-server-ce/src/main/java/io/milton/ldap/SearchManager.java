@@ -39,8 +39,8 @@ public class SearchManager {
     /**
      * Search threads map
      */
-    private final HashMap<LdapConnection, Map<Integer, SearchRunnable>> mapOfSearchesByConnection = new HashMap<LdapConnection, Map<Integer, SearchRunnable>>();
-    private final HashMap<UUID, LdapConnection> mapOfUuids = new HashMap<UUID, LdapConnection>();
+    private final HashMap<LdapConnection, Map<Integer, SearchRunnable>> mapOfSearchesByConnection = new HashMap<>();
+    private final HashMap<UUID, LdapConnection> mapOfUuids = new HashMap<>();
     private final LdapTransactionManager txManager;
 
     public SearchManager(LdapTransactionManager txManager) {
@@ -49,11 +49,7 @@ public class SearchManager {
 
     private Map<Integer, SearchRunnable> getThreadMap(LdapConnection connection) {
         synchronized (mapOfSearchesByConnection) {
-            Map<Integer, SearchRunnable> map = mapOfSearchesByConnection.get(connection);
-            if (map == null) {
-                map = new HashMap<Integer, SearchRunnable>();
-                mapOfSearchesByConnection.put(connection, map);
-            }
+            Map<Integer, SearchRunnable> map = mapOfSearchesByConnection.computeIfAbsent(connection, k -> new HashMap<>());
             return map;
         }
     }
@@ -74,15 +70,11 @@ public class SearchManager {
             searchThreadMap.put(currentMessageId, searchRunnable);
             mapOfUuids.put(searchRunnable.getUuid(), aThis);
         }
-        Runnable runnableRunner = new Runnable() {
-
-            @Override
-            public void run() {
-                try {
-                    txManager.tx(searchRunnable);
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
+        Runnable runnableRunner = () -> {
+            try {
+                txManager.tx(searchRunnable);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
             }
         };
         Thread searchThread = new Thread(runnableRunner);
@@ -106,9 +98,7 @@ public class SearchManager {
                     searchThreadMap.remove(currentMessageId);
                 }
             }
-        } catch (IllegalAccessException e) {
-            log.error("", e);
-        } catch (InvocationTargetException e) {
+        } catch (IllegalAccessException | InvocationTargetException e) {
             log.error("", e);
         }
         LogUtils.debug(log, "LOG_LDAP_REQ_ABANDON_SEARCH", currentMessageId, abandonMessageId);

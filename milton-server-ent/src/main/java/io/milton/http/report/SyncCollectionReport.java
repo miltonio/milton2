@@ -33,7 +33,7 @@ import org.jdom2.Namespace;
 
 public class SyncCollectionReport implements Report {
     protected final Namespace NS_DAV = Namespace.getNamespace(WebDavProtocol.NS_DAV.getPrefix(), WebDavProtocol.NS_DAV.getName());
-    private static enum SyncLevel {
+    private enum SyncLevel {
       One,
       Infinite
     }
@@ -128,7 +128,7 @@ public class SyncCollectionReport implements Report {
 
         String parentHref = HttpManager.request().getAbsolutePath();
         parentHref = Utils.suffixSlash(parentHref);
-        List<PropFindResponse> respProps = new ArrayList<PropFindResponse>();
+        List<PropFindResponse> respProps = new ArrayList<>();
         findResources(syncCollectionResource, doc, syncToken, lv, parentHref, respProps);
 
         final URI nextSyncToken = syncCollectionResource.getSyncToken();
@@ -161,15 +161,13 @@ public class SyncCollectionReport implements Report {
          */
       
         //List<PropFindResponse>
-      
-        String xml = xmlGenerator.generate(respProps, new PropFindXmlFooter() {
+
+        return xmlGenerator.generate(respProps, new PropFindXmlFooter() {
             @Override
             public void footer(XmlWriter writer) {
                 writer.writeProperty(WebDavProtocol.NS_DAV.getPrefix(), "sync-token", nextSyncToken.toString());
             }
         });
-      
-        return xml;
     }
   
     private void findResources(SyncCollectionResource parent, Document doc, URI syncToken, SyncLevel syncLevel, String parentHref, List<PropFindResponse> respProps) throws NotAuthorizedException, BadRequestException {
@@ -238,7 +236,7 @@ public class SyncCollectionReport implements Report {
             throw new RuntimeException("No prop element");
         }
 
-        Set<QName> set = new HashSet<QName>();
+        Set<QName> set = new HashSet<>();
         for (Object o : elProp.getChildren()) {
             if (o instanceof Element) {
                 Element el = (Element) o;

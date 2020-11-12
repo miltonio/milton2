@@ -19,6 +19,7 @@ import io.milton.resource.PropFindableResource;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import javax.xml.namespace.QName;
 import junit.framework.TestCase;
@@ -58,7 +59,7 @@ public class ExpandPropertyReportTest extends TestCase {
 		valueWriters = new ValueWriters(writers);
 		xmlGeneratorHelper.setValueWriters(valueWriters);
 		xmlGenerator = new PropFindXmlGenerator(valueWriters);
-		propertySources = Arrays.asList(propertySource);
+		propertySources = Collections.singletonList(propertySource);
 		meta1 = new PropertySource.PropertyMetaData(PropertySource.PropertyAccessibility.READ_ONLY, HrefList.class);
                 meta2 = new PropertySource.PropertyMetaData(PropertySource.PropertyAccessibility.READ_ONLY, HrefList.class);
 		propertyBuilder = new DefaultPropFindPropertyBuilder(propertySources);

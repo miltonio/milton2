@@ -44,7 +44,7 @@ public class AnnotationsPrincipalSearchService implements PrincipalSearchService
                 log.warn("No users collection found");
                 return null;
             }
-            List<DiscretePrincipal> results = new ArrayList<DiscretePrincipal>();
+            List<DiscretePrincipal> results = new ArrayList<>();
             for (AnnoCollectionResource r : usersCol) {
                 for (Resource u : r.getChildren()) {
                     if (u instanceof AnnoPrincipalResource) {

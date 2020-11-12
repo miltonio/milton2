@@ -72,7 +72,7 @@ public class CardDavProtocol implements HttpExtension, PropertySource, WellKnown
         propertyMapCardDav.add(new DirectoryGateway());
         propertyMapCardDav.add(new AddressDataProperty());
 
-        handlers = new HashSet<Handler>();
+        handlers = new HashSet<>();
 
         webDavProtocol.addPropertySource(this);
 
@@ -128,8 +128,7 @@ public class CardDavProtocol implements HttpExtension, PropertySource, WellKnown
     @Override
     public List<QName> getAllPropertyNames(Resource r) {
         log.trace("getAllPropertyNames");
-        List<QName> list = new ArrayList<QName>();
-        list.addAll(propertyMapCardDav.getAllPropertyNames(r));
+        List<QName> list = new ArrayList<>(propertyMapCardDav.getAllPropertyNames(r));
         return list;
     }
 
@@ -188,7 +187,7 @@ public class CardDavProtocol implements HttpExtension, PropertySource, WellKnown
      * attributes can be used on each variant of the CALDAV:address-data XML
      * element.
      */
-    class AddressDataProperty implements StandardProperty<String> {
+    static class AddressDataProperty implements StandardProperty<String> {
 
         @Override
         public String fieldName() {
@@ -227,7 +226,7 @@ public class CardDavProtocol implements HttpExtension, PropertySource, WellKnown
      * <D:href>/bernard/addresses/</D:href>
      * </C:addressbook-home-set>
      */
-    class AddressBookHomeSetProperty implements StandardProperty<HrefList> {
+    static class AddressBookHomeSetProperty implements StandardProperty<HrefList> {
 
         @Override
         public String fieldName() {
@@ -262,7 +261,7 @@ public class CardDavProtocol implements HttpExtension, PropertySource, WellKnown
      * <C:addressbook-description xml:lang="fr-CA"
      * xmlns:C="urn:ietf:params:xml:ns:carddav">Adresses de Oliver Daboo</C:addressbook-description>
      */
-    class AddressBookDescriptionProperty implements StandardProperty<String> {
+    static class AddressBookDescriptionProperty implements StandardProperty<String> {
 
         // todo - add support of internationalization so the protocol can allow
         // multiple language description, this can be accomplished by either 
@@ -313,7 +312,7 @@ public class CardDavProtocol implements HttpExtension, PropertySource, WellKnown
      * <C:address-data-type content-type="text/vcard" version="3.0"/>
      * </C:supported-address-data>
      */
-    class SupportedAddressData implements StandardProperty<List<Pair<String, String>>> {
+    static class SupportedAddressData implements StandardProperty<List<Pair<String, String>>> {
 
         @Override
         public String fieldName() {
@@ -353,7 +352,7 @@ public class CardDavProtocol implements HttpExtension, PropertySource, WellKnown
      * <C:max-resource-size xmlns:C="urn:ietf:params:xml:ns:carddav">102400</C:max-resource-size>
      *
      */
-    class MaxResourceSize implements StandardProperty<Long> {
+    static class MaxResourceSize implements StandardProperty<Long> {
 
         @Override
         public String fieldName() {
@@ -392,7 +391,7 @@ public class CardDavProtocol implements HttpExtension, PropertySource, WellKnown
      * </C:principal-address>
      *
      */
-    class PrincipalAddress implements StandardProperty<String> {
+    static class PrincipalAddress implements StandardProperty<String> {
 
         @Override
         public String fieldName() {
@@ -425,7 +424,7 @@ public class CardDavProtocol implements HttpExtension, PropertySource, WellKnown
      * </C:directory-gateway>
      *
      */
-    class DirectoryGateway implements StandardProperty<HrefList> {
+    static class DirectoryGateway implements StandardProperty<HrefList> {
 
         @Override
         public String fieldName() {

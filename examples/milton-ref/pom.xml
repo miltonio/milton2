@@ -27,6 +27,15 @@
                     <stopPort>8089</stopPort>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
     <repositories>
@@ -75,7 +84,7 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.2</version>
+            <version>2.4</version>
         </dependency>
         <dependency>
             <groupId>commons-collections</groupId>

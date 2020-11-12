@@ -70,9 +70,7 @@ public class MultipleRangeWritingOutputStream extends OutputStream {
 	private boolean isValid(Range r) {
 		if (r != null) {
 			if (r.getStart() == null || r.getStart() <= currentByte) {
-				if (r.getFinish() == null || r.getFinish() >= currentByte) {
-					return true;
-				}
+                return r.getFinish() == null || r.getFinish() >= currentByte;
 
 			}
 		}

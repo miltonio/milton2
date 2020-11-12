@@ -237,14 +237,12 @@ public class Generator {
 
 	public int generateWeakSum(byte[] buf, int offset, Configuration config) {
 		config.weakSum.first(buf, offset, config.blockLength);
-		int weakSum = config.weakSum.getValue();
-		return weakSum;
+		return config.weakSum.getValue();
 	}
 
 	public int generateRollSum(byte b, Configuration config) {
 		config.weakSum.roll(b);
-		int weakSum = config.weakSum.getValue();
-		return weakSum;
+		return config.weakSum.getValue();
 	}
 
 	public byte[] generateStrongSum(byte[] buf, int off, int len, Configuration config) {

@@ -43,7 +43,7 @@ public class MemoryLockManagerTest extends TestCase {
 
     
     public void testLockUnLock() throws NotAuthorizedException {
-        LockTimeout timeout = new LockTimeout( 100l );
+        LockTimeout timeout = new LockTimeout(100L);
         LockInfo lockInfo = new LockInfo( LockInfo.LockScope.NONE, LockInfo.LockType.READ, "me", LockInfo.LockDepth.ZERO );
         SimpleFileContentService contentService = new SimpleFileContentService();
         FsResource resource = new FsFileResource( null, null, new File( File.pathSeparator ), contentService );

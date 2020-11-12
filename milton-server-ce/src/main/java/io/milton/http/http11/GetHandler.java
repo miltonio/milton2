@@ -222,12 +222,8 @@ public class GetHandler implements ExistingEntityHandler {
 				}
 				responseHandler.respondContent(resource, response, request, params);
 			}
-		} catch (NotFoundException e) {
+		} catch (NotFoundException | BadRequestException | NotAuthorizedException e) {
 			throw e;
-		} catch (NotAuthorizedException notAuthorizedException) {
-			throw notAuthorizedException;
-		} catch (BadRequestException badRequestException) {
-			throw badRequestException;
 		} catch (Throwable e) {
 			log.error("Exception sending content for:" + request.getAbsolutePath() + " of resource type: " + resource.getClass().getCanonicalName(), e);
 			throw new RuntimeException(e);

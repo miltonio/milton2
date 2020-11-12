@@ -45,7 +45,6 @@ public class MyByteArrayOutputStream extends ByteArrayOutputStream {
     }
 
     public InputStream asIn() {
-        ByteArrayInputStream in = new ByteArrayInputStream( this.toByteArray() );
-        return in;
+        return new ByteArrayInputStream( this.toByteArray() );
     }
 }

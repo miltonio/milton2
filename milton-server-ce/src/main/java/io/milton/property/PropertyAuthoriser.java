@@ -32,7 +32,7 @@ import javax.xml.namespace.QName;
  */
 public interface PropertyAuthoriser {
 
-    public enum PropertyPermission {
+    enum PropertyPermission {
         READ,
         WRITE
     }
@@ -52,7 +52,7 @@ public interface PropertyAuthoriser {
     /**
      * Describes a permission violation.
      */
-    public class CheckResult {
+    class CheckResult {
         private final QName field;
         private final Status status;
         private final String description;

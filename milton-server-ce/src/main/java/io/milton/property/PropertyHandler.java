@@ -31,6 +31,6 @@ import io.milton.http.Handler;
  */
 public interface PropertyHandler extends Handler{
 	
-    public PropertyAuthoriser getPermissionService();
+    PropertyAuthoriser getPermissionService();
 
 }

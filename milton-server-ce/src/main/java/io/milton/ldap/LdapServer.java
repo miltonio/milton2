@@ -178,9 +178,7 @@ public class LdapServer extends Thread {
 
                 // create ServerSocketFactory from sslContext
                 serverSocketFactory = sslContext.getServerSocketFactory();
-            } catch (IOException ex) {
-                throw new Exception(ex);
-            } catch (GeneralSecurityException ex) {
+            } catch (IOException | GeneralSecurityException ex) {
                 throw new Exception(ex);
             } finally {
                 if (keyStoreInputStream != null) {

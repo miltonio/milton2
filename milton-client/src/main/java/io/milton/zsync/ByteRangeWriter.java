@@ -50,7 +50,7 @@ public class ByteRangeWriter {
 		this.first = true;
 	}
 
-	public void add(Range range, RandomAccessFile randAccess) throws UnsupportedEncodingException, IOException {
+	public void add(Range range, RandomAccessFile randAccess) throws IOException {
 		/*
 		 * Write the Range Key:Value pair to dataOut
 		 */

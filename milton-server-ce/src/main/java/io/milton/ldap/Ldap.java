@@ -49,13 +49,13 @@ public class Ldap {
 	/**
 	 * Root DSE naming contexts (default and OpenDirectory)
 	 */
-	static final List<String> NAMING_CONTEXTS = new ArrayList<String>();
+	static final List<String> NAMING_CONTEXTS = new ArrayList<>();
 
 	static {
 		NAMING_CONTEXTS.add(BASE_CONTEXT);
 		NAMING_CONTEXTS.add(OD_BASE_CONTEXT);
 	}
-	static final List<String> PERSON_OBJECT_CLASSES = new ArrayList<String>();
+	static final List<String> PERSON_OBJECT_CLASSES = new ArrayList<>();
 
 	static {
 		PERSON_OBJECT_CLASSES.add("top");
@@ -77,7 +77,7 @@ public class Ldap {
 	/**
 	 * OSX constant value for attribute apple-serviceslocator
 	 */
-	static final HashMap<String, String> STATIC_ATTRIBUTE_MAP = new HashMap<String, String>();
+	static final HashMap<String, String> STATIC_ATTRIBUTE_MAP = new HashMap<>();
 
 	static {
 		STATIC_ATTRIBUTE_MAP.put("apple-serviceslocator", COMPUTER_GUID + ':' + VIRTUALHOST_GUID + ":calendar");

@@ -59,8 +59,8 @@ public class MiltonSNIService {
         chainBuilder.add(this.sniFilter);
 
         Filter sslFilter = null;
-        for (int i = 0; i < filterChain.size(); i++) {
-            sslFilter = filterChain.get(i);
+        for (Filter filter : filterChain) {
+            sslFilter = filter;
 
             if (sslFilter instanceof TransportFilter) {
                 continue;

@@ -46,12 +46,8 @@ public class DeleteAnnotationHandler extends AbstractAnnotationHandler {
 		try {
 			Object[] args = annoResourceFactory.buildInvokeArgs(res, cm.method);
 			cm.method.invoke(cm.controller, args);
-		} catch (NotAuthorizedException e) {
+		} catch (NotAuthorizedException | ConflictException | BadRequestException e) {
 			throw e;
-		} catch (BadRequestException e) {
-			throw e;
-		} catch (ConflictException e) {
-			throw e;			
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
