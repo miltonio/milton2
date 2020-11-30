@@ -81,3 +81,5 @@ milton-server-ent/.settings/org.eclipse.wst.common.project.facet.core.xml
 *.iws
 /out/
 .idea_modules/
+**/WEB-INF/wwwroot/js/node_modules/
+**/*.log

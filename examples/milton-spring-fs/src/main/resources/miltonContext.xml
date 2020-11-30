@@ -3,25 +3,22 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-
-   <!-- <bean id="resource.factory" class="io.milton.http.annotated.AnnotationResourceFactory">
-        <property name="controllers">
-            <list>
-                <bean class="com.bandstand.web.BandsController" />
-            </list>
-        </property>
-    </bean>-->
-    
     <bean id="resource.factory" class="io.milton.http.fs.FileSystemResourceFactory">
     	<constructor-arg value="/tmp"/>
     	<constructor-arg>
     		<bean class="io.milton.http.fs.NullSecurityManager"/>
     	</constructor-arg>
+        <property name="lockManager" ref="lock.manager"/>
+    </bean>
+    <bean id="lock.manager" class="io.milton.http.fs.SimpleLockManager">
+        <constructor-arg>
+            <bean class="io.milton.cache.LocalCacheManager"/>
+        </constructor-arg>
     </bean>
 
-    <bean id="milton.http.manager" class="io.milton.config.HttpManagerBuilder">
+    <bean id="milton.http.manager" class="io.milton.samples.fs.FsHttpManagerBuilderEnt">
         <property name="mainResourceFactory" ref="resource.factory" />
         <property name="enableCompression" value="false"/>
-        <property name="buffering" value="never"/>      
-    </bean>    
+        <property name="buffering" value="never"/>
+    </bean>
 </beans>

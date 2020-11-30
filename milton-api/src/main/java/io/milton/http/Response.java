@@ -103,7 +103,7 @@ public interface Response {
         SC_CREATED( ResponseStatus.SC_CREATED ),
         SC_ACCEPTED( ResponseStatus.SC_ACCEPTED ),
         SC_NO_CONTENT( ResponseStatus.SC_NO_CONTENT ),
-        SC_MULTI_STATUS( 207, "Multi-status" ),
+        SC_MULTI_STATUS( 207, "Multi-Status" ),
         SC_MOVED_PERMANENTLY( ResponseStatus.SC_MOVED_PERMANENTLY ),
         SC_MOVED_TEMPORARILY( ResponseStatus.SC_MOVED_TEMPORARILY ),
 		SC_TEMPORARY_REDIRECT( ResponseStatus.SC_TEMPORARY_REDIRECT ),
