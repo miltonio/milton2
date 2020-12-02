@@ -13,7 +13,7 @@
     </description>
 
     <properties>
-        <jetty.version>9.4.24.v20191120</jetty.version>
+        <jetty.version>9.4.35.v20201120</jetty.version>
     </properties>
 
     <profiles>
