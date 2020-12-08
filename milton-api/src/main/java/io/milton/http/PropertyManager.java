@@ -19,21 +19,24 @@
 
 package io.milton.http;
 
-import io.milton.resource.LockableResource;
-import io.milton.http.exceptions.NotAuthorizedException;
+import io.milton.property.PropertySource;
+import io.milton.resource.MultiNamespaceCustomPropertyResource;
+
+import javax.xml.namespace.QName;
+import java.util.List;
 
 /**
  *
  */
-public interface LockManager {
+public interface PropertyManager {
 
-    LockResult lock(LockTimeout timeout, LockInfo lockInfo, LockableResource resource) throws NotAuthorizedException;
+    Object getProperty(QName name, MultiNamespaceCustomPropertyResource resource);
 
-    LockResult refresh(String token, LockableResource resource) throws NotAuthorizedException;
+    void setProperty(QName name, Object value, MultiNamespaceCustomPropertyResource resource);
 
-    void unlock(String tokenId, LockableResource resource) throws NotAuthorizedException;
+    PropertySource.PropertyMetaData getPropertyMetaData(QName name, MultiNamespaceCustomPropertyResource resource);
 
-    LockToken getCurrentToken(LockableResource resource);
+    List<QName> getAllPropertyNames(MultiNamespaceCustomPropertyResource resource);
 
 }
 

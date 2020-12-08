@@ -21,6 +21,7 @@ package io.milton.http.fs;
 
 import io.milton.common.Path;
 import io.milton.http.LockManager;
+import io.milton.http.PropertyManager;
 import io.milton.http.ResourceFactory;
 import io.milton.resource.Resource;
 import java.io.File;
@@ -40,6 +41,7 @@ public final class FileSystemResourceFactory implements ResourceFactory {
     File root;
     io.milton.http.SecurityManager securityManager;
     LockManager lockManager;
+    PropertyManager propertyManager;
     Long maxAgeSeconds;
     String contextPath;
     boolean allowDirectoryBrowsing;
@@ -193,6 +195,14 @@ public final class FileSystemResourceFactory implements ResourceFactory {
 
     public void setLockManager(LockManager lockManager) {
         this.lockManager = lockManager;
+    }
+
+    public PropertyManager getPropertyManager() {
+        return propertyManager;
+    }
+
+    public void setPropertyManager(PropertyManager propertyManager) {
+        this.propertyManager = propertyManager;
     }
 
     public void setContextPath(String contextPath) {

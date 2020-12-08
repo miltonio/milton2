@@ -24,24 +24,22 @@ import io.milton.common.RangeUtils;
 import io.milton.common.ReadingException;
 import io.milton.common.WritingException;
 import io.milton.http.Auth;
+import io.milton.http.PropertyManager;
 import io.milton.http.Range;
 import io.milton.http.Request;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.http.exceptions.NotFoundException;
-import io.milton.resource.CopyableResource;
-import io.milton.resource.DeletableResource;
-import io.milton.resource.GetableResource;
-import io.milton.resource.MoveableResource;
-import io.milton.resource.PropFindableResource;
-import io.milton.resource.ReplaceableResource;
+import io.milton.property.PropertySource;
+import io.milton.resource.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
@@ -49,10 +47,12 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.namespace.QName;
+
 /**
  *
  */
-public class FsFileResource extends FsResource implements CopyableResource, DeletableResource, GetableResource, MoveableResource, PropFindableResource, ReplaceableResource {
+public class FsFileResource extends FsResource implements CopyableResource, DeletableResource, GetableResource, MoveableResource, PropFindableResource, ReplaceableResource, MultiNamespaceCustomPropertyResource {
 
     private static final Logger log = LoggerFactory.getLogger(FsFileResource.class);
     
@@ -139,4 +139,39 @@ public class FsFileResource extends FsResource implements CopyableResource, Dele
 			throw new BadRequestException("Couldnt write to: " + file.getAbsolutePath(), ex);
 		}
 	}
+
+    @Override
+    public Object getProperty(QName name) {
+        final PropertyManager propertyManager = factory.getPropertyManager();
+        if (propertyManager != null) {
+            return propertyManager.getProperty(name, this);
+        }
+        return null;
+    }
+
+    @Override
+    public void setProperty(QName name, Object value) throws PropertySource.PropertySetException, NotAuthorizedException {
+        final PropertyManager propertyManager = factory.getPropertyManager();
+        if (propertyManager != null) {
+            propertyManager.setProperty(name, value, this);
+        }
+    }
+
+    @Override
+    public PropertySource.PropertyMetaData getPropertyMetaData(QName name) {
+        final PropertyManager propertyManager = factory.getPropertyManager();
+        if (propertyManager != null) {
+            return propertyManager.getPropertyMetaData(name, this);
+        }
+        return null;
+    }
+
+    @Override
+    public List<QName> getAllPropertyNames() {
+        final PropertyManager propertyManager = factory.getPropertyManager();
+        if (propertyManager != null) {
+            return propertyManager.getAllPropertyNames(this);
+        }
+        return null;
+    }
 }

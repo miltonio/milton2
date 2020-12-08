@@ -8,6 +8,13 @@
     	<constructor-arg>
     		<bean class="io.milton.http.fs.NullSecurityManager"/>
     	</constructor-arg>
+        <property name="propertyManager" ref="property.manager"/>
+    </bean>
+
+    <bean id="property.manager" class="io.milton.http.fs.SimplePropertyManager">
+        <constructor-arg>
+            <bean class="io.milton.cache.LocalCacheManager"/>
+        </constructor-arg>
     </bean>
 
     <bean id="milton.http.manager" class="io.milton.samples.fs.FsHttpManagerBuilderEnt">
