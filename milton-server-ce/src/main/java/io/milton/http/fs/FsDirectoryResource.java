@@ -23,9 +23,8 @@ import io.milton.http.*;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.resource.*;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -72,15 +71,15 @@ public class FsDirectoryResource extends FsResource implements MakeCollectionabl
     @Override
     public List<? extends Resource> getChildren() {
         ArrayList<FsResource> list = new ArrayList<>();
-        File[] files = this.file.listFiles();
-        if (files != null) {
-            for (File fchild : files) {
-                FsResource res = factory.resolveFile(this.host, fchild);
-                if (res != null) {
-                    list.add(res);
-                } else {
-                    log.error("Couldnt resolve file {}", fchild.getAbsolutePath());
-                }
+        File[] files = Arrays.stream(Optional.ofNullable(this.file.listFiles()).orElse(new File[0]))
+                .sorted(Comparator.comparing(File::isDirectory).reversed().thenComparing(File::getName))
+                .toArray(File[]::new);
+        for (File fchild : files) {
+            FsResource res = factory.resolveFile(this.host, fchild);
+            if (res != null) {
+                list.add(res);
+            } else {
+                log.error("Couldnt resolve file {}", fchild.getAbsolutePath());
             }
         }
         return list;

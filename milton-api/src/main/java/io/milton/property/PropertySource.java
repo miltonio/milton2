@@ -46,11 +46,19 @@ public interface PropertySource {
 
         private final PropertyAccessibility accessibility;
         private final Class valueType;
+        private final boolean alwaysWriteable;
         public static final PropertyMetaData UNKNOWN = new PropertyMetaData( PropertyAccessibility.UNKNOWN, null );
 
         public PropertyMetaData( PropertyAccessibility accessibility, Class valueType ) {
             this.accessibility = accessibility;
             this.valueType = valueType;
+            this.alwaysWriteable = false;
+        }
+
+        public PropertyMetaData( PropertyAccessibility accessibility, Class valueType, boolean alwaysWriteable) {
+            this.accessibility = accessibility;
+            this.valueType = valueType;
+            this.alwaysWriteable = alwaysWriteable;
         }
 
         public PropertyAccessibility getAccessibility() {
@@ -67,6 +75,10 @@ public interface PropertySource {
 
         public boolean isWritable() {
             return accessibility.equals( PropertyAccessibility.WRITABLE );
+        }
+
+        public boolean isAlwaysWriteable() {
+            return alwaysWriteable;
         }
     }
 

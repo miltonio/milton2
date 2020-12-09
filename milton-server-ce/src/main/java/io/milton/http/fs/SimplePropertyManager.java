@@ -45,8 +45,13 @@ public class SimplePropertyManager implements PropertyManager {
 
     @Override
     public PropertySource.PropertyMetaData getPropertyMetaData(QName name, MultiNamespaceCustomPropertyResource resource) {
-        if (!name.getNamespaceURI().equals(WebDavProtocol.NS_DAV.getName())) {
-            return new PropertySource.PropertyMetaData(PropertySource.PropertyAccessibility.WRITABLE, String.class);
+        if (!name.getNamespaceURI().equals(WebDavProtocol.NS_DAV.getName()) && !name.getNamespaceURI().contains("caldav") && !name.getNamespaceURI().contains("carddav")) {
+            final Map<QName, Object> map = propertiesByUniqueId.get(resource.getUniqueId());
+            if (map != null && map.containsKey(name)) {
+                return new PropertySource.PropertyMetaData(PropertySource.PropertyAccessibility.WRITABLE, String.class);
+            } else {
+                return new PropertySource.PropertyMetaData(PropertySource.PropertyAccessibility.UNKNOWN, String.class, true);
+            }
         }
         return null;
     }
