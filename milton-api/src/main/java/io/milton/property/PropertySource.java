@@ -73,12 +73,16 @@ public interface PropertySource {
             return accessibility.equals( PropertyAccessibility.UNKNOWN );
         }
 
+        public boolean isNotUnknownOrAlwaysWriteable() {
+            return !accessibility.equals( PropertyAccessibility.UNKNOWN ) || alwaysWriteable;
+        }
+
         public boolean isWritable() {
             return accessibility.equals( PropertyAccessibility.WRITABLE );
         }
 
         public boolean isAlwaysWriteable() {
-            return alwaysWriteable;
+            return accessibility.equals( PropertyAccessibility.WRITABLE ) || alwaysWriteable;
         }
     }
 

@@ -86,9 +86,9 @@ public class PropertySourcePatchSetter implements PropPatchSetter {
 			boolean found = false;
 			for (PropertySource source : propertySources) {
 				PropertyMetaData meta = source.getPropertyMetaData(entry.getKey(), r);
-				if (meta != null && (!meta.isUnknown() || meta.isAlwaysWriteable())) {
+				if (meta != null && meta.isNotUnknownOrAlwaysWriteable()) {
 					found = true;
-					if (meta.isWritable() || meta.isAlwaysWriteable()) {
+					if (meta.isAlwaysWriteable()) {
 						Object val = parse(name, entry.getValue(), meta.getValueType());
 						try {
 							log.trace("setProperties: name: {} source: {}", name, source.getClass());
