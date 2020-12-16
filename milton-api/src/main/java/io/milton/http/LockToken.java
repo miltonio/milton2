@@ -52,6 +52,10 @@ public class LockToken implements Serializable {
         this.from = from;
     }
 
+    public void setTimeout(LockTimeout timeout) {
+        this.timeout = timeout;
+    }
+
     public boolean isExpired() {
         long secondsDif = dateDiffSeconds(new Date(), from);
         // http://jira.ettrema.com:8080/browse/MIL-79

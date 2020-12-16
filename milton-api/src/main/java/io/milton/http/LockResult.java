@@ -28,7 +28,7 @@ public class LockResult implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public static LockResult failed( FailureReason failureReason) {
+    public static LockResult failed(FailureReason failureReason) {
         return new LockResult(failureReason, null);
     }
 

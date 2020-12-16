@@ -140,12 +140,12 @@ public abstract class TResource extends AbstractResource implements GetableResou
     }
 
     @Override
-    public final LockResult refreshLock(String tokenId) {
+    public final LockResult refreshLock(String tokenId, LockTimeout timeout) {
         log.trace("RefreshLock : " + tokenId + " on resource : " + getName() + " in : " + parent);
         //throw new UnsupportedOperationException("Not supported yet.");
         LockToken token = new LockToken();
         token.info = null;
-        token.timeout = LockTimeout.parseTimeout("30");
+        token.timeout = timeout;
         token.tokenId = currentLock.tokenId;
         currentLock = token;
         return LockResult.success(token);

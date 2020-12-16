@@ -9,9 +9,16 @@
     		<bean class="io.milton.http.fs.NullSecurityManager"/>
     	</constructor-arg>
         <property name="propertyManager" ref="property.manager"/>
+        <property name="lockManager" ref="lock.manager"/>
     </bean>
 
     <bean id="property.manager" class="io.milton.http.fs.SimplePropertyManager">
+        <constructor-arg>
+            <bean class="io.milton.cache.LocalCacheManager"/>
+        </constructor-arg>
+    </bean>
+
+    <bean id="lock.manager" class="io.milton.http.fs.SimpleLockManager">
         <constructor-arg>
             <bean class="io.milton.cache.LocalCacheManager"/>
         </constructor-arg>

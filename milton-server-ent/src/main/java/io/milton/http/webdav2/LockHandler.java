@@ -13,7 +13,9 @@ import io.milton.http.*;
 import io.milton.http.exceptions.*;
 import io.milton.http.webdav.WebDavResponseHandler;
 import io.milton.webdav.utils.LockUtils;
+
 import java.io.IOException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -26,14 +28,14 @@ import org.xml.sax.SAXException;
 public class LockHandler implements ResourceHandler {
 
     private static final Logger log = LoggerFactory.getLogger(LockHandler.class);
-            
+
     private final WebDavResponseHandler responseHandler;
     private final HandlerHelper handlerHelper;
 
     public LockHandler(WebDavResponseHandler responseHandler, HandlerHelper handlerHelper) {
         this.responseHandler = responseHandler;
         this.handlerHelper = handlerHelper;
-        LockUtils.init(); 
+        LockUtils.init();
     }
 
     @Override
@@ -91,10 +93,10 @@ public class LockHandler implements ResourceHandler {
 
     /**
      * (from the spec) 7.4 Write Locks and Null Resources
-     *
+     * <p>
      * It is possible to assert a write lock on a null resource in order to lock
      * the name.
-     *
+     * <p>
      * A write locked null resource, referred to as a lock-null resource, MUST
      * respond with a 404 (Not Found) or 405 (Method Not Allowed) to any
      * HTTP/1.1 or DAV methods except for PUT, MKCOL, OPTIONS, PROPFIND, LOCK,
@@ -104,16 +106,15 @@ public class LockHandler implements ResourceHandler {
      * get* properties, will have no value as a lock-null resource does not
      * support the GET method. Lock-Null resources MUST have defined values for
      * lockdiscovery and supportedlock properties.
-     *
+     * <p>
      * Until a method such as PUT or MKCOL is successfully executed on the
      * lock-null resource the resource MUST stay in the lock-null state.
      * However, once a PUT or MKCOL is successfully executed on a lock-null
      * resource the resource ceases to be in the lock-null state.
-     *
+     * <p>
      * If the resource is unlocked, for any reason, without a PUT, MKCOL, or
      * similar method having been successfully executed upon it then the
      * resource MUST return to the null state.
-     *
      *
      * @param manager
      * @param request
@@ -221,12 +222,12 @@ public class LockHandler implements ResourceHandler {
         log.debug("refreshing lock: {}", token);
         LockResult result;
         try {
-            result = r.refreshLock(token);
+            result = r.refreshLock(token, timeout);
         } catch (PreConditionFailedException ex) {
             responseHandler.respondPreconditionFailed(request, response, r);
             return;
         }
-        if( result == null ) {
+        if (result == null) {
             throw new NullPointerException("Null lock result returned from: " + r.getClass());
         }
         if (result.isSuccessful()) {

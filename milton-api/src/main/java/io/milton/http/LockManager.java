@@ -29,7 +29,7 @@ public interface LockManager {
 
     LockResult lock(LockTimeout timeout, LockInfo lockInfo, LockableResource resource) throws NotAuthorizedException;
 
-    LockResult refresh(String token, LockableResource resource) throws NotAuthorizedException;
+    LockResult refresh(String token, LockTimeout timeout, LockableResource resource) throws NotAuthorizedException;
 
     void unlock(String tokenId, LockableResource resource) throws NotAuthorizedException;
 

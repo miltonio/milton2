@@ -30,32 +30,32 @@ import io.milton.http.exceptions.PreConditionFailedException;
 
 /**
  * webDAV LOCK
- *
+ * <p>
  * You should also implement LockingCollectionResource on your collections for full
  * locking support
- * 
+ *
  * @author brad
  */
 public interface LockableResource extends Resource {
     /**
      * Lock this resource and return a token
-     * 
-     * @param timeout - in seconds, or null
+     *
+     * @param timeout  - in seconds, or null
      * @param lockInfo
      * @return - a result containing the token representing the lock if succesful,
      * otherwise a failure reason code
      */
     LockResult lock(LockTimeout timeout, LockInfo lockInfo) throws NotAuthorizedException, PreConditionFailedException, LockedException;
-    
+
     /**
      * Renew the lock and return new lock info
-     * 
+     *
      * @param token
      * @return
      * @throws io.milton.http.exceptions.NotAuthorizedException
      * @throws io.milton.http.exceptions.PreConditionFailedException
      */
-    LockResult refreshLock(String token) throws NotAuthorizedException, PreConditionFailedException;
+    LockResult refreshLock(String token, LockTimeout timeout) throws NotAuthorizedException, PreConditionFailedException;
 
     /**
      * If the resource is currently locked, and the tokenId  matches the current
@@ -66,7 +66,6 @@ public interface LockableResource extends Resource {
     void unlock(String tokenId) throws NotAuthorizedException, PreConditionFailedException;
 
     /**
-     *
      * @return - the current lock, if the resource is locked, or null
      */
     LockToken getCurrentLock();

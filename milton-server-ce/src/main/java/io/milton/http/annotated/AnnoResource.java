@@ -458,8 +458,8 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
 	}
 
 	@Override
-	public LockResult refreshLock(String token) throws NotAuthorizedException, PreConditionFailedException {
-		return annoFactory.getLockManager().refresh(token, this);
+	public LockResult refreshLock(String token, LockTimeout timeout) throws NotAuthorizedException, PreConditionFailedException {
+		return annoFactory.getLockManager().refresh(token, timeout, this);
 	}
 
 	@Override

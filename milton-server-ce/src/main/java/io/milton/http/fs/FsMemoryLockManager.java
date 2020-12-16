@@ -22,11 +22,13 @@ package io.milton.http.fs;
 import io.milton.http.*;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.resource.LockableResource;
+
 import java.io.File;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +37,7 @@ import org.slf4j.LoggerFactory;
  */
 public class FsMemoryLockManager implements LockManager {
 
-    private static final Logger log = LoggerFactory.getLogger( FsMemoryLockManager.class );
+    private static final Logger log = LoggerFactory.getLogger(FsMemoryLockManager.class);
     /**
      * maps current locks by the file associated with the resource
      */
@@ -48,77 +50,78 @@ public class FsMemoryLockManager implements LockManager {
     }
 
     @Override
-    public synchronized LockResult lock( LockTimeout timeout, LockInfo lockInfo, LockableResource r ) {
+    public synchronized LockResult lock(LockTimeout timeout, LockInfo lockInfo, LockableResource r) {
         FsResource resource = (FsResource) r;
-        LockToken currentLock = currentLock( resource );
-        if( currentLock != null ) {
-            return LockResult.failed( LockResult.FailureReason.ALREADY_LOCKED );
+        LockToken currentLock = currentLock(resource);
+        if (currentLock != null) {
+            return LockResult.failed(LockResult.FailureReason.ALREADY_LOCKED);
         }
 
-        LockToken newToken = new LockToken( UUID.randomUUID().toString(), lockInfo, timeout );
+        LockToken newToken = new LockToken(UUID.randomUUID().toString(), lockInfo, timeout);
         CurrentLock newLock = new CurrentLock(resource.getFile(), newToken, lockInfo.lockedByUser);
-        locksByFile.put( resource.getFile(), newLock );
-        locksByToken.put( newToken.tokenId, newLock );
-        return LockResult.success( newToken );
+        locksByFile.put(resource.getFile(), newLock);
+        locksByToken.put(newToken.tokenId, newLock);
+        return LockResult.success(newToken);
     }
 
     @Override
-    public synchronized LockResult refresh( String tokenId, LockableResource resource ) {
-        CurrentLock curLock = locksByToken.get( tokenId );
-        if( curLock == null ) {
-            log.debug( "can't refresh because no lock");
-            return LockResult.failed( LockResult.FailureReason.PRECONDITION_FAILED );
+    public synchronized LockResult refresh(String tokenId, LockTimeout timeout, LockableResource resource) {
+        CurrentLock curLock = locksByToken.get(tokenId);
+        if (curLock == null) {
+            log.debug("can't refresh because no lock");
+            return LockResult.failed(LockResult.FailureReason.PRECONDITION_FAILED);
         } else {
-            curLock.token.setFrom( new Date() );
-            return LockResult.success( curLock.token );
+            curLock.token.setTimeout(timeout);
+            curLock.token.setFrom(new Date());
+            return LockResult.success(curLock.token);
         }
     }
 
     @Override
-    public synchronized void unlock( String tokenId, LockableResource r ) throws NotAuthorizedException {
+    public synchronized void unlock(String tokenId, LockableResource r) throws NotAuthorizedException {
         FsResource resource = (FsResource) r;
-        LockToken lockToken = currentLock( resource );
-        if( lockToken == null ) {
-            log.debug( "not locked" );
+        LockToken lockToken = currentLock(resource);
+        if (lockToken == null) {
+            log.debug("not locked");
             return;
         }
-        if( lockToken.tokenId.equals( tokenId ) ) {
-            removeLock( lockToken );
+        if (lockToken.tokenId.equals(tokenId)) {
+            removeLock(lockToken);
         } else {
-            throw new NotAuthorizedException( resource );
+            throw new NotAuthorizedException(resource);
         }
     }
 
-    private LockToken currentLock( FsResource resource ) {
-        CurrentLock curLock = locksByFile.get( resource.getFile() );
-        if( curLock == null ) return null;
+    private LockToken currentLock(FsResource resource) {
+        CurrentLock curLock = locksByFile.get(resource.getFile());
+        if (curLock == null) return null;
         LockToken token = curLock.token;
-        if( token.isExpired() ) {
-            removeLock( token );
+        if (token.isExpired()) {
+            removeLock(token);
             return null;
         } else {
             return token;
         }
     }
 
-    private void removeLock( LockToken token ) {
-        log.debug( "removeLock: " + token.tokenId );
-        CurrentLock currentLock = locksByToken.get( token.tokenId );
-        if( currentLock != null ) {
-            locksByFile.remove( currentLock.file );
-            locksByToken.remove( currentLock.token.tokenId );
+    private void removeLock(LockToken token) {
+        log.debug("removeLock: " + token.tokenId);
+        CurrentLock currentLock = locksByToken.get(token.tokenId);
+        if (currentLock != null) {
+            locksByFile.remove(currentLock.file);
+            locksByToken.remove(currentLock.token.tokenId);
         } else {
-            log.warn( "couldnt find lock: " + token.tokenId );
+            log.warn("couldnt find lock: " + token.tokenId);
         }
     }
 
     @Override
-    public LockToken getCurrentToken( LockableResource r ) {
+    public LockToken getCurrentToken(LockableResource r) {
         FsResource resource = (FsResource) r;
-        CurrentLock lock = locksByFile.get( resource.getFile() );
-        if( lock == null ) return null;
+        CurrentLock lock = locksByFile.get(resource.getFile());
+        if (lock == null) return null;
         LockToken token = new LockToken();
-        token.info = new LockInfo( LockInfo.LockScope.EXCLUSIVE, LockInfo.LockType.WRITE, lock.lockedByUser, LockInfo.LockDepth.ZERO );
+        token.info = new LockInfo(LockInfo.LockScope.EXCLUSIVE, LockInfo.LockType.WRITE, lock.lockedByUser, LockInfo.LockDepth.ZERO);
         token.info.lockedByUser = lock.lockedByUser;
         token.timeout = lock.token.timeout;
         token.tokenId = lock.token.tokenId;
@@ -131,7 +134,7 @@ public class FsMemoryLockManager implements LockManager {
         final LockToken token;
         final String lockedByUser;
 
-        public CurrentLock( File file, LockToken token, String lockedByUser ) {
+        public CurrentLock(File file, LockToken token, String lockedByUser) {
             this.file = file;
             this.token = token;
             this.lockedByUser = lockedByUser;

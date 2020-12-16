@@ -142,8 +142,8 @@ public abstract class FsResource implements Resource, MoveableResource, Copyable
         return factory.getLockManager().lock(timeout, lockInfo, this);
     }
 
-    public LockResult refreshLock(String token) throws NotAuthorizedException {
-        return factory.getLockManager().refresh(token, this);
+    public LockResult refreshLock(String token, LockTimeout timeout) throws NotAuthorizedException {
+        return factory.getLockManager().refresh(token, timeout, this);
     }
 
     public void unlock(String tokenId) throws NotAuthorizedException {
