@@ -30,6 +30,8 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static io.milton.http.ResponseStatus.SC_FORBIDDEN;
+
 /**
  * Represents a directory in a physical file system.
  *
@@ -110,12 +112,19 @@ public class FsDirectoryResource extends FsResource implements MakeCollectionabl
     }
 
     @Override
-    protected void doCopy(File dest) {
+    protected void doCopy(File dest) throws NotAuthorizedException {
         try {
+            if (isRecursive(dest)) {
+                throw new NotAuthorizedException("Cannot copy to subfolder", this, SC_FORBIDDEN);
+            }
             FileUtils.copyDirectory(this.getFile(), dest);
         } catch (IOException ex) {
             throw new RuntimeException("Failed to copy to:" + dest.getAbsolutePath(), ex);
         }
+    }
+
+    private boolean isRecursive(File dest) throws IOException {
+        return dest.getCanonicalPath().startsWith(this.file.getCanonicalPath());
     }
 
     @Override

@@ -25,6 +25,8 @@ import io.milton.http.exceptions.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static io.milton.http.ResponseStatus.SC_FORBIDDEN;
+
 public class StandardFilter implements Filter {
 
 	private final Logger log = LoggerFactory.getLogger(StandardFilter.class);
@@ -63,7 +65,11 @@ public class StandardFilter implements Filter {
 			manager.getResponseHandler().respondConflict(ex.getResource(), response, request, INTERNAL_SERVER_ERROR_HTML);
 		} catch (NotAuthorizedException ex) {
 			log.warn("NotAuthorizedException", ex);
-			manager.getResponseHandler().respondUnauthorised(ex.getResource(), response, request);
+			if (ex.getRequiredStatusCode() == SC_FORBIDDEN) {
+				manager.getResponseHandler().respondForbidden(ex.getResource(), response, request);
+			} else {
+				manager.getResponseHandler().respondUnauthorised(ex.getResource(), response, request);
+			}
 		} catch (NotFoundException ex) {
 			log.warn("NotFoundException", ex);
 			manager.getResponseHandler().respondNotFound(response, request);

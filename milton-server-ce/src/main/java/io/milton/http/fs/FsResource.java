@@ -40,7 +40,7 @@ public abstract class FsResource implements Resource, MoveableResource, Copyable
     final String host;
     String ssoPrefix;
 
-    protected abstract void doCopy(File dest);
+    protected abstract void doCopy(File dest) throws NotAuthorizedException;
 
     public FsResource(String host, FileSystemResourceFactory factory, File file) {
         this.host = host;
@@ -121,7 +121,7 @@ public abstract class FsResource implements Resource, MoveableResource, Copyable
         }
     }
 
-    public void copyTo(CollectionResource newParent, String newName) {
+    public void copyTo(CollectionResource newParent, String newName) throws NotAuthorizedException {
         if (newParent instanceof FsDirectoryResource) {
             FsDirectoryResource newFsParent = (FsDirectoryResource) newParent;
             File dest = new File(newFsParent.getFile(), newName);

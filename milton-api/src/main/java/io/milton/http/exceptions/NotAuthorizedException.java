@@ -30,6 +30,7 @@ import io.milton.resource.Resource;
  */
 public class NotAuthorizedException extends MiltonException{
     private static final long serialVersionUID = 1L;
+    private int requiredStatusCode = -1;
 
     public NotAuthorizedException() {
     }    
@@ -46,7 +47,12 @@ public class NotAuthorizedException extends MiltonException{
 		super(message, r);
 	}
 	
-	
-	
+	public NotAuthorizedException(String message, Resource r, int requiredStatusCode) {
+        super(message, r);
+        this.requiredStatusCode = requiredStatusCode;
+    }
 
+    public int getRequiredStatusCode() {
+        return requiredStatusCode;
+    }
 }
