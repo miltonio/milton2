@@ -117,7 +117,8 @@ public class PropFindHandler implements ExistingEntityHandler, PropertyHandler {
         PropFindableResource pfr = (PropFindableResource) resource;
         int depth = request.getDepthHeader();
         response.setStatus( Response.Status.SC_MULTI_STATUS );
-        response.setContentTypeHeader( Response.XML );
+        response.setContentTypeHeader(Response.APPLICATION_XML);
+//        response.setContentTypeHeader( Response.XML );
         PropertiesRequest parseResult;
         try {
             parseResult = requestFieldParser.getRequestedFields( request.getInputStream() );

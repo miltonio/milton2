@@ -31,6 +31,7 @@ public interface Response {
     String MULTIPART = "multipart/form-data";
     String MULTIPART_MIXED = "multipart/mixed";
     String XML = "text/xml; charset=UTF-8";
+    String APPLICATION_XML = "application/xml; charset=utf-8";
 
     enum ContentType {
 
@@ -70,7 +71,7 @@ public interface Response {
         ACCESS_CONTROL_ALLOW_ORIGIN("Access-Control-Allow-Origin"),
         ACCEPT_RANGES("Accept-Ranges"),
         CONTENT_RANGE( "Content-Range" );
-        
+
         public final String code;
 
         Header( String code ) {
@@ -165,7 +166,7 @@ public interface Response {
     Map<String, String> getHeaders();
 
     /**
-     * 
+     *
      * @return - the content length which might have been set by a handler, or null
      * if none has been set
      */
@@ -245,17 +246,17 @@ public interface Response {
 
     /**
      * Used for CORS responses
-     * 
-     * @return 
+     *
+     * @return
      */
     String getAccessControlAllowOrigin();
-    
+
     void setAccessControlAllowOrigin(String s);
-    
+
     String getAcceptRanges();
-    
+
     void setAcceptRanges(String s);
-    
+
     /**
      * Called to indicate that the request is completed. Some response implementations
      * might choose to close the http connection, while others which implement pipelining
@@ -272,19 +273,19 @@ public interface Response {
      * @param message
      */
     void sendError(Status status, String message);
-    
+
     /**
      * Will set the status to moved_temporarily and set the location header
      * to the given url
-     * 
+     *
      * @param url
      */
     void sendRedirect( String url );
-    
+
     /**
      * Will set the status to moved_permanently and set the location header
      * to the given url
-     * 
+     *
      * @param url
      */
     void sendPermanentRedirect( String url );

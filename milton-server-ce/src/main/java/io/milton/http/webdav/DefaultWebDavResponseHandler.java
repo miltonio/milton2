@@ -188,7 +188,7 @@ public class DefaultWebDavResponseHandler implements WebDavResponseHandler, Buff
 		log.trace("respondPropFind");
 		response.setStatus(Status.SC_MULTI_STATUS);
 		response.setDateHeader(new Date());
-		response.setContentTypeHeader("application/xml; charset=utf-8");
+//		response.setContentTypeHeader("application/xml; charset=utf-8");
 		//response.setContentTypeHeader( Response.XML );
 		List<String> supportedLevels = resourceTypeHelper.getSupportedLevels(r);
 		String s = Utils.toCsv(supportedLevels);
@@ -206,7 +206,7 @@ public class DefaultWebDavResponseHandler implements WebDavResponseHandler, Buff
 				log.trace("----");
 			}
 			byte[] arr = bout.toByteArray();
-			//response.setContentLengthHeader((long) arr.length);			
+			response.setContentLengthHeader((long) arr.length);
 			outputStream.write(arr);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
