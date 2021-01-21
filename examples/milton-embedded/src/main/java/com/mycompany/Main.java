@@ -41,7 +41,7 @@ public class Main {
     
     private static final String LOG_PATH = "./var/logs/access/yyyy_mm_dd.request.log";
     private static final String WEB_XML = "META-INF/webapp/WEB-INF/web.xml";
-    private static final String PROJECT_RELATIVE_PATH_TO_WEBAPP = "src/main/webapp";
+    private static final String PROJECT_RELATIVE_PATH_TO_WEBAPP = "examples/milton-embedded/src/main/webapp";
 
     public static interface WebContext {
 
@@ -64,10 +64,9 @@ public class Main {
     }
 
     public void start() throws Exception {
-        server = new Server();
-
-        server.setThreadPool(createThreadPool());
-        server.addConnector(createConnector());
+        server = new Server(createThreadPool());
+        createConnector(server);
+//        server.addConnector(createConnector(server));
         server.setHandler(createHandlers());
         server.setStopAtShutdown(true);
 
@@ -91,9 +90,9 @@ public class Main {
         return _threadPool;
     }
 
-    private SelectChannelConnector createConnector() {
-        SelectChannelConnector _connector
-                = new SelectChannelConnector();
+    private Connector createConnector(Server server) {
+        ServerConnector _connector
+                = new ServerConnector(server);
         _connector.setPort(port);
         _connector.setHost(bindInterface);
         return _connector;
