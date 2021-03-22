@@ -4,7 +4,7 @@
     <parent>
         <groupId>io.milton</groupId>
         <artifactId>milton</artifactId>
-        <version>3.0.0.93</version>
+        <version>3.0.0.180</version>
     </parent>
     <groupId>io.milton</groupId>
     <artifactId>milton-proxy</artifactId>
