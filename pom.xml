@@ -1,190 +1,199 @@
-
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>io.milton</groupId>
-	<artifactId>milton</artifactId>
-	<version>3.0.0.194</version>
-	<packaging>pom</packaging>
-	<name>milton</name>
-	<url>http://milton.io</url>
-	<scm>
-		<connection>scm:git:git@github.com:miltonio/milton2.git</connection>
-	</scm>
-	<distributionManagement>
-		<repository>
-			<id>bintray-milton-Milton</id>
-			<name>milton-Milton</name>
-			<url>https://api.bintray.com/maven/milton/Milton/milton/;publish=1</url>
-		</repository>
-		<snapshotRepository>
-			<uniqueVersion>false</uniqueVersion>
-			<id>ettrema-repo</id>
-			<url>https://milton.io/maven/</url>
-		</snapshotRepository>
-	</distributionManagement>
-	<developers>
-		<developer>
-			<name>Brad McEvoy</name>
-			<timezone>GMT+12</timezone>
-		</developer>
-	</developers>
-	<properties>
-		<servlet.version>2.4</servlet.version>
-		<mime-util.version>2.1.3</mime-util.version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<easy-mock.version>3.1</easy-mock.version>
-		<netbeans.hint.license>apache20</netbeans.hint.license>
-	</properties>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>io.milton</groupId>
+    <artifactId>milton</artifactId>
+    <version>3.0.0.215</version>
+    <packaging>pom</packaging>
+    <name>milton</name>
+    <description>With Milton WebDAV Server Library for Java you can create your own WebDAV server, add WebDAV support to your existing Java project or DAV-enable your CMS/DMS/CRM.</description>
+    <url>http://milton.io</url>
+    <licenses>
+        <license>
+            <name>Milton Software License</name>
+            <url>https://milton.io/media/2123/milton-license-agreement.rtf</url>
+        </license>
+    </licenses>
+    <scm>
+        <connection>scm:git:git@github.com:miltonio/milton2.git</connection>
+        <url>http://github.com/miltonio/milton2/tree/master</url>
+    </scm>
+    <distributionManagement>
+        <repository>
+            <id>bintray-milton-Milton</id>
+            <name>milton-Milton</name>
+            <url>https://api.bintray.com/maven/milton/Milton/milton/;publish=1</url>
+        </repository>
+        <snapshotRepository>
+            <uniqueVersion>false</uniqueVersion>
+            <id>ettrema-repo</id>
+            <url>https://milton.io/maven/</url>
+        </snapshotRepository>
+    </distributionManagement>
+    <developers>
+        <developer>
+            <name>Brad McEvoy</name>
+            <timezone>GMT+12</timezone>
+        </developer>
+    </developers>
+    <properties>
+        <servlet.version>2.4</servlet.version>
+        <mime-util.version>2.1.3</mime-util.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <easy-mock.version>3.1</easy-mock.version>
+        <netbeans.hint.license>apache20</netbeans.hint.license>
+    </properties>
 
     <organization>
         <name>McEvoy Software Ltd</name>
         <url>http://www.mcevoysoftware.co.nz/</url>
     </organization>
-	<modules>
-		<module>milton-api</module>
-		<module>milton-server-ce</module>
-		<module>milton-server-ent</module>
-		<module>milton-client</module>
-		<module>milton-proxy</module>
-		<module>milton-mail-api</module>
-		<module>milton-mail-server</module>
+    <modules>
+        <module>milton-api</module>
+        <module>milton-server-ce</module>
+        <module>milton-server-ent</module>
+        <module>milton-client</module>
+        <module>milton-proxy</module>
+        <module>milton-mail-api</module>
+        <module>milton-mail-server</module>
 
         <!--
         <module>milton-filesystem-test</module>
         <module>milton-test</module>
         <module>milton-ajax-demo</module>
         -->
-	</modules>
-	<build>
-		<!--
-		<resources>
-			<resource>
-				<directory>${basedir}</directory>
-				<filtering>false</filtering>
-				<includes>
-					<include>LICENSE.txt</include>
-					<include>NOTICE.txt</include>
-				</includes>
-			</resource>
-		</resources>
-		-->
-		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.3.2</version>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-				</configuration>
-			</plugin>
-
-<!--
+    </modules>
+    <build>
+        <!--
+        <resources>
+            <resource>
+                <directory>${basedir}</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>LICENSE.txt</include>
+                    <include>NOTICE.txt</include>
+                </includes>
+            </resource>
+        </resources>
+        -->
+        <plugins>
             <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+
+            <!--
+                        <plugin>
+                            <artifactId>maven-antrun-plugin</artifactId>
+                            <executions>
+                                <execution>
+                                    <phase>install</phase>
+                                    <configuration>
+                                        <tasks>
+                                            <echo>Doing java to html...</echo>
+                                            requires j2h.jar to be on classpath. see http://www.java2html.com/java2html_ant_task.html
+                                            <taskdef name="java2html" classname="com.java2html.Java2HTMLTask" />
+
+                                                        <java2html title="Example" simple="no" tabsize="4" marginsize="2" header="true" footer="false" destination="target/html">
+                                                            <fileset dir="${basedir}/src/main/java">
+                                                                <include name="**/*.java" />
+                                                            </fileset>
+                                                        </java2html>
+                                                        <echo>...done</echo>
+                                                    </tasks>
+                                                </configuration>
+                                                <goals>
+                                                    <goal>run</goal>
+                                                </goals>
+                                            </execution>
+                                        </executions>
+                                        <dependencies>
+                                            <dependency>
+                                                <groupId>java2html</groupId>
+                                                <artifactId>j2h</artifactId>
+                                                <version>1.3.1</version>
+                                            </dependency>
+                                        </dependencies>
+                                    </plugin>
+                        -->
+
+            <plugin>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.1.2</version>
                 <executions>
                     <execution>
-                        <phase>install</phase>
-                        <configuration>
-                            <tasks>
-                                <echo>Doing java to html...</echo>
-                                requires j2h.jar to be on classpath. see http://www.java2html.com/java2html_ant_task.html
-                                <taskdef name="java2html" classname="com.java2html.Java2HTMLTask" />
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <doclint>none</doclint>
+                </configuration>
+            </plugin>
+        </plugins>
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-webdav</artifactId>
+                <version>1.0-beta-2</version>
+            </extension>
+        </extensions>
+    </build>
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jxr-plugin</artifactId>
+                <version>2.3</version>
+            </plugin>
+        </plugins>
+    </reporting>
 
-											<java2html title="Example" simple="no" tabsize="4" marginsize="2" header="true" footer="false" destination="target/html">
-												<fileset dir="${basedir}/src/main/java">
-													<include name="**/*.java" />
-												</fileset>
-											</java2html>
-											<echo>...done</echo>
-										</tasks>
-									</configuration>
-									<goals>
-										<goal>run</goal>
-									</goals>
-								</execution>
-							</executions>
-							<dependencies>
-								<dependency>
-									<groupId>java2html</groupId>
-									<artifactId>j2h</artifactId>
-									<version>1.3.1</version>
-								</dependency>
-							</dependencies>
-						</plugin>
-			-->
-
-			<plugin>
-				<artifactId>maven-source-plugin</artifactId>
-				<version>2.1.2</version>
-				<executions>
-					<execution>
-						<id>attach-sources</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<!--
-						<plugin>
-							<artifactId>maven-javadoc-plugin</artifactId>
-							<executions>
-								<execution>
-									<id>attach-javadocs</id>
-									<goals>
-										<goal>jar</goal>
-									</goals>
-								</execution>
-							</executions>
-						</plugin>
-			-->
-		</plugins>
-		<extensions>
-			<extension>
-				<groupId>org.apache.maven.wagon</groupId>
-				<artifactId>wagon-webdav</artifactId>
-				<version>1.0-beta-2</version>
-			</extension>
-		</extensions>
-	</build>
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jxr-plugin</artifactId>
-				<version>2.3</version>
-			</plugin>
-		</plugins>
-	</reporting>
-
-	<dependencies>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>${servlet.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.7.5</version>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>3.8.1</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<scope>test</scope>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.7.5</version>
-		</dependency>
-	</dependencies>
+    <dependencies>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>${servlet.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.5</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <scope>test</scope>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.5</version>
+        </dependency>
+    </dependencies>
 
 
-	<repositories>
+    <repositories>
         <repository>
             <id>central</id>
             <name>Central Repository</name>
@@ -194,24 +203,24 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
-		<repository>
-			<id>milton-repo</id>
-			<url>https://milton.io/maven/</url>
-		</repository>
-		<repository>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<id>bintray-milton-Milton</id>
-			<name>bintray</name>
-			<url>https://dl.bintray.com/milton/Milton</url>
-		</repository>
-		<!--
-				<repository>
-					<id>mvnrepository.com</id>
-					<name>mvnrepository.com</name>
-					<url>https://www.mvnrepository.com/artifacts</url>
-				</repository>
-		-->
-	</repositories>
+        <repository>
+            <id>milton-repo</id>
+            <url>https://milton.io/maven/</url>
+        </repository>
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>bintray-milton-Milton</id>
+            <name>bintray</name>
+            <url>https://dl.bintray.com/milton/Milton</url>
+        </repository>
+        <!--
+                <repository>
+                    <id>mvnrepository.com</id>
+                    <name>mvnrepository.com</name>
+                    <url>https://www.mvnrepository.com/artifacts</url>
+                </repository>
+        -->
+    </repositories>
 </project>
