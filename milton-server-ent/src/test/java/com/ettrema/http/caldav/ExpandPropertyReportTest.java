@@ -74,6 +74,7 @@ public class ExpandPropertyReportTest extends TestCase {
 	public void testProcess() throws Exception {
 		PropFindableResource pfr = createMock(PropFindableResource.class);
 		SAXBuilder builder = new org.jdom2.input.SAXBuilder();
+		builder.setExpandEntities(false);
 		String xml = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>" +
 						"<D:expand-property xmlns:D=\"DAV:\">" +
 						"<D:property name=\"version-history\">" +

@@ -79,6 +79,7 @@ public class ReportHandler implements ExistingEntityHandler {
 			org.jdom2.input.SAXBuilder builder = new org.jdom2.input.SAXBuilder();
 			// Prevent possibily of malicious clients using remote the parser to load remote resources
 			builder.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+			builder.setExpandEntities(false);
 			org.jdom2.Document doc = builder.build(request.getInputStream());
 			String reportName = doc.getRootElement().getName();
 			Report r = reports.get(reportName);
