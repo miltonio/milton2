@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.milton</groupId>
     <artifactId>milton</artifactId>
-    <version>3.0.0.215</version>
+    <version>3.0.0.232</version>
     <packaging>pom</packaging>
     <name>milton</name>
     <description>With Milton WebDAV Server Library for Java you can create your own WebDAV server, add WebDAV support to your existing Java project or DAV-enable your CMS/DMS/CRM.</description>
@@ -19,16 +19,14 @@
         <url>http://github.com/miltonio/milton2/tree/master</url>
     </scm>
     <distributionManagement>
-        <repository>
-            <id>bintray-milton-Milton</id>
-            <name>milton-Milton</name>
-            <url>https://api.bintray.com/maven/milton/Milton/milton/;publish=1</url>
-        </repository>
         <snapshotRepository>
-            <uniqueVersion>false</uniqueVersion>
-            <id>ettrema-repo</id>
-            <url>https://milton.io/maven/</url>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
     </distributionManagement>
     <developers>
         <developer>
@@ -56,26 +54,8 @@
         <module>milton-proxy</module>
         <module>milton-mail-api</module>
         <module>milton-mail-server</module>
-
-        <!--
-        <module>milton-filesystem-test</module>
-        <module>milton-test</module>
-        <module>milton-ajax-demo</module>
-        -->
     </modules>
     <build>
-        <!--
-        <resources>
-            <resource>
-                <directory>${basedir}</directory>
-                <filtering>false</filtering>
-                <includes>
-                    <include>LICENSE.txt</include>
-                    <include>NOTICE.txt</include>
-                </includes>
-            </resource>
-        </resources>
-        -->
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -85,42 +65,6 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
-
-            <!--
-                        <plugin>
-                            <artifactId>maven-antrun-plugin</artifactId>
-                            <executions>
-                                <execution>
-                                    <phase>install</phase>
-                                    <configuration>
-                                        <tasks>
-                                            <echo>Doing java to html...</echo>
-                                            requires j2h.jar to be on classpath. see http://www.java2html.com/java2html_ant_task.html
-                                            <taskdef name="java2html" classname="com.java2html.Java2HTMLTask" />
-
-                                                        <java2html title="Example" simple="no" tabsize="4" marginsize="2" header="true" footer="false" destination="target/html">
-                                                            <fileset dir="${basedir}/src/main/java">
-                                                                <include name="**/*.java" />
-                                                            </fileset>
-                                                        </java2html>
-                                                        <echo>...done</echo>
-                                                    </tasks>
-                                                </configuration>
-                                                <goals>
-                                                    <goal>run</goal>
-                                                </goals>
-                                            </execution>
-                                        </executions>
-                                        <dependencies>
-                                            <dependency>
-                                                <groupId>java2html</groupId>
-                                                <artifactId>j2h</artifactId>
-                                                <version>1.3.1</version>
-                                            </dependency>
-                                        </dependencies>
-                                    </plugin>
-                        -->
-
             <plugin>
                 <artifactId>maven-source-plugin</artifactId>
                 <version>2.1.2</version>
@@ -145,6 +89,34 @@
                 </executions>
                 <configuration>
                     <doclint>none</doclint>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <executable>${GPG_PATH}</executable>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.7</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
                 </configuration>
             </plugin>
         </plugins>
