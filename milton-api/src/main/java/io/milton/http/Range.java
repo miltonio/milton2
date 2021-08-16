@@ -96,7 +96,7 @@ public class Range {
         }
         s += "-";
         if (finish != null) {
-            s += "finish";
+            s += finish;
         }
         return s;
     }

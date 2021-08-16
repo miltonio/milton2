@@ -33,4 +33,10 @@ public class RangeTest extends TestCase {
         assertEquals(123, r.getStart().longValue());
         assertEquals(456, r.getFinish().longValue());
     }
+
+    public void testRangeParseWithNoEnd() {
+        Range r = Range.parse("123-");
+        assertEquals(123, r.getStart().longValue());
+        assertNull(r.getFinish());
+    }
 }
