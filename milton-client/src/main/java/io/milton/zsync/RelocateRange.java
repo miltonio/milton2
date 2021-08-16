@@ -41,7 +41,7 @@ public final class RelocateRange {
 	 * The String separating the Range from the offset in the String representation 
 	 * of this object.
 	 */
-	public final static String DIV = "/";
+	public static final String DIV = "/";
 
 	private final Range blockRange;
 	private final long newOffset;

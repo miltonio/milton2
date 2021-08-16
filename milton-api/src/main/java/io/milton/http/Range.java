@@ -34,10 +34,8 @@ public class Range {
                 start = Long.parseLong(arr[0]);
             }
             Long finish = null;
-            if (arr.length > 1) {
-                if (arr[1].length() > 0) {
-                    finish = Long.parseLong(arr[1]);
-                }
+            if (arr.length > 1 && arr[1].length() > 0) {
+                finish = Long.parseLong(arr[1]);
             }
             return new Range(start, finish);
         } catch (Throwable e) {

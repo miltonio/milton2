@@ -108,19 +108,13 @@ public class UploadReader {
         /*The FileChannels should be obtained from a RandomAccessFile rather than a 
          *Stream, or the position() method will not work correctly
          */
-        FileChannel rc = null;
-        FileChannel wc = null;
-        try {
-            rc = new RandomAccessFile(inFile, "r").getChannel();
-            wc = new RandomAccessFile(outFile, "rw").getChannel();
+        try (FileChannel rc = new RandomAccessFile(inFile, "r").getChannel();
+            FileChannel wc = new RandomAccessFile(outFile, "rw").getChannel()) {
 
             while (relocRanges.hasMoreElements()) {
 
                 moveRange(rc, relocRanges.nextElement(), blocksize, wc);
             }
-        } finally {
-            Util.close(rc);
-            Util.close(wc);
         }
     }
 
@@ -203,10 +197,8 @@ public class UploadReader {
         int BUFFER_SIZE = 16384;
         byte[] buffer = new byte[BUFFER_SIZE];
 
-        RandomAccessFile randAccess = null;
-        try {
+        try (RandomAccessFile randAccess = new RandomAccessFile(outFile, "rw")) {
 
-            randAccess = new RandomAccessFile(outFile, "rw");
             while (byteRanges.hasMoreElements()) {
 
                 ByteRange byteRange = byteRanges.nextElement();
@@ -215,8 +207,6 @@ public class UploadReader {
 
                 sendBytes(data, range, buffer, randAccess);
             }
-        } finally {
-            Util.close(randAccess);
         }
     }
 
@@ -265,26 +255,14 @@ public class UploadReader {
      */
     private static void copyFile(File inFile, File outFile, long length) throws IOException {
 
-        InputStream fIn = null;
-        OutputStream fOut = null;
-        RandomAccessFile randAccess = null;
+        try (InputStream fIn = new FileInputStream(inFile);
+             OutputStream fOut = new FileOutputStream(outFile)) {
 
-        try {
-
-            fIn = new FileInputStream(inFile);
-            fOut = new FileOutputStream(outFile);
             RangeUtils.sendBytes(fIn, fOut, inFile.length());
-        } finally {
-            StreamUtils.close(fIn);
-            StreamUtils.close(fOut);
         }
 
-        try {
-
-            randAccess = new RandomAccessFile(outFile, "rw");
+        try (RandomAccessFile randAccess = new RandomAccessFile(outFile, "rw")){
             randAccess.setLength(length);
-        } finally {
-            Util.close(randAccess);
         }
     }
     private final File serverCopy;
