@@ -4,7 +4,7 @@
     <parent>
         <groupId>io.milton</groupId>
         <artifactId>milton</artifactId>
-        <version>3.0.0.232</version>
+        <version>3.0.0.246</version>
     </parent>
     <artifactId>milton-mail-api</artifactId>
     <packaging>jar</packaging>
