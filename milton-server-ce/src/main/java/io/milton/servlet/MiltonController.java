@@ -60,10 +60,14 @@ public class MiltonController implements Controller {
     @Override
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         log.debug("handleRequest: " + request.getRequestURI() + " method:" + request.getMethod());
-        ServletRequest rq = new ServletRequest(request, null);
-        ServletResponse rs = new ServletResponse(response);
-        httpManager.process(rq, rs);
-        return null;
+        try {
+            ServletRequest rq = new ServletRequest(request, null);
+            ServletResponse rs = new ServletResponse(response);
+            httpManager.process(rq, rs);
+            return null;
+        } finally {
+            ServletRequest.clearThreadLocals();
+        }
     }
 
     public HttpManager getHttpManager() {

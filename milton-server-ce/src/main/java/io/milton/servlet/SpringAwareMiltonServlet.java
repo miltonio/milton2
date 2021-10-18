@@ -135,6 +135,7 @@ public class SpringAwareMiltonServlet implements Servlet{
         } finally {
             originalRequest.remove();
             originalResponse.remove();
+            ServletRequest.clearThreadLocals();
             servletResponse.getOutputStream().flush();            
             servletResponse.flushBuffer();
         }

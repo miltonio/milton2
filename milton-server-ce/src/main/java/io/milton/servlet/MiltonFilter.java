@@ -129,6 +129,7 @@ public class MiltonFilter implements javax.servlet.Filter {
 			httpManager.process(request, response);
 		} finally {
 			MiltonServlet.clearThreadlocals();
+			ServletRequest.clearThreadLocals();
 			resp.getOutputStream().flush();
 			resp.flushBuffer();
 		}
