@@ -46,7 +46,7 @@ public interface MultiNamespaceCustomPropertyResource extends Resource {
 	 * 
 	 * @param name - the qualified name of the property
 	 * @param value - the new typed value
-	 * @throws com.bradmcevoy.property.PropertySource.PropertySetException - if the input is invalid
+	 * @throws io.milton.property.PropertySource.PropertySetException - if the input is invalid
 	 * @throws NotAuthorizedException - if the current user is not allowed to set this value
 	 */
     void setProperty( QName name, Object value ) throws PropertySource.PropertySetException, NotAuthorizedException;

@@ -66,7 +66,7 @@ public class CompressingResponseHandler extends AbstractWrappingResponseHandler 
 	}
 
 	/**
-	 * Defaults to com.bradmcevoy.http.http11.DefaultCacheControlHelper
+	 * Defaults to io.milton.http.http11.DefaultCacheControlHelper
 	 *
 	 * @return
 	 */

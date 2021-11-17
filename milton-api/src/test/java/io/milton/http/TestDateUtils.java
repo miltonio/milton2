@@ -114,7 +114,7 @@ public class TestDateUtils extends TestCase {
     /**
      * See http://www.ettrema.com:8080/browse/MIL-60
      *
-     * @throws com.bradmcevoy.http.DateUtils.DateParseException
+     * @throws io.milton.http.DateUtils.DateParseException
      */
     public void testParseWithoutSeconds() throws DateParseException {
         Date dt = DateUtils.parseDate( "Sun, 28 Mar 2010 01:00 GMT");

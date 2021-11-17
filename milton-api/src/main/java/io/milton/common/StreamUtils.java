@@ -98,8 +98,8 @@ public class StreamUtils {
      * @param in
      * @param out
      * @return
-     * @throws com.bradmcevoy.io.ReadingException
-     * @throws com.bradmcevoy.io.WritingException
+     * @throws io.milton.common.ReadingException
+     * @throws io.milton.common.WritingException
      */
     public static long readTo(InputStream in, OutputStream out) throws ReadingException, WritingException {
         return readTo(in, out, false, false, null, null);
@@ -114,8 +114,8 @@ public class StreamUtils {
      * @param closeIn
      * @param closeOut
      * @return - number of bytes written
-     * @throws com.bradmcevoy.io.ReadingException
-     * @throws com.bradmcevoy.io.WritingException
+     * @throws io.milton.common.ReadingException
+     * @throws io.milton.common.WritingException
      */
     public static long readTo(InputStream in, OutputStream out, boolean closeIn, boolean closeOut) throws ReadingException, WritingException {
         return readTo(in, out, closeIn, closeOut, null, null);

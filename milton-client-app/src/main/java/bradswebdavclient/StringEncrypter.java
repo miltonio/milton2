@@ -19,7 +19,7 @@
 
 package bradswebdavclient;
 
-import com.bradmcevoy.io.Base64Coder;
+import org.base64coder.Base64Coder;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;

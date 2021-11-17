@@ -46,7 +46,7 @@ public interface DigestResource extends Resource {
      * 
      * Returning null indicates credentials were not accpeted
      *
-     * You SHOULD use com.bradmcevoy.http.http11.auth.DigestGenerator to implement
+     * You SHOULD use io.milton.http.http11.auth.DigestGenerator to implement
      * digest calculation, and then compare that to the given request digest.
      * 
      * @param digestRequest - the digest authentication information provided by the client

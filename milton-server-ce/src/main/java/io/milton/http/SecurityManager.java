@@ -31,7 +31,7 @@ public interface SecurityManager {
     /**
      * Authenticate a digest request
      *
-     * See com.bradmcevoy.http.http11.auth.DigestGenerator
+     * @see io.milton.http.http11.auth.DigestGenerator
      *
      * @param digestRequest
      * @return

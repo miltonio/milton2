@@ -89,7 +89,7 @@ public class DefaultHttp11ResponseHandler implements Http11ResponseHandler, Buff
 	}
 
 	/**
-	 * Defaults to com.bradmcevoy.http.http11.DefaultCacheControlHelper
+	 * Defaults to io.milton.http.http11.DefaultCacheControlHelper
 	 *
 	 * @return
 	 */
