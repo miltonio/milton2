@@ -116,6 +116,7 @@ public abstract class FsResource implements Resource, MoveableResource, Copyable
                 throw new RuntimeException("Failed to move to: " + dest.getAbsolutePath());
             }
             this.file = dest;
+            factory.getWsManager().ifPresent(wsManager -> wsManager.notifyMoved(factory.toResourcePath(newFsParent.getFile()), factory.toResourcePath(file)));
         } else {
             throw new RuntimeException("Destination is an unknown type. Must be a FsDirectoryResource, is a: " + newParent.getClass());
         }
@@ -126,6 +127,7 @@ public abstract class FsResource implements Resource, MoveableResource, Copyable
             FsDirectoryResource newFsParent = (FsDirectoryResource) newParent;
             File dest = new File(newFsParent.getFile(), newName);
             doCopy(dest);
+            factory.getWsManager().ifPresent(wsManager -> wsManager.notifyCreated(factory.toResourcePath(dest)));
         } else {
             throw new RuntimeException("Destination is an unknown type. Must be a FsDirectoryResource, is a: " + newParent.getClass());
         }
@@ -136,18 +138,24 @@ public abstract class FsResource implements Resource, MoveableResource, Copyable
         if (!ok) {
             throw new RuntimeException("Failed to delete");
         }
+        factory.getWsManager().ifPresent(wsManager -> wsManager.notifyDeleted(factory.toResourcePath(file)));
     }
 
     public LockResult lock(LockTimeout timeout, LockInfo lockInfo) throws NotAuthorizedException {
-        return factory.getLockManager().lock(timeout, lockInfo, this);
+        final LockResult lockResult = factory.getLockManager().lock(timeout, lockInfo, this);
+        factory.getWsManager().ifPresent(wsManager -> wsManager.notifyLocked(factory.toResourcePath(file)));
+        return lockResult;
     }
 
     public LockResult refreshLock(String token, LockTimeout timeout) throws NotAuthorizedException {
-        return factory.getLockManager().refresh(token, timeout, this);
+        final LockResult lockResult = factory.getLockManager().refresh(token, timeout, this);
+        factory.getWsManager().ifPresent(wsManager -> wsManager.notifyLocked(factory.toResourcePath(file)));
+        return lockResult;
     }
 
     public void unlock(String tokenId) throws NotAuthorizedException {
         factory.getLockManager().unlock(tokenId, this);
+        factory.getWsManager().ifPresent(wsManager -> wsManager.notifyUnlocked(factory.toResourcePath(file)));
     }
 
     public LockToken getCurrentLock() {

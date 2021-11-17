@@ -60,6 +60,7 @@ public class FsDirectoryResource extends FsResource implements MakeCollectionabl
         if (!ok) {
             throw new RuntimeException("Failed to create: " + fnew.getAbsolutePath());
         }
+        factory.getWsManager().ifPresent(wsManager -> wsManager.notifyCreated(factory.toResourcePath(fnew)));
         return new FsDirectoryResource(host, factory, fnew, contentService);
     }
 
@@ -106,7 +107,8 @@ public class FsDirectoryResource extends FsResource implements MakeCollectionabl
     @Override
     public Resource createNew(String name, InputStream in, Long length, String contentType) throws IOException {
 		File dest = new File(this.getFile(), name);
-		contentService.setFileContent(dest, in);        
+		contentService.setFileContent(dest, in);
+        factory.getWsManager().ifPresent(wsManager -> wsManager.notifyCreated(factory.toResourcePath(dest)));
         return factory.resolveFile(this.host, dest);
 
     }
@@ -140,6 +142,7 @@ public class FsDirectoryResource extends FsResource implements MakeCollectionabl
         FileOutputStream fout = null;
         try {
             fout = new FileOutputStream(file);
+            factory.getWsManager().ifPresent(wsManager -> wsManager.notifyCreated(factory.toResourcePath(file)));
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {

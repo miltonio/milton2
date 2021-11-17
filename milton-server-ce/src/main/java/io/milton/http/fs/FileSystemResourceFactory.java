@@ -23,8 +23,11 @@ import io.milton.common.Path;
 import io.milton.http.LockManager;
 import io.milton.http.PropertyManager;
 import io.milton.http.ResourceFactory;
+import io.milton.http.WSManager;
 import io.milton.resource.Resource;
 import java.io.File;
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +44,7 @@ public final class FileSystemResourceFactory implements ResourceFactory {
     File root;
     io.milton.http.SecurityManager securityManager;
     LockManager lockManager;
+    private WSManager wsManager;
     PropertyManager propertyManager;
     Long maxAgeSeconds;
     String contextPath;
@@ -150,6 +154,10 @@ public final class FileSystemResourceFactory implements ResourceFactory {
             f = new File(f, s);
         }
         return f;
+    }
+
+    public String toResourcePath(File file) {
+        return root.toPath().relativize(file.toPath()).toString().replace(File.separatorChar, '/');
     }
 
     public String getRealm(String host) {
@@ -274,5 +282,13 @@ public final class FileSystemResourceFactory implements ResourceFactory {
 
     public void setContentService(FileContentService contentService) {
         this.contentService = contentService;
+    }
+
+    public void setWsManager(WSManager wsManager) {
+        this.wsManager = wsManager;
+    }
+
+    public Optional<WSManager> getWsManager() {
+        return Optional.ofNullable(wsManager);
     }
 }

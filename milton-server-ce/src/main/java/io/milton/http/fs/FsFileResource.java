@@ -135,6 +135,7 @@ public class FsFileResource extends FsResource implements CopyableResource, Dele
 	public void replaceContent(InputStream in, Long length) throws BadRequestException, ConflictException, NotAuthorizedException {
 		try {
 			contentService.setFileContent(file, in);
+            factory.getWsManager().ifPresent(wsManager -> wsManager.notifyUpdated(factory.toResourcePath(file)));
 		} catch (IOException ex) {
 			throw new BadRequestException("Couldnt write to: " + file.getAbsolutePath(), ex);
 		}
@@ -154,6 +155,7 @@ public class FsFileResource extends FsResource implements CopyableResource, Dele
         final PropertyManager propertyManager = factory.getPropertyManager();
         if (propertyManager != null) {
             propertyManager.setProperty(name, value, this);
+            factory.getWsManager().ifPresent(wsManager -> wsManager.notifyUpdated(factory.toResourcePath(file)));
         }
     }
 
