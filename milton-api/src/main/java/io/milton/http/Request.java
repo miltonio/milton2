@@ -109,6 +109,7 @@ public interface Request {
         TRACE("TRACE", false),
         ACL("ACL", true),
         CONNECT("CONNECT", true),
+        CANCELUPLOAD("CANCELUPLOAD", true),
         REPORT("REPORT", false);
         public final String code;
         public final boolean isWrite;

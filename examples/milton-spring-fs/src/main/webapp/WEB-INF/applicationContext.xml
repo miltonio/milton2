@@ -1,12 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans 
-xmlns="http://www.springframework.org/schema/beans"
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-xmlns:tx="http://www.springframework.org/schema/tx"
-xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
-		
-	
-   
-	
+<!-- We must use global context in order to share beans between Milton spring filter and DispatcherServlet -->
+<beans
+        xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:websocket="http://www.springframework.org/schema/websocket"
+        xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/websocket
+        http://www.springframework.org/schema/websocket/spring-websocket.xsd">
+
+    <bean id="resource.factory" class="io.milton.http.fs.FileSystemResourceFactory">
+        <constructor-arg value="/tmp"/>
+        <constructor-arg>
+            <bean class="io.milton.http.fs.NullSecurityManager"/>
+        </constructor-arg>
+        <property name="propertyManager" ref="property.manager"/>
+        <property name="lockManager" ref="lock.manager"/>
+        <property name="wsManager" ref="ws.manager"/>
+    </bean>
+
+    <bean id="property.manager" class="io.milton.http.fs.SimplePropertyManager">
+        <constructor-arg>
+            <bean class="io.milton.cache.LocalCacheManager"/>
+        </constructor-arg>
+    </bean>
+
+    <bean id="lock.manager" class="io.milton.http.fs.SimpleLockManager">
+        <constructor-arg>
+            <bean class="io.milton.cache.LocalCacheManager"/>
+        </constructor-arg>
+    </bean>
+
+    <bean id="milton.http.manager" class="io.milton.samples.fs.FsHttpManagerBuilderEnt">
+        <property name="mainResourceFactory" ref="resource.factory" />
+        <property name="enableCompression" value="false"/>
+        <property name="buffering" value="never"/>
+    </bean>
+
+    <bean id="ws.handler" class="io.milton.samples.fs.SocketHandler"/>
+
+    <bean id="ws.manager" class="io.milton.samples.fs.WebSocketServer">
+        <constructor-arg name="socketHandler" ref="ws.handler"/>
+    </bean>
+
+    <websocket:handlers>
+        <websocket:mapping path="/_ws" handler="ws.handler"/>
+    </websocket:handlers>
 </beans>

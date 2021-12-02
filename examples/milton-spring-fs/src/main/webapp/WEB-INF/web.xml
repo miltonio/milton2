@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_5.xsd"
-         version="2.4">
-
-
-	<welcome-file-list>
-		<welcome-file>home-debug.html</welcome-file>
-	</welcome-file-list>
-	
-	
+         xsi:schemaLocation="
+        http://java.sun.com/xml/ns/javaee
+        https://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+         version="3.0">
+    <absolute-ordering/>
 	<!--
 		 webapp root key: necessary when having multiple instance with log4j
 		-->
@@ -35,11 +31,6 @@
 		<listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
 	</listener>
 
-	<context-param>
-		<param-name>contextConfigLocation</param-name>
-		<param-value>classpath:applicationContext*.xml</param-value>
-	</context-param>
-	
 	<listener>
 		<listener-class>
 			org.springframework.web.context.ContextLoaderListener
@@ -106,16 +97,14 @@
     </filter-mapping>
 	
 	
-	<!--
 	<servlet>
-		<description>Spring MVC Dispatcher Servlet</description>
-		<servlet-name>test</servlet-name>
-		<servlet-class>io.milton.servlet.DavEnabledDispatcherServlet</servlet-class>
-		<load-on-startup>2</load-on-startup>
+		<description>Spring MVC Dispatcher Servlet to process websocket calls</description>
+		<servlet-name>ws</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>test</servlet-name>
-		<url-pattern>/test/*</url-pattern>
-	</servlet-mapping>-->
+		<servlet-name>ws</servlet-name>
+		<url-pattern>/_ws</url-pattern>
+	</servlet-mapping>
 	
 </web-app>

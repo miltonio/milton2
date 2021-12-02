@@ -112,7 +112,7 @@ public class SpringMiltonFilter implements javax.servlet.Filter {
 
 		servletContext = fc.getServletContext();
 
-		String sExcludePaths = fc.getInitParameter(EXCLUDE_PATHS_SYSPROP);		
+		String sExcludePaths = fc.getInitParameter(EXCLUDE_PATHS_SYSPROP);
 		if (sExcludePaths != null) {
 			log.info("init: exclude paths: " + sExcludePaths);
 			excludeMiltonPaths = sExcludePaths.split(",");
@@ -221,19 +221,24 @@ public class SpringMiltonFilter implements javax.servlet.Filter {
 	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain fc) throws IOException, ServletException {
 		if (req instanceof HttpServletRequest) {
 			HttpServletRequest hsr = (HttpServletRequest) req;
-			String url = hsr.getRequestURI();
-			// Allow certain paths to be excluded from Milton, these might be other servlets, for example
-			if (excludeMiltonPaths != null) {
-				for (String s : excludeMiltonPaths) {
-					if (url.startsWith(s)) {
-						log.trace("doFilter: is excluded path");
-						fc.doFilter(req, resp);
-						return;
-					}
-				}
-			}
-			log.trace("doFilter: begin milton processing");
-			doMiltonProcessing((HttpServletRequest) req, (HttpServletResponse) resp);
+            final String upgrade = hsr.getHeader("upgrade");
+            if ("websocket".equalsIgnoreCase(upgrade)) {
+                fc.doFilter(req, resp);
+            } else {
+                String url = hsr.getRequestURI();
+                // Allow certain paths to be excluded from Milton, these might be other servlets, for example
+                if (excludeMiltonPaths != null) {
+                    for (String s : excludeMiltonPaths) {
+                        if (url.startsWith(s)) {
+                            log.trace("doFilter: is excluded path");
+                            fc.doFilter(req, resp);
+                            return;
+                        }
+                    }
+                }
+                log.trace("doFilter: begin milton processing");
+                doMiltonProcessing((HttpServletRequest) req, (HttpServletResponse) resp);
+            }
 		} else {
 			log.trace("doFilter: request is not a supported type, continue with filter chain");
 			fc.doFilter(req, resp);
