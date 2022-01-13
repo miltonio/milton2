@@ -3,11 +3,32 @@
  */
 package io.milton.grizzly;
 
+import org.apache.commons.codec.digest.DigestUtils;
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
+import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
+import org.bouncycastle.asn1.sec.ECPrivateKey;
+import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
+import org.bouncycastle.asn1.x9.X9ObjectIdentifiers;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.openssl.PEMDecryptorProvider;
+import org.bouncycastle.openssl.PEMEncryptedKeyPair;
+import org.bouncycastle.openssl.PEMKeyPair;
+import org.bouncycastle.openssl.PEMParser;
+import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
+import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
+import org.bouncycastle.openssl.jcajce.JceOpenSSLPKCS8DecryptorProviderBuilder;
+import org.bouncycastle.openssl.jcajce.JcePEMDecryptorProviderBuilder;
+import org.bouncycastle.operator.InputDecryptorProvider;
+import org.bouncycastle.pkcs.PKCS8EncryptedPrivateKeyInfo;
+import org.bouncycastle.util.encoders.Base64;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.math.BigInteger;
 import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -21,16 +42,15 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.security.interfaces.DSAPrivateKey;
+import java.security.interfaces.RSAPrivateCrtKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.security.spec.DSAPublicKeySpec;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.openssl.PEMReader;
-import org.bouncycastle.openssl.PEMWriter;
-import org.bouncycastle.openssl.PasswordFinder;
-import org.bouncycastle.util.encoders.Base64;
+import java.security.spec.RSAPublicKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 
 /**
  *
@@ -120,32 +140,34 @@ public class SSLTools {
 	 * @param privateKeyBytes
 	 * @param password
 	 * @return
-	 * @throws java.security.GeneralSecurityException
 	 * @throws java.io.IOException
 	 */
-	public static PrivateKey parsePrivateKey(final byte[] privateKeyBytes, final char[] password) throws GeneralSecurityException, IOException {
-		ByteArrayInputStream bais = new ByteArrayInputStream(privateKeyBytes);
-		InputStreamReader reader = new InputStreamReader(bais);
-		PEMReader parser = null;
-		try {
-			if (password != null) {
-				parser = new PEMReader(reader, getPasswordFinder(password));
-			} else {
-				parser = new PEMReader(reader);
-			}
-			KeyPair caKeyPair = (KeyPair) parser.readObject();
-			if (caKeyPair == null) {
-				throw new GeneralSecurityException("Reading CA private key failed");
-			}
-			return caKeyPair.getPrivate();
-		} finally {
-			if (parser != null) {
-				parser.close();
-			}
-			bais.close();
-			reader.close();
-		}
+	public static PrivateKey parsePrivateKey(final byte[] privateKeyBytes, final char[] password) throws IOException, GeneralSecurityException {
 
+		try (ByteArrayInputStream bais = new ByteArrayInputStream(privateKeyBytes);
+			 InputStreamReader reader = new InputStreamReader(bais)) {
+
+			PEMParser keyReader = new PEMParser(reader);
+			JcaPEMKeyConverter converter = new JcaPEMKeyConverter();
+			Object keyPair = keyReader.readObject();
+			PrivateKeyInfo keyInfo;
+			if (keyPair instanceof PEMEncryptedKeyPair) {
+				PEMDecryptorProvider decryptionProv = new JcePEMDecryptorProviderBuilder().build(password);
+				PEMKeyPair decryptedKeyPair = ((PEMEncryptedKeyPair) keyPair).decryptKeyPair(decryptionProv);
+				keyInfo = decryptedKeyPair.getPrivateKeyInfo();
+			} else if (keyPair instanceof PKCS8EncryptedPrivateKeyInfo) {
+				try {
+					InputDecryptorProvider decryptionProv = new JceOpenSSLPKCS8DecryptorProviderBuilder().build(password);
+					keyInfo = ((PKCS8EncryptedPrivateKeyInfo) keyPair).decryptPrivateKeyInfo(decryptionProv);
+				} catch (Exception ex) {
+					throw new GeneralSecurityException(ex);
+				}
+			} else {
+				keyInfo = ((PEMKeyPair) keyPair).getPrivateKeyInfo();
+			}
+			keyReader.close();
+			return converter.getPrivateKey(keyInfo);
+		}
 	}
 
 	/**
@@ -181,26 +203,62 @@ public class SSLTools {
 	 */
 	public static KeyPair parseKeyPair(final byte[] privateKeyBytes, final String password) throws GeneralSecurityException, IOException {
 		ByteArrayInputStream bais = new ByteArrayInputStream(privateKeyBytes);
-		InputStreamReader reader = new InputStreamReader(bais);
-		PEMReader parser = null;
-		try {
-			if (password != null) {
-				parser = new PEMReader(reader, getPasswordFinder(password));
-			} else {
-				parser = new PEMReader(reader);
+		PEMParser pemParser = new PEMParser(new InputStreamReader(bais));
+		Object object = pemParser.readObject();
+		pemParser.close();
+		JcaPEMKeyConverter converter = new JcaPEMKeyConverter();
+		KeyPair kp;
+		if (object == null) {
+			throw new IllegalStateException("PEM parsing failed: missing or invalid data");
+		} else if (object instanceof PKCS8EncryptedPrivateKeyInfo) {
+			if (password == null)
+				throw new GeneralSecurityException("passphrase required");
+			try {
+				InputDecryptorProvider decryptionProv = new JceOpenSSLPKCS8DecryptorProviderBuilder().build(password.toCharArray());
+				final PrivateKeyInfo privateKeyInfo = ((PKCS8EncryptedPrivateKeyInfo) object).decryptPrivateKeyInfo(decryptionProv);
+				PublicKey pub;
+				ASN1ObjectIdentifier id = privateKeyInfo.getPrivateKeyAlgorithm().getAlgorithm();
+				PKCS8EncodedKeySpec p8s = new PKCS8EncodedKeySpec(privateKeyInfo.getEncoded());
+				if (id.equals(PKCSObjectIdentifiers.rsaEncryption)) {
+					KeyFactory rfact = KeyFactory.getInstance("RSA");
+					RSAPrivateCrtKey rprv = (RSAPrivateCrtKey) rfact.generatePrivate(p8s);
+					pub = rfact.generatePublic(new RSAPublicKeySpec(rprv.getModulus(), rprv.getPublicExponent()));
+				} else if (id.equals(X9ObjectIdentifiers.id_dsa)) {
+					KeyFactory dfact = KeyFactory.getInstance("DSA");
+					DSAPrivateKey dprv = (DSAPrivateKey) dfact.generatePrivate(p8s);
+					BigInteger p = dprv.getParams().getP();
+					BigInteger q = dprv.getParams().getQ();
+					BigInteger g = dprv.getParams().getG();
+					pub = dfact.generatePublic (new DSAPublicKeySpec(g.modPow(dprv.getX(),p), p, q, g));
+				} else if (id.equals(X9ObjectIdentifiers.id_ecPublicKey)) {
+					ECPrivateKey eprv = ECPrivateKey.getInstance(privateKeyInfo.parsePrivateKey());
+					byte[] eenc = new SubjectPublicKeyInfo(privateKeyInfo.getPrivateKeyAlgorithm(), eprv.getPublicKey().getOctets()).getEncoded();
+					pub = KeyFactory.getInstance("EC").generatePublic(new X509EncodedKeySpec(eenc));
+				} else {
+					throw new GeneralSecurityException ("unknown private key OID " + id);
+				}
+				return new KeyPair(pub, converter.getPrivateKey(privateKeyInfo));
+			} catch (Exception ex) {
+				throw new GeneralSecurityException(ex);
 			}
-			KeyPair caKeyPair = (KeyPair) parser.readObject();
-			if (caKeyPair == null) {
-				throw new GeneralSecurityException("Reading CA private key failed");
+		} else if (object instanceof PEMEncryptedKeyPair) {
+			if (password == null)
+				throw new GeneralSecurityException("passphrase required");
+			try {
+				PEMDecryptorProvider decProv = new JcePEMDecryptorProviderBuilder().build(password.toCharArray());
+				kp = converter.getKeyPair(((PEMEncryptedKeyPair) object).decryptKeyPair(decProv));
+			} catch (Exception e) {
+				throw new GeneralSecurityException("wrong passphrase", e);
 			}
-			return caKeyPair;
-		} finally {
-			if (parser != null) {
-				parser.close();
-			}
-			bais.close();
-			reader.close();
+		} else if (object instanceof PEMKeyPair) {
+			kp = converter.getKeyPair((PEMKeyPair) object);
+		} else if (object instanceof PrivateKeyInfo) {
+			PrivateKey privKey = converter.getPrivateKey((PrivateKeyInfo) object);
+			kp = new KeyPair(null, privKey);
+		} else {
+			throw new IllegalStateException("PEM parser support missing for: " + object);
 		}
+		return kp;
 	}
 
 	/**
@@ -324,26 +382,6 @@ public class SSLTools {
 	}
 
 	/**
-	 * returns an instance of PasswordFinder containing the given password
-	 *
-	 * @param password
-	 * @return PasswordFinder
-	 */
-	public static PasswordFinder getPasswordFinder(final String password) {
-		return () -> password.toCharArray();
-	}
-
-	/**
-	 * returns an instance of PasswordFinder containing the given password
-	 *
-	 * @param password
-	 * @return PasswordFinder
-	 */
-	public static PasswordFinder getPasswordFinder(final char[] password) {
-		return () -> password;
-	}
-
-	/**
 	 *
 	 * @param privateKeyText
 	 * @return
@@ -448,7 +486,7 @@ public class SSLTools {
 	 */
 	public static String pemWriter(Object o) throws IOException {
 		StringWriter sw = new StringWriter();
-		PEMWriter pw = new PEMWriter(sw);
+		JcaPEMWriter pw = new JcaPEMWriter(sw);
 		pw.writeObject(o);
 		pw.flush();
 		return sw.toString();
@@ -462,7 +500,7 @@ public class SSLTools {
 	 */
 	public static Object pemReader(String pem) throws IOException {
 		StringReader reader = new StringReader(pem);
-		PEMReader pr = new PEMReader(reader);
+		PEMParser pr = new PEMParser(reader);
 		return pr.readObject();
 	}
 }

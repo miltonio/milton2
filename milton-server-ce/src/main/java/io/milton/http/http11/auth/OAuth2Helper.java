@@ -24,6 +24,7 @@ import io.milton.resource.OAuth2Provider;
 import io.milton.resource.OAuth2Resource.OAuth2ProfileDetails;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Base64;
 import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.apache.oltu.oauth2.client.OAuthClient;
@@ -38,7 +39,6 @@ import org.apache.oltu.oauth2.common.exception.OAuthProblemException;
 import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
 import org.apache.oltu.oauth2.common.message.types.GrantType;
 import org.apache.oltu.oauth2.common.utils.JSONUtils;
-import org.bouncycastle.util.encoders.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,12 +80,12 @@ public class OAuth2Helper {
 			sb.append("||");
 			sb.append(returnUrl);
 		}
-		byte[] arr = Base64.encode(sb.toString().getBytes());
+		byte[] arr = Base64.getEncoder().encode(sb.toString().getBytes());
 		return new String(arr);
 	}
 
 	public static Pair<String, String> parseState(String encoded) {
-		String decoded = new String(Base64.decode(encoded));
+		String decoded = new String(Base64.getDecoder().decode(encoded));
 		int i = decoded.indexOf("||");
 		String p;
 		String r;
