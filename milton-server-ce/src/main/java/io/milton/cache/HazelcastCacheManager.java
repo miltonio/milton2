@@ -3,7 +3,7 @@
  */
 package io.milton.cache;
 
-import com.hazelcast.core.Cluster;
+import com.hazelcast.cluster.Cluster;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import java.util.Map;
