@@ -41,7 +41,7 @@
             <plugin>
                 <groupId>com.github.eirslett</groupId>
                 <artifactId>frontend-maven-plugin</artifactId>
-                <version>1.6</version>
+                <version>1.12.1</version>
                 <executions>
                     <execution>
                         <id>install node and npm</id>
@@ -50,7 +50,20 @@
                         </goals>
                         <configuration>
                             <installDirectory>${java.io.tmpdir}</installDirectory>
-                            <nodeVersion>v4.6.0</nodeVersion>
+                            <nodeVersion>v16.14.2</nodeVersion>
+                            <npmVersion>8.7.0</npmVersion>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>npm update</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <phase>generate-resources</phase>
+                        <configuration>
+                            <arguments>update</arguments>
+                            <workingDirectory>src/main/webapp/WEB-INF/wwwroot/js</workingDirectory>
+                            <installDirectory>${java.io.tmpdir}</installDirectory>
                         </configuration>
                     </execution>
                     <execution>
