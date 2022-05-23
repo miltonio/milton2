@@ -6,31 +6,10 @@
         https://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
          version="3.0">
     <absolute-ordering/>
-	<!--
-		 webapp root key: necessary when having multiple instance with log4j
-		-->
-	 <context-param>
-		<param-name>webAppRootKey</param-name>
-		<param-value>3.4</param-value>
-	</context-param>
-	
-	<!--
-		Location of the Log4J config file, for initialization and refresh checks.
-		Applied by Log4jConfigListener.
--->
-	<context-param>
-		<param-name>log4jConfigLocation</param-name>
-		<param-value>/WEB-INF/log4j.xml</param-value>
-	</context-param>
-	
 	 <session-config>
     	<session-timeout>120</session-timeout>
   	</session-config>
 	
-	<listener>
-		<listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
-	</listener>
-
 	<listener>
 		<listener-class>
 			org.springframework.web.context.ContextLoaderListener
