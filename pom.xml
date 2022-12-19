@@ -35,10 +35,10 @@
         </developer>
     </developers>
     <properties>
-        <servlet.version>2.4</servlet.version>
+        <servlet.version>6.0.0</servlet.version>
         <mime-util.version>2.1.3</mime-util.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <easy-mock.version>3.1</easy-mock.version>
+        <easy-mock.version>5.0.1</easy-mock.version>
         <netbeans.hint.license>apache20</netbeans.hint.license>
     </properties>
 
@@ -59,10 +59,10 @@
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
+                <version>3.8.1</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>17</source>
+                    <target>17</target>
                 	<fork>true</fork>
                 	<useIncrementalCompilation>true</useIncrementalCompilation>
                 </configuration>
@@ -91,6 +91,10 @@
                 </executions>
                 <configuration>
                     <doclint>none</doclint>
+                    <additionalJOptions>
+                        <additionalJOption>--add-exports</additionalJOption>
+                        <additionalJOption>java.naming/com.sun.jndi.ldap=ALL-UNNAMED</additionalJOption>
+                    </additionalJOptions>
                 </configuration>
             </plugin>
             <plugin>
@@ -142,8 +146,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
             <version>${servlet.version}</version>
             <scope>provided</scope>
         </dependency>
@@ -166,35 +170,15 @@
         </dependency>
     </dependencies>
 
-
-    <repositories>
-        <repository>
-            <id>central</id>
-            <name>Central Repository</name>
-            <url>https://repo.maven.apache.org/maven2</url>
-            <layout>default</layout>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>milton-repo</id>
-            <url>https://milton.io/maven/</url>
-        </repository>
-        <repository>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <id>bintray-milton-Milton</id>
-            <name>bintray</name>
-            <url>https://dl.bintray.com/milton/Milton</url>
-        </repository>
-        <!--
-                <repository>
-                    <id>mvnrepository.com</id>
-                    <name>mvnrepository.com</name>
-                    <url>https://www.mvnrepository.com/artifacts</url>
-                </repository>
-        -->
-    </repositories>
+    <profiles>
+        <profile>
+            <id>jdk-17-config</id>
+            <activation>
+                <jdk>17</jdk>
+            </activation>
+            <properties>
+                <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
+            </properties>
+        </profile>
+    </profiles>
 </project>

@@ -20,18 +20,16 @@
 package io.milton.samples.fs;
 
 import io.milton.servlet.MiltonUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.*;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 
 public class FsStaticResourceFilter implements Filter {
-    
+
     private FilterConfig filterConfig = null;
-    
+
     public void doFilter(ServletRequest request, ServletResponse response,FilterChain chain)throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
         String s = MiltonUtils.stripContext(req);
@@ -51,9 +49,9 @@ public class FsStaticResourceFilter implements Filter {
 
     public void destroy() {
     }
-    
+
     public void init(FilterConfig filterConfig) {
         this.filterConfig = filterConfig;
     }
-    
+
 }

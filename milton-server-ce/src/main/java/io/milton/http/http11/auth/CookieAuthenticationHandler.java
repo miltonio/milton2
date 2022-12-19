@@ -17,13 +17,13 @@
 package io.milton.http.http11.auth;
 
 import io.milton.common.Utils;
-import io.milton.dns.utils.base64;
 import io.milton.http.*;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.principal.DiscretePrincipal;
 import io.milton.resource.Resource;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -300,7 +300,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 		String encodedUserUrl = null;
 		String lt = getCookieOrParam(request, loginTokenName);
 		if (lt != null) {
-			byte[] raw = base64.fromString(lt);
+			byte[] raw = Base64.getDecoder().decode(lt);
 			String params = new String(raw);
 			if (params.contains("|")) {
 				String[] parts = params.split("\\|");
@@ -340,7 +340,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 			log.debug("getUserUrlFromRequest: Percent decoded:" + encodedUserUrl);
 		}
 
-		byte[] arr = base64.fromString(encodedUserUrl);
+		byte[] arr = Base64.getDecoder().decode(encodedUserUrl);
 		if (arr == null) {
 			log.debug("Failed to decode encodedUserUrl, so maybe its not encoded, return as it is");
 			return encodedUserUrl; // its just not encoded
@@ -364,7 +364,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 			if (signing == null) {
 				String lt = getCookieOrParam(request, loginTokenName);
 				if (lt != null) {
-					byte[] raw = base64.fromString(lt);
+					byte[] raw = Base64.getDecoder().decode(lt);
 					String params = new String(raw);
 					if (params.contains("|")) {
 						String[] parts = params.split("\\|");
@@ -515,7 +515,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 
 	public String getLoginToken(String userUrl, String urlSigningHash) {
 		String s = userUrl + '|' + urlSigningHash;
-		return base64.toString(s.getBytes());
+		return Base64.getEncoder().encodeToString(s.getBytes());
 	}
 
 	private void setCookieValues(Response response, String userUrl, String hash, boolean keepLoggedIn) {
@@ -542,7 +542,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 	}
 
 	public String encodeUserUrl(String userUrl) {
-		String encodedUserUrl = base64.toString(userUrl.getBytes(Utils.UTF8));
+		String encodedUserUrl = Base64.getEncoder().encodeToString(userUrl.getBytes(Utils.UTF8));
 		encodedUserUrl = Utils.percentEncode(encodedUserUrl); // base64 uses some chars illegal in cookies, eg equals
 		encodedUserUrl = "b64" + encodedUserUrl; // need to distinguish if base64 encoded or not
 		return (encodedUserUrl);

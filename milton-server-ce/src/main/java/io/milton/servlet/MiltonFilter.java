@@ -22,9 +22,9 @@ import io.milton.http.HttpManager;
 import io.milton.http.Request;
 import io.milton.http.Response;
 import java.io.IOException;
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.*;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author brad
  */
-public class MiltonFilter implements javax.servlet.Filter {
+public class MiltonFilter implements jakarta.servlet.Filter {
 
 	private static final Logger log = LoggerFactory.getLogger(MiltonFilter.class);
 	private FilterConfigWrapper config;
@@ -88,7 +88,7 @@ public class MiltonFilter implements javax.servlet.Filter {
 	}
 
 	@Override
-	public void doFilter(javax.servlet.ServletRequest req, javax.servlet.ServletResponse resp, javax.servlet.FilterChain fc) throws IOException, ServletException {
+	public void doFilter(jakarta.servlet.ServletRequest req, jakarta.servlet.ServletResponse resp, jakarta.servlet.FilterChain fc) throws IOException, ServletException {
 		if (req instanceof HttpServletRequest) {
 			HttpServletRequest hsr = (HttpServletRequest) req;
 			String url = hsr.getRequestURI();

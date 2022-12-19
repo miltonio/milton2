@@ -30,7 +30,7 @@ public class FileSystemResourceFactoryTest extends TestCase{
 
     File root;
     FileSystemResourceFactory factory;
-    
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();
@@ -39,14 +39,14 @@ public class FileSystemResourceFactoryTest extends TestCase{
         factory = new FileSystemResourceFactory( root, sm );
         System.out.println("testing with root: " + root.getAbsolutePath());
     }
-    
-    
-    
+
+
+
     public void testResolvePath_Root() {
         File f = factory.resolvePath(root, "/");
         assertEquals(root, f);
     }
-    
+
     public void testResolvePath_SubDir() {
         File f = factory.resolvePath(root, "/lib");
         assertEquals(new File(root,"lib"), f);
@@ -58,13 +58,13 @@ public class FileSystemResourceFactoryTest extends TestCase{
         assertTrue(f.exists());
         assertTrue(f.isDirectory());
     }
-    
+
     public void testResolvePath_File() {
-        File f = factory.resolvePath(root, "/lib/security/java.policy");
-        assertEquals("java.policy", f.getName());
+        File f = factory.resolvePath(root, "/lib/security/default.policy");
+        assertEquals("default.policy", f.getName());
         assertTrue(f.exists());
         assertFalse(f.isDirectory());
-        
+
     }
-    
+
 }

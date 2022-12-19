@@ -138,12 +138,12 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-orm</artifactId>
-            <version>5.1.5.RELEASE</version>
+            <version>6.0.2</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
-            <version>5.3.18</version>
+            <version>6.0.2</version>
         </dependency>
 
 

@@ -31,14 +31,16 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
-import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.WriteListener;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Used to provide access to servlet resources via milton. This just wraps the
@@ -178,16 +180,6 @@ public class ServletResource implements GetableResource {
 		}
 
 		@Override
-		public String encodeUrl(String url) {
-			return MiltonServlet.response().encodeURL(url);
-		}
-
-		@Override
-		public String encodeRedirectUrl(String url) {
-			return MiltonServlet.response().encodeRedirectURL(url);
-		}
-
-		@Override
 		public void sendError(int sc, String msg) throws IOException {
 			throw new UnsupportedOperationException("Not supported yet.");
 		}
@@ -238,8 +230,23 @@ public class ServletResource implements GetableResource {
 		}
 
 		@Override
-		public void setStatus(int sc, String sm) {
-			throw new UnsupportedOperationException("Not supported yet.");
+		public int getStatus() {
+			return MiltonServlet.response().getStatus();
+		}
+
+		@Override
+		public String getHeader(String s) {
+			return MiltonServlet.response().getHeader(s);
+		}
+
+		@Override
+		public Collection<String> getHeaders(String s) {
+			return MiltonServlet.response().getHeaders(s);
+		}
+
+		@Override
+		public Collection<String> getHeaderNames() {
+			return MiltonServlet.response().getHeaderNames();
 		}
 
 		@Override
@@ -260,6 +267,11 @@ public class ServletResource implements GetableResource {
 		@Override
 		public void setContentLength(int len) {
 			throw new UnsupportedOperationException("Not supported yet.");
+		}
+
+		@Override
+		public void setContentLengthLong(long l) {
+			MiltonServlet.response().setContentLengthLong(l);
 		}
 
 		@Override
@@ -330,6 +342,16 @@ public class ServletResource implements GetableResource {
 		@Override
 		public void setCharacterEncoding(String charset) {
 			throw new UnsupportedOperationException("Not supported yet.");
+		}
+
+		@Override
+		public boolean isReady() {
+			throw new UnsupportedOperationException("Not supported yet.");
+		}
+
+		@Override
+		public void setWriteListener(WriteListener writeListener) {
+
 		}
 	}
 }

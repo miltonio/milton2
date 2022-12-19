@@ -19,7 +19,7 @@
 package io.milton.servlet;
 
 import io.milton.http.HttpManager;
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 
 /**
  * Implement this to customise how the HttpManager is created in the servlet

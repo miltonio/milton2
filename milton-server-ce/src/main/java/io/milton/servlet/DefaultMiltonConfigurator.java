@@ -26,7 +26,7 @@ import io.milton.http.ResourceFactory;
 import io.milton.http.webdav.WebDavResponseHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.beanutils.ConvertUtilsBean2;
 import org.slf4j.Logger;

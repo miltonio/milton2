@@ -25,13 +25,13 @@ import io.milton.servlet.MiltonServlet;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author brad
  */
-public class MyOwnServlet implements javax.servlet.Servlet {
+public class MyOwnServlet implements jakarta.servlet.Servlet {
     private static final Logger log = LoggerFactory.getLogger(MyOwnServlet.class);
     private ServletConfig config;
     private ServletContext servletContext;

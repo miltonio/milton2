@@ -19,8 +19,8 @@
 
 package io.milton.servlet;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.ServletContext;
 
 public class MiltonUtils {
     public static String stripContext(HttpServletRequest req) {

@@ -91,7 +91,7 @@
             <scope>test</scope>
             <groupId>org.easymock</groupId>
             <artifactId>easymockclassextension</artifactId>
-            <version>${easy-mock.version}</version>
+            <version>3.2</version>
         </dependency>
         <dependency>
             <scope>test</scope>

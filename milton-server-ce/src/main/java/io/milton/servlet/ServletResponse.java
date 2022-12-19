@@ -29,7 +29,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +41,7 @@ public class ServletResponse extends AbstractResponse {
 	/**
 	 * We make this available via a threadlocal so it can be accessed from parts
 	 * of the application which don't have a reference to the servletresponse
-	 * @return 
+	 * @return
 	 */
 	public static HttpServletResponse getResponse() {
 		return tlResponse.get();
@@ -84,11 +84,7 @@ public class ServletResponse extends AbstractResponse {
 
 	@Override
 	public void setStatus(Response.Status status) {
-		if (status.text == null) {
-			r.setStatus(status.code);
-		} else {
-			r.setStatus(status.code, status.text);
-		}
+		r.setStatus(status.code);
 		this.status = status;
 	}
 
@@ -158,7 +154,7 @@ public class ServletResponse extends AbstractResponse {
 	public Cookie setCookie(Cookie cookie) {
 		String h = BeanCookie.toHeader(cookie);
 		r.addHeader("Set-Cookie", h);
-		return cookie;		
+		return cookie;
 	}
 
 	@Override

@@ -20,26 +20,26 @@
 
 package io.milton.servlet;
 
+import jakarta.servlet.http.Part;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileItemHeaders;
 
-public class FileItemWrapper implements io.milton.http.FileItem{
+public class PartWrapper implements io.milton.http.FileItem{
 
-    final org.apache.commons.fileupload.FileItem wrapped;
+    final Part wrapped;
 
     final String name;
-	
+
 	private Map<String, String> mapOfHeaders;
-    
+
     /**
      * strip path information provided by IE
-     * 
+     *
      * @param s
      * @return
      */
@@ -50,12 +50,12 @@ public class FileItemWrapper implements io.milton.http.FileItem{
         }
         return s;
     }
-    
-    public FileItemWrapper(FileItem wrapped) {
+
+    public PartWrapper(Part wrapped) {
         this.wrapped = wrapped;
         name = fixIEFileName(wrapped.getName());
-    }        
-    
+    }
+
 	@Override
     public String getContentType() {
         return wrapped.getContentType();
@@ -63,7 +63,7 @@ public class FileItemWrapper implements io.milton.http.FileItem{
 
 	@Override
     public String getFieldName() {
-        return wrapped.getFieldName();
+        return wrapped.getName();
     }
 
 	@Override
@@ -77,13 +77,9 @@ public class FileItemWrapper implements io.milton.http.FileItem{
 
 	@Override
     public OutputStream getOutputStream() {
-        try {
-            return wrapped.getOutputStream();
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        }
+        throw new UnsupportedOperationException("Unsupported operation");
     }
-    
+
 	@Override
     public String getName() {
         return name;
@@ -98,14 +94,12 @@ public class FileItemWrapper implements io.milton.http.FileItem{
 	public Map<String, String> getHeaders() {
 		if (mapOfHeaders == null) {
 			mapOfHeaders = new HashMap<>();
-			if (wrapped.getHeaders() != null) {
-				FileItemHeaders headers = wrapped.getHeaders();
-				Iterator<String> it = headers.getHeaderNames();
-				while (it.hasNext()) {
-					String headerName = it.next();
-					String s = headers.getHeader(headerName);
-					mapOfHeaders.put(headerName, s);
-				}
+			if (wrapped.getHeaderNames() != null) {
+				Collection<String> headers = wrapped.getHeaderNames();
+                for (String headerName : headers) {
+                    String s = wrapped.getHeader(headerName);
+                    mapOfHeaders.put(headerName, s);
+                }
 			}
 		}
 		return mapOfHeaders;

@@ -22,7 +22,7 @@ package io.milton.servlet;
 import io.milton.http.ResourceFactory;
 import io.milton.resource.Resource;
 import java.io.File;
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**

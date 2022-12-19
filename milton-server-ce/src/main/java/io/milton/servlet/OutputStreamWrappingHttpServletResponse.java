@@ -20,9 +20,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Locale;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.WriteListener;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponseWrapper;
 
 /**
  *
@@ -42,12 +43,12 @@ public class OutputStreamWrappingHttpServletResponse extends HttpServletResponse
 	}
 
 	@Override
-	public String encodeUrl(String url) {
+	public String encodeURL(String url) {
 		return MiltonServlet.response().encodeURL(url);
 	}
 
 	@Override
-	public String encodeRedirectUrl(String url) {
+	public String encodeRedirectURL(String url) {
 		return MiltonServlet.response().encodeRedirectURL(url);
 	}
 
@@ -98,6 +99,16 @@ public class OutputStreamWrappingHttpServletResponse extends HttpServletResponse
 		@Override
 		public void write(byte[] b, int off, int len) throws IOException {
 			out.write(b, off, len);
+		}
+
+		@Override
+		public boolean isReady() {
+			throw new UnsupportedOperationException("Not supported yet.");
+		}
+
+		@Override
+		public void setWriteListener(WriteListener writeListener) {
+
 		}
 	}
 }

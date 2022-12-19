@@ -19,44 +19,27 @@
 
 package io.milton.servlet;
 
-import io.milton.http.AbstractRequest;
-import io.milton.http.Auth;
-import io.milton.http.BeanCookie;
-import io.milton.http.Cookie;
-import io.milton.http.Request;
-import io.milton.http.RequestParseException;
-import io.milton.http.Response;
+import io.milton.http.*;
+import io.milton.http.Response.ContentType;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.Part;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
-
-import io.milton.http.Response.ContentType;
-import io.milton.servlet.upload.MonitoredDiskFileItemFactory;
-import io.milton.servlet.upload.UploadListener;
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.Locale;
-import javax.servlet.ServletContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 public class ServletRequest extends AbstractRequest {
 
     private static final Logger log = LoggerFactory.getLogger(ServletRequest.class);
-	
-	public static BeanCookie toBeanCookie(javax.servlet.http.Cookie c) {
+
+	public static BeanCookie toBeanCookie(jakarta.servlet.http.Cookie c) {
 		BeanCookie bc = new BeanCookie(c.getName());
 		bc.setDomain(c.getDomain());
 		bc.setExpiry(c.getMaxAge());
@@ -66,8 +49,8 @@ public class ServletRequest extends AbstractRequest {
 		bc.setValue(c.getValue());
 		bc.setVersion(c.getVersion());
 		return bc;
-	}	
-	
+	}
+
     private final HttpServletRequest request;
     private final ServletContext servletContext;
     private final Request.Method method;
@@ -108,7 +91,7 @@ public class ServletRequest extends AbstractRequest {
         url = r.getRequestURL().toString();
         tlRequest.set(r);
         tlServletContext.set(servletContext);
-		
+
 		if( log.isTraceEnabled()) {
 			log.trace("Dumping headers ---- " + r.getMethod() + " " + r.getRequestURL() + " -----");
 			log.trace("Request class: " + r.getClass());
@@ -183,20 +166,16 @@ public class ServletRequest extends AbstractRequest {
         try {
             if (isMultiPart()) {
                 log.trace("parseRequestParameters: isMultiPart");
-                UploadListener listener = new UploadListener();
-                MonitoredDiskFileItemFactory factory = new MonitoredDiskFileItemFactory(listener);
-                ServletFileUpload upload = new ServletFileUpload(factory);
-                List items = upload.parseRequest(request);
+                Collection<Part> items = request.getParts();
 
                 parseQueryString(params);
 
-                for (Object o : items) {
-                    FileItem item = (FileItem) o;
-                    if (item.isFormField()) {
-                        params.put(item.getFieldName(), item.getString());
+                for (Part item : items) {
+                    if (isFormField(item)) {
+                        params.put(item.getName(), new String(item.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
                     } else {
-                        // See http://jira.ettrema.com:8080/browse/MIL-118 - ServletRequest#parseRequestParameters overwrites multiple file uploads when using input type="file" multiple="multiple"                        
-                        String itemKey = item.getFieldName();
+                        // See http://jira.ettrema.com:8080/browse/MIL-118 - ServletRequest#parseRequestParameters overwrites multiple file uploads when using input type="file" multiple="multiple"
+                        String itemKey = item.getName();
                         if (files.containsKey(itemKey)) {
                             int count = 1;
                             while (files.containsKey(itemKey + count)) {
@@ -204,7 +183,7 @@ public class ServletRequest extends AbstractRequest {
                             }
                             itemKey = itemKey + count;
                         }
-                        files.put(itemKey, new FileItemWrapper(item));
+                        files.put(itemKey, new PartWrapper(item));
                     }
                 }
             } else {
@@ -222,14 +201,16 @@ public class ServletRequest extends AbstractRequest {
 							sb.deleteCharAt(sb.length()-1); // remove last comma
 						}
 						params.put(nm, sb.toString());
-					}					
+					}
                 }
             }
-        } catch (FileUploadException ex) {
-            throw new RequestParseException("FileUploadException", ex);
         } catch (Throwable ex) {
             throw new RequestParseException(ex.getMessage(), ex);
         }
+    }
+
+    private boolean isFormField(Part part) {
+        return (part.getSubmittedFileName() == null);
     }
 
     private void parseQueryString(Map<String, String> map) {
@@ -293,7 +274,7 @@ public class ServletRequest extends AbstractRequest {
     @Override
     public Cookie getCookie(String name) {
         if (request.getCookies() != null) {
-            for (javax.servlet.http.Cookie c : request.getCookies()) {
+            for (jakarta.servlet.http.Cookie c : request.getCookies()) {
                 if (c.getName().equals(name)) {
                     return toBeanCookie(c);
                 }
@@ -306,14 +287,14 @@ public class ServletRequest extends AbstractRequest {
     public List<Cookie> getCookies() {
         ArrayList<Cookie> list = new ArrayList<>();
         if (request.getCookies() != null) {
-            for (javax.servlet.http.Cookie c : request.getCookies()) {
+            for (jakarta.servlet.http.Cookie c : request.getCookies()) {
                 list.add(toBeanCookie(c));
 
             }
         }
         return list;
     }
-	
+
     @Override
     public String getRemoteAddr() {
         return request.getRemoteAddr();
@@ -327,6 +308,6 @@ public class ServletRequest extends AbstractRequest {
 	public Locale getLocale() {
 		return request.getLocale();
 	}
-	
-	
+
+
 }

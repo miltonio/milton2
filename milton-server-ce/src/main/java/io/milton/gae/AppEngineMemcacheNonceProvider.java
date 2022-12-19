@@ -29,7 +29,6 @@ import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import io.milton.http.Request;
 import io.milton.http.http11.auth.Nonce;
 import io.milton.http.http11.auth.NonceProvider;
-import io.milton.http.http11.auth.NonceProvider.NonceValidity;
 
 /**
  * Uses google's memcache implementation to store nonces which are available
@@ -47,11 +46,11 @@ import io.milton.http.http11.auth.NonceProvider.NonceValidity;
 public class AppEngineMemcacheNonceProvider implements NonceProvider {
 
 	private static final Logger log = Logger.getLogger(AppEngineMemcacheNonceProvider.class.getName() );
-    
+
     protected final int nonceValiditySeconds;
     protected boolean enableNonceCountChecking;
     protected final MemcacheService memcache = MemcacheServiceFactory.getMemcacheService();
-    
+
     public AppEngineMemcacheNonceProvider( int nonceValiditySeconds ) {
         this.nonceValiditySeconds = nonceValiditySeconds;
         log.info( "created" );

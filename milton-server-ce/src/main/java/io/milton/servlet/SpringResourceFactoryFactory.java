@@ -23,7 +23,7 @@ import io.milton.config.HttpManagerBuilder;
 import io.milton.http.HttpManager;
 import io.milton.http.ResourceFactory;
 import io.milton.http.webdav.WebDavResponseHandler;
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
