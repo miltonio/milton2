@@ -5,7 +5,7 @@
     <parent>
         <groupId>io.milton</groupId>
         <artifactId>milton</artifactId>
-        <version>3.1.1.488</version>
+        <version>4.0.0.1129</version>
     </parent>
     <artifactId>tuts-anno4-carddav</artifactId>
     <version>0.0.1-SNAPSHOT</version>
@@ -15,7 +15,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <milton.version>3.1.1.488</milton.version>
+        <milton.version>4.0.0.1129</milton.version>
     </properties>
 
     <build>
