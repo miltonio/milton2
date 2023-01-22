@@ -100,7 +100,7 @@ import io.milton.property.DefaultPropertyAuthoriser;
 import io.milton.property.MultiNamespaceCustomPropertySource;
 import io.milton.property.PropertyAuthoriser;
 import io.milton.property.PropertySource;
-
+import jakarta.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -111,16 +111,12 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import javax.inject.Inject;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -21,7 +21,7 @@ package io.milton.mail;
 
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
-import javax.mail.internet.InternetAddress;
+import jakarta.mail.internet.InternetAddress;
 
 public class MailboxAddress implements Serializable{
 

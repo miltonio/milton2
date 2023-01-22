@@ -18,7 +18,7 @@
  */
 package io.milton.mail;
 
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMessage;
 
 /**
  *  A service to copy information from a MimeMessage to a

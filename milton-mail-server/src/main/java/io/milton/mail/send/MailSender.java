@@ -2,8 +2,8 @@ package io.milton.mail.send;
 
 import io.milton.mail.StandardMessage;
 import java.util.List;
-import javax.mail.Session;
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.Session;
+import jakarta.mail.internet.MimeMessage;
 
 /**
  * Implements high level abstraction on sending emails. The actual message 

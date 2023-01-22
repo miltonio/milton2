@@ -34,9 +34,9 @@
         </dependency>
                 <!-- mvn install:install-file -DgroupId=org.masukomi -DartifactId=aspirin-core -Dversion=1.0 -Dpackaging=jar -Dfile=/path/to/file -->
         <dependency>
-            <groupId>io.milton</groupId>
+            <groupId>com.cosium.aspirin</groupId>
             <artifactId>aspirin</artifactId>
-            <version>0.10.03.08</version>
+            <version>0.12.00</version>
         </dependency>
 <!--
 		<dependency>

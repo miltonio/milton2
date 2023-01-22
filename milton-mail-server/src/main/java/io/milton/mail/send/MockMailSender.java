@@ -6,9 +6,9 @@ import io.milton.mail.StandardMessageFactoryImpl;
 import com.sun.mail.smtp.SMTPMessage;
 import java.util.ArrayList;
 import java.util.List;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Session;
+import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
