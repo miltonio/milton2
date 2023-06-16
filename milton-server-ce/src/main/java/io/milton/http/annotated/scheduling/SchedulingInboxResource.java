@@ -29,6 +29,7 @@ import io.milton.resource.PropFindableResource;
 import io.milton.resource.Resource;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 4.2. Scheduling Inbox Collection
@@ -136,11 +137,11 @@ public class SchedulingInboxResource extends BaseSchedulingResource implements C
     public SchedulingInboxResource(CalDavPrincipal principal, CalendarSearchService calendarSearchService, String name) {
         super(principal, calendarSearchService, name);
     }
-        
-    
+
+
     @Override
     public Resource child(String childName) throws NotAuthorizedException, BadRequestException {
-        for( Resource r : getChildren() ) {
+        for( Resource r : Optional.ofNullable(getChildren()).orElse(List.of()) ) {
             if( r.getName().equals(childName)) {
                 return r;
             }
@@ -174,12 +175,12 @@ public class SchedulingInboxResource extends BaseSchedulingResource implements C
 //    @Override
 //    public String getUniqueId() {
 //        return principal.getName() + "_inbox";
-//    }    
+//    }
 //
 //    @Override
 //    public Date getModifiedDate() {
 //        return super.getModifiedDate(); //To change body of generated methods, choose Tools | Templates.
 //    }
 
-    
+
 }

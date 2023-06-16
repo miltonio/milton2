@@ -29,6 +29,8 @@ import io.milton.principal.DiscretePrincipal;
 import io.milton.principal.HrefPrincipleId;
 import io.milton.resource.Resource;
 import java.util.List;
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +57,7 @@ public class AnnoPrincipalResource extends AnnoCollectionResource implements Dis
 				list.add(this.getHref());
 			}
 
-			for (Resource r : getChildren()) {
+			for (Resource r : Optional.ofNullable(getChildren()).orElse(List.of())) {
 				if (r instanceof AnnoCollectionResource) {
 					AnnoCollectionResource col = (AnnoCollectionResource) r;
 					if (annoFactory.calendarsAnnotationHandler.hasCalendars(col.getSource())) {
@@ -99,7 +101,7 @@ public class AnnoPrincipalResource extends AnnoCollectionResource implements Dis
 				list.add(this.getHref());
 			}
 
-			for (Resource r : getChildren()) {
+			for (Resource r : Optional.ofNullable(getChildren()).orElse(List.of())) {
 				if (r instanceof AnnoCollectionResource) {
 					AnnoCollectionResource col = (AnnoCollectionResource) r;
 					if (annoFactory.addressBooksAnnotationHandler.hasAddressBooks(col.getSource())) {
@@ -117,8 +119,8 @@ public class AnnoPrincipalResource extends AnnoCollectionResource implements Dis
 	public HrefList getDirectoryGateway() {
 		try {
 			HrefList list = new HrefList();
-			// add all addressbooks which have the 
-			for (Resource r : getChildren()) {
+			// add all addressbooks which have the
+			for (Resource r : Optional.ofNullable(getChildren()).orElse(List.of())) {
 				if (r instanceof AnnoCollectionResource) {
 					AnnoCollectionResource col = (AnnoCollectionResource) r;
 					Boolean isDirectoryGateway = annoFactory.directoryGatewayAnnotationHandler.get(col);

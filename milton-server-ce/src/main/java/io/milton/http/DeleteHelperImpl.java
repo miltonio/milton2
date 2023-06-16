@@ -29,6 +29,8 @@ import io.milton.event.DeleteEvent;
 import io.milton.event.EventManager;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +63,7 @@ public class DeleteHelperImpl implements DeleteHelper {
 			return locked;
 		} else if (r instanceof CollectionResource) {
 			CollectionResource col = (CollectionResource) r;
-            List<Resource> list = new ArrayList<>(col.getChildren());
+            List<Resource> list = new ArrayList<>(Optional.ofNullable(col.getChildren()).orElse(List.of()));
 			for (Resource rChild : list) {
 				if (rChild instanceof DeletableResource) {
 					DeletableResource rChildDel = (DeletableResource) rChild;
@@ -101,7 +103,7 @@ public class DeleteHelperImpl implements DeleteHelper {
 
 		} else if (r instanceof CollectionResource) {
 			CollectionResource col = (CollectionResource) r;
-            List<Resource> list = new ArrayList<>(col.getChildren());
+            List<Resource> list = new ArrayList<>(Optional.ofNullable(col.getChildren()).orElse(List.of()));
 			for (Resource rChild : list) {
 				if (rChild == null) {
 					log.warn("got a null item in list");

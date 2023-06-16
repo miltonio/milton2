@@ -19,7 +19,6 @@
 
 package io.milton.resource;
 
-import io.milton.resource.Resource;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import java.util.List;
@@ -29,12 +28,12 @@ import java.util.List;
  * <P/>
  * This is only part of the normal behaviour of a directory though, you
  * should have a look at FolderResource for a more complete interface
- * 
+ *
  * @author brad
  */
 public interface CollectionResource extends Resource {
 
     Resource child(String childName) throws NotAuthorizedException, BadRequestException;
-	
+
     List<? extends Resource> getChildren() throws NotAuthorizedException, BadRequestException;
 }

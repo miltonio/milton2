@@ -37,7 +37,10 @@ import io.milton.common.FileUtils;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -196,7 +199,7 @@ public class FckFileManagerResource extends FckCommon implements GetableResource
             el.noContent();
             writer().open( "Folders" );
             writer().writeText( "\n" );
-            for( Resource r : target.getChildren() ) {
+            for( Resource r : Optional.ofNullable(target.getChildren()).orElse(List.of()) ) {
                 if( r instanceof CollectionResource ) {
                     el = writer().begin( "Folder" );
                     String nm = Utils.escapeXml( r.getName() );
@@ -209,7 +212,7 @@ public class FckFileManagerResource extends FckCommon implements GetableResource
             if( includeFiles ) {
                 writer().open( "Files" );
                 writer().writeText( "\n" );
-                for( Resource r : target.getChildren() ) {
+                for( Resource r : Optional.ofNullable(target.getChildren()).orElse(List.of()) ) {
                     if( !( r instanceof CollectionResource ) ) {
                         el = writer().begin( "File" );
                         String nm = Utils.escapeXml( r.getName() );

@@ -36,6 +36,7 @@ import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Represents a remote DAV host which has been mapped onto the DAV proxy
@@ -63,7 +64,7 @@ public class MappedHostResourceAdapter extends AbstractRemoteAdapter implements 
     public String getName() {
         return name;
     }
-    
+
     @Override
     public CollectionResource createCollection(String newName) throws NotAuthorizedException, ConflictException, BadRequestException {
         Folder newRemoteFolder;
@@ -77,7 +78,7 @@ public class MappedHostResourceAdapter extends AbstractRemoteAdapter implements 
 
     @Override
     public io.milton.resource.Resource child(String childName) throws NotAuthorizedException, BadRequestException {
-        for( io.milton.resource.Resource r : getChildren() ) {
+        for( io.milton.resource.Resource r : Optional.ofNullable(getChildren()).orElse(List.of()) ) {
             if( r.getName().equals(childName)) {
                 return r;
             }

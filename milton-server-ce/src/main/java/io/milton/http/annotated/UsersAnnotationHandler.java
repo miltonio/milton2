@@ -22,6 +22,7 @@ import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.resource.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  *
@@ -55,7 +56,7 @@ public class UsersAnnotationHandler extends AbstractAnnotationHandler {
 			// iterate over each root collection, looking for objects which have
 			// a @Authenticate annotation on their ChildOf or ChildrenOf methods
 			List<AnnoCollectionResource> list = new ArrayList<>();
-			for (Resource col : root.getChildren()) {
+			for (Resource col : Optional.ofNullable(root.getChildren()).orElse(List.of())) {
 				if (col instanceof AnnoCollectionResource) {
 					AnnoCollectionResource acr = (AnnoCollectionResource) col;
 					List<ControllerMethod> availMethods = getMethods(acr.getSource().getClass());

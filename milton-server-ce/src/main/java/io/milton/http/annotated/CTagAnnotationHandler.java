@@ -22,6 +22,9 @@ import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.resource.CollectionResource;
 import io.milton.resource.Resource;
 import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+
 import org.apache.commons.beanutils.PropertyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +39,7 @@ public class CTagAnnotationHandler extends AbstractAnnotationHandler {
 
 	public static String deriveCtag(CollectionResource col) throws NotAuthorizedException, BadRequestException {
 		Date latest = col.getModifiedDate();
-		for (Resource r : col.getChildren()) {
+		for (Resource r : Optional.ofNullable(col.getChildren()).orElse(List.of())) {
 			Date d = r.getModifiedDate();
 			if (d != null) {
 				if (latest == null || d.after(latest)) {

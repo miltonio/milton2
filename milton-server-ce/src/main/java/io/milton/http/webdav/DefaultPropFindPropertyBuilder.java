@@ -178,19 +178,15 @@ public class DefaultPropFindPropertyBuilder implements PropFindPropertyBuilder {
 
 		if (requestedDepth > currentDepth && resource instanceof CollectionResource) {
 			CollectionResource col = (CollectionResource) resource;
-			List<? extends Resource> list = col.getChildren();
-			if (list != null) {
-				list = new ArrayList<Resource>(list);
-				for (Resource child : list) {
-					if (child instanceof PropFindableResource) {
-						String childName = child.getName();
-						if (childName == null) {
-							log.warn("null name for resource of type: " + child.getClass() + " in folder: " + href + " WILL NOT be returned in PROPFIND response!!");
-						} else {
-							String childHref = href + Utils.percentEncode(childName);
-							// Note that the new collection href, is just the current href
-							processResource(responses, (PropFindableResource) child, parseResult, childHref, requestedDepth, currentDepth + 1, href);
-						}
+			for (Resource child : Optional.ofNullable(col.getChildren()).orElse(List.of())) {
+				if (child instanceof PropFindableResource) {
+					String childName = child.getName();
+					if (childName == null) {
+						log.warn("null name for resource of type: " + child.getClass() + " in folder: " + href + " WILL NOT be returned in PROPFIND response!!");
+					} else {
+						String childHref = href + Utils.percentEncode(childName);
+						// Note that the new collection href, is just the current href
+						processResource(responses, (PropFindableResource) child, parseResult, childHref, requestedDepth, currentDepth + 1, href);
 					}
 				}
 			}

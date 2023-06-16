@@ -31,6 +31,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 import org.apache.ftpserver.ftplet.FtpFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -281,7 +283,7 @@ public class MiltonFtpFile implements FtpFile {
         if( r instanceof CollectionResource ) {
             try {
                 CollectionResource cr = (CollectionResource) r;
-                for( Resource child : cr.getChildren() ) {
+                for( Resource child : Optional.ofNullable(cr.getChildren()).orElse(List.of()) ) {
                     list.add( ftpFactory.wrap( path.child( child.getName() ), child ) );
                 }
             } catch (NotAuthorizedException | BadRequestException ex) {

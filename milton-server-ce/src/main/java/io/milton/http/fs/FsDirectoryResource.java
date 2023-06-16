@@ -39,7 +39,7 @@ import static io.milton.http.ResponseStatus.SC_FORBIDDEN;
 public class FsDirectoryResource extends FsResource implements MakeCollectionableResource, PutableResource, CopyableResource, DeletableResource, MoveableResource, PropFindableResource, LockingCollectionResource, GetableResource {
 
     private static final Logger log = LoggerFactory.getLogger(FsDirectoryResource.class);
-    
+
     private final FileContentService contentService;
 
     public FsDirectoryResource(String host, FileSystemResourceFactory factory, File dir, FileContentService contentService) {
@@ -199,7 +199,7 @@ public class FsDirectoryResource extends FsResource implements MakeCollectionabl
         w.open("body");
         w.begin("h1").open().writeText(this.getName()).close();
         w.open("table");
-        for (Resource r : getChildren()) {
+        for (Resource r : Optional.ofNullable(getChildren()).orElse(List.of())) {
             w.open("tr");
 
             w.open("td");

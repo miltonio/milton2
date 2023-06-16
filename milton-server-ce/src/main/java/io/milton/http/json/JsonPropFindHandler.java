@@ -38,15 +38,8 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import javax.xml.namespace.QName;
 
@@ -84,7 +77,7 @@ public class JsonPropFindHandler {
         String[] arr;
         if (propertyBuilder == null) {
             if (wrappedResource instanceof CollectionResource) {
-                List<? extends Resource> children = ((CollectionResource) wrappedResource).getChildren();
+                List<? extends Resource> children = Optional.ofNullable(((CollectionResource) wrappedResource).getChildren()).orElse(List.of());
                 json = JSONSerializer.toJSON(toSimpleList(children), cfg);
             } else {
                 json = JSONSerializer.toJSON(toSimple(wrappedResource), cfg);
@@ -107,10 +100,10 @@ public class JsonPropFindHandler {
                 depth = Integer.parseInt(sDepth);
             }
 
-			
+
             String href = encodedUrl.replace("/_DAV/PROPFIND", "");
             PropertiesRequest parseResult = new PropertiesRequest(toProperties(fields));
-            LogUtils.debug(log, "prop builder: ", propertyBuilder.getClass(), "href", href);			
+            LogUtils.debug(log, "prop builder: ", propertyBuilder.getClass(), "href", href);
             List<PropFindResponse> props;
 			try {
 				props = propertyBuilder.buildProperties(wrappedResource, depth, parseResult, href);
@@ -127,14 +120,14 @@ public class JsonPropFindHandler {
         json.write(writer);
         writer.flush();
     }
-	
+
 	private Set<Property> toProperties(Set<QName> set) {
 		Set<Property> props = new HashSet<>();
 		for(QName n : set ) {
 			props.add(new Property(n, null));
 		}
 		return props;
-	}	
+	}
 
     /**
      * Parse the given field and populate the given maps

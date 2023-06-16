@@ -37,6 +37,7 @@ import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  *
@@ -47,9 +48,9 @@ public class FolderResourceAdapter extends AbstractRemoteAdapter implements IFol
     private final io.milton.httpclient.Folder folder;
 
     private final FolderHtmlContentGenerator contentGenerator;
-    
+
     private final RemoteManager remoteManager;
-    
+
     public FolderResourceAdapter(Folder folder, io.milton.http.SecurityManager securityManager, String hostName, FolderHtmlContentGenerator contentGenerator, RemoteManager remoteManager) {
         super(folder, securityManager, hostName);
         this.folder = folder;
@@ -70,7 +71,7 @@ public class FolderResourceAdapter extends AbstractRemoteAdapter implements IFol
 
     @Override
     public Resource child(String childName) throws NotAuthorizedException, BadRequestException {
-        for( Resource r : getChildren() ) {
+        for( Resource r : Optional.ofNullable(getChildren()).orElse(List.of())) {
             if( r.getName().equals(childName)) {
                 return r;
             }
@@ -112,7 +113,7 @@ public class FolderResourceAdapter extends AbstractRemoteAdapter implements IFol
         Folder destRemoteFolder = destFolderAdapter.getRemoteFolder();
         remoteManager.moveTo(folder, destName, destRemoteFolder);
     }
-    
+
     @Override
     public void sendContent(OutputStream out, Range range, Map<String, String> params, String contentType) throws IOException, NotAuthorizedException, BadRequestException {
         String uri = HttpManager.request().getAbsolutePath();
@@ -138,7 +139,7 @@ public class FolderResourceAdapter extends AbstractRemoteAdapter implements IFol
     public Date getCreateDate() {
         return folder.getCreatedDate();
     }
-    
+
     @Override
     public void delete() throws NotAuthorizedException, ConflictException, BadRequestException {
         try {
@@ -153,6 +154,6 @@ public class FolderResourceAdapter extends AbstractRemoteAdapter implements IFol
     public Folder getRemoteFolder() {
         return folder;
     }
-    
-    
+
+
 }

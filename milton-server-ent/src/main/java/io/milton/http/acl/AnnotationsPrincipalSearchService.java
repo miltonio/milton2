@@ -12,13 +12,15 @@ import io.milton.principal.PrincipalSearchService;
 import io.milton.resource.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * This is a default implementation of principal search which iterates over the
  * principals in the users home and applies critieria.
- * 
+ *
  * It should generally not be used in production. Instead you should replace it
  * with something that integrates into the query facilities of your persistence
  * tier to search efficiently.
@@ -46,7 +48,7 @@ public class AnnotationsPrincipalSearchService implements PrincipalSearchService
             }
             List<DiscretePrincipal> results = new ArrayList<>();
             for (AnnoCollectionResource r : usersCol) {
-                for (Resource u : r.getChildren()) {
+                for (Resource u : Optional.ofNullable(r.getChildren()).orElse(List.of())) {
                     if (u instanceof AnnoPrincipalResource) {
                         AnnoPrincipalResource dp = (AnnoPrincipalResource) u;
                         for (PrincipalSearchCriteria.SearchItem item  : criteria.getSearchItems()) {
@@ -88,9 +90,4 @@ public class AnnotationsPrincipalSearchService implements PrincipalSearchService
     public void setAnnotationResourceFactory(AnnotationResourceFactory arf) {
         this.arf = arf;
     }
-    
-    
-    
-    
-
 }

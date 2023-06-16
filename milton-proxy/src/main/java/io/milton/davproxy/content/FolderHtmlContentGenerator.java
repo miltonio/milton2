@@ -26,6 +26,9 @@ import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.resource.CollectionResource;
 import io.milton.resource.Resource;
 import java.io.OutputStream;
+import java.util.List;
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,11 +37,11 @@ import org.slf4j.LoggerFactory;
  * @author brad
  */
 public class FolderHtmlContentGenerator {
-    
+
     private static final Logger log = LoggerFactory.getLogger(FolderHtmlContentGenerator.class);
-    
+
     private String ssoPrefix; // currently not used - BM
-    
+
     public void generateContent(CollectionResource folder, OutputStream out, String uri) throws NotAuthorizedException, BadRequestException {
         XmlWriter w = new XmlWriter(out);
         w.open("html");
@@ -72,7 +75,7 @@ public class FolderHtmlContentGenerator {
         w.open("body");
         w.begin("h1").open().writeText(folder.getName()).close();
         w.open("table");
-        for (Resource r : folder.getChildren()) {
+        for (Resource r : Optional.ofNullable(folder.getChildren()).orElse(List.of())) {
             w.open("tr");
 
             w.open("td");
@@ -89,9 +92,9 @@ public class FolderHtmlContentGenerator {
         w.close("table");
         w.close("body");
         w.close("html");
-        w.flush();        
+        w.flush();
     }
-    
+
 
     private String buildHref(String uri, String name) {
         // hmm, we're ignoring the path passed in uri. Dodgy...
@@ -115,5 +118,5 @@ public class FolderHtmlContentGenerator {
         s += abUrl.substring(pos);
         return s;
     }
-    
+
 }
