@@ -29,9 +29,9 @@ import org.slf4j.LoggerFactory;
  * @author brad
  */
 public class DeleteAnnotationHandler extends AbstractAnnotationHandler {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(DeleteAnnotationHandler.class);
-	
+
 	public DeleteAnnotationHandler(final AnnotationResourceFactory outer) {
 		super(outer, Delete.class, Method.DELETE);
 	}
@@ -44,13 +44,12 @@ public class DeleteAnnotationHandler extends AbstractAnnotationHandler {
 			throw new RuntimeException("Method not found: " + getClass() + " - " + source.getClass());
 		}
 		try {
-			Object[] args = annoResourceFactory.buildInvokeArgs(res, cm.method);
-			cm.method.invoke(cm.controller, args);
+			invoke(cm, res);
 		} catch (NotAuthorizedException | ConflictException | BadRequestException e) {
 			throw e;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
-    
+
 }

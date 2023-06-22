@@ -30,9 +30,9 @@ import org.slf4j.LoggerFactory;
  * @author brad
  */
 public class MoveAnnotationHandler extends AbstractAnnotationHandler {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(MoveAnnotationHandler.class);
-	
+
 	public MoveAnnotationHandler(final AnnotationResourceFactory outer) {
 		super(outer, Move.class, Method.MOVE);
 	}
@@ -50,13 +50,12 @@ public class MoveAnnotationHandler extends AbstractAnnotationHandler {
 				AnnoResource arDest = (AnnoResource) rDest;
 				destObject = arDest.getSource();
 			}
-			Object[] args = annoResourceFactory.buildInvokeArgs(res, cm.method, newName, rDest, destObject);
-			cm.method.invoke(cm.controller, args);
+			invoke(cm, res, newName, newName, rDest, destObject);
 		} catch (NotAuthorizedException | ConflictException | BadRequestException e) {
 			throw e;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
-    
+
 }

@@ -66,7 +66,7 @@ public class PostAnnotationHandler extends AbstractAnnotationHandler {
 			if (a.bindData()) {
 				TimeZone tz = null;
 				if (a.timeZoneParam().length() > 0) {
-					String sTimezone = DataBinder.getRawParam(params, a.timeZoneParam());					
+					String sTimezone = DataBinder.getRawParam(params, a.timeZoneParam());
 					if (sTimezone != null) {
 						tz = TimeZone.getTimeZone(sTimezone);
 					}
@@ -81,8 +81,7 @@ public class PostAnnotationHandler extends AbstractAnnotationHandler {
 		}
 
 		try {
-			Object[] args = annoResourceFactory.buildInvokeArgs(resource, cm.method, params);
-            return cm.method.invoke(cm.controller, args);
+            return invoke(cm, resource, params);
 		} catch (NotAuthorizedException | ConflictException | BadRequestException e) {
 			throw e;
 		} catch (Exception e) {

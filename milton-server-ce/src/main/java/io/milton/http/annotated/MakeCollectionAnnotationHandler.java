@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  * @author brad
  */
 public class MakeCollectionAnnotationHandler extends AbstractAnnotationHandler {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(MakeCollectionAnnotationHandler.class);
 
 	public MakeCollectionAnnotationHandler(final AnnotationResourceFactory outer) {
@@ -44,17 +44,16 @@ public class MakeCollectionAnnotationHandler extends AbstractAnnotationHandler {
 			throw new RuntimeException("Method not found: Annotation=" + MakeCollection.class + " - source object=" + source.getClass());
 		}
 		try {
-			Object[] args = annoResourceFactory.buildInvokeArgs(res, cm.method, newName);
-			Object o = cm.method.invoke(cm.controller, args);
+			Object o = invoke(cm, res, newName);
 			if( o == null ) {
 				throw new RuntimeException("Method returned null object or void: " + cm.controller.getClass() + "::" + cm.method.getName() + " - should return newly created object");
 			}
 			return o;
 		} catch(NotAuthorizedException | ConflictException | BadRequestException e) {
-			throw e;			
+			throw e;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
-    
+
 }

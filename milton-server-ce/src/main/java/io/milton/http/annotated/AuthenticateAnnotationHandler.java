@@ -72,8 +72,7 @@ public class AuthenticateAnnotationHandler extends AbstractAnnotationHandler {
 			} else if (cm.method.getReturnType().equals(Boolean.class)) {
 				if (hasParamType(cm.method, String.class)) { // Must have a string parameter for the password
 					try {
-						Object[] args = annoResourceFactory.buildInvokeArgs(userRes, cm.method, requestedPassword);
-						Boolean result = (Boolean) cm.method.invoke(cm.controller, args);
+						Boolean result = (Boolean) invoke(cm, userRes, requestedPassword);
 						if (result != null) {
 							return result;
 						}
@@ -120,8 +119,9 @@ public class AuthenticateAnnotationHandler extends AbstractAnnotationHandler {
 				} else if (hasParamType(cm.method, DigestResponse.class)) {
 					// if it returns String then it returns a password. Otherwise is authenticate method
 					if (cm.method.getReturnType().equals(String.class)) {
-						Object[] args = annoResourceFactory.buildInvokeArgs(userRes, cm.method, userRes);
-						String result = (String) cm.method.invoke(cm.controller, args);
+//						Object[] args = annoResourceFactory.buildInvokeArgs(userRes, cm.method, userRes);
+//						String result = (String) cm.method.invoke(cm.controller, args);
+						String result = (String) invoke(cm, userRes, userRes);
 						if (result == null) {
 							log.warn("Null password from: " + cm + " for user: " + userRes.getHref());
 							return false;
@@ -136,8 +136,9 @@ public class AuthenticateAnnotationHandler extends AbstractAnnotationHandler {
 							}
 						}
 					} else if (cm.method.getReturnType().equals(Boolean.class)) {
-						Object[] args = annoResourceFactory.buildInvokeArgs(userRes, cm.method, digestRequest);
-						Boolean result = (Boolean) cm.method.invoke(cm.controller, args);
+//						Object[] args = annoResourceFactory.buildInvokeArgs(userRes, cm.method, digestRequest);
+//						Boolean result = (Boolean) cm.method.invoke(cm.controller, args);
+						Boolean result = (Boolean) invoke(cm, userRes, digestRequest);
 						if (result != null) {
 							return result;
 						}
