@@ -28,7 +28,7 @@ package io.milton.http.values;
 public class CData {
     private final String data;
 
-    public CData( String data ) {
+    public CData(String data) {
         this.data = data;
     }
 

@@ -22,7 +22,6 @@ package io.milton.event;
 import io.milton.resource.Resource;
 
 /**
- *
  * @author brad
  */
 public interface ResourceEvent extends Event {

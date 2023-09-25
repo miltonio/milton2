@@ -36,7 +36,7 @@ public class DbUtils {
     public static <T> List<T> toList(Criteria crit, Class<T> c) {
         List list = crit.list();
         if( list == null ) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         } else {
             return list;
         }

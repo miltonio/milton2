@@ -31,5 +31,5 @@ public class View {
 
     public String getTemplateName() {
         return templateName;
-    }    
+    }
 }

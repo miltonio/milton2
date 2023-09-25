@@ -17,11 +17,12 @@
 
 package io.milton.context;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.Closeable;
 import java.util.List;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class RootContext extends Context implements Closeable {
 
@@ -73,14 +74,15 @@ public class RootContext extends Context implements Closeable {
 
     /**
      * Execute without any return value
+     *
      * @param exec
      */
     public void execute(Executable2 exec) {
         RequestContext prev = RequestContext.getCurrent();
-        if( prev != null ) {
+        if (prev != null) {
             // we already have a request context, so use it
             exec.execute(prev);
-            return ;
+            return;
         }
         RequestContext.setCurrent(null);
         RequestContext context = RequestContext.getInstance(this);

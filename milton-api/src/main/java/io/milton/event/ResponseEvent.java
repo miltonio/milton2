@@ -45,9 +45,9 @@ public class ResponseEvent implements Event {
 
     public Response getResponse() {
         return response;
-    }        
+    }
 
     public long getDuration() {
         return duration;
-    }        
+    }
 }

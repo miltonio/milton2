@@ -19,17 +19,13 @@
 
 package io.milton.resource;
 
-import io.milton.resource.PropFindableResource;
-import io.milton.resource.PostableResource;
-import io.milton.resource.GetableResource;
-
-/** 
+/**
  * Extends all interfaces required for typical document behavior.
- * <P/>
+ * <p/>
  * This is a good place to start if you want a normal resource. However, think
  * carefully about which interfaces to implement. Only implement those which
  * should actually be supported
  */
 public interface FileResource extends CopyableResource, DeletableResource, GetableResource, MoveableResource, PostableResource, PropFindableResource {
-    
+
 }

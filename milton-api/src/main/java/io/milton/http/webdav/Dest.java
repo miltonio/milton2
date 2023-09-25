@@ -22,11 +22,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
  * @author brad
- *
+ * <p>
  * Represents the destination of a MOVE or COPY method
- *
+ * <p>
  * The target url is parsed into the 3 components, host, parent url and name to
  * make it easier to differentiate between the name and folder of the
  * destination
@@ -45,7 +44,7 @@ public class Dest {
     public final String name;
 
     public Dest(String sourceHost, String sDest) {
-        log.debug("sDest: " + sDest);
+        log.debug("sDest: {}", sDest);
         String sUrl;
         if (sDest.endsWith("/")) {
             sDest = sDest.substring(0, sDest.length() - 1);

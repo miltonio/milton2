@@ -19,11 +19,9 @@
 
 package io.milton.event;
 
-import io.milton.event.Event;
 import io.milton.http.Request;
 
 /**
- *
  * @author brad
  */
 public class RequestEvent implements Event {

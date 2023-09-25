@@ -21,8 +21,8 @@ package io.milton.common;
 
 import java.io.IOException;
 
-public class WritingException extends IOException{
-    
+public class WritingException extends IOException {
+
     private static final long serialVersionUID = 1L;
 
     public WritingException(IOException cause) {
@@ -32,5 +32,5 @@ public class WritingException extends IOException{
     public WritingException(String message, Throwable cause) {
         super(message, cause);
     }
-           
+
 }

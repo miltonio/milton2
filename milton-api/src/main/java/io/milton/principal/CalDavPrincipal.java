@@ -23,7 +23,6 @@ import io.milton.http.values.SupportedCalendarComponentListsSet;
 import io.milton.resource.PropFindableResource;
 
 /**
- *
  * @author brad
  */
 public interface CalDavPrincipal extends DiscretePrincipal, PropFindableResource {
@@ -31,31 +30,31 @@ public interface CalDavPrincipal extends DiscretePrincipal, PropFindableResource
     /**
      * This is usually a single href which identifies the collection which
      * contains the users calendars. This might be the user's own href.
-     *
+     * <p>
      * Name: calendar-home-set
-     *
+     * <p>
      * Namespace: urn:ietf:params:xml:ns:caldav
-     *
+     * <p>
      * Purpose: Identifies the URL of any WebDAV collections that contain
      * calendar collections owned by the associated principal resource.
-     *
+     * <p>
      * Conformance: This property SHOULD be defined on a principal resource. If
      * defined, it MAY be protected and SHOULD NOT be returned by a PROPFIND
      * DAV:allprop request (as defined in Section 12.14.1 of [RFC2518]).
-     *
+     * <p>
      * Description: The CALDAV:calendar-home-set property is meant to allow
      * users to easily find the calendar collections owned by the principal.
      * Typically, users will group all the calendar collections that they own
      * under a common collection. This property specifies the URL of collections
      * that are either calendar collections or ordinary collections that have
      * child or descendant calendar collections owned by the principal.
-     *
+     * <p>
      * Definition:
-     *
+     * <p>
      * <!ELEMENT calendar-home-set (DAV:href*)>
-     *
+     * <p>
      * Example:
-     *
+     * <p>
      * <C:calendar-home-set xmlns:D="DAV:"
      * xmlns:C="urn:ietf:params:xml:ns:caldav">
      * <D:href>http://cal.example.com/home/bernard/calendars/</D:href>
@@ -67,9 +66,9 @@ public interface CalDavPrincipal extends DiscretePrincipal, PropFindableResource
 
     /**
      * Return identifiers for this user:
-     *
+     * <p>
      * "Identify the calendar addresses of the associated principal resource."
-     *
+     * <p>
      * Eg: mailto:xxx@mysite.org
      *
      * @return
@@ -86,14 +85,13 @@ public interface CalDavPrincipal extends DiscretePrincipal, PropFindableResource
     SupportedCalendarComponentListsSet getSupportedComponentSets();
 
     /**
-     *
      * See
      * http://tools.ietf.org/html/draft-desruisseaux-caldav-sched-08#section-13.2.4
-     *
+     * <p>
      * Identifies the calendar user type of the associated principal resource.
      * Value: Same values allowed for the iCalendar "CUTYPE" property parameter
      * defined in Section 3.2.3 of [I-D.ietf-calsify-rfc2445bis].
-     * 
+     * <p>
      * Should be one of: INDIVIDUAL, GROUP, RESOURCE, ROOM, UNKNOWN
      *
      * @return

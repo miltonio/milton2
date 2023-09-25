@@ -23,7 +23,6 @@ import io.milton.http.caldav.ITip;
 import io.milton.http.caldav.ITip.StatusResponse;
 
 /**
- *
  * @author brad
  */
 public class SchedulingResponseItem {

@@ -44,24 +44,24 @@ public @interface BeanProperty {
     /**
      * Required role to read this property
      *
-     * @return
+     * @return Priviledge.READ by default.
      */
     Priviledge readRole() default Priviledge.READ;
 
     /**
      * Required role to change the property
      *
-     * @return
+     * @return Priviledge.READ by WRITE.
      */
     Priviledge writeRole() default Priviledge.WRITE;
-	
+
     /**
      * True indicates that the method should be enabled (ie DAV accessible)
      * regardless of the class default
-     *
+     * <p>
      * False indicats that the property is accessible if the class default is to allow access
      *
-     * @return
-     */	
-	boolean value() default true;
+     * @return true by default.
+     */
+    boolean value() default true;
 }

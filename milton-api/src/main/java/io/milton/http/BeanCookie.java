@@ -18,7 +18,6 @@ package io.milton.http;
 import java.util.Date;
 
 /**
- *
  * @author brad
  */
 public class BeanCookie implements Cookie {
@@ -31,18 +30,19 @@ public class BeanCookie implements Cookie {
     public static String toHeader(Cookie c) {
         return toHeader(c, System.currentTimeMillis());
     }
+
     public static String toHeader(Cookie c, long nowMs) {
         StringBuilder sb = new StringBuilder();
         sb.append(c.getName()).append("=").append(c.getValue());
-        if (c.getDomain() != null && c.getDomain().length() > 0) {
+        if (c.getDomain() != null && !c.getDomain().isEmpty()) {
             sb.append("; Domain=").append(c.getDomain());
         }
-        if (c.getPath() != null && c.getPath().length() > 0) {
+        if (c.getPath() != null && !c.getPath().isEmpty()) {
             sb.append("; Path=").append(c.getPath());
         }
 
         if (c.getExpiry() > 0) {
-            long expiryMs = nowMs + (c.getExpiry() * 1000);
+            long expiryMs = nowMs + (c.getExpiry() * 1000L);
             Date date = new Date(expiryMs);
             String sDate = DateUtils.formatForCookieExpiry(date);
             sb.append("; Expires=").append(sDate);
@@ -55,6 +55,7 @@ public class BeanCookie implements Cookie {
         }
         return sb.toString();
     }
+
     private int version;
     private final String name;
     private String value;

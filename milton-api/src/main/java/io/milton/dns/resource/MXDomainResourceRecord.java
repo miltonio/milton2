@@ -20,10 +20,10 @@ package io.milton.dns.resource;
 
 
 /**
- *
  * @author brad
  */
 public interface MXDomainResourceRecord extends DomainResourceRecord {
     int getPriority();
+
     String getTarget();
 }

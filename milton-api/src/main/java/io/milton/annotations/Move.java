@@ -23,29 +23,29 @@ import java.lang.annotation.Target;
 
 /**
  * Marks a method as one which moves a resource to a new parent, or that renames it, or both
- * 
+ *
  * <p>Return type - void
- * 
+ *
  * <p>Input parameters:
- * <ul> 
+ * <ul>
  *  <li>source object
  *  <li>destination parent (as POJO) - might be same as current parent, indicating no change
  *  <li>newName - might be same as current name, indicating no change
  * </ul>
- * 
+ *
  * <p>Example:
  * <pre>
  *  {@literal @}Move
-    public void move(MyDatabase.AbstractContentItem source, MyDatabase.FolderContentItem newParent, String newName) {
-        source.moveTo(newParent);
-        source.setName(newName);
-    }
-    </pre>
+ * public void move(MyDatabase.AbstractContentItem source, MyDatabase.FolderContentItem newParent, String newName) {
+ * source.moveTo(newParent);
+ * source.setName(newName);
+ * }
+ * </pre>
  *
  * @author brad
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Move {
-    
+
 }

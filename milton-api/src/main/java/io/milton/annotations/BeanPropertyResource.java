@@ -40,14 +40,14 @@ public @interface BeanPropertyResource {
     /**
      * Default property which is the namespace uri for the properties
      * on this resource
-     *
+     * <p>
      * E.g. http://mycompany.com/ns/example
-     * 
+     *
      * @return - the namespace uri
      */
     String value();
+
     /**
-     *
      * @return - true allows the resource to be updatable
      */
     boolean writable() default true;
@@ -55,7 +55,7 @@ public @interface BeanPropertyResource {
     /**
      * If true, indicates that properties on the resource should be accessible
      * unless otherwise specified
-     * 
+     *
      * @return
      */
     boolean enableByDefault() default true;

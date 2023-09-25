@@ -19,10 +19,10 @@
 
 package io.milton.resource;
 
-import io.milton.resource.Resource;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
+
 import java.io.InputStream;
 
 /**

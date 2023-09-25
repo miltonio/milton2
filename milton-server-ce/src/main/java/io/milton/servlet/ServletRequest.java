@@ -39,17 +39,17 @@ public class ServletRequest extends AbstractRequest {
 
     private static final Logger log = LoggerFactory.getLogger(ServletRequest.class);
 
-	public static BeanCookie toBeanCookie(jakarta.servlet.http.Cookie c) {
-		BeanCookie bc = new BeanCookie(c.getName());
-		bc.setDomain(c.getDomain());
-		bc.setExpiry(c.getMaxAge());
-		bc.setHttpOnly(true); // http only by default
-		bc.setPath(c.getPath());
-		bc.setSecure(c.getSecure());
-		bc.setValue(c.getValue());
-		bc.setVersion(c.getVersion());
-		return bc;
-	}
+    public static BeanCookie toBeanCookie(jakarta.servlet.http.Cookie c) {
+        BeanCookie bc = new BeanCookie(c.getName());
+        bc.setDomain(c.getDomain());
+        bc.setExpiry(c.getMaxAge());
+        bc.setHttpOnly(true); // http only by default
+        bc.setPath(c.getPath());
+        bc.setSecure(c.getSecure());
+        bc.setValue(c.getValue());
+        bc.setVersion(c.getVersion());
+        return bc;
+    }
 
     private final HttpServletRequest request;
     private final ServletContext servletContext;
@@ -67,6 +67,7 @@ public class ServletRequest extends AbstractRequest {
             typeContents.put(contentTypes.get(key), key);
         }
     }
+
     private static final ThreadLocal<HttpServletRequest> tlRequest = new ThreadLocal<>();
     private static final ThreadLocal<ServletContext> tlServletContext = new ThreadLocal<>();
 
@@ -92,18 +93,18 @@ public class ServletRequest extends AbstractRequest {
         tlRequest.set(r);
         tlServletContext.set(servletContext);
 
-		if( log.isTraceEnabled()) {
-			log.trace("Dumping headers ---- " + r.getMethod() + " " + r.getRequestURL() + " -----");
-			log.trace("Request class: " + r.getClass());
-			log.trace("Response class: " + r.getClass());
-			Enumeration names = r.getHeaderNames();
-			while( names.hasMoreElements() ) {
-				String name = (String) names.nextElement();
-				String value = r.getHeader(name);
-				log.trace("  " + name + "=" + value);
-			}
-			log.trace("-------------------------------------------");
-		}
+        if (log.isTraceEnabled()) {
+            log.trace("Dumping headers ---- " + r.getMethod() + " " + r.getRequestURL() + " -----");
+            log.trace("Request class: " + r.getClass());
+            log.trace("Response class: " + r.getClass());
+            Enumeration names = r.getHeaderNames();
+            while (names.hasMoreElements()) {
+                String name = (String) names.nextElement();
+                String value = r.getHeader(name);
+                log.trace("  " + name + "=" + value);
+            }
+            log.trace("-------------------------------------------");
+        }
     }
 
     public HttpSession getSession() {
@@ -137,10 +138,10 @@ public class ServletRequest extends AbstractRequest {
         }
         String enc = getRequestHeader(Request.Header.AUTHORIZATION);
         if (enc == null) {
-			log.trace("getAuthorization: No http credentials in request headers");
+            log.trace("getAuthorization: No http credentials in request headers");
             return null;
         }
-        if (enc.length() == 0) {
+        if (enc.isEmpty()) {
             log.trace("getAuthorization: No http credentials in request headers; authorization header is not-null, but is empty");
             return null;
         }
@@ -187,21 +188,21 @@ public class ServletRequest extends AbstractRequest {
                     }
                 }
             } else {
-                for (Enumeration en = request.getParameterNames(); en.hasMoreElements();) {
+                for (Enumeration en = request.getParameterNames(); en.hasMoreElements(); ) {
                     String nm = (String) en.nextElement();
-					String[] vals = request.getParameterValues(nm);
-					if( vals.length == 1) {
-						params.put(nm, vals[0]);
-					} else {
-						StringBuilder sb = new StringBuilder();
-						for( String s : vals) {
-							sb.append(s).append(",");
-						}
-						if( sb.length() > 0 ) {
-							sb.deleteCharAt(sb.length()-1); // remove last comma
-						}
-						params.put(nm, sb.toString());
-					}
+                    String[] vals = request.getParameterValues(nm);
+                    if (vals.length == 1) {
+                        params.put(nm, vals[0]);
+                    } else {
+                        StringBuilder sb = new StringBuilder();
+                        for (String s : vals) {
+                            sb.append(s).append(",");
+                        }
+                        if (sb.length() > 0) {
+                            sb.deleteCharAt(sb.length() - 1); // remove last comma
+                        }
+                        params.put(nm, sb.toString());
+                    }
                 }
             }
         } catch (Throwable ex) {
@@ -304,10 +305,10 @@ public class ServletRequest extends AbstractRequest {
         return servletContext;
     }
 
-	@Override
-	public Locale getLocale() {
-		return request.getLocale();
-	}
+    @Override
+    public Locale getLocale() {
+        return request.getLocale();
+    }
 
 
 }

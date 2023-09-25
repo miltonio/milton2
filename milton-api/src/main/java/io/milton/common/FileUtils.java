@@ -18,32 +18,23 @@
  */
 package io.milton.common;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
-import java.io.Closeable;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
 import java.util.List;
-import org.apache.commons.io.IOUtils;
 
+/**
+ * Utility class with helpful methods for file manipulations.
+ */
 public class FileUtils {
 
     public void copy(File source, File dest) {
-        FileInputStream is = null;
-        FileOutputStream os = null;
-        try {
-            is = new FileInputStream(source);
-            os = new FileOutputStream(dest);
+        try (FileInputStream is = new FileInputStream(source);
+             FileOutputStream os = new FileOutputStream(dest)) {
             int i = is.read();
             while (i >= 0) {
                 os.write(i);
@@ -51,9 +42,6 @@ public class FileUtils {
             }
         } catch (IOException ex) {
             ex.printStackTrace();
-        } finally {
-            close(is);
-            close(os);
         }
     }
 
@@ -100,7 +88,8 @@ public class FileUtils {
         try {
             Method m = o.getClass().getMethod("close");
             m.invoke(o);
-        } catch (IllegalArgumentException | NoSuchMethodException | InvocationTargetException | IllegalAccessException | SecurityException ex) {
+        } catch (IllegalArgumentException | NoSuchMethodException | InvocationTargetException | IllegalAccessException |
+                 SecurityException ex) {
             throw new RuntimeException(ex);
         }
     }
@@ -119,11 +108,8 @@ public class FileUtils {
     }
 
     public String readFile(File file) throws FileNotFoundException {
-        FileReader fr = null;
-        BufferedReader br = null;
-        try {
-            fr = new FileReader(file);
-            br = new BufferedReader(fr);
+        try (FileReader fr = new FileReader(file);
+             BufferedReader br = new BufferedReader(fr)) {
             StringBuilder sb = new StringBuilder();
             String s;
             while ((s = br.readLine()) != null) {
@@ -135,9 +121,6 @@ public class FileUtils {
             throw e;
         } catch (IOException ex) {
             throw new RuntimeException(ex);
-        } finally {
-            close(br);
-            close(fr);
         }
     }
 
@@ -174,7 +157,7 @@ public class FileUtils {
     }
 
     public static String getExtension(String nm) {
-        if( nm == null ) {
+        if (nm == null) {
             return null;
         }
         try {
@@ -250,28 +233,20 @@ public class FileUtils {
     }
 
     public static void readLines(File f, List<String> lines) {
-        InputStream in = null;
-        try {
-            in = new FileInputStream(f);
+        try (InputStream in = Files.newInputStream(f.toPath())) {
             for (Object oLine : IOUtils.readLines(in)) {
                 lines.add(oLine.toString());
             }
         } catch (Exception e) {
             throw new RuntimeException(f.getAbsolutePath(), e);
-        } finally {
-            IOUtils.closeQuietly(in);
         }
     }
 
     public static void writeLines(File f, List<String> lines) {
-        FileOutputStream fout = null;
-        try {
-            fout = new FileOutputStream(f);
+        try (FileOutputStream fout = new FileOutputStream(f)) {
             IOUtils.writeLines(lines, null, fout);
         } catch (Exception e) {
             throw new RuntimeException(f.getAbsolutePath(), e);
-        } finally {
-            IOUtils.closeQuietly(fout);
         }
     }
 }

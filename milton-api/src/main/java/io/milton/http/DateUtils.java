@@ -18,21 +18,15 @@
  */
 package io.milton.http;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A utility class for parsing and formatting HTTP dates as used in cookies and
@@ -44,7 +38,6 @@ import org.slf4j.LoggerFactory;
  */
 public class DateUtils {
 
-    private static final Logger log = LoggerFactory.getLogger(DateUtils.class);
     // 2005-03-30T05:18:33Z
     public static final String PATTERN_WEBDAV = "yyyy-MM-dd HH:mm:ss";
     /**
@@ -60,7 +53,6 @@ public class DateUtils {
 
     /**
      * Like PATTERN_RFC1123 but with hyphens between the date components
-     *
      */
     public static final String PATTERN_RFC1123_HYPHENS = "EEE, dd-MMM-yyyy HH:mm:ss zzz";
 
@@ -91,11 +83,12 @@ public class DateUtils {
         calendar.set(2000, Calendar.JANUARY, 1, 0, 0);
         DEFAULT_TWO_DIGIT_YEAR_START = calendar.getTime();
     }
+
     public static final TimeZone GMT = TimeZone.getTimeZone("GMT");
 
     private static final Pattern DATE_VALUE = Pattern.compile(
             "(\\d{4,})(\\d\\d)(\\d\\d)"
-            + "(?:T([0-1]\\d|2[0-3])([0-5]\\d)([0-5]\\d)(Z)?)?");
+                    + "(?:T([0-1]\\d|2[0-3])([0-5]\\d)([0-5]\\d)(Z)?)?");
 
     /**
      * Parse date in format: 2010-09-03T09:29:43Z
@@ -119,45 +112,39 @@ public class DateUtils {
      * @param s
      * @return
      */
-	public static Date parseIcalDateTime( String s ) throws DateParseException
-	{
-		SimpleDateFormat sdf = new SimpleDateFormat( "yyyyMMdd'T'HHmmss'Z'" );
-		sdf.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
-		try
-		{
-			return sdf.parse( s );
-		}
-		catch( ParseException e )
-		{
-			throw new DateParseException( "Does not match regex: " + s );
-		}
-	}
-	
-	public static Date parseIcalDateTime_old( String s ) throws DateParseException
-	{
-		Matcher m = DATE_VALUE.matcher( s );
-		if ( !m.matches() )
-		{
-			throw new DateParseException( "Does not match regex: " + s );
-		}
-		int year = Integer.parseInt( m.group( 1 ) );
-		int month = Integer.parseInt( m.group( 2 ) );
-		int day = Integer.parseInt( m.group( 3 ) );
-		Calendar cal = Calendar.getInstance();
-		cal.set( Calendar.YEAR, year );
-		cal.set( Calendar.MONTH, month );
-		cal.set( Calendar.DAY_OF_MONTH, day );
+    public static Date parseIcalDateTime(String s) throws DateParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        try {
+            return sdf.parse(s);
+        } catch (ParseException e) {
+            throw new DateParseException("Does not match regex: " + s);
+        }
+    }
 
-		if (null != m.group(4) ) { // hour
-			int hour = Integer.parseInt( m.group( 4 ) );
-			int minute = Integer.parseInt( m.group( 5 ) );
-			int second = Integer.parseInt( m.group( 6 ) );
-			boolean utc = null != m.group( 7 );
-			cal.set( Calendar.HOUR, hour );
-			cal.set( Calendar.MINUTE, minute );
-			cal.set( Calendar.SECOND, second );
-		}
-		return cal.getTime();
+    public static Date parseIcalDateTime_old(String s) throws DateParseException {
+        Matcher m = DATE_VALUE.matcher(s);
+        if (!m.matches()) {
+            throw new DateParseException("Does not match regex: " + s);
+        }
+        int year = Integer.parseInt(m.group(1));
+        int month = Integer.parseInt(m.group(2));
+        int day = Integer.parseInt(m.group(3));
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH, month);
+        cal.set(Calendar.DAY_OF_MONTH, day);
+
+        if (null != m.group(4)) { // hour
+            int hour = Integer.parseInt(m.group(4));
+            int minute = Integer.parseInt(m.group(5));
+            int second = Integer.parseInt(m.group(6));
+            boolean utc = null != m.group(7);
+            cal.set(Calendar.HOUR, hour);
+            cal.set(Calendar.MINUTE, minute);
+            cal.set(Calendar.SECOND, second);
+        }
+        return cal.getTime();
 
     }
 
@@ -166,11 +153,9 @@ public class DateUtils {
      * retrieved from the default http params.
      *
      * @param dateValue the date value to parse
-     *
      * @return the parsed date
-     *
      * @throws DateParseException if the value could not be parsed using any of
-     * the supported date formats
+     *                            the supported date formats
      */
     public static Date parseDate(String dateValue) throws DateParseException {
         return parseDate(dateValue, null, null);
@@ -179,13 +164,11 @@ public class DateUtils {
     /**
      * Parses the date value using the given date formats.
      *
-     * @param dateValue the date value to parse
+     * @param dateValue   the date value to parse
      * @param dateFormats the date formats to use
-     *
      * @return the parsed date
-     *
      * @throws DateParseException if none of the dataFormats could parse the
-     * dateValue
+     *                            dateValue
      */
     public static Date parseDate(String dateValue, Collection<String> dateFormats)
             throws DateParseException {
@@ -195,17 +178,15 @@ public class DateUtils {
     /**
      * Parses the date value using the given date formats.
      *
-     * @param dateValue the date value to parse
+     * @param dateValue   the date value to parse
      * @param dateFormats the date formats to use
-     * @param startDate During parsing, two digit years will be placed in the
-     * range <code>startDate</code> to <code>startDate + 100 years</code>. This
-     * value may be <code>null</code>. When <code>null</code> is given as a
-     * parameter, year <code>2000</code> will be used.
-     *
+     * @param startDate   During parsing, two digit years will be placed in the
+     *                    range <code>startDate</code> to <code>startDate + 100 years</code>. This
+     *                    value may be <code>null</code>. When <code>null</code> is given as a
+     *                    parameter, year <code>2000</code> will be used.
      * @return the parsed date
-     *
      * @throws DateParseException if none of the dataFormats could parse the
-     * dateValue
+     *                            dateValue
      */
     public static Date parseDate(
             String dateValue,
@@ -258,7 +239,6 @@ public class DateUtils {
     }
 
     /**
-     *
      * @param cal
      * @return
      * @see #PATTERN_WEBDAV
@@ -307,12 +287,10 @@ public class DateUtils {
      * must conform to that used by the {@link SimpleDateFormat simple date
      * format} class.
      *
-     * @param date The date to format.
+     * @param date    The date to format.
      * @param pattern The pattern to use for formatting the date.
      * @return A formatted date string.
-     *
      * @throws IllegalArgumentException If the given date pattern is invalid.
-     *
      * @see SimpleDateFormat
      */
     public static String formatDate(Date date, String pattern) {
@@ -350,7 +328,7 @@ public class DateUtils {
 
     public static class DateParseException extends Exception {
 
-        static final long serialVersionUID = 4417696455000643370L;
+        private static final long serialVersionUID = 4417696455000643370L;
 
         /**
          *

@@ -16,19 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-    package io.milton.common;
+package io.milton.common;
 
-import io.milton.resource.CollectionResource;
-import io.milton.resource.Resource;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
-
 import io.milton.http.webdav.Dest;
+import io.milton.resource.CollectionResource;
+import io.milton.resource.Resource;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.Collection;
@@ -37,11 +36,12 @@ import java.util.Iterator;
 
 public class Utils {
 
-    public static final Charset UTF8 = Charset.forName("UTF-8");
+    private Utils() {
+    }
 
-    private final static char[] hexDigits = {
-        '0', '1', '2', '3', '4', '5', '6', '7',
-        '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
+    private static final char[] hexDigits = {
+            '0', '1', '2', '3', '4', '5', '6', '7',
+            '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
     };
 
     public static Resource findChild(Resource parent, Path path) throws NotAuthorizedException, BadRequestException {
@@ -50,7 +50,7 @@ public class Utils {
 
     /**
      * does percentage decoding on a path portion of a url
-     *
+     * <p>
      * E.g. /foo > /foo /with%20space -> /with space
      *
      * @param href
@@ -115,24 +115,24 @@ public class Utils {
     }
 
     public static String escapeXml(String s) {
-        s = s.replaceAll("\"", "&quot;");
-        s = s.replaceAll("&", "&amp;");
-        s = s.replaceAll("'", "&apos;");
-        s = s.replaceAll("<", "&lt;");
-        s = s.replaceAll(">", "&gt;");
-//        s = s.replaceAll("�", "ae");
+        s = s.replace("\"", "&quot;");
+        s = s.replace("&", "&amp;");
+        s = s.replace("'", "&apos;");
+        s = s.replace("<", "&lt;");
+        s = s.replace(">", "&gt;");
+//        s = s.replace("�", "ae");
         return s;
     }
 
     /**
      * this is a modified verion of java.net.URI.encode(s)
-     *
+     * <p>
      * the java.net version only encodes characters over \u0080, but this
      * version also applies encoding to characters below char 48
-     *
+     * <p>
      * this method should be applied only to parts of a URL, not the whole URL
      * as forward slashes, semi-colons etc will be encoded
-     *
+     * <p>
      * by "part of url" i mean the bits between slashes
      *
      * @param s
@@ -159,7 +159,7 @@ public class Utils {
         } catch (Exception e) {
             daten = str.getBytes();
         }
-        int length = daten.length;
+
         for (byte b : daten) {
             char c = (char) (b & 0xFF);
             switch (c) {
@@ -209,12 +209,12 @@ public class Utils {
 
     /**
      * Range 1 - dec 65 - 90 A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
-     *
+     * <p>
      * Range 2 - dec 97 - 122 a b c d e f g h i j k l m n o p q r s t u v w x y
      * z
-     *
+     * <p>
      * Range 3 - dec 48 - 57 0 1 2 3 4 5 6 7 8 9
-     *
+     * <p>
      * 45 46 95 126 - . _ ~
      *
      * @param b
@@ -267,7 +267,7 @@ public class Utils {
      * java.text.Normalizer is only available for jdk 1.6. Since it isnt really
      * required and we don't want to annoy our 1.5 colleagues, this is commented
      * out.
-     *
+     * <p>
      * It isnt really needed because URLs still get consistently encoded and
      * decoded without it. Its just that you might get different results on
      * different platforms
@@ -321,7 +321,7 @@ public class Utils {
      * Used for parsing uploaded file names. MS web browsers tend to transmit
      * the complete path for an uploaded file, but we generally only want to
      * know the last part of the path.
-     *
+     * <p>
      * TODO: move this into milton
      *
      * @param s

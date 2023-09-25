@@ -24,15 +24,12 @@ import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * 
- * 
- *
  * @author brad
  */
 public class SupportedCalendarComponentListsSet extends ArrayList<SupportedCalendarComponentList> {
 
     public static final SupportedCalendarComponentListsSet EVENTS_ONLY = new SupportedCalendarComponentListsSet(SupportedCalendarComponentList.VEVENT_ONLY);
-    
+
     private static final long serialVersionUID = 1L;
 
     public SupportedCalendarComponentListsSet() {
@@ -42,9 +39,9 @@ public class SupportedCalendarComponentListsSet extends ArrayList<SupportedCalen
         super(c);
     }
 
-    public SupportedCalendarComponentListsSet(SupportedCalendarComponentList ... lists) {
+    public SupportedCalendarComponentListsSet(SupportedCalendarComponentList... lists) {
         this.addAll(Arrays.asList(lists));
     }
-    
+
 
 }

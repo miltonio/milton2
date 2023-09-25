@@ -66,7 +66,7 @@ public class MyOwnServlet implements jakarta.servlet.Servlet {
         builder.setEnableDigestAuth(false); // Example of config property
         AnnotationResourceFactory arf = new AnnotationResourceFactory();
         builder.setMainResourceFactory(arf); // Example of setting dependency        
-        Collection<Object> controllers = Collections.EMPTY_LIST; // should have REAL controllers, of course
+        Collection<Object> controllers = Collections.emptyList(); // should have REAL controllers, of course
         arf.setControllers(controllers);
         
         // Init the builder, this will create services that we havent injected

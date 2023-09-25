@@ -55,10 +55,10 @@ import java.util.Map;
  *
  * <?xml version="1.0" encoding="utf-8" ?> <D:propfind xmlns:D="DAV:"> <D:prop>
  * <D:current-user-privilege-set/> </D:prop> </D:propfind>
- *</pre>
+ * </pre>
  *
  * <p>>> Response <<
- * 
+ *
  * <pre>
  * HTTP/1.1 207 Multi-Status Content-Type: text/xml; charset="utf-8"
  * Content-Length: xxx
@@ -70,63 +70,62 @@ import java.util.Map;
  * OK</D:status> </D:propstat> </D:response> </D:multistatus>
  * </pre>
  *
- *
  * @author alex
  */
 public interface AccessControlledResource extends Resource {
-  
-    
+
+
     enum Priviledge {
         /**
          * READ the content of resources, but this does not permit reading PROPFIND (milton extension)
          */
-        READ_CONTENT(Collections.EMPTY_LIST),
+        READ_CONTENT(Collections.emptyList()),
         /**
          * Permits PROPFIND (milton extension)
          */
-        READ_PROPERTIES(Collections.EMPTY_LIST),
-        READ_CURRENT_USER_PRIVILEDGE(Collections.EMPTY_LIST),        
-        READ_ACL(Collections.EMPTY_LIST),        
+        READ_PROPERTIES(Collections.emptyList()),
+        READ_CURRENT_USER_PRIVILEDGE(Collections.emptyList()),
+        READ_ACL(Collections.emptyList()),
         /**
          * READ permits all other READ operations
          */
         READ(Arrays.asList(READ_CONTENT, READ_PROPERTIES, READ_ACL, READ_CURRENT_USER_PRIVILEDGE)),
-        WRITE_PROPERTIES(Collections.EMPTY_LIST),
-        WRITE_CONTENT(Collections.EMPTY_LIST),        
-        WRITE_ACL(Collections.EMPTY_LIST),
-        UNLOCK(Collections.EMPTY_LIST),        
+        WRITE_PROPERTIES(Collections.emptyList()),
+        WRITE_CONTENT(Collections.emptyList()),
+        WRITE_ACL(Collections.emptyList()),
+        UNLOCK(Collections.emptyList()),
         /**
          * Includes all other WRITE privs
          */
         WRITE(Arrays.asList(WRITE_CONTENT, WRITE_PROPERTIES, WRITE_ACL, UNLOCK)),
-        
-        BIND(Collections.EMPTY_LIST),
-        UNBIND(Collections.EMPTY_LIST),
+
+        BIND(Collections.emptyList()),
+        UNBIND(Collections.emptyList()),
         ALL(Arrays.asList(READ, WRITE, BIND, UNBIND));
-        
+
         public final List<Priviledge> contains;
 
         Priviledge(List<Priviledge> contains) {
             this.contains = contains;
-        }               
+        }
     }
-    
+
     /**
      * Just an empty list which conveys no permissions. This is an appropriate value
      * to return from ACL methods when you want to deny access
      */
     List<AccessControlledResource.Priviledge> NONE = Collections.emptyList();
-    
+
     List<AccessControlledResource.Priviledge> READ_WRITE = Arrays.asList(Priviledge.READ, Priviledge.WRITE);
-    
+
     List<AccessControlledResource.Priviledge> READ_CONTENT = Collections.singletonList(Priviledge.READ_CONTENT);
-    
+
     List<AccessControlledResource.Priviledge> READ_BROWSE = Arrays.asList(Priviledge.READ_CONTENT, Priviledge.READ_PROPERTIES);
-    
+
 
     /**
      * A URL which identifies the principal owner of this resource
-     *
+     * <p>
      * See http://greenbytes.de/tech/webdav/rfc3744.html#PROPERTY_principal-URL
      *
      * @return
@@ -156,7 +155,6 @@ public interface AccessControlledResource extends Resource {
      * Existing priviledges must be removed or updated as required so that the
      * given list is the complete list for this resource
      *
-     *
      * @param privs
      */
     void setAccessControlList(Map<Principal, List<Priviledge>> privs);
@@ -165,10 +163,10 @@ public interface AccessControlledResource extends Resource {
      * Return the hrefs (either fully qualified URLs or absolute paths) to the
      * collections which contain principals. This is to allow user agents to
      * display a list of users to display.
-     *
+     * <p>
      * Most implementations will only have a single value which will be the path
      * to the users folder. Eg:
-     *
+     * <p>
      * return Arrays.asList("/users/");
      *
      * @return - a list of hrefs

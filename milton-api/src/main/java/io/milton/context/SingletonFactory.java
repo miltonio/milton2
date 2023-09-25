@@ -17,19 +17,19 @@
 
 package io.milton.context;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 /**
- *
  * @author brad
  */
-public class SingletonFactory implements Factory{
+public class SingletonFactory implements Factory {
 
     private static final Logger log = LoggerFactory.getLogger(SingletonFactory.class);
 
@@ -58,16 +58,16 @@ public class SingletonFactory implements Factory{
 
     @Override
     public void destroy() {
-        if( bean instanceof Closeable) {
-            log.warn( "closing: " + bean.getClass());
+        if (bean instanceof Closeable) {
+            log.warn("closing: {}", bean.getClass());
             Closeable c = (Closeable) bean;
             try {
                 c.close();
-            } catch( IOException ex ) {
+            } catch (IOException ex) {
                 log.error("Exception closing: " + bean.getClass(), ex);
             }
         } else {
-            log.warn( "not closing: " + bean.getClass());
+            log.warn("not closing: {}", bean.getClass());
         }
     }
 
@@ -82,29 +82,29 @@ public class SingletonFactory implements Factory{
 
     public String getKeyClasses() {
         StringBuilder s = new StringBuilder();
-        for( Class c : keyClasses ) {
+        for (Class c : keyClasses) {
             s.append(c.getCanonicalName()).append(",");
         }
         return s.toString();
     }
 
-    public void setBean( Object bean ) {
+    public void setBean(Object bean) {
         this.bean = bean;
         List<Class> list = new ArrayList<>();
-        list.add( bean.getClass());
+        list.add(bean.getClass());
         log.debug("setBean: " + bean.getClass().getCanonicalName());
-        for(Class c :  this.bean.getClass().getInterfaces() ) {
-            list.add( c );
+        for (Class c : this.bean.getClass().getInterfaces()) {
+            list.add(c);
             log.debug(" - add interface: " + c.getCanonicalName());
         }
         Class superClass = this.bean.getClass().getSuperclass();
-        while( superClass != null ) {
+        while (superClass != null) {
             list.add(superClass);
             superClass = superClass.getSuperclass();
         }
 
         this.keyClasses = new Class[list.size()];
-        list.toArray( keyClasses );
+        list.toArray(keyClasses);
     }
 
     public Object getBean() {
@@ -113,14 +113,12 @@ public class SingletonFactory implements Factory{
 
     @Override
     public String toString() {
-        if( bean != null ) {
+        if (bean != null) {
             return "SingletonFactory(" + bean.getClass() + ")";
         } else {
             return super.toString();
         }
     }
-
-
 
 
 }

@@ -40,7 +40,7 @@ public class DigestResponse {
     private final String nc;
     private final String cnonce;
 
-    public DigestResponse( Auth auth, Request request ) {
+    public DigestResponse(Auth auth, Request request) {
         this.method = request.getMethod();
         user = auth.getUser();
         realm = auth.getRealm();
@@ -52,7 +52,7 @@ public class DigestResponse {
         cnonce = auth.getCnonce();
     }
 
-    public DigestResponse( Method method, String user, String realm, String nonce, String uri, String responseDigest, String qop, String nc, String cnonce ) {
+    public DigestResponse(Method method, String user, String realm, String nonce, String uri, String responseDigest, String qop, String nc, String cnonce) {
         this.method = method;
         this.user = user;
         this.realm = realm;
@@ -65,13 +65,9 @@ public class DigestResponse {
     }
 
 
-
     public Method getMethod() {
         return method;
     }
-
-
-    
 
 
     public String getUser() {
@@ -94,7 +90,7 @@ public class DigestResponse {
     /**
      * This is the response to the challenge. It is effectively The Answer
      * from the user agent.
-     *
+     * <p>
      * Note the overloaded meanings of the word "response". This class is a response to a challenge, but is sent in a request from
      * the user agent.
      *

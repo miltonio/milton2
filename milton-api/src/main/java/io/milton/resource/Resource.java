@@ -23,67 +23,67 @@ import io.milton.http.Auth;
 import io.milton.http.Request;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
+
 import java.util.Date;
 
 
 /**
- * 
- * Implementations should implement compareTo as an alphabetic comparison 
- *  on the name property
- * 
+ * Implementations should implement compareTo as an alphabetic comparison
+ * on the name property
+ *
  * @author Alienware1
  */
 public interface Resource {
 
     /**
      * Returning a null value is allowed, and disables the ETag field.
-     * <P/>
+     * <p/>
      * If a unique id is returned it will be combined with the modified date (if available)
      * to produce an ETag which identifies this version of this resource. Note that this
      * behaviour can be changed by injecting an alternative EtagGenerator instance into
      * the HttpManagerBuilder
-     * 
+     *
      * @return - a string which uniquely identifies this resource. This will be
-     * used in the ETag header field, and affects caching of resources. 
-     * 
+     * used in the ETag header field, and affects caching of resources.
      */
     String getUniqueId();
-    
+
     /**
      * Note that this name MUST be consistent with URL resolution in your ResourceFactory
-     * <P/>
+     * <p/>
      * If they aren't consistent Milton will generate a different href in PropFind
      * responses then what clients have request and this will cause either an
      * error or no resources to be displayed
-     * 
+     *
      * @return - the name of this resource. Ie just the local name, within its folder
      */
-    String getName();    
-    
-    
+    String getName();
+
+
     /**
      * Check the given credentials, and return a relevant object if accepted.
-     * <P/>
+     * <p/>
      * Returning null indicates credentials were not accepted
-     * 
-     * @param user - the user name provided by the user's agent
+     *
+     * @param user     - the user name provided by the user's agent
      * @param password - the password provided by the user's agent
      * @return - if credentials are accepted, some object to attach to the Auth object.
      * otherwise null
      */
     Object authenticate(String user, String password);
 
-    /** Return true if the current user is permitted to access this resource using
-     *  the specified method.
-     *  <P/>
-     *  Note that the current user may be determined by the Auth associated with
-     *  the request, or by a separate, application specific, login mechanism such
-     *  as a session variable or cookie based system. This method should correctly
-     *  interpret all such mechanisms
-     *  <P/>
-     *  The auth given as a parameter will be null if authentication failed. The
-     *  auth associated with the request will still exist
-     * 
+    /**
+     * Return true if the current user is permitted to access this resource using
+     * the specified method.
+     * <p/>
+     * Note that the current user may be determined by the Auth associated with
+     * the request, or by a separate, application specific, login mechanism such
+     * as a session variable or cookie based system. This method should correctly
+     * interpret all such mechanisms
+     * <p/>
+     * The auth given as a parameter will be null if authentication failed. The
+     * auth associated with the request will still exist
+     *
      * @param request
      * @param method
      * @param auth
@@ -91,25 +91,27 @@ public interface Resource {
      */
     boolean authorise(Request request, Request.Method method, Auth auth);
 
-    /** Return the security realm for this resource. Just any string identifier.
-     * <P/>
+    /**
+     * Return the security realm for this resource. Just any string identifier.
+     * <p/>
      * This will be used to construct authorization challenges and will be used
      * on Digest authentication to construct the expected response.
-     * 
+     *
      * @return - the security realm, for HTTP authentication
      */
     String getRealm();
 
-    /** The date and time that this resource, or any part of this resource, was last
-     *  modified. For dynamic rendered resources this should consider everything
-     *  which will influence its output.
-     *<P/>
-     *  Resources for which no such date can be calculated should return null.
-     *<P/>
-     *  This field, if not null, is used to reply to conditional GETs (ie GET with
+    /**
+     * The date and time that this resource, or any part of this resource, was last
+     * modified. For dynamic rendered resources this should consider everything
+     * which will influence its output.
+     * <p/>
+     * Resources for which no such date can be calculated should return null.
+     * <p/>
+     * This field, if not null, is used to reply to conditional GETs (ie GET with
      * if-modified-since). If the modified-since argument is later then the modified
      * date then we return a 304 - Not Modified.
-     *<P/>
+     * <p/>
      * Although nulls are explicitly allowed by milton, certain client applications
      * might require modified dates for file browsing. For example, the command line
      * client on Vista doesn't work properly if this is null.
@@ -119,15 +121,14 @@ public interface Resource {
     Date getModifiedDate();
 
 
-
-    
-    /** Determine if a redirect is required for this request, and if so return
-     *  the URL to redirect to. May be absolute or relative.
-     *<P/>
-     *  Called after authorization check but before any method specific processing
-     *<P/>
-     *  Return null for no redirect
-     * 
+    /**
+     * Determine if a redirect is required for this request, and if so return
+     * the URL to redirect to. May be absolute or relative.
+     * <p/>
+     * Called after authorization check but before any method specific processing
+     * <p/>
+     * Return null for no redirect
+     *
      * @param request
      * @return - null for no redirect, else the path to redirect to
      * @throws io.milton.http.exceptions.NotAuthorizedException

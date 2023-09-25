@@ -22,10 +22,8 @@ package io.milton.resource;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
-import io.milton.resource.CollectionResource;
 
 /**
- *
  * @author brad
  */
 public interface MakeCalendarResource extends CollectionResource {

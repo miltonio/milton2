@@ -140,7 +140,7 @@ public class MemoryUserSessionFactory implements UserFactory {
 
 		@Override
 		public List<LdapContact> searchContacts(Condition condition, int maxCount) {
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		}
 
 		public String getPassword() {

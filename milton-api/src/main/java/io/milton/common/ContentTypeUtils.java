@@ -22,16 +22,16 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
+ * Utility which uses {@link DefaultContentTypeService} for mime types resolving.
  *
  * @author brad
  */
 public class ContentTypeUtils {
 
-    private static Logger log = LoggerFactory.getLogger(ContentTypeUtils.class);
+    private ContentTypeUtils() {
+    }
+
     private static final ContentTypeService contentTypeService = new DefaultContentTypeService(); // will load props file ;
 
     public static String findContentTypes(String name) {

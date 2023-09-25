@@ -20,20 +20,23 @@ package io.milton.http;
 
 import io.milton.resource.AccessControlledResource;
 import io.milton.resource.AccessControlledResource.Priviledge;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- *
  * @author brad
  */
 public class AclUtils {
 
+    private AclUtils() {
+    }
+
     /**
      * Recurisve function which checks the given collection of priviledges,
      * and checks inside the contains property of those priviledges
-     *
+     * <p>
      * Returns true if the required priviledge is directly present in the collection
      * or is implied
      *
@@ -42,21 +45,21 @@ public class AclUtils {
      * @return
      */
     public static boolean containsPriviledge(AccessControlledResource.Priviledge required, Iterable<AccessControlledResource.Priviledge> privs) {
-        if( privs == null ) {
+        if (privs == null) {
             return false;
         }
         for (AccessControlledResource.Priviledge p : privs) {
             if (p.equals(required)) {
                 return true;
             }
-            if( containsPriviledge(required, p.contains)) {
+            if (containsPriviledge(required, p.contains)) {
                 return true;
             }
         }
         return false;
     }
 
-    public static Set<AccessControlledResource.Priviledge> asSet(AccessControlledResource.Priviledge ... privs) {
+    public static Set<AccessControlledResource.Priviledge> asSet(AccessControlledResource.Priviledge... privs) {
         Set<AccessControlledResource.Priviledge> set = new HashSet<>(privs.length);
         set.addAll(Arrays.asList(privs));
         return set;
@@ -76,10 +79,10 @@ public class AclUtils {
     }
 
     private static void _expand(Iterable<AccessControlledResource.Priviledge> privs, Set<AccessControlledResource.Priviledge> output) {
-        if( privs == null ) {
-            return ;
+        if (privs == null) {
+            return;
         }
-        for( Priviledge p : privs ) {
+        for (Priviledge p : privs) {
             output.add(p);
             _expand(p.contains, output);
         }

@@ -18,7 +18,6 @@ package io.milton.resource;
 import java.util.Collection;
 
 /**
- *
  * @author brad
  */
 public interface OAuth2Provider {

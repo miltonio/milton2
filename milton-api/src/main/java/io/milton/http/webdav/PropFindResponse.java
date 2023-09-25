@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 public class PropFindResponse {
-    private final Response.Status status; 
+    private final Response.Status status;
 
     private final String href;
     private final Map<QName, ValueAndType> knownProperties;
@@ -69,13 +69,12 @@ public class PropFindResponse {
     public Map<Status, List<NameAndError>> getErrorProperties() {
         return errorProperties;
     }
- 
+
     /**
      * Carries the qualified name of a field in error, and an optional attribute
      * with textual information describing the error.
-     *
+     * <p>
      * This might be a validation error, for example
-     *
      */
     public static class NameAndError {
 

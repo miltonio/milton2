@@ -24,19 +24,25 @@
 package io.milton.common;
 
 /**
- * Represents a string object that contains an extra information of language. 
- * 
+ * Represents a string object that contains extra information of language.
+ *
  * @author nabil.shams
  */
-public class InternationalizedString{
-        private final String language;
-        private final String value;
-        public InternationalizedString(String language, String value){
-            this.language = language;
-            this.value = value;
-        }
-        
-        public String getLanguage(){ return language;}
-        public String getValue() {return value;}
-        
+public class InternationalizedString {
+    private final String language;
+    private final String value;
+
+    public InternationalizedString(String language, String value) {
+        this.language = language;
+        this.value = value;
     }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+}

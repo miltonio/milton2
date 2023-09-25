@@ -38,6 +38,7 @@ import io.milton.resource.SchedulingResponseItem;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -203,7 +204,7 @@ public class SchedulingOutboxResource extends BaseSchedulingResource implements 
 
     @Override
     public List<? extends Resource> getChildren() throws NotAuthorizedException, BadRequestException {
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     @Override
@@ -220,7 +221,7 @@ public class SchedulingOutboxResource extends BaseSchedulingResource implements 
             List<SchedulingResponseItem> respItems = queryFreeBusy(iCalText);
 
             String xml = schedulingHelper.generateXml(respItems);
-            xmlResponse = xml.getBytes(StringUtils.UTF8);
+            xmlResponse = xml.getBytes(StandardCharsets.UTF_8);
             if (log.isTraceEnabled()) {
                 log.trace("FreeBusy response= " + xml);
             }

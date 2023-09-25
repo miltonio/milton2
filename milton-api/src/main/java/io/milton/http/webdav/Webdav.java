@@ -19,9 +19,8 @@
 package io.milton.http.webdav;
 
 /**
- *
  * @author brad
  */
 public class Webdav {
-    
+
 }

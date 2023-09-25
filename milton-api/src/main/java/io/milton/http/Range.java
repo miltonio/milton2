@@ -30,11 +30,11 @@ public class Range {
         }
         try {
             Long start = null;
-            if (arr[0].length() > 0) {
+            if (!arr[0].isEmpty()) {
                 start = Long.parseLong(arr[0]);
             }
             Long finish = null;
-            if (arr.length > 1 && arr[1].length() > 0) {
+            if (arr.length > 1 && !arr[1].isEmpty()) {
                 finish = Long.parseLong(arr[1]);
             }
             return new Range(start, finish);
@@ -44,10 +44,10 @@ public class Range {
     }
 
     public Range(int start, int finish) {
-        this.start = (long)start;
-        this.finish = (long)finish;
+        this.start = (long) start;
+        this.finish = (long) finish;
     }
-    
+
     public Range(Long start, Long finish) {
         this.start = start;
         this.finish = finish;
@@ -64,18 +64,18 @@ public class Range {
     /**
      * Calculate the length of this range if both start and finish indexes are non-null,
      * otherwise return null
-     * 
-     * @return 
+     *
+     * @return
      */
     public Long getLength() {
-        if( start != null && finish != null ) {
+        if (start != null && finish != null) {
             // ranges are inclusive, ie 0-499 is length 500
             return finish - start + 1; //see http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.35.1
         } else {
             return null;
         }
     }
-    
+
     @Override
     public String toString() {
         return "bytes " + start + "-" + finish;

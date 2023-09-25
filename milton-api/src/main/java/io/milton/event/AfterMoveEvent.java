@@ -33,11 +33,10 @@ public class AfterMoveEvent implements ResourceEvent {
     private final String newName;
 
     /**
-     *
-     * @param res - the resource to move
+     * @param res            - the resource to move
      * @param destCollection - the destination collection
-     * @param destNewName - the name of the resource within the destination
-     * folder
+     * @param destNewName    - the name of the resource within the destination
+     *                       folder
      */
     public AfterMoveEvent(Resource res, CollectionResource destCollection, String destNewName) {
         this.res = res;

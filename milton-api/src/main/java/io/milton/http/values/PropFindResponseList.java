@@ -19,11 +19,12 @@
 package io.milton.http.values;
 
 import io.milton.http.webdav.PropFindResponse;
+
 import java.util.ArrayList;
 
 /**
  * Represents a list of responses.
- *
+ * <p>
  * Note you can't just have a genericed list because we need to know the type of
  * the list at runtime (for valuewriter determination) but generic information
  * is removed at compile time.

@@ -22,13 +22,12 @@ package io.milton.event;
 import io.milton.resource.Resource;
 
 /**
- *
  * @author brad
  */
-public class GetEvent  implements ResourceEvent {
+public class GetEvent implements ResourceEvent {
     private final Resource res;
 
-    public GetEvent( Resource res) {
+    public GetEvent(Resource res) {
         this.res = res;
     }
 

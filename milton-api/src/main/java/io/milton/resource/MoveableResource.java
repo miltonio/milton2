@@ -19,7 +19,6 @@
 
 package io.milton.resource;
 
-import io.milton.resource.Resource;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
@@ -27,15 +26,14 @@ import io.milton.http.exceptions.NotAuthorizedException;
 /**
  * webDAV MOVE
  */
-public interface MoveableResource  extends Resource {
+public interface MoveableResource extends Resource {
 
     /**
-     *
      * @param rDest is the destination folder to move to.
-     * @param name is the new name of the moved resource
+     * @param name  is the new name of the moved resource
      * @throws ConflictException if the destination already exists, or the operation
-     * could not be completed because of some other persisted state
+     *                           could not be completed because of some other persisted state
      */
     void moveTo(CollectionResource rDest, String name) throws ConflictException, NotAuthorizedException, BadRequestException;
-    
+
 }

@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 
 /**
  * Marks the method as one which returns the email address for a type of object.
- * 
+ *
  * <p>Usually the type of object will be the same as returned by {@code @Users} method,
  * ie your principal source object
  *
@@ -32,5 +32,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Email {
-    
+
 }

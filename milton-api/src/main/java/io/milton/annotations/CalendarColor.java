@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 
 /**
  * Marks the method which gets/sets the color for the given calendar object
- * 
+ *
  * <p>There should be a setter (ie void return type) and a getter (return {@link String})
  *
  * @author brad
@@ -31,5 +31,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CalendarColor {
-    
+
 }

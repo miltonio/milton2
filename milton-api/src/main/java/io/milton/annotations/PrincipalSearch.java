@@ -24,12 +24,11 @@ import java.lang.annotation.Target;
 /**
  * Marks the method which does principal searches. This integrates with an annotations
  * implementation of AddressBookQuerySearchableResource
- * 
  *
  * @author brad
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PrincipalSearch {
-    
+
 }

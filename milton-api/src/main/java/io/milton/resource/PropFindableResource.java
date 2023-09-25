@@ -21,6 +21,6 @@ package io.milton.resource;
 
 import java.util.Date;
 
-public interface PropFindableResource extends Resource {    
-    Date getCreateDate();        
+public interface PropFindableResource extends Resource {
+    Date getCreateDate();
 }

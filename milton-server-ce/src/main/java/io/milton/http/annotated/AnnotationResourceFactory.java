@@ -705,7 +705,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	public List<LockHolder> getTempResourcesForParent(AnnoCollectionResource parent) {
 		String parentKey = parent.getUniqueId();
 		if (parentKey == null) {
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		}
 		return getTempResourcesForParent(parentKey);
 	}
@@ -713,7 +713,7 @@ public final class AnnotationResourceFactory implements ResourceFactory {
 	public List<LockHolder> getTempResourcesForParent(String parentKey) {
 		List<LockHolder> list = mapOfTempResources.get(parentKey);
 		if (list == null) {
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		} else {
 			return list;
 		}

@@ -21,14 +21,9 @@ package io.milton.http;
 
 import java.io.Serializable;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-public class LockInfo implements Serializable{
+public class LockInfo implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-    private static final Logger log = LoggerFactory.getLogger( LockInfo.class );
 
     public enum LockScope {
 
@@ -60,13 +55,12 @@ public class LockInfo implements Serializable{
     public LockDepth depth;
 
     /**
-     *
      * @param scope
      * @param type
      * @param lockedByUser - the identifier of the user, such as a href
      * @param depth
      */
-    public LockInfo( LockScope scope, LockType type, String lockedByUser, LockDepth depth ) {
+    public LockInfo(LockScope scope, LockType type, String lockedByUser, LockDepth depth) {
         this.scope = scope;
         this.type = type;
         this.lockedByUser = lockedByUser;

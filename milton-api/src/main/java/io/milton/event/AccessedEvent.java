@@ -24,18 +24,17 @@ import io.milton.resource.Resource;
 /**
  * This is event is fired on any type of method, after authorisation but
  * before any method specific processing
- * 
+ * <p>
  * Set the returnRedirectUrl from a listener to cause a redirect
- * 
  *
  * @author brad
  */
-public class AccessedEvent  implements ResourceEvent {
+public class AccessedEvent implements ResourceEvent {
     private final Resource res;
-    
+
     private String returnRedirectUrl;
 
-    public AccessedEvent( Resource res) {
+    public AccessedEvent(Resource res) {
         this.res = res;
     }
 
@@ -44,7 +43,7 @@ public class AccessedEvent  implements ResourceEvent {
     public Resource getResource() {
         return res;
     }
-    
+
 
     public String getReturnRedirectUrl() {
         return returnRedirectUrl;
@@ -53,5 +52,5 @@ public class AccessedEvent  implements ResourceEvent {
     public void setReturnRedirectUrl(String returnRedirectUrl) {
         this.returnRedirectUrl = returnRedirectUrl;
     }
-        
+
 }

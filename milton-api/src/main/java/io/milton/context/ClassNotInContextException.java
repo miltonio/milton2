@@ -22,11 +22,11 @@ package io.milton.context;
  *
  * @author brad
  */
-public class ClassNotInContextException extends RuntimeException{
+public class ClassNotInContextException extends RuntimeException {
     private static final long serialVersionUID = 1L;
     private final Class missing;
 
-    public ClassNotInContextException( Class missing ) {
+    public ClassNotInContextException(Class missing) {
         super("The requested class is not in context: " + missing.getCanonicalName());
         this.missing = missing;
     }

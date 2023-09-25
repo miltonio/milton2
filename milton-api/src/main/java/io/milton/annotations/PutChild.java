@@ -24,13 +24,13 @@ import java.lang.annotation.Target;
 /**
  * Marks a method as one which creates a child resource containing the given content,
  * or replaces an existing child's content with new data<br/><br/>
- * 
+ *
  * <p>Return type - Must return the created POJO object, or the updated child
- * 
+ *
  * <p>Parameters:
  * <ol>
  *  <li>first arg must be the object to update OR..</li>
- *  <li>the parent object, followed by the name of the child resource</li> 
+ *  <li>the parent object, followed by the name of the child resource</li>
  *  <li>items following that may include (in preferential order)
  *      <ol>
  *      <li>inputStream or byte[]</li>
@@ -39,10 +39,10 @@ import java.lang.annotation.Target;
  *     </ol>
  * </li>
  * </ol>
- * 
+ *
  * <p>
  * Example: Creating a new child resource
- * 
+ *
  * <pre>
  *    {@literal @}PutChild
  *    public MyDatabase.FileContentItem createFile(MyDatabase.FolderContentItem parent, String name, byte[] bytes) {
@@ -64,11 +64,11 @@ import java.lang.annotation.Target;
  *        return image;
  *    }
  * </pre>
- * 
+ *
  * <p>
  * Example: Creating a new child resource from an inputstream. This uses the contentLength and contentType
  * headers, but please note these are not always sent by client apps.
- * 
+ *
  * <pre>
  *    {@literal @}PutChild
  *    public MyDatabase.FileContentItem createFile(MyDatabase.FolderContentItem parent, String name, InputStream in, Long contentLength, String contentType) {
@@ -81,5 +81,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PutChild {
-    
+
 }

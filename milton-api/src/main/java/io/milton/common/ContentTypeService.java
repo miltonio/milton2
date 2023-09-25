@@ -21,14 +21,15 @@ package io.milton.common;
 import java.util.List;
 
 /**
+ * Interface provides handful methods to work with mime types.
  *
  * @author brad
  */
 public interface ContentTypeService {
     List<String> findContentTypes(String name);
-    
+
     String getPreferedMimeType(String accept, List<String> canProvide);
-    
+
     String getPreferedMimeType(List<String> accept, List<String> canProvide);
-       
+
 }

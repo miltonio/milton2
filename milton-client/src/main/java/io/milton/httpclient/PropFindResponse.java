@@ -203,7 +203,7 @@ public class PropFindResponse {
                 }
             }
         }
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
 //        String dn = RespUtils.asString(el, "displayname");

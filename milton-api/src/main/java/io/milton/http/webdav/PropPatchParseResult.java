@@ -15,29 +15,28 @@
  */
 package io.milton.http.webdav;
 
+import javax.xml.namespace.QName;
 import java.util.Map;
 import java.util.Set;
-import javax.xml.namespace.QName;
 
 /**
- *
  * @author brad
  */
 public class PropPatchParseResult {
-	private final Map<QName, String> fieldsToSet;
-	private final Set<QName> fieldsToRemove;
+    private final Map<QName, String> fieldsToSet;
+    private final Set<QName> fieldsToRemove;
 
-	public PropPatchParseResult(Map<QName, String> fieldsToSet, Set<QName> fieldsToRemove) {
-		this.fieldsToSet = fieldsToSet;
-		this.fieldsToRemove = fieldsToRemove;
-	}
+    public PropPatchParseResult(Map<QName, String> fieldsToSet, Set<QName> fieldsToRemove) {
+        this.fieldsToSet = fieldsToSet;
+        this.fieldsToRemove = fieldsToRemove;
+    }
 
-	public Set<QName> getFieldsToRemove() {
-		return fieldsToRemove;
-	}
+    public Set<QName> getFieldsToRemove() {
+        return fieldsToRemove;
+    }
 
-	public Map<QName, String> getFieldsToSet() {
-		return fieldsToSet;
-	}
-    
+    public Map<QName, String> getFieldsToSet() {
+        return fieldsToSet;
+    }
+
 }

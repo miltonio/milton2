@@ -20,34 +20,34 @@ package io.milton.http.exceptions;
 import io.milton.resource.Resource;
 
 /**
- *  Indicates that the current user is not able to perform the requested operation
- *
+ * Indicates that the current user is not able to perform the requested operation
+ * <p>
  * This should not normally be used. Instead, a resource should determine if
  * a user can perform an operation in its authorised method
- *
+ * <p>
  * However, this exception allows for cases where the authorised status can
  * only be determined during processing
  */
-public class NotAuthorizedException extends MiltonException{
+public class NotAuthorizedException extends MiltonException {
     private static final long serialVersionUID = 1L;
     private int requiredStatusCode = -1;
 
     public NotAuthorizedException() {
-    }    
-    
+    }
+
     public NotAuthorizedException(Resource r) {
         super(r);
     }
 
     public NotAuthorizedException(Resource r, Throwable cause) {
         super(r, cause);
-    }    
-    
-	public NotAuthorizedException(String message, Resource r) {
-		super(message, r);
-	}
-	
-	public NotAuthorizedException(String message, Resource r, int requiredStatusCode) {
+    }
+
+    public NotAuthorizedException(String message, Resource r) {
+        super(message, r);
+    }
+
+    public NotAuthorizedException(String message, Resource r, int requiredStatusCode) {
         super(message, r);
         this.requiredStatusCode = requiredStatusCode;
     }

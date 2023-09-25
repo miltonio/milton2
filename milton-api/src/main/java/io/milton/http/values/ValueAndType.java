@@ -24,33 +24,30 @@ package io.milton.http.values;
  *
  * <p>This is important because we will often want to select parses and formatters
  * based on knowledge of the type of the value, even when that value is null.
- * 
  *
  * @author brad
  */
 public class ValueAndType {
 
-	private final Object value;
-	private final Class type;
+    private final Object value;
+    private final Class<?> type;
 
-	public ValueAndType(Object value, Class type) {
-		if (type == null) {
-			throw new IllegalArgumentException("type may not be null");
-		}
-		if (value != null) {
-			if (value.getClass() != type) {
-				throw new RuntimeException("Inconsistent type information: " + value + " != " + type);
-			}
-		}
-		this.value = value;
-		this.type = type;
-	}
+    public ValueAndType(Object value, Class<?> type) {
+        if (type == null) {
+            throw new IllegalArgumentException("type may not be null");
+        }
+        if (value != null && (value.getClass() != type)) {
+                throw new RuntimeException("Inconsistent type information: " + value + " != " + type);
+        }
+        this.value = value;
+        this.type = type;
+    }
 
-	public Class getType() {
-		return type;
-	}
+    public Class<?> getType() {
+        return type;
+    }
 
-	public Object getValue() {
-		return value;
-	}
+    public Object getValue() {
+        return value;
+    }
 }

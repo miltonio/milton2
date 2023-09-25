@@ -26,9 +26,9 @@ import java.lang.annotation.Target;
  * pojo which can be considered a user. To be usable as a user it must at least be
  * able to be authenticated by having a password field, or explicit methods for
  * validating a password or Digest hash
- * 
+ *
  * <p>@Users methods MUST take a root folder collection object as their parent. For example /users/brad
- * 
+ *
  * <p>Optionally, user objects may be supported by methods to return an access control
  * list which can be used for authorization. Otherwise a default ACL scheme is used
  *

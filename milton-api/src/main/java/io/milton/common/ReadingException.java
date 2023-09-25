@@ -21,8 +21,8 @@ package io.milton.common;
 
 import java.io.IOException;
 
-public class ReadingException extends IOException{
-    
+public class ReadingException extends IOException {
+
     private static final long serialVersionUID = 1L;
 
     public ReadingException(IOException cause) {

@@ -19,7 +19,6 @@
 
 package io.milton.resource;
 
-import io.milton.resource.Resource;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
@@ -27,6 +26,6 @@ import io.milton.http.exceptions.NotAuthorizedException;
 /**
  * webDAV COPY
  */
-public interface CopyableResource extends Resource{
+public interface CopyableResource extends Resource {
     void copyTo(CollectionResource toCollection, String name) throws NotAuthorizedException, BadRequestException, ConflictException;
 }

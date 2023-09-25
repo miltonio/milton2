@@ -24,10 +24,10 @@ import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
 
 /**
- *
  * @author brad
  */
 public interface EventManager {
     void fireEvent(Event e) throws ConflictException, BadRequestException, NotAuthorizedException;
+
     <T extends Event> void registerEventListener(EventListener l, Class<T> c);
 }

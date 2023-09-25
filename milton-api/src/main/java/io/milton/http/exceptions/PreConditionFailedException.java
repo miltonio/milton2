@@ -22,10 +22,9 @@ package io.milton.http.exceptions;
 import io.milton.resource.Resource;
 
 /**
- *
  * @author brad
  */
-public class PreConditionFailedException extends MiltonException{
+public class PreConditionFailedException extends MiltonException {
     private static final long serialVersionUID = 1L;
 
     public PreConditionFailedException(Resource r) {

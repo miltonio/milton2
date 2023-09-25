@@ -19,22 +19,24 @@
 package io.milton.http;
 
 import io.milton.common.StringSplitUtils;
-import java.nio.charset.Charset;
-import java.util.Map;
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
+
 /**
  * Holds authentication information for a request
- *
+ * <p>
  * There are two sets of information: - that which is present in the request -
  * that which is determined as part of performing authentication
- *
+ * <p>
  * Note that even if authentication fails, this object will still be available
  * in the request - DO NOT USE THE PRESENCE OF THIS OBJECT TO CHECK FOR A VALID
  * LOGIN!!!
- *
+ * <p>
  * Instead use the tag property. This will ONLY be not null after a successful
  * authentication
  *
@@ -49,10 +51,10 @@ public class Auth {
     // use 8859-1 as required by spec - https://github.com/miltonio/milton2/issues/19
     static {
         try {
-            basicParserCharset = Charset.forName("ISO-8859-1");
+            basicParserCharset = StandardCharsets.ISO_8859_1;
         } catch (Exception e) {
             // fall
-            basicParserCharset = Charset.forName("UTF-8");
+            basicParserCharset = StandardCharsets.UTF_8;
         }
     }
 
@@ -63,7 +65,7 @@ public class Auth {
     /**
      * Holds application specific user data, as returned from the authenticate
      * method on Resource
-     *
+     * <p>
      * This should be used to test for a valid login.
      */
     private Object tag;
@@ -84,7 +86,7 @@ public class Auth {
         BEARER
     }
 
-    private Scheme scheme;
+    private final Scheme scheme;
     private String user;
     private String password;
 
@@ -140,7 +142,6 @@ public class Auth {
     }
 
     /**
-     *
      * @return - the user property in the request. This MIGHT NOT be an actual
      * user
      */
@@ -150,7 +151,7 @@ public class Auth {
 
     /**
      * Set after a successful authenticate method with a not-null value
-     *
+     * <p>
      * The actual value will be application dependent
      *
      * @param authTag
@@ -162,12 +163,11 @@ public class Auth {
     /**
      * Holds application specific user data, as returned from the authenticate
      * method on Resource
-     *
+     * <p>
      * This should be used to test for a valid login.
      *
      * @return some object identifying the user, normally returned from
      * Resource.authenticate
-     *
      */
     public Object getTag() {
         return tag;
@@ -238,17 +238,17 @@ public class Auth {
 
     private void parseDigest(String s) {
         String[] headerEntries = StringSplitUtils.splitIgnoringQuotes(s, ',');
-        Map headerMap = StringSplitUtils.splitEachArrayElementAndCreateMap(headerEntries, "=", "\"");
+        Map<String, String> headerMap = StringSplitUtils.splitEachArrayElementAndCreateMap(headerEntries, "=", "\"");
 
 //        log.debug( "headerMap: " + headerMap);
-        user = (String) headerMap.get("username");
-        realm = (String) headerMap.get("realm");
-        nonce = (String) headerMap.get("nonce");
-        uri = (String) headerMap.get("uri");
-        responseDigest = (String) headerMap.get("response");
-        qop = (String) headerMap.get("qop"); // RFC 2617 extension
-        nc = (String) headerMap.get("nc"); // RFC 2617 extension
-        cnonce = (String) headerMap.get("cnonce"); // RFC 2617 extension
+        user = headerMap.get("username");
+        realm = headerMap.get("realm");
+        nonce = headerMap.get("nonce");
+        uri = headerMap.get("uri");
+        responseDigest = headerMap.get("response");
+        qop = headerMap.get("qop"); // RFC 2617 extension
+        nc = headerMap.get("nc"); // RFC 2617 extension
+        cnonce = headerMap.get("cnonce"); // RFC 2617 extension
     }
 
     private void parseBearer(String enc) {

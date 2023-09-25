@@ -22,7 +22,6 @@ package io.milton.resource;
 import io.milton.http.values.SupportedCalendarComponentList;
 
 /**
- *
  * @author alex
  */
 public interface CalendarResource extends CalendarCollection, PropFindableResource {
@@ -35,24 +34,24 @@ public interface CalendarResource extends CalendarCollection, PropFindableResour
         VFREEBUSY,
         VJOURNAL
     }
-    
+
     String getCalendarDescription();
 
     String getColor();
-    
-    void setColor(String s);	
+
+    void setColor(String s);
 
     /**
      * If there is a restriction as to what types of components may be created within
      * this calendar collection, then return the allowed components. If there are
      * no restrictions return null.
-     * 
-     * @return 
+     *
+     * @return
      */
     SupportedCalendarComponentList getSupportedComponentSet();
-    
+
     String getCalendarOrder();
 
-    void setCalendarOrder(String value);    
-    
+    void setCalendarOrder(String value);
+
 }

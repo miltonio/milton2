@@ -29,62 +29,62 @@ import static io.milton.http.ResponseStatus.SC_FORBIDDEN;
 
 public class StandardFilter implements Filter {
 
-	private final Logger log = LoggerFactory.getLogger(StandardFilter.class);
-	public static final String INTERNAL_SERVER_ERROR_HTML = "<html><body><h1>Internal Server Error (500)</h1></body></html>";
+    private final Logger log = LoggerFactory.getLogger(StandardFilter.class);
+    public static final String INTERNAL_SERVER_ERROR_HTML = "<html><body><h1>Internal Server Error (500)</h1></body></html>";
 
-	public StandardFilter() {
-	}
+    public StandardFilter() {
+    }
 
-	@Override
-	public void process(FilterChain chain, Request request, Response response) {
-		HttpManager manager = chain.getHttpManager();
-		try {
-			Request.Method method = request.getMethod();
+    @Override
+    public void process(FilterChain chain, Request request, Response response) {
+        HttpManager manager = chain.getHttpManager();
+        try {
+            Request.Method method = request.getMethod();
 
-			Handler handler = manager.getMethodHandler(method);
-			if (handler == null) {
-				log.warn("No method handler for: " + method + " Please check that dav level 2 protocol support is enabled");
-				manager.getResponseHandler().respondMethodNotImplemented(null, response, request);
-			} else {
-				if (log.isTraceEnabled()) {
-					log.trace("delegate to method handler: " + handler.getClass().getCanonicalName());
-				}
-				handler.process(manager, request, response);
-				if (response.getEntity() != null) {
-					manager.sendResponseEntity(response);
-				} else {
-					log.debug("No response entity to send to client for method: " + request.getMethod());
-				}
-			}
+            Handler handler = manager.getMethodHandler(method);
+            if (handler == null) {
+                log.warn("No method handler for: " + method + " Please check that dav level 2 protocol support is enabled");
+                manager.getResponseHandler().respondMethodNotImplemented(null, response, request);
+            } else {
+                if (log.isTraceEnabled()) {
+                    log.trace("delegate to method handler: " + handler.getClass().getCanonicalName());
+                }
+                handler.process(manager, request, response);
+                if (response.getEntity() != null) {
+                    manager.sendResponseEntity(response);
+                } else {
+                    log.debug("No response entity to send to client for method: " + request.getMethod());
+                }
+            }
 
-		} catch (BadRequestException ex) {
-			log.warn("BadRequestException: " + ex.getReason(), ex);
-			manager.getResponseHandler().respondBadRequest(ex.getResource(), response, request);
-		} catch (ConflictException ex) {
-			log.warn("conflictException: ", ex);
-			manager.getResponseHandler().respondConflict(ex.getResource(), response, request, INTERNAL_SERVER_ERROR_HTML);
-		} catch (NotAuthorizedException ex) {
-			log.warn("NotAuthorizedException", ex);
-			if (ex.getRequiredStatusCode() == SC_FORBIDDEN) {
-				manager.getResponseHandler().respondForbidden(ex.getResource(), response, request);
-			} else {
-				manager.getResponseHandler().respondUnauthorised(ex.getResource(), response, request);
-			}
-		} catch (NotFoundException ex) {
-			log.warn("NotFoundException", ex);
-			manager.getResponseHandler().respondNotFound(response, request);
-		} catch (Throwable e) {
-			if (log.isDebugEnabled()) {
-				e.printStackTrace();
-			}
-			// Looks like in some cases we can be left with a connection in an indeterminate state
-			// due to the content length not being equal to the content length header, so
-			// fall back on the udnerlying connection provider to manage the error
-			log.error("exception sending content", e);
+        } catch (BadRequestException ex) {
+            log.warn("BadRequestException: " + ex.getReason(), ex);
+            manager.getResponseHandler().respondBadRequest(ex.getResource(), response, request);
+        } catch (ConflictException ex) {
+            log.warn("conflictException: ", ex);
+            manager.getResponseHandler().respondConflict(ex.getResource(), response, request, INTERNAL_SERVER_ERROR_HTML);
+        } catch (NotAuthorizedException ex) {
+            log.warn("NotAuthorizedException", ex);
+            if (ex.getRequiredStatusCode() == SC_FORBIDDEN) {
+                manager.getResponseHandler().respondForbidden(ex.getResource(), response, request);
+            } else {
+                manager.getResponseHandler().respondUnauthorised(ex.getResource(), response, request);
+            }
+        } catch (NotFoundException ex) {
+            log.warn("NotFoundException", ex);
+            manager.getResponseHandler().respondNotFound(response, request);
+        } catch (Throwable e) {
+            if (log.isDebugEnabled()) {
+                e.printStackTrace();
+            }
+            // Looks like in some cases we can be left with a connection in an indeterminate state
+            // due to the content length not being equal to the content length header, so
+            // fall back on the udnerlying connection provider to manage the error
+            log.error("exception sending content", e);
 
-			response.sendError(Response.Status.SC_INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR_HTML);
-		} finally {
-			manager.closeResponse(response);
-		}
-	}
+            response.sendError(Response.Status.SC_INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR_HTML);
+        } finally {
+            manager.closeResponse(response);
+        }
+    }
 }

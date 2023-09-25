@@ -18,19 +18,18 @@
  */
 package io.milton.event;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 /**
- *
  * @author brad
  */
 public class EventManagerImpl implements EventManager {
 
-    private final static Logger log = LoggerFactory.getLogger(EventManagerImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(EventManagerImpl.class);
     private final List<Registration> registrations = new CopyOnWriteArrayList<>();
 
     @Override
@@ -40,7 +39,7 @@ public class EventManagerImpl implements EventManager {
             if (r.clazz.isAssignableFrom(e.getClass())) {
                 long tm = System.currentTimeMillis();
                 r.listener.onEvent(e);
-                
+
                 if (log.isTraceEnabled()) {
                     log.trace("  fired on: {} completed in {}ms", r.listener.getClass(), (System.currentTimeMillis() - tm));
                 }
@@ -50,7 +49,7 @@ public class EventManagerImpl implements EventManager {
 
     @Override
     public synchronized <T extends Event> void registerEventListener(EventListener l, Class<T> c) {
-        log.info("registerEventListener: " + l.getClass().getCanonicalName() + " - " + c.getCanonicalName());
+        log.info("registerEventListener: {} - {}", l.getClass().getCanonicalName(), c.getCanonicalName());
         Registration r = new Registration(l, c);
         registrations.add(r);
     }

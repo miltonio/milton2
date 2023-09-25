@@ -26,12 +26,12 @@ public class RequestContext extends Context implements RemovalCallback {
 
     /**
      * For convenience, equivalent to RequestContext.getCurrent().get(c)
-     *
+     * <p>
      * This method assumes that the requested class is required and will throw
      * an exception if it is not found
      *
      * @param <T> - the type expected to be returned
-     * @param c - the class to 
+     * @param c   - the class to
      * @return - an object of the given type
      */
     public static <T> T C(Class<T> c) throws ClassNotInContextException {
@@ -41,17 +41,17 @@ public class RequestContext extends Context implements RemovalCallback {
         }
         return t;
     }
-    
+
     /**
      * For convenience, equivalent to RequestContext.getCurrent().get(c)
-     *
+     * <p>
      * Returns the object in context of the given type or null if not found and
      * required is false.
      *
      * @param <T>
      * @param c
      * @param required - if true will throw an exception if the requested class
-     * is not found. Otherwise will return null.
+     *                 is not found. Otherwise will return null.
      * @return - an object of the given type
      */
     public static <T> T C(Class<T> c, boolean required) throws ClassNotInContextException {
@@ -61,7 +61,7 @@ public class RequestContext extends Context implements RemovalCallback {
         }
         return t;
     }
-    
+
 
     public static RequestContext getCurrent() {
         return tlContext.get();
@@ -133,7 +133,7 @@ public class RequestContext extends Context implements RemovalCallback {
      */
     @Override
     public void onRemove(Object item) {
-        tlContext.set(null);
+        tlContext.remove();
         ArrayList<Registration> items = new ArrayList<>(this.itemByClass.values());
         for (Registration reg : items) {
             reg.remove();

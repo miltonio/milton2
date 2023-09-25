@@ -27,16 +27,14 @@ import java.util.concurrent.ConcurrentHashMap;
  * This implementation of ContentTypeService just uses a map of file extension
  * to mime types. It supports multiple mimetypes per extension, but does not support
  * qos.
- * 
- * The default constructor reads a properties file /mime-types.properties, which 
+ * <p>
+ * The default constructor reads a properties file /mime-types.properties, which
  * should be a series of lines in the form:
- * 
+ * <p>
  * ext=contentType1,contentType2
- * 
+ * <p>
  * Eg:
  * arj=application/arj,application/octet-stream
- * 
- * 
  *
  * @author brad
  */
@@ -72,7 +70,7 @@ public class DefaultContentTypeService implements ContentTypeService {
     @Override
     public List<String> findContentTypes(String name) {
         String ext = FileUtils.getExtension(name);
-        if( ext == null || ext.length() == 0 ) {
+        if (ext == null || ext.isEmpty()) {
             return null;
         }
         ext = ext.toLowerCase();
@@ -90,19 +88,19 @@ public class DefaultContentTypeService implements ContentTypeService {
         if (canProvide.size() == 1) {
             return canProvide.get(0);
         }
-        if (accept == null || accept.length() == 0 || accept.equals("*/*")) {
+        if (accept == null || accept.isEmpty() || accept.equals("*/*")) {
             return canProvide.get(0);
         }
 
-        // Drop the qos parameter, because we don't support it        
+        // Drop the qos parameter, because we don't support it
         // eg  text/html; q=0.4 -> text/html
         accept = stripQop(accept);
 
         String s = getBestMatch(accept, canProvide);
-        if( s != null ) {
+        if (s != null) {
             return s;
         }
-        if( canProvide.isEmpty() ) {
+        if (canProvide.isEmpty()) {
             return null;
         }
         String ct = canProvide.get(0);
@@ -127,7 +125,7 @@ public class DefaultContentTypeService implements ContentTypeService {
         for (String accept : accepts) {
             accept = stripQop(accept);
             String best = getBestMatch(accept, canProvide);
-            if( best != null ) {
+            if (best != null) {
                 return best;
             }
         }
@@ -153,7 +151,7 @@ public class DefaultContentTypeService implements ContentTypeService {
     private String getBestMatch(final String accept, List<String> canProvideList) {
         for (String cp : canProvideList) {
             cp = stripQop(cp);
-            if (cp.contains(accept) || cp.equals(accept) ) {
+            if (cp.contains(accept)) {
                 return cp;
             }
         }

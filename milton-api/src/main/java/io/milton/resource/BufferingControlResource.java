@@ -22,12 +22,12 @@ package io.milton.resource;
  *
  * @author brad
  */
-public interface BufferingControlResource extends GetableResource{
+public interface BufferingControlResource extends GetableResource {
     /**
      * True indicates that content will always be buffered, false that it never
      * will, and null means to use default mechanism
-     * 
-     * @return 
+     *
+     * @return
      */
     Boolean isBufferingRequired();
 }

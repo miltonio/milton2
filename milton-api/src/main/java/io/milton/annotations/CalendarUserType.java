@@ -23,8 +23,8 @@ import java.lang.annotation.Target;
 
 /**
  * Marks the method which gets/sets the type of calendar user this principal
- * represents. 
- * 
+ * represents.
+ *
  * <p>Typically will be INDIVIDUAL, GROUP, ROOM, etc
  *
  * @author brad
@@ -32,5 +32,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CalendarUserType {
-    
+
 }

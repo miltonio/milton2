@@ -21,32 +21,29 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 
  * Supports CardDAV Directory Gateway Extension
- * 
+ * <p>
  * https://github.com/miltonio/milton2/issues/25
- * 
- * 
+ * <p>
+ * <p>
  * https://tools.ietf.org/html/draft-daboo-carddav-directory-gateway-02#page-4
- * 
+ * <p>
  * Implement this for each address book class to return whether it is or is not
  * to be used as a directory gateway
- * 
+ * <p>
  * MUST return Boolean !!
- * 
+ * <p>
  * Default bean property is "directoryGateway"
- * 
+ * <p>
  * Example annotated method:
- * 
- * @DirectoryGateway
- * public boolean isGateway(MyAddressBook ab) {
- *      return ab.isGateway(); // can be a constant or per addressbook
- * }
- * 
+ *
  * @author brad
+ * @DirectoryGateway public boolean isGateway(MyAddressBook ab) {
+ * return ab.isGateway(); // can be a constant or per addressbook
+ * }
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DirectoryGateway {
-    
+
 }

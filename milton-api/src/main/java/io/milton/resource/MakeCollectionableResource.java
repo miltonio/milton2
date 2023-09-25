@@ -19,7 +19,6 @@
 
 package io.milton.resource;
 
-import io.milton.resource.CollectionResource;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
@@ -32,7 +31,6 @@ import io.milton.http.exceptions.NotAuthorizedException;
  */
 public interface MakeCollectionableResource extends CollectionResource {
     /**
-     *
      * @param newName
      * @return
      * @throws NotAuthorizedException
@@ -40,5 +38,5 @@ public interface MakeCollectionableResource extends CollectionResource {
      * @throws BadRequestException
      */
     CollectionResource createCollection(String newName) throws NotAuthorizedException, ConflictException, BadRequestException;
-    
+
 }

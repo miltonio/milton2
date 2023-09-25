@@ -18,14 +18,15 @@ package io.milton.resource;
 
 /**
  * Implement for resources that want to be able to update their display names
- * 
- * Note that most webdav clients do not use displayname, but it is used for
- * calendars and addressbooks
+ * <p>
+ * Note that most webdav clients do not use display name, but it is used for
+ * calendars and address books
  *
  * @author brad
  */
 public interface DisplayNameResource extends PropFindableResource {
     String getDisplayName();
+
     void setDisplayName(String s);
-    
+
 }

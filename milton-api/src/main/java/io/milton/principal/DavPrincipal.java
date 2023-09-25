@@ -24,7 +24,7 @@ import io.milton.resource.Resource;
 
 /**
  * A common webdav group
- * 
+ *
  * @author brad
  */
 public interface DavPrincipal extends Principal {
@@ -35,7 +35,7 @@ public interface DavPrincipal extends Principal {
      * @param auth
      * @return
      */
-    boolean matches( Auth auth, Resource current );
+    boolean matches(Auth auth, Resource current);
 
 
 }

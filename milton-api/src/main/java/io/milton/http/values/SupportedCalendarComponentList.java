@@ -19,13 +19,14 @@
 package io.milton.http.values;
 
 import io.milton.resource.CalendarResource;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
  * Holds a list of href values which will be written as a list of <href>
  * elements
- *
+ * <p>
  * See HrefListValueWriter
  *
  * @author brad
@@ -35,9 +36,9 @@ public class SupportedCalendarComponentList extends ArrayList<CalendarResource.C
     private static final long serialVersionUID = 1L;
 
     public static final SupportedCalendarComponentList VEVENT_ONLY = asList(CalendarResource.ComponentType.VEVENT);
-    
+
     public static final SupportedCalendarComponentList VEVENT_VFREEBUSY = asList(CalendarResource.ComponentType.VEVENT, CalendarResource.ComponentType.VFREEBUSY);
-    
+
     public static SupportedCalendarComponentList asList(CalendarResource.ComponentType... items) {
         SupportedCalendarComponentList l = new SupportedCalendarComponentList();
         l.addAll(Arrays.asList(items));

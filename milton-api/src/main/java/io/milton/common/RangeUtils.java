@@ -27,7 +27,6 @@ import java.io.OutputStream;
 import java.util.List;
 
 /**
- *
  * @author brad
  */
 public class RangeUtils {
@@ -47,7 +46,7 @@ public class RangeUtils {
         }
         return s;
     }
-    
+
     public static void writeRanges(InputStream in, List<Range> ranges, OutputStream responseOut) throws IOException {
         try {
             long pos = 0;
@@ -84,7 +83,7 @@ public class RangeUtils {
 
     public static void writeRange(InputStream in, Range r, OutputStream responseOut) throws IOException {
         if (r != null) {
-            if( r.getStart() != null ) {
+            if (r.getStart() != null) {
                 long skip = r.getStart();
                 in.skip(skip);
             }

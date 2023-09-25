@@ -23,10 +23,10 @@ import java.lang.annotation.Target;
 
 /**
  * Marks the method which returns a unique identifier for this resource.
- * 
+ *
  * <p>The uniqueId should be guaranteed to not conflict with any other resource
  * but should remain constant across versions.
- * 
+ *
  * <p>This will be used as the key for locking resources (by default)
  *
  * @author brad
@@ -34,5 +34,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface UniqueId {
-    
+
 }

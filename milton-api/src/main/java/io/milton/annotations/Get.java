@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
 
 /**
  * Marks a method as one which generates content for the given resource
- * 
+ *
  * <p>The method return type can be
  * <ul>
  *  <li>void, in which case you must write content to the outputStream in the method call
@@ -36,7 +36,7 @@ import java.lang.annotation.Target;
  *  <li>a {@link io.milton.common.ModelAndView} which is passed to the ViewResolver to execute the template
  * </ul>
  * Any other return type causes an exception
- * 
+ *
  * <p>The input parameters must be:
  * <ul>
  *  <li>first must be the source object
@@ -48,29 +48,29 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Get {
-    
-    
+
+
     /**
      * If specified, will only match on requests with the given content type
-     * 
-     * @return 
+     *
+     * @return empty string matching everything by default.
      */
     String contentType() default "";
-    
+
     /**
-     * If present, only requests which contain all of the given parameters will
+     * If present, only requests which contain all the given parameters will
      * be matched
-     * 
-     * @return 
+     *
+     * @return array of params to match.
      */
     String[] params() default {};
-    
+
     /**
-     * Default is -1 which means use the system default. Returning 0 will 
-     * explicitly disabled caching. Any other value is the number of seconds
+     * Default is -1 which means use the system default. Returning 0 will
+     * explicitly disable caching. Any other value is the number of seconds
      * that the content may be cached by clients
-     * 
-     * @return 
+     *
+     * @return -1 by default.
      */
     long maxAgeSecs() default -1;
 }

@@ -20,13 +20,11 @@
 package io.milton.common;
 
 /**
- *
  * @author brad
  */
 public interface Stoppable {
     /**
      * The service should be made unavailable
-     *
      */
-    void stop();	
+    void stop();
 }

@@ -83,7 +83,7 @@ public class AnnotationsCalendarSearchService implements CalendarSearchService {
             List<SchedulingResponseItem> list = annotationResourceFactory.getFreeBusyQueryAnnotationHandler().execute(p, iCalText);
             if( list == null ) {
                 log.warn("Got null response from getFreeBusyQueryAnnotationHandler");
-                list = Collections.EMPTY_LIST;                
+                list = Collections.emptyList();                
             }
             return list;
         } else {

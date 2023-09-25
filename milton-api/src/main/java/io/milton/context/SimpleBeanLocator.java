@@ -20,7 +20,7 @@ package io.milton.context;
 /**
  *
  */
-public class SimpleBeanLocator implements BeanLocator{
+public class SimpleBeanLocator implements BeanLocator {
 
     final Object bean;
 

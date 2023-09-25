@@ -19,8 +19,6 @@
 
 package io.milton.resource;
 
-import io.milton.resource.PropFindableResource;
-
 /**
  * Represents a resource which can return an ical textual representation
  *

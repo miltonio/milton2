@@ -28,35 +28,34 @@ import io.milton.resource.Resource;
  */
 public class ConflictException extends MiltonException {
 
-	private final String message;
+    private final String message;
 
-	/**
-	 * The resource identified by the URI.
-	 *
-	 * @param r
-	 */
-	public ConflictException(Resource r) {
-		super(r);
-		this.message = "Conflict exception: " + r.getName();
-	}
+    /**
+     * The resource identified by the URI.
+     *
+     * @param r
+     */
+    public ConflictException(Resource r) {
+        super(r);
+        this.message = "Conflict exception: " + r.getName();
+    }
 
-	public ConflictException(Resource r, String message) {
-		super(r);
-		this.message = message;
-	}
+    public ConflictException(Resource r, String message) {
+        super(r);
+        this.message = message;
+    }
 
-	public ConflictException() {
-		this.message = "Conflict";
-	}
+    public ConflictException() {
+        this.message = "Conflict";
+    }
 
-	public ConflictException(String message) {
-		this.message = message;
-	}
-	
-	
+    public ConflictException(String message) {
+        this.message = message;
+    }
 
-	@Override
-	public String getMessage() {
-		return message;
-	}
+
+    @Override
+    public String getMessage() {
+        return message;
+    }
 }

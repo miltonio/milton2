@@ -21,10 +21,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks a method as one which performs a query of events in a calendar for a given 
+ * Marks a method as one which performs a query of events in a calendar for a given
  * date range
- * 
- * <p>Must take the following arguments: 
+ *
+ * <p>Must take the following arguments:
  * <ul>
  *  <li>Source object, representing a calendar</li>
  *  <li>Start date, as a java.util.Date</li>
@@ -36,5 +36,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CalendarDateRangeQuery {
-    
+
 }

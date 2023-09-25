@@ -20,12 +20,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *
  * @author brad
  */
 public class ModelAndView {
-    private final Map<String,Object> model;
-    
+    private final Map<String, Object> model;
+
     private final View view;
 
     public ModelAndView(Map<String, Object> model, View view) {
@@ -36,8 +35,8 @@ public class ModelAndView {
     public ModelAndView(String template) {
         view = new View(template);
         this.model = new HashMap<>();
-    }    
-    
+    }
+
     public ModelAndView(Map<String, Object> model, String template) {
         view = new View(template);
         this.model = model;
@@ -48,8 +47,8 @@ public class ModelAndView {
         this.model = new HashMap<>();
         model.put(modelObjectName, modelObject);
     }
-    
-    
+
+
     public Map<String, Object> getModel() {
         return model;
     }
@@ -57,7 +56,6 @@ public class ModelAndView {
     public View getView() {
         return view;
     }
-    
-    
-    
+
+
 }

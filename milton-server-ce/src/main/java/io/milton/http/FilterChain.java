@@ -22,36 +22,37 @@ package io.milton.http;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Passes the request and response along a series of filters
- *
- *  By default the HttpManager loads a single filter which executes the appropriate
- *  handler for the http method
- *
- *  Additional filters can be added using HttpManager.addFilter
+/**
+ * Passes the request and response along a series of filters
+ * <p>
+ * By default the HttpManager loads a single filter which executes the appropriate
+ * handler for the http method
+ * <p>
+ * Additional filters can be added using HttpManager.addFilter
  */
 public class FilterChain {
-    
-	private final static Logger log = LoggerFactory.getLogger(FilterChain.class);
-	
+
+    private final static Logger log = LoggerFactory.getLogger(FilterChain.class);
+
     final HttpManager httpManager;
     int pos = 0;
-    
+
     public FilterChain(HttpManager httpManager) {
         this.httpManager = httpManager;
     }
 
-    public void process( Request request, Response response) {        
+    public void process(Request request, Response response) {
         Filter filter = httpManager.getFilters().get(pos++);
-		long tm = System.currentTimeMillis();
-        filter.process(this,request,response);
-		tm = System.currentTimeMillis() - tm;
-		if( tm > 1000) {
-			log.info("Slow request {}ms in filter {} for path={}", tm, filter, request.getAbsolutePath());
-		}
+        long tm = System.currentTimeMillis();
+        filter.process(this, request, response);
+        tm = System.currentTimeMillis() - tm;
+        if (tm > 1000) {
+            log.info("Slow request {}ms in filter {} for path={}", tm, filter, request.getAbsolutePath());
+        }
     }
 
     public HttpManager getHttpManager() {
         return httpManager;
     }
-       
+
 }

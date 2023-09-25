@@ -23,13 +23,13 @@ import java.util.List;
 /**
  *
  */
-public class ListFactory implements Factory<List>{
+public class ListFactory implements Factory<List> {
 
     final String[] ids;
     final List<BeanLocator> beanLocators;
 
     public ListFactory(String id, List<BeanLocator> beanLocators) {
-        ids = new String[] {id};
+        ids = new String[]{id};
         this.beanLocators = beanLocators;
     }
 
@@ -46,26 +46,26 @@ public class ListFactory implements Factory<List>{
     @Override
     public Registration<List> insert(RootContext context, Context requestContext) {
         List list = new ArrayList();
-        for( BeanLocator bl : beanLocators ) {
+        for (BeanLocator bl : beanLocators) {
             Object o = bl.locateBean(requestContext);
             list.add(o);
         }
-        return new Registration<List>(list, null, context);
+        return new Registration<>(list, null, context);
     }
 
     @Override
     public void init(RootContext context) {
-        
+
     }
 
     @Override
     public void destroy() {
-        
+
     }
 
     @Override
     public void onRemove(List item) {
-        
+
     }
 
 }

@@ -20,32 +20,33 @@
 package io.milton.http.values;
 
 /**
- * Represents an object that constitutes with two related objects. 
- * 
- * Example: 
+ * Represents an object that constitutes with two related objects.
+ * <p>
+ * Example:
  * Xml Attribtes -> name,value
- * 
+ *
  * @author nabil.shams
  */
-public class Pair<T,U> {
-	private final T object1;
-	private final U object2;
-	public Pair(T t, U u){
-		object1 = t;
-		object2 = u;
-	}
+public class Pair<T, U> {
+    private final T object1;
+    private final U object2;
 
-	/**
-	 * @return the object1
-	 */
-	public T getObject1() {
-		return object1;
-	}
+    public Pair(T t, U u) {
+        object1 = t;
+        object2 = u;
+    }
 
-	/**
-	 * @return the object2
-	 */
-	public U getObject2() {
-		return object2;
-	}
+    /**
+     * @return the object1
+     */
+    public T getObject1() {
+        return object1;
+    }
+
+    /**
+     * @return the object2
+     */
+    public U getObject2() {
+        return object2;
+    }
 }

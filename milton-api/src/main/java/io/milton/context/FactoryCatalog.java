@@ -17,32 +17,33 @@
 
 package io.milton.context;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 public class FactoryCatalog {
 
     private static final Logger log = LoggerFactory.getLogger(FactoryCatalog.class);
 
-    public final Map<Class,Factory> factoriesByClass = new HashMap<>();
-    public final Map<String,Factory> factoriesById = new HashMap<>();
+    public final Map<Class, Factory> factoriesByClass = new HashMap<>();
+    public final Map<String, Factory> factoriesById = new HashMap<>();
     public final List<Factory> factories = new ArrayList<>();
-    public final Map<String,String> keys = new HashMap<>();
+    public final Map<String, String> keys = new HashMap<>();
     public File configFile;
 
-    public void setKeys(Map<String,String> mapOfKeys) {
-        for( Map.Entry<String,String> entry : mapOfKeys.entrySet()) {
-            addKey( entry.getKey(), entry.getValue());
+    public void setKeys(Map<String, String> mapOfKeys) {
+        for (Map.Entry<String, String> entry : mapOfKeys.entrySet()) {
+            addKey(entry.getKey(), entry.getValue());
         }
     }
 
-    public Map<String,String> getKeys() {
+    public Map<String, String> getKeys() {
         return keys;
     }
 
@@ -51,46 +52,44 @@ public class FactoryCatalog {
     }
 
     public void setFactories(List<Factory> list) {
-        for( Factory f : list ) {
-            addFactory( f );
+        for (Factory f : list) {
+            addFactory(f);
         }
     }
 
     public void setSingletons(List<Object> list) {
-        for( Object single : list ) {
+        for (Object single : list) {
             SingletonFactory f = new SingletonFactory();
-            f.setBean( single );
-            addFactory( f );
+            f.setBean(single);
+            addFactory(f);
         }
     }
 
 
     public void addFactory(Factory factory) {
-        log.debug("addFactory: " + factory.getClass());
-        if( factory.keyClasses() != null ) {
-            for( Class c: factory.keyClasses() ) {
-                if( !factoriesByClass.containsKey(c) ) {
+        log.debug("addFactory: {}", factory.getClass());
+        if (factory.keyClasses() != null) {
+            for (Class c : factory.keyClasses()) {
+                if (!factoriesByClass.containsKey(c)) {
                     log.debug("    " + c.getCanonicalName());
                     factoriesByClass.put(c, factory);
                 }
             }
         }
-        if( factory.keyIds() != null ) {
-            for( String id: factory.keyIds() ) {
-                if( !factoriesById.containsKey(id) ) {
-                    factoriesById.put(id, factory);
-                }
+        if (factory.keyIds() != null) {
+            for (String id : factory.keyIds()) {
+                factoriesById.putIfAbsent(id, factory);
             }
         }
-        factories.add( factory );
+        factories.add(factory);
     }
 
 
     public Factory get(Class c) throws IllegalArgumentException {
         Factory factory = factoriesByClass.get(c);
-        if( factory == null ) {
+        if (factory == null) {
             log.warn("No factory found for: " + c.getCanonicalName());
-            for( Class cc : factoriesByClass.keySet() ) {
+            for (Class cc : factoriesByClass.keySet()) {
                 log.warn("  key: " + cc.getCanonicalName());
             }
             return null;
@@ -102,18 +101,17 @@ public class FactoryCatalog {
         return factoriesById.get(id);
     }
 
-    
-    
+
     public void destroy() {
         log.debug("destroy FactoryCatalog");
-        for( Factory f : factories ) {
-            log.debug("destroying " + f.getClass().getName() );
+        for (Factory f : factories) {
+            log.debug("destroying " + f.getClass().getName());
             f.destroy();
         }
     }
 
     public void addKey(String key, String value) {
-        keys.put(key,value);
+        keys.put(key, value);
     }
 
     public File getConfigFile() {
@@ -123,6 +121,6 @@ public class FactoryCatalog {
     public void setConfigFile(File configFile) {
         this.configFile = configFile;
     }
-    
+
 
 }

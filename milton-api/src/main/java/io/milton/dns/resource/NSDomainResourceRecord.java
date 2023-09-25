@@ -19,7 +19,6 @@
 package io.milton.dns.resource;
 
 /**
- *
  * @author brad
  */
 public interface NSDomainResourceRecord extends DomainResourceRecord {

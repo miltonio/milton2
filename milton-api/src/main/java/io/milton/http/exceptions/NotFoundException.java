@@ -20,7 +20,6 @@
 package io.milton.http.exceptions;
 
 /**
- *
  * @author bradm
  */
 public class NotFoundException extends MiltonException {
@@ -28,18 +27,19 @@ public class NotFoundException extends MiltonException {
 
     private final String reason;
 
-	
+
     public NotFoundException(String reason) {
         super(reason);
         this.reason = reason;
-    }	
+    }
 
     /**
      * Optional property, which describe the cause of the exception
+     *
      * @return
      */
     public String getReason() {
         return reason;
     }
-	
+
 }

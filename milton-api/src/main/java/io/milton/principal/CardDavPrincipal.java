@@ -20,10 +20,8 @@
 package io.milton.principal;
 
 import io.milton.http.values.HrefList;
-import io.milton.principal.DiscretePrincipal;
 
 /**
- *
  * @author brad
  */
 public interface CardDavPrincipal extends DiscretePrincipal {
@@ -34,14 +32,14 @@ public interface CardDavPrincipal extends DiscretePrincipal {
      * @return the list of hrefs for the addressbook homes
      */
     HrefList getAddressBookHomeSet();
-    
+
     /**
-     * Returns the URL of an address object resource that corresponds to the 
+     * Returns the URL of an address object resource that corresponds to the
      * user represented by the principal.
-     * 
+     *
      * @return the url of the principal
      */
     String getAddress();
-    
+
 
 }

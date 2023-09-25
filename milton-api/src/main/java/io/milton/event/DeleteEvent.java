@@ -23,13 +23,12 @@ import io.milton.resource.Resource;
 
 
 /**
- *
  * @author brad
  */
-public class DeleteEvent implements ResourceEvent{
+public class DeleteEvent implements ResourceEvent {
     private final Resource res;
 
-    public DeleteEvent( Resource res ) {
+    public DeleteEvent(Resource res) {
         this.res = res;
     }
 

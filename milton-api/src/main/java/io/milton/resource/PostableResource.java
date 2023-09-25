@@ -23,19 +23,20 @@ import io.milton.http.FileItem;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
+
 import java.util.Map;
 
-public interface PostableResource extends  GetableResource {
-    
+public interface PostableResource extends GetableResource {
+
     /**
      * Called after a POST request
-     * 
+     *
      * @param parameters
      * @param files
      * @return - null,or an address if a redirect is required.
      * @throws BadRequestException
      * @throws NotAuthorizedException
-     * @throws ConflictException 
+     * @throws ConflictException
      */
-    String processForm(Map<String,String> parameters, Map<String,FileItem> files) throws BadRequestException, NotAuthorizedException, ConflictException;
+    String processForm(Map<String, String> parameters, Map<String, FileItem> files) throws BadRequestException, NotAuthorizedException, ConflictException;
 }

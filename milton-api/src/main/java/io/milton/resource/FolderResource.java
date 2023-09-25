@@ -21,11 +21,11 @@ package io.milton.resource;
 
 /**
  * Extends all interfaces required for typical folder behavior.
- * <P/>
+ * <p/>
  * This is a good place to start if you want a normal directory. However, think
  * carefully about which interfaces to implement. Only implement those which
  * should actually be supported. Eg, only implement MoveableResource if it can be moved
  */
-public interface FolderResource extends MakeCollectionableResource, PutableResource, CopyableResource, DeletableResource, GetableResource, MoveableResource, PropFindableResource{
-    
+public interface FolderResource extends MakeCollectionableResource, PutableResource, CopyableResource, DeletableResource, GetableResource, MoveableResource, PropFindableResource {
+
 }

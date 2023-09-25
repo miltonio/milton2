@@ -21,11 +21,12 @@ package io.milton.resource;
 
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
+
 import java.util.List;
 
 /**
  * A type of Resource which can have children, ie it can act as a directory.
- * <P/>
+ * <p/>
  * This is only part of the normal behaviour of a directory though, you
  * should have a look at FolderResource for a more complete interface
  *

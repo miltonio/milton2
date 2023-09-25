@@ -18,7 +18,6 @@
 package io.milton.context;
 
 /**
- *
  * @author brad
  */
 public class RootContextLocator {
@@ -28,7 +27,7 @@ public class RootContextLocator {
         return rootContext;
     }
 
-    public void setRootContext( RootContext rootContext ) {
+    public void setRootContext(RootContext rootContext) {
         this.rootContext = rootContext;
     }
 

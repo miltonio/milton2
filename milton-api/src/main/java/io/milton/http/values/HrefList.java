@@ -24,7 +24,7 @@ import java.util.Arrays;
 
 /**
  * Holds a list of href values which will be written as a list of <href> elements
- *
+ * <p>
  * See HrefListValueWriter
  *
  * @author brad
@@ -35,7 +35,7 @@ public class HrefList extends ArrayList<String> {
 
     public static HrefList asList(String... items) {
         HrefList l = new HrefList();
-		l.addAll(Arrays.asList(items));
+        l.addAll(Arrays.asList(items));
         return l;
     }
 }

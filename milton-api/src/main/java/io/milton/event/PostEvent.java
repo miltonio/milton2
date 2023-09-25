@@ -22,19 +22,19 @@ package io.milton.event;
 import io.milton.resource.Resource;
 
 /**
- * Fired on a POST event. 
- * 
+ * Fired on a POST event.
+ * <p>
  * A handler may decide that the POST should do a redirect, in which case
  * set the returnRedirectUrl property on this event
  *
  * @author brad
  */
-public class PostEvent  implements ResourceEvent {
+public class PostEvent implements ResourceEvent {
     private final Resource res;
-    
+
     private String returnRedirectUrl;
 
-    public PostEvent( Resource res) {
+    public PostEvent(Resource res) {
         this.res = res;
     }
 
@@ -51,6 +51,6 @@ public class PostEvent  implements ResourceEvent {
     public void setReturnRedirectUrl(String returnRedirectUrl) {
         this.returnRedirectUrl = returnRedirectUrl;
     }
-    
-    
+
+
 }

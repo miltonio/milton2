@@ -22,14 +22,13 @@ package io.milton.event;
 import io.milton.resource.CollectionResource;
 
 /**
- *
  * @author brad
  */
-public class NewFolderEvent implements ResourceEvent{
+public class NewFolderEvent implements ResourceEvent {
 
     private final CollectionResource collectionResource;
 
-    public NewFolderEvent( CollectionResource collectionResource ) {
+    public NewFolderEvent(CollectionResource collectionResource) {
         this.collectionResource = collectionResource;
     }
 

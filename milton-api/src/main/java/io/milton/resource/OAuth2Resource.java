@@ -18,7 +18,6 @@ package io.milton.resource;
 import java.util.Map;
 
 /**
- *
  * @author Lee YOU
  */
 public interface OAuth2Resource extends Resource {
@@ -28,12 +27,12 @@ public interface OAuth2Resource extends Resource {
      * received from the remote server. The method should return an application
      * specific object representing the user if one exists OR if the application
      * chooses to create one.
-     *
+     * <p>
      * Or return null to indicate that this resource cannot authenticate the
      * request. In that case the AuthenticationService may continue looking for
      * other authentication providers which are able to authenticate the
      * request.
-     *
+     * <p>
      * A typical workflow is that an OAuth response will be received, the
      * current user will be authenticated from the CookieAuthenticationHandler,
      * and the application will then choose to link the oauth credentials to the
@@ -41,7 +40,7 @@ public interface OAuth2Resource extends Resource {
      * oauth.
      *
      * @param profile - the details about the current user as provided by the
-     * remote authentication server
+     *                remote authentication server
      * @return an object which represents the current principal, or null to
      * reject the login
      */

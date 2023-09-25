@@ -17,16 +17,17 @@
 
 package io.milton.common;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 /**
@@ -37,27 +38,26 @@ import org.slf4j.LoggerFactory;
 public class Formatter {
 
     private static final Logger log = LoggerFactory.getLogger(Formatter.class);
-    
+
     public static final String CHECKBOX_SUFFIX = "_checkbox";
-    
+
     public static ThreadLocal<DateFormat> tlSdfUkShort = ThreadLocal.withInitial(() -> new SimpleDateFormat("dd/MM/yyyy"));
     public static ThreadLocal<DateFormat> tlSdfUkLong = ThreadLocal.withInitial(() -> new SimpleDateFormat("dd MMMM yyyy"));
     public static final ThreadLocal<DateFormat> sdfDateOnly = ThreadLocal.withInitial(() -> new SimpleDateFormat("dd/MM/yyyy"));
     public static final ThreadLocal<DateFormat> sdfDateAndTime = ThreadLocal.withInitial(() -> new SimpleDateFormat("dd/MM/yyyy HH:mm"));
-    
 
 
     /**
      * Null safe method, returns empty string if the value is null
      *
-     * @param o
-     * @return
+     * @param object to be a String.
+     * @return Returns a string representation of the object.
      */
-    public String toString(Object o) {
-        if (o == null) {
+    public String toString(Object object) {
+        if (object == null) {
             return "";
         } else {
-            return o.toString();
+            return object.toString();
         }
     }
 
@@ -73,7 +73,7 @@ public class Formatter {
             String s = (String) o;
             s = s.toLowerCase();
             s = s.trim();
-            if (s.length() > 0) {
+            if (!s.isEmpty()) {
                 return s.equals("true") || s.equals("yes");
             } else {
                 return null;
@@ -102,7 +102,7 @@ public class Formatter {
         } else if (o instanceof String) {
             String s = (String) o;
             s = s.trim();
-            if (s.length() == 0) {
+            if (s.isEmpty()) {
                 return BigDecimal.ZERO;
             } else {
                 try {
@@ -122,7 +122,7 @@ public class Formatter {
         } else if (o instanceof String) {
             String s = (String) o;
             s = s.trim();
-            if (s.length() == 0) {
+            if (s.isEmpty()) {
                 return 0d;
             } else {
                 try {
@@ -171,10 +171,10 @@ public class Formatter {
             return bd.longValue();
         } else if (oVal instanceof Boolean) {
             Boolean bb = (Boolean) oVal;
-            return bb ? 1L : 0L;
+            return Boolean.TRUE.equals(bb) ? 1L : 0L;
         } else if (oVal instanceof String) {
             String s = (String) oVal;
-            if (s.length() == 0) {
+            if (s.isEmpty()) {
                 limit = withNulls ? null : 0L;
             } else {
                 if (s.equals("true") || s.equals("false")) {
@@ -229,7 +229,6 @@ public class Formatter {
     }
 
 
-
     public String formatMinsAsDuration(Object o) {
         return formatMinsAsDuration(o, true);
     }
@@ -239,12 +238,12 @@ public class Formatter {
      * human readable duration such as 12:30 (12 mins, 30 seconds) or 12 mins, 3
      * hrs 20
      *
-     * @param o
+     * @param object
      * @param numeric
      * @return
      */
-    public String formatMinsAsDuration(Object o, boolean numeric) {
-        Long l = toLong(o);
+    public String formatMinsAsDuration(Object object, boolean numeric) {
+        Long l = toLong(object);
         if (l == null) {
             return "";
         } else {
@@ -299,13 +298,12 @@ public class Formatter {
     }
 
     /**
-     *
      * @param num
      * @param div
      * @param appendSymbol - if true the percentage symbol is appended if a
-     * non-blank value
-     * @param withBlanks - if true, blank numerators or divisors result in a
-     * blank value. Otherwise return zero.
+     *                     non-blank value
+     * @param withBlanks   - if true, blank numerators or divisors result in a
+     *                     blank value. Otherwise return zero.
      * @return
      */
     public String toPercent(Object num, Object div, boolean appendSymbol, boolean withBlanks) {
@@ -326,16 +324,16 @@ public class Formatter {
 
     /**
      * Removes the file extension if present
-     *
+     * <p>
      * Eg file1.swf -> file1
-     *
+     * <p>
      * file1 -> file1
      *
      * @param s
      * @return
      */
     public String stripExt(String s) {
-        if (s == null || s.length() == 0) {
+        if (s == null || s.isEmpty()) {
             return "";
         }
         return FileUtils.stripExtension(s);
@@ -343,7 +341,7 @@ public class Formatter {
 
     /**
      * True if val1 is greater then val2
-     *
+     * <p>
      * will do string conversions
      *
      * @param val1
@@ -394,16 +392,14 @@ public class Formatter {
      * @return
      */
     public String percentDecode(String s) {
-        if (s == null) {
-            return "";
-        } else if (s.length() == 0) {
+        if (s == null || s.isEmpty()) {
             return "";
         }
         return Utils.decodePath(s);
     }
-    
+
     public String percentEncode(String s) {
-        if( s == null ) {
+        if (s == null) {
             return null;
         }
         return Utils.percentEncode(s);
@@ -507,11 +503,11 @@ public class Formatter {
 
     /**
      * This just permits simple templating syntax for basic conditional values
-     *
+     * <p>
      * Eg: <li><a class="$formatter.ifTrue($item.active, 'navActive', '')"
      * href="$item.href">$item.text</a></li>
      *
-     * @param b
+     * @param bb
      * @param o1
      * @param o2
      * @return
@@ -525,7 +521,7 @@ public class Formatter {
     }
 
     private Date parseDate(String s) {
-        if (s == null || s.trim().length() == 0) {
+        if (s == null || s.trim().isEmpty()) {
             return null;
         }
         try {
@@ -557,15 +553,15 @@ public class Formatter {
             return new BigDecimal(ii);
         } else if (o instanceof Double) {
             Double dd = (Double) o;
-            return new BigDecimal(dd).setScale(decimals, RoundingMode.HALF_UP);
+            return BigDecimal.valueOf(dd).setScale(decimals, RoundingMode.HALF_UP);
         } else if (o instanceof Float) {
             Float ff = (Float) o;
-            return new BigDecimal(ff);
+            return BigDecimal.valueOf(ff);
         } else if (o instanceof String) {
             Double dd = toDouble(o);
             return toBigDecimal(dd, decimals);
         } else {
-            log.warn("unhandled type: " + o.getClass());
+            log.warn("unhandled type: {}", o.getClass());
             return null;
         }
     }
@@ -577,7 +573,7 @@ public class Formatter {
     public String checkbox(String id, String name, Object oChecked) {
         return checkbox(id, name, oChecked, "true");
     }
-    
+
     public String checkbox(String id, String name, Object oChecked, String value) {
         Boolean checked = toBool(oChecked);
         if (checked == null) {
@@ -594,7 +590,7 @@ public class Formatter {
         if (id != null) {
             sb.append(" id=\"").append(id).append("\"");
         }
-        sb.append(" />");        
+        sb.append(" />");
         return sb.toString();
     }
 
@@ -636,8 +632,8 @@ public class Formatter {
     private void appendValue(StringBuilder sb, Object value) {
         sb.append(" value=");
         sb.append("\"");
-        if( value != null ) {
-            sb.append(value.toString());
+        if (value != null) {
+            sb.append(value);
         }
         sb.append("\"");
     }
@@ -657,16 +653,7 @@ public class Formatter {
     }
 
     public String toCsv(String[] list) {
-        StringBuilder sb = new StringBuilder();
-        if (list != null) {
-            for (Object o : list) {
-                if (sb.length() > 0) {
-                    sb.append(",");
-                }
-                sb.append(o.toString());
-            }
-        }
-        return sb.toString();
+        return toCsv(Arrays.asList(list));
     }
 
 
@@ -675,7 +662,7 @@ public class Formatter {
      * negative) to the given date
      *
      * @param now
-     * @param i
+     * @param days
      * @return
      */
     public Date addDays(Date now, int days) {

@@ -19,10 +19,10 @@
 package io.milton.dns.resource;
 
 /**
- *
  * @author brad
  */
 public interface DomainResourceRecord {
     String getName();
+
     long getTtl();
 }

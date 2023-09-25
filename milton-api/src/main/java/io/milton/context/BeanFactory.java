@@ -42,7 +42,7 @@ public class BeanFactory implements Factory {
 
     public Registration insert(RootContext context, Context requestContext) {
         Object o = instantiateBean();
-        if( isRequestScope() ) {
+        if (isRequestScope()) {
             return requestContext.put(o);
         } else {
             return context.put(o);
@@ -50,15 +50,15 @@ public class BeanFactory implements Factory {
     }
 
     public void init(RootContext context) {
-        
+
     }
 
     public void destroy() {
-        
+
     }
 
     public void onRemove(Object item) {
-        
+
     }
 
     public String getBeanClass() {
@@ -71,12 +71,12 @@ public class BeanFactory implements Factory {
         } catch (ClassNotFoundException ex) {
             throw new RuntimeException(beanClass, ex);
         }
-        if( this.keyClasses == null ) this.keyClasses = this.beanClass.getInterfaces();
+        if (this.keyClasses == null) this.keyClasses = this.beanClass.getInterfaces();
     }
 
     public String getKeyClasses() {
         StringBuilder s = new StringBuilder();
-        for( Class<?> c : keyClasses ) {
+        for (Class<?> c : keyClasses) {
             s.append(c.getCanonicalName()).append(",");
         }
         return s.toString();
@@ -85,7 +85,7 @@ public class BeanFactory implements Factory {
     public void setKeyClasses(String keyClasses) {
         String[] arr = keyClasses.split(",");
         List<Class<?>> list = new ArrayList<>();
-        for( String s : arr) {
+        for (String s : arr) {
             try {
                 Class<?> i = Class.forName(s);
                 list.add(i);
@@ -102,7 +102,7 @@ public class BeanFactory implements Factory {
     }
 
     public void setScope(String scope) {
-        if( scope.equals(SCOPE_APP) || scope.equals(SCOPE_REQUEST)) {
+        if (scope.equals(SCOPE_APP) || scope.equals(SCOPE_REQUEST)) {
             this.scope = scope;
         } else {
             throw new RuntimeException("Scope attribute on BeanFactory must be " + SCOPE_APP + " or " + SCOPE_REQUEST + "  not: " + scope);

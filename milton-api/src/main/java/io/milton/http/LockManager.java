@@ -19,8 +19,8 @@
 
 package io.milton.http;
 
-import io.milton.resource.LockableResource;
 import io.milton.http.exceptions.NotAuthorizedException;
+import io.milton.resource.LockableResource;
 
 /**
  *

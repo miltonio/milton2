@@ -18,16 +18,10 @@
  */
 package io.milton.common;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.*;
 
 public class StreamUtils {
 
@@ -162,7 +156,7 @@ public class StreamUtils {
             try {
                 out.flush();
             } catch (IOException ex) {
-                throw new WritingException("Write exception at byte: " + numBytes, ex); 
+                throw new WritingException("Write exception at byte: " + numBytes, ex);
             }
             return numBytes;
         } finally {

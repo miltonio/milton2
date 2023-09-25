@@ -28,7 +28,7 @@ import java.util.List;
 
 /**
  * Allows searching for calendar items by date range
- *
+ * <p>
  * A default implementation will be used in CaldavProtocol, but you can
  * implement your own to optimise for SQL searching, etc
  *
@@ -38,8 +38,8 @@ public interface CalendarSearchService {
 
     /**
      * Query the free busy status of the given principal
-     *
-     * http://tools.ietf.org/html/rfc6638#section-2.1
+     * <p>
+     * <a href="http://tools.ietf.org/html/rfc6638#section-2.1">http://tools.ietf.org/html/rfc6638#section-2.1</a>
      *
      * @param principal
      * @param iCalText
@@ -75,7 +75,7 @@ public interface CalendarSearchService {
     /**
      * Returns the name of the collection which contains scheduling collections
      * such as inbox and outbox:
-     *
+     * <p>
      * Eg For scheduling inbox href like /users/joe/scheduling/inbox this would
      * return scheuduling
      *

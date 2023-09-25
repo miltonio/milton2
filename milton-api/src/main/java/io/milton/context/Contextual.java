@@ -17,10 +17,11 @@
 
 package io.milton.context;
 
-/** This interface represents those classes which contain context
+/**
+ * This interface represents those classes which contain context
  */
 public interface Contextual {
     <T> T get(String id);
-    
+
     <T> T get(Class<T> c);
 }

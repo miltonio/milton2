@@ -22,7 +22,6 @@ package io.milton.http.exceptions;
 import io.milton.resource.Resource;
 
 /**
- *
  * @author brad
  */
 public class BadRequestException extends MiltonException {
@@ -39,25 +38,25 @@ public class BadRequestException extends MiltonException {
         super(r);
         this.reason = reason;
     }
-	
+
     public BadRequestException(String reason) {
         super();
         this.reason = reason;
-    }	
-	
+    }
+
     public BadRequestException(String reason, Throwable cause) {
-        super(cause); 
+        super(cause);
         this.reason = reason;
-    }		
+    }
 
     /**
      * Optional property, which describe the cause of the exception
+     *
      * @return
      */
     public String getReason() {
         return reason;
     }
-
 
 
 }

@@ -24,16 +24,16 @@ import io.milton.http.Request;
 /**
  * An extension to DeletableResource and CollectionResource, this interface
  * adds a method to support efficient detection of child locks.
- *<P/>
+ * <p/>
  * This interface ONLY needs to be implemented by those who need to improve
  * performance of deleting collections
- *<P/>
+ * <p/>
  * In the case of deleting a collection resource it might be inefficient to
  * check for locks by recursively walking through the collection. By implementing
  * this interface you have the ability to use a more efficient approach
- *
+ * <p>
  * See HandlerHelper.isLockedOut for an example of checking for locks:
- *<P/>
+ * <p/>
  * <pre>
  * {@code
  *     public boolean isLockedOut( Request inRequest, Resource inResource ) {
@@ -63,7 +63,8 @@ import io.milton.http.Request;
  *       return false;
  *   }
  * }
-* </pre>
+ * </pre>
+ *
  * @author brad
  */
 public interface DeletableCollectionResource extends DeletableResource, CollectionResource {

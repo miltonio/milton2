@@ -19,10 +19,10 @@
 
 package io.milton.resource;
 
-import io.milton.resource.Resource;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -55,11 +55,11 @@ public interface PutableResource extends CollectionResource {
     /**
      * Create a new resource, or overwrite an existing one
      *
-     * @param newName - the name to create within the collection. E.g. myFile.txt
+     * @param newName     - the name to create within the collection. E.g. myFile.txt
      * @param inputStream - the data to populate the resource with
-     * @param length - the length of the data
+     * @param length      - the length of the data
      * @param contentType - the content type of the data being uploaded. This can be a list, such as "image/pjpeg,image/jpeg". It
-	 * is the responsibility of the application to create a resource which also represents those content types, or a subset
+     *                    is the responsibility of the application to create a resource which also represents those content types, or a subset
      * @return - a reference to the new resource
      * @throws IOException
      * @throws ConflictException

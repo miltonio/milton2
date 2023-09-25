@@ -25,20 +25,21 @@ import java.util.Map;
 
 /**
  * CollectionResource which supports sync-token.
- * @author pomu0325
  *
+ * @author pomu0325
  */
 public interface SyncCollectionResource extends CollectionResource {
-  /**
-   * Current sync-token.
-   * @return
-   */
-  URI getSyncToken();
-  
-  /**
-   * @return Map contains href -> Resource. Removed resource should be included as {@link io.milton.resource.RemovedResource}.
-   */
-  Map<String, Resource> findResourcesBySyncToken(URI syncToken) throws NotAuthorizedException, BadRequestException;
+    /**
+     * Current sync-token.
+     *
+     * @return
+     */
+    URI getSyncToken();
+
+    /**
+     * @return Map contains href -> Resource. Removed resource should be included as {@link io.milton.resource.RemovedResource}.
+     */
+    Map<String, Resource> findResourcesBySyncToken(URI syncToken) throws NotAuthorizedException, BadRequestException;
 
   /* 3.4.  Types of Changes Reported on Initial Synchronization
 

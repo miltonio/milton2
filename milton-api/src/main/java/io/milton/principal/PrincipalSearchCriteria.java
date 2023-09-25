@@ -20,36 +20,32 @@ package io.milton.principal;
 import java.util.List;
 
 /**
- *
  * @author brad
  */
 public class PrincipalSearchCriteria {
 
     public static final String CU_TYPE_INDIVIDUAL = "INDIVIDUAL";
     public static final String CU_TYPE_GROUP = "GROUP";
-    
-    public enum TestType
-    {
+
+    public enum TestType {
         ANY("anyof"),
-        ALL("allof"),;
+        ALL("allof"),
+        ;
 
         private final String code;
 
-        TestType(String code)
-        {
+        TestType(String code) {
             this.code = code;
         }
 
-        public static TestType fromCode( String code )
-        {
-           TestType testType = ALL;
-           if(code != null && code.equals(ANY.code))
-              testType = ANY;
-           return testType;
+        public static TestType fromCode(String code) {
+            TestType testType = ALL;
+            if (code != null && code.equals(ANY.code))
+                testType = ANY;
+            return testType;
         }
 
-        public String getCode()
-        {
+        public String getCode() {
             return code;
         }
     }
@@ -71,20 +67,16 @@ public class PrincipalSearchCriteria {
             return this.code;
         }
 
-        public static MatchType fromCode( String code )
-    		{
-    			if ( code != null )
-    			{
-    				for ( MatchType enumm : MatchType.values() )
-    				{
-    					if ( enumm.name().equalsIgnoreCase( code ) || enumm.code.equalsIgnoreCase( code ) )
-    					{
-    						return enumm;
-    					}
-    				}
-    			}
-    			return null;
-    		}
+        public static MatchType fromCode(String code) {
+            if (code != null) {
+                for (MatchType enumm : MatchType.values()) {
+                    if (enumm.name().equalsIgnoreCase(code) || enumm.code.equalsIgnoreCase(code)) {
+                        return enumm;
+                    }
+                }
+            }
+            return null;
+        }
     }
 
     private TestType test;
@@ -107,7 +99,7 @@ public class PrincipalSearchCriteria {
 
     /**
      * This is INDIVIDUAL or GROUP
-     * 
+     *
      * @return the cuType
      */
     public String getCuType() {
@@ -160,31 +152,28 @@ public class PrincipalSearchCriteria {
             if (matchType != null) {
                 sb.append("matchType=").append(matchType);
             }
-            if( value != null ) {
+            if (value != null) {
                 sb.append("value=").append(value);
             }
-            if ( field != null )
-      			{
-      				sb.append( field ).append( "," );
-      			}
+            if (field != null) {
+                sb.append(field).append(",");
+            }
             return sb.toString();
         }
 
         /**
-    		 * @return the fields
-    		 */
-    		public String getField()
-    		{
-    			return field;
-    		}
+         * @return the fields
+         */
+        public String getField() {
+            return field;
+        }
 
-    		/**
-    		 * @param fields the fields to set
-    		 */
-    		public void setField( String fields )
-    		{
-    			this.field = fields;
-    		}
+        /**
+         * @param fields the fields to set
+         */
+        public void setField(String fields) {
+            this.field = fields;
+        }
 
         /**
          * @return the matchType

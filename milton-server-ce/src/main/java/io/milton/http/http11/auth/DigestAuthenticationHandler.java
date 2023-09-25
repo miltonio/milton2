@@ -21,98 +21,96 @@ package io.milton.http.http11.auth;
 
 import io.milton.http.Auth;
 import io.milton.http.AuthenticationHandler;
-import io.milton.resource.DigestResource;
 import io.milton.http.Request;
+import io.milton.resource.DigestResource;
 import io.milton.resource.Resource;
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 /**
- *
  * @author brad
  */
 public class DigestAuthenticationHandler implements AuthenticationHandler {
 
-    private static final Logger log = LoggerFactory.getLogger( DigestAuthenticationHandler.class );
+    private static final Logger log = LoggerFactory.getLogger(DigestAuthenticationHandler.class);
     private final NonceProvider nonceProvider;
     private final DigestHelper digestHelper;
 
 
-    public DigestAuthenticationHandler( NonceProvider nonceProvider ) {
+    public DigestAuthenticationHandler(NonceProvider nonceProvider) {
         this.nonceProvider = nonceProvider;
         this.digestHelper = new DigestHelper(nonceProvider);
     }
 
-	@Override
-	public boolean credentialsPresent(Request request) {
-		return request.getAuthorization() != null;
-	}	
-	
-	@Override
-    public boolean supports( Resource r, Request request ) {
+    @Override
+    public boolean credentialsPresent(Request request) {
+        return request.getAuthorization() != null;
+    }
+
+    @Override
+    public boolean supports(Resource r, Request request) {
         Auth auth = request.getAuthorization();
-        if( auth == null ) {
-			log.trace("supports: No credentials in request");
+        if (auth == null) {
+            log.trace("supports: No credentials in request");
             return false;
         }
         boolean b;
-        if( r instanceof DigestResource ) {
-            DigestResource dr = (DigestResource) r;
-            if( dr.isDigestAllowed()) {
-                b = Auth.Scheme.DIGEST.equals( auth.getScheme() );
-				if( !b ) {
-					log.trace("supports: Authentication scheme is not DIGEST");
-				} else {
-					log.trace("supports: DIGEST scheme credentials provided, supports = true");
-				}
+        if (r instanceof DigestResource dr) {
+            if (dr.isDigestAllowed()) {
+                b = Auth.Scheme.DIGEST.equals(auth.getScheme());
+                if (!b) {
+                    log.trace("supports: Authentication scheme is not DIGEST");
+                } else {
+                    log.trace("supports: DIGEST scheme credentials provided, supports = true");
+                }
             } else {
                 log.trace("supports: digest auth is not allowed by the resource");
                 b = false;
             }
         } else {
-            log.trace( "supports: resource is not an instanceof DigestResource" );
+            log.trace("supports: resource is not an instanceof DigestResource");
             b = false;
         }
         return b;
     }
 
-	@Override
-    public Object authenticate( Resource r, Request request ) {
+    @Override
+    public Object authenticate(Resource r, Request request) {
         DigestResource digestResource = (DigestResource) r;
         Auth auth = request.getAuthorization();
-		String realm = r.getRealm();
-		if( realm == null ) {
-			throw new NullPointerException("Got null realm from resource: " + r.getClass());
-		}
+        String realm = r.getRealm();
+        if (realm == null) {
+            throw new NullPointerException("Got null realm from resource: " + r.getClass());
+        }
         DigestResponse resp = digestHelper.calculateResponse(auth, realm, request.getMethod());
-        if( resp == null ) {
+        if (resp == null) {
             log.info("requested digest authentication is invalid or incorrectly formatted");
             return null;
         } else {
-            Object o = digestResource.authenticate( resp );
-			if( o == null ) {
-				log.info("digest authentication failed from resource: " + digestResource.getClass() + " - " + digestResource.getName() + " for user: " + resp.getUser());
-			}
+            Object o = digestResource.authenticate(resp);
+            if (o == null) {
+                log.info("digest authentication failed from resource: {} - {} for user: {}", digestResource.getClass(), digestResource.getName(), resp.getUser());
+            }
             return o;
         }
     }
 
-	@Override
-    public void appendChallenges( Resource resource, Request request, List<String> challenges ) {
-        String nonceValue = nonceProvider.createNonce( request );
-        challenges.add( digestHelper.getChallenge(nonceValue, request.getAuthorization(), resource.getRealm()) );
+    @Override
+    public void appendChallenges(Resource resource, Request request, List<String> challenges) {
+        String nonceValue = nonceProvider.createNonce(request);
+        challenges.add(digestHelper.getChallenge(nonceValue, request.getAuthorization(), resource.getRealm()));
     }
 
-	@Override
-    public boolean isCompatible( Resource resource, Request request ) {
-        if ( resource instanceof DigestResource ) {
-			DigestResource dr = (DigestResource) resource;
-			return dr.isDigestAllowed();
-		} else {
-			log.trace("Digest auth not supported because class does not implement DigestResource");
-			return false;
-		}
+    @Override
+    public boolean isCompatible(Resource resource, Request request) {
+        if (resource instanceof DigestResource dr) {
+            return dr.isDigestAllowed();
+        } else {
+            log.trace("Digest auth not supported because class does not implement DigestResource");
+            return false;
+        }
     }
 }
 

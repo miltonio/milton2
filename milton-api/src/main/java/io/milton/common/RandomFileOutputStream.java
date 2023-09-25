@@ -19,22 +19,18 @@
 
 package io.milton.common;
 
-import java.io.File;
-import java.io.FileDescriptor;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.RandomAccessFile;
+import java.io.*;
 
 /**
  * A positionable file output stream.
  * <p>
  * Threading Design : [x] Single Threaded  [ ] Threadsafe  [ ] Immutable  [ ] Isolated
- *
+ * <p>
  * From http://stackoverflow.com/questions/825732/how-can-i-implement-an-outputstream-that-i-can-rewind
  */
 public class RandomFileOutputStream extends OutputStream {
 
-// *****************************************************************************
+    // *****************************************************************************
 // INSTANCE PROPERTIES
 // *****************************************************************************
     protected RandomAccessFile randomFile;                             // the random file to write to
@@ -58,7 +54,7 @@ public class RandomFileOutputStream extends OutputStream {
         sync = syn;
     }
 
-// *****************************************************************************
+    // *****************************************************************************
 // INSTANCE METHODS - OUTPUT STREAM IMPLEMENTATION
 // *****************************************************************************
     public void write(int val) throws IOException {
@@ -96,7 +92,7 @@ public class RandomFileOutputStream extends OutputStream {
         randomFile.close();
     }
 
-// *****************************************************************************
+    // *****************************************************************************
 // INSTANCE METHODS - RANDOM ACCESS EXTENSIONS
 // *****************************************************************************
     public long getFilePointer() throws IOException {

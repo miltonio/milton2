@@ -20,7 +20,6 @@
 package io.milton.common;
 
 /**
- *
  * @author alex
  */
 public class NameSpace {

@@ -88,7 +88,7 @@ public class ResponseStatus {
      * Status code (302) indicating that the resource has temporarily
      * moved to another location, but that future references should
      * still use the original URI to access the resource.
-     *
+     * <p>
      * This definition is being retained for backwards compatibility.
      * SC_FOUND is now the preferred definition.
      */
@@ -96,12 +96,12 @@ public class ResponseStatus {
     public static final int SC_MOVED_TEMPORARILY = 302;
 
     /**
-    * Status code (302) indicating that the resource reside
-    * temporarily under a different URI. Since the redirection might
-    * be altered on occasion, the client should continue to use the
-    * Request-URI for future requests.(HTTP/1.1) To represent the
-    * status code (302), it is recommended to use this variable.
-    */
+     * Status code (302) indicating that the resource reside
+     * temporarily under a different URI. Since the redirection might
+     * be altered on occasion, the client should continue to use the
+     * Request-URI for future requests.(HTTP/1.1) To represent the
+     * status code (302), it is recommended to use this variable.
+     */
 
     public static final int SC_FOUND = 302;
 
@@ -127,14 +127,14 @@ public class ResponseStatus {
 
     public static final int SC_USE_PROXY = 305;
 
-     /**
-     * Status code (307) indicating that the requested resource 
+    /**
+     * Status code (307) indicating that the requested resource
      * resides temporarily under a different URI. The temporary URI
-     * <em>SHOULD</em> be given by the <code><em>Location</em></code> 
+     * <em>SHOULD</em> be given by the <code><em>Location</em></code>
      * field in the response.
      */
 
-     public static final int SC_TEMPORARY_REDIRECT = 307;
+    public static final int SC_TEMPORARY_REDIRECT = 307;
 
     /**
      * Status code (400) indicating the request sent by the client was
@@ -314,5 +314,5 @@ public class ResponseStatus {
      */
 
     public static final int SC_HTTP_VERSION_NOT_SUPPORTED = 505;
-    
+
 }

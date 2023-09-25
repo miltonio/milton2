@@ -24,38 +24,37 @@ import java.util.List;
 /**
  * Value object holding the result of some operation in a generic form
  * which is suitable for outputting as JSON.
- * 
  *
  * @author brad
  */
 public class JsonResult {
-    
+
     //public static String CONTENT_TYPE = "application/x-javascript; charset=utf-8";
     public static String CONTENT_TYPE = "application/json; charset=utf-8";
 
     public static JsonResult error(String description) {
         return new JsonResult(false, description);
     }
-    
+
     public static JsonResult fieldError(String field, String fieldMessage) {
         JsonResult r = new JsonResult(false, "Validation error");
         r.addFieldMessage(field, fieldMessage);
         return r;
     }
-    
+
     public static JsonResult returnData(String href, Object data) {
         JsonResult r = new JsonResult(true);
         r.setData(data);
         r.setNextHref(href);
-        return r;        
+        return r;
     }
-    
+
     public static JsonResult returnData(Object data) {
         JsonResult r = new JsonResult(true);
         r.setData(data);
         return r;
-    }    
-    
+    }
+
     private boolean status;
     private String nextHref;
     private List<String> messages;
@@ -71,32 +70,32 @@ public class JsonResult {
         this.messages = messages;
         this.fieldMessages = fieldMessages;
     }
-    
+
     public JsonResult(boolean status) {
         this.status = status;
-    }    
-    
+    }
+
     public JsonResult(boolean status, String message) {
         this.status = status;
         this.messages = Collections.singletonList(message);
-    }        
-    
+    }
+
     public JsonResult(boolean status, String message, String nextHref) {
         this.status = status;
         this.nextHref = nextHref;
         this.messages = Collections.singletonList(message);
-    }          
-    
+    }
+
     public void addFieldMessage(String field, String message) {
-        if( fieldMessages == null ) {
+        if (fieldMessages == null) {
             fieldMessages = new ArrayList<>();
         }
         fieldMessages.add(new FieldMessage(field, message));
     }
-    
+
     /**
      * Flag to indicate success or failure of the operation
-     * 
+     *
      * @return the status
      */
     public boolean isStatus() {
@@ -114,7 +113,7 @@ public class JsonResult {
      * If an object was created this should be the href of that object.
      * If the operation completed was part of a workflow then this should be the
      * href of the next step in the workflow
-     * 
+     *
      * @return the nextHref
      */
     public String getNextHref() {
@@ -130,7 +129,7 @@ public class JsonResult {
 
     /**
      * Any messages which are not specific to certain fields
-     * 
+     *
      * @return the messages
      */
     public List<String> getMessages() {
@@ -147,7 +146,7 @@ public class JsonResult {
     /**
      * List of messages relating to specific fields. The field name must
      * correspond to a POST variable name
-     * 
+     *
      * @return the fieldMessages
      */
     public List<FieldMessage> getFieldMessages() {
@@ -163,7 +162,8 @@ public class JsonResult {
 
     /**
      * Any JSON friendly object
-     * @return 
+     *
+     * @return
      */
     public Object getData() {
         return data;
@@ -172,15 +172,12 @@ public class JsonResult {
     public void setData(Object data) {
         this.data = data;
     }
-    
-    
-    
-    
+
+
     /**
      * Represents a message (usually a validation error) pertaining to a field
-     * 
+     * <p>
      * The field name is the name of the POST variable which caused the error
-     * 
      */
     public static class FieldMessage {
         private String field;
@@ -193,8 +190,8 @@ public class JsonResult {
             this.field = field;
             this.message = message;
         }
-       
-        
+
+
         public String getField() {
             return field;
         }
@@ -209,6 +206,6 @@ public class JsonResult {
 
         public void setMessage(String message) {
             this.message = message;
-        }                
+        }
     }
 }

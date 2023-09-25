@@ -28,18 +28,18 @@ import io.milton.resource.Resource;
  *
  * @author brad
  */
-public interface DiscretePrincipal extends Principal, Resource{
+public interface DiscretePrincipal extends Principal, Resource {
 
-        
+
     /**
      * A URL to identify this principle **and** the owner of this principal. Note the relationship between this and
-	 * the AccessControlledResource.getPrincipalURL method which returns the principal
-	 * that owns the resource.
-	 * 
-	 * It is assumed that where a AccessControlledResource instance is also a DiscretePrincipal
-	 * that the getPrincipalURL method will return the url of itself.
-	 * 
-	 * In other words, we make the semantic decision that a principle owns itself.
+     * the AccessControlledResource.getPrincipalURL method which returns the principal
+     * that owns the resource.
+     * <p>
+     * It is assumed that where a AccessControlledResource instance is also a DiscretePrincipal
+     * that the getPrincipalURL method will return the url of itself.
+     * <p>
+     * In other words, we make the semantic decision that a principle owns itself.
      *
      * @return
      */

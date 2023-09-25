@@ -23,11 +23,11 @@ import java.lang.annotation.Target;
 
 /**
  * Marks the method which returns a CTag for the resource
- * 
+ *
  * <p>A CTag "tags" a collection with some identifier representing the current state.
  * The only requirement for this tag is that it changes whenever the state of
  * any member changes
- * 
+ *
  * <p>A simple way to achieve this is to set the ctag to the system clock whenever
  * any member of the collection changes
  *
@@ -36,5 +36,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CTag {
-    
+
 }

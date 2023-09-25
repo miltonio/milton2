@@ -16,10 +16,10 @@
 package io.milton.http.http11;
 
 import io.milton.common.RangeUtils;
-import io.milton.common.Utils;
 import io.milton.http.Range;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -106,11 +106,11 @@ public class MultipleRangeWritingOutputStream extends OutputStream {
 //--3d6b6a416f9b5
 //Content-Type: text/html
 //Content-Range: bytes 100-200/1270
-		out.write(("\n--" + boundary + "\n").getBytes(Utils.UTF8));
+		out.write(("\n--" + boundary + "\n").getBytes(StandardCharsets.UTF_8));
 		if (contentType != null) {
-			out.write(("Content-Type: " + contentType + "\n").getBytes(Utils.UTF8));
+			out.write(("Content-Type: " + contentType + "\n").getBytes(StandardCharsets.UTF_8));
 		}
-		out.write(("Content-Range: " + RangeUtils.toRangeString(currentByte, r.getFinish(), totalResourceLength) + "\n\n").getBytes(Utils.UTF8));
+		out.write(("Content-Range: " + RangeUtils.toRangeString(currentByte, r.getFinish(), totalResourceLength) + "\n\n").getBytes(StandardCharsets.UTF_8));
 	}
 
 }

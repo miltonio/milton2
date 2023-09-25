@@ -23,12 +23,10 @@ import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
 
+import javax.xml.namespace.QName;
 import java.util.Map;
 
-import javax.xml.namespace.QName;
-
 /**
- *
  * @author brad
  */
 public interface ExtMakeCalendarResource extends CollectionResource {

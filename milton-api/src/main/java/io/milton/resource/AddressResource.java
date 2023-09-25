@@ -19,18 +19,16 @@
 
 package io.milton.resource;
 
-import io.milton.resource.Resource;
 /**
- * Represents an address resource. 
- * 
- * 
+ * Represents an address resource.
+ *
  * @author nabil.shams
  */
-public interface AddressResource extends Resource{
+public interface AddressResource extends Resource {
     /**
-     * Return the contact information as VCard formatted text - http://en.wikipedia.org/wiki/VCard
-     * 
-     * @return 
+     * Return the contact information as VCard formatted text - <a href="https://en.wikipedia.org/wiki/VCard">https://en.wikipedia.org/wiki/VCard</a>
+     *
+     * @return
      */
     String getAddressData();
 }

@@ -27,10 +27,9 @@ import java.net.InetAddress;
  */
 public interface ADomainResourceRecord extends DomainResourceRecord {
     /**
-     * 
      * Supports both IPv4 and IPv6 addresses
-     * 
-     * @return 
+     *
+     * @return
      */
     InetAddress getAddress();
 }

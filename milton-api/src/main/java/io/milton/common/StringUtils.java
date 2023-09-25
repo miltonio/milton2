@@ -19,67 +19,65 @@
 
 package io.milton.common;
 
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 /**
- *
  * @author brad
  */
 public abstract class StringUtils {
 
-    public static final Charset UTF8 = Charset.forName("UTF-8");
-    
-    public static String[] delimitedListToStringArray( String str, String delimiter ) {
-        if( str == null ) {
+    private StringUtils() {
+    }
+
+    public static String[] delimitedListToStringArray(String str, String delimiter) {
+        if (str == null) {
             return new String[0];
         }
-        if( delimiter == null ) {
+        if (delimiter == null) {
             return new String[]{str};
         }
-        List result = new ArrayList();
-        if( "".equals( delimiter ) ) {
-            for( int i = 0; i < str.length(); i++ ) {
-                result.add( str.substring( i, i + 1 ) );
+        List<String> result = new ArrayList<>();
+        if (delimiter.isEmpty()) {
+            for (int i = 0; i < str.length(); i++) {
+                result.add(str.substring(i, i + 1));
             }
         } else {
             int pos = 0;
-            int delPos = 0;
-            while( ( delPos = str.indexOf( delimiter, pos ) ) != -1 ) {
-                result.add( str.substring( pos, delPos ) );
+            int delPos;
+            while ((delPos = str.indexOf(delimiter, pos)) != -1) {
+                result.add(str.substring(pos, delPos));
                 pos = delPos + delimiter.length();
             }
-            if( str.length() > 0 && pos <= str.length() ) {
+            if (!str.isEmpty() && pos <= str.length()) {
                 // Add rest of String, but not in case of empty input.
-                result.add( str.substring( pos ) );
+                result.add(str.substring(pos));
             }
         }
-        return toStringArray( result );
+        return toStringArray(result);
     }
 
-    public static String[] toStringArray( Collection collection ) {
-        if( collection == null ) {
+    public static String[] toStringArray(Collection collection) {
+        if (collection == null) {
             return null;
         }
         return (String[]) collection.toArray(new String[0]);
     }
 
-	/**
-	 * 
-	 * true if the given string contains any of the given strings
-	 * 
-	 * @param ua
-	 * @param browserIds
-	 * @return 
-	 */
-	public static boolean contains(String ua, String[] browserIds) {	
-		for(String s : browserIds ) {
-			if( ua.contains(s)) {
-				return true;
-			}
-		}
-		return false;
-	}
+    /**
+     * true if the given string contains any of the given strings
+     *
+     * @param ua
+     * @param browserIds
+     * @return
+     */
+    public static boolean contains(String ua, String[] browserIds) {
+        for (String s : browserIds) {
+            if (ua.contains(s)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

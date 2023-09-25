@@ -23,27 +23,27 @@ import java.lang.annotation.Target;
 
 /**
  * Marks a method as one which creates a collection within the resource given
- * 
+ *
  * <p>The method must
- * <ul> 
+ * <ul>
  *  <li>return the created object.
  *  <li>first param is the hierarchy parent objet (ie object which represents the parent folder)
  *  <li>the second param must be the name for the new object
  *  <li>other params are standard options such as request and response
  * </ul>
- * 
+ *
  * <p>Eg
  * <pre>
  *  {@literal @}MakeCollection
-    public Band createBand(BandsController root, String newName) {
-		..
-	}
-	</pre>
+ * public Band createBand(BandsController root, String newName) {
+ * ..
+ * }
+ * </pre>
  *
  * @author brad
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MakeCollection {
-    
+
 }

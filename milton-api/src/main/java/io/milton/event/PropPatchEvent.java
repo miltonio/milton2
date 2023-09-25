@@ -19,18 +19,17 @@
 
 package io.milton.event;
 
-import io.milton.resource.Resource;
 import io.milton.http.webdav.PropFindResponse;
+import io.milton.resource.Resource;
 
 /**
- *
  * @author brad
  */
 public class PropPatchEvent implements ResourceEvent {
     private final Resource res;
     private final PropFindResponse resp;
 
-    public PropPatchEvent( Resource res, PropFindResponse resp ) {
+    public PropPatchEvent(Resource res, PropFindResponse resp) {
         this.res = res;
         this.resp = resp;
     }
@@ -44,7 +43,6 @@ public class PropPatchEvent implements ResourceEvent {
     public PropFindResponse getResponse() {
         return resp;
     }
-
 
 
 }

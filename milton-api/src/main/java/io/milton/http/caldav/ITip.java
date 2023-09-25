@@ -20,7 +20,6 @@
 package io.milton.http.caldav;
 
 /**
- *
  * @author brad
  */
 public class ITip {

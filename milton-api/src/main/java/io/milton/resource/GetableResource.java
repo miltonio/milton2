@@ -21,14 +21,13 @@ package io.milton.resource;
 
 import io.milton.http.Auth;
 import io.milton.http.Range;
-import io.milton.resource.Resource;
 import io.milton.http.exceptions.BadRequestException;
+import io.milton.http.exceptions.NotAuthorizedException;
+import io.milton.http.exceptions.NotFoundException;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map;
-
-import io.milton.http.exceptions.NotAuthorizedException;
-import io.milton.http.exceptions.NotFoundException;
 
 /**
  * webDAV GET and HEAD
@@ -39,14 +38,14 @@ public interface GetableResource extends Resource {
      * should assume that bytes are being physically transmitted and that headers
      * have already been committed, although this might not be the case with
      * all web containers.
-     * <P/>
+     * <p/>
      * This method will be used to serve GET requests, and also to generate
      * content following POST requests (if they have not redirected)
-     * <P/>
+     * <p/>
      * The Range argument is not-null for partial content requests. In this case
      * implementations should (but are not required) to only send the data
      * range requested.
-     * <P/>
+     * <p/>
      * The contentType argument is that which was resolved by negotiation in
      * the getContentType method. HTTP allows a given resource to have multiple
      * representations on the same URL. For example, a data series could be retrieved
@@ -57,19 +56,20 @@ public interface GetableResource extends Resource {
      * and is provided here so that the resource implementation can render itself
      * appropriately.
      *
-     * @param out - the output stream to send the content to
-     * @param range - null for normal GET's, not null for partial GET's. May be ignored
-     * @param params - request parameters
+     * @param out         - the output stream to send the content to
+     * @param range       - null for normal GET's, not null for partial GET's. May be ignored
+     * @param params      - request parameters
      * @param contentType - the contentType selected by negotiation
-     * @throws java.io.IOException - if there is an exception writing content to the output stream. This
-     * indicates that the client has disconnected (as frequently occurs with http transfers). DO NOT
-     * throw an IOException if there was an internal error generating the response (eg if reading from a database)
+     * @throws java.io.IOException                              - if there is an exception writing content to the output stream. This
+     *                                                          indicates that the client has disconnected (as frequently occurs with http transfers). DO NOT
+     *                                                          throw an IOException if there was an internal error generating the response (eg if reading from a database)
      * @throws io.milton.http.exceptions.NotAuthorizedException
      */
     void sendContent(OutputStream out, Range range, Map<String, String> params, String contentType) throws IOException, NotAuthorizedException, BadRequestException, NotFoundException;
 
-    /** How many seconds to allow the content to be cached for, or null if caching is not allowed
-     *
+    /**
+     * How many seconds to allow the content to be cached for, or null if caching is not allowed
+     * <p>
      * The provided auth object allows this method to determine an appropriate caching
      * time depending on authenticated context. For example, in a CMS in might
      * be appropriate to have a short expiry time for logged in users who might
@@ -77,35 +77,36 @@ public interface GetableResource extends Resource {
      */
     Long getMaxAgeSeconds(Auth auth);
 
-    /** 
+    /**
      * Given a comma separated listed of preferred content types acceptable for a client,
      * return one content type which is the best.
-     * <P/>
+     * <p/>
      * Returns the most preferred  MIME type. E.g. text/html, image/jpeg, etc
-     * <P/>
-     *  Must be IANA registered
-     * <P/>
-     *  accepts is the accepts header. Eg: Accept: text/*, text/html, text/html;level=1
-     * <P/>
-     *  See - http://www.iana.org/assignments/media-types/ for a list of content types
-     *  See - http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html for details about the accept header
-     * <P/>
+     * <p/>
+     * Must be IANA registered
+     * <p/>
+     * accepts is the accepts header. Eg: Accept: text/*, text/html, text/html;level=1
+     * <p/>
+     * See - http://www.iana.org/assignments/media-types/ for a list of content types
+     * See - http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html for details about the accept header
+     * <p/>
      * See here for a fun discussion of using content type and accepts for XHTML - http://stackoverflow.com/questions/348736/is-writing-self-closing-tags-for-elements-not-traditionally-empty-bad-practice
-     * <P/>
-     *  If you can't handle accepts interpretation, just return a single content type - E.g. text/html
-     * <P/>
+     * <p/>
+     * If you can't handle accepts interpretation, just return a single content type - E.g. text/html
+     * <p/>
      * But typically you should do something like this:
      * <PRE>
-     *   String mime = ContentTypeUtils.findContentTypes( this.file );
-     *   return ContentTypeUtils.findAcceptableContentType( mime, preferredList );
+     * String mime = ContentTypeUtils.findContentTypes( this.file );
+     * return ContentTypeUtils.findAcceptableContentType( mime, preferredList );
      * </PRE>
-     *  @see io.milton.common.ContentTypeUtils
      *
+     * @see io.milton.common.ContentTypeUtils
      */
     String getContentType(String accepts);
 
-    /** The length of the content in this resource. If unknown return NULL
+    /**
+     * The length of the content in this resource. If unknown return NULL
      */
     Long getContentLength();
-    
+
 }

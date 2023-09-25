@@ -19,7 +19,7 @@ import io.milton.http.values.HrefList;
 
 /**
  * Implement this to add support for
- *
+ * <p>
  * https://tools.ietf.org/html/draft-daboo-carddav-directory-gateway-02#page-4
  *
  * @author brad

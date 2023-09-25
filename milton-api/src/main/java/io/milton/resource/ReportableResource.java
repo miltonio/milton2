@@ -19,12 +19,10 @@
 
 package io.milton.resource;
 
-import io.milton.resource.Resource;
-
 /**
  * Just a marker interface to indicate that the resource is permitted to support
  * REPORT requests.
- *
+ * <p>
  * The requirements for supporting particular Report instances is determined
  * by each report, but is typically just to support PROPFIND
  *

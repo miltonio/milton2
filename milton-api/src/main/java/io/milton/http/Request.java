@@ -124,10 +124,10 @@ public interface Request {
 
     /**
      * equivalent to Servlet Request getRemoteHost
-     * 
+     * <p>
      * Returns the fully qualified name of the client or the last proxy that sent the request.
-     * 
-     * @return 
+     *
+     * @return
      */
     String getFromAddress();
 
@@ -154,7 +154,7 @@ public interface Request {
     String getIfHeader();
 
     String getIfRangeHeader();
-    
+
     String getIfMatchHeader();
 
     String getIfNoneMatchHeader();
@@ -194,17 +194,15 @@ public interface Request {
     String getAcceptEncodingHeader();
 
     /**
-     * Get the user-agents preferred languages. 
-     * 
+     * Get the user-agents preferred languages.
+     * <p>
      * Eg: en-ca,en;q=0.8,en-us;q=0.6,de-de;q=0.4,de;q=0.2
-     * 
-     * 
-     * @return 
+     *
+     * @return
      */
     String getAcceptLanguage();
-    
+
     /**
-     *
      * @return a range header, for partial gets
      */
     String getRangeHeader();
@@ -225,11 +223,10 @@ public interface Request {
      */
     Boolean getOverwriteHeader();
 
-    
+
     String getOriginHeader();
-    
+
     /**
-     *
      * @return - the user agent header field
      */
     String getUserAgentHeader();
@@ -248,9 +245,9 @@ public interface Request {
      * classes and added to the attributes map. If you're extending
      * AbstractRequest this method will already be implemented for you by
      * returning that attribute
-     *
+     * <p>
      * If you are not extending AbstractRequest you should implement this as:
-     *
+     * <p>
      * return attributes.get( "_params");
      *
      * @return - map of querystring or POST parameters, keyed by name
@@ -262,7 +259,7 @@ public interface Request {
      * classes and added to the attributes map. If you're extending
      * AbstractRequest this method will already be implemented for you by
      * returning that attribute
-     *
+     * <p>
      * If you are not extending AbstractRequest you should return implement this
      * as: return attributes.get( "_files");
      *
@@ -278,7 +275,6 @@ public interface Request {
      * as the optional domain part.
      *
      * @param name this is the name of the cookie object to acquire
-     *
      * @return this returns a cookie object from the header or null
      */
     Cookie getCookie(String name);
@@ -301,12 +297,12 @@ public interface Request {
      * @return
      */
     String getRemoteAddr();
-    
+
     /**
      * Use the Accept-Language header to derive a java Locale
-     * 
-     * @return 
+     *
+     * @return
      */
     Locale getLocale();
-    
+
 }

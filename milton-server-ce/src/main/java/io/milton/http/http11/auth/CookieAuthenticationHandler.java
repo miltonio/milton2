@@ -22,6 +22,8 @@ import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.principal.DiscretePrincipal;
 import io.milton.resource.Resource;
+
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -542,7 +544,7 @@ public class CookieAuthenticationHandler implements AuthenticationHandler {
 	}
 
 	public String encodeUserUrl(String userUrl) {
-		String encodedUserUrl = Base64.getEncoder().encodeToString(userUrl.getBytes(Utils.UTF8));
+		String encodedUserUrl = Base64.getEncoder().encodeToString(userUrl.getBytes(StandardCharsets.UTF_8));
 		encodedUserUrl = Utils.percentEncode(encodedUserUrl); // base64 uses some chars illegal in cookies, eg equals
 		encodedUserUrl = "b64" + encodedUserUrl; // need to distinguish if base64 encoded or not
 		return (encodedUserUrl);

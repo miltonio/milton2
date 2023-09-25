@@ -20,7 +20,6 @@
 package io.milton.event;
 
 /**
- *
  * @author brad
  */
 public interface EventListener {

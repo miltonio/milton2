@@ -21,13 +21,13 @@ package io.milton.principal;
 
 import io.milton.http.Auth;
 import io.milton.resource.Resource;
+
 import javax.xml.namespace.QName;
 
 /**
  * Used to represent aggregated principals defined by the ACL spec
- *
+ * <p>
  * Eg D:all, D:authenticated, D:unauthenticated
- *
  *
  * @author brad
  */
@@ -42,8 +42,8 @@ public class DavPrincipals {
         private final PrincipleId id;
         private final QName qname;
 
-        public AbstractDavPrincipal( String name ) {
-            this.qname = new QName( "DAV:", name );
+        protected AbstractDavPrincipal(String name) {
+            this.qname = new QName("DAV:", name);
             this.id = new PrincipleId() {
 
                 public QName getIdType() {
@@ -64,10 +64,10 @@ public class DavPrincipals {
     public static class AllDavPrincipal extends DavPrincipals.AbstractDavPrincipal {
 
         AllDavPrincipal() {
-            super( "all" );
+            super("all");
         }
 
-        public boolean matches( Auth auth, Resource current ) {
+        public boolean matches(Auth auth, Resource current) {
             return true;
         }
     }
@@ -75,10 +75,10 @@ public class DavPrincipals {
     public static class AuthenticatedDavPrincipal extends DavPrincipals.AbstractDavPrincipal {
 
         AuthenticatedDavPrincipal() {
-            super( "authenticated" );
+            super("authenticated");
         }
 
-        public boolean matches( Auth auth, Resource current ) {
+        public boolean matches(Auth auth, Resource current) {
             return auth.getTag() != null;
         }
     }
@@ -86,10 +86,10 @@ public class DavPrincipals {
     public static class UnAuthenticatedDavPrincipal extends DavPrincipals.AbstractDavPrincipal {
 
         UnAuthenticatedDavPrincipal() {
-            super( "unauthenticated" );
+            super("unauthenticated");
         }
 
-        public boolean matches( Auth auth, Resource current ) {
+        public boolean matches(Auth auth, Resource current) {
             return auth.getTag() == null;
         }
     }

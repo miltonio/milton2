@@ -22,7 +22,6 @@ package io.milton.principal;
 import javax.xml.namespace.QName;
 
 /**
- *
  * @author brad
  */
 public class HrefPrincipleId implements Principal.PrincipleId {
