@@ -271,6 +271,13 @@ public class ResponseStatus {
     public static final int SC_EXPECTATION_FAILED = 417;
 
     /**
+     * Status code (429) indicates that the user has sent too many
+     * requests in a given amount of time ("rate limiting").
+     */
+
+    public static final int SC_TOO_MANY_REQUESTS = 429;
+
+    /**
      * Status code (500) indicating an error inside the HTTP server
      * which prevented it from fulfilling the request.
      */
