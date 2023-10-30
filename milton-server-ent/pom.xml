@@ -11,7 +11,9 @@
     <artifactId>milton-server-ent</artifactId>
     <packaging>jar</packaging>
     <name>milton-server-ent</name>
-    <description>Milton Enterprise: Supports DAV level 2 and above, including Caldav and Carddav. Available on AGPL or commercial licenses</description>
+    <description>Milton Enterprise: Supports DAV level 2 and above, including Caldav and Carddav. Available on AGPL or
+        commercial licenses
+    </description>
     <licenses>
         <license>
             <name>McEvoy Software Ltd</name>
@@ -24,7 +26,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
+                <version>3.11.0</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
