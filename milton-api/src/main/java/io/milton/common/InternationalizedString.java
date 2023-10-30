@@ -32,15 +32,28 @@ public class InternationalizedString {
     private final String language;
     private final String value;
 
+    /**
+     * Initializes an object with language and extra information.
+     * @param language Language.
+     * @param value Extra information.
+     */
     public InternationalizedString(String language, String value) {
         this.language = language;
         this.value = value;
     }
 
+    /**
+     * Returns Language.
+     * @return Language.
+     */
     public String getLanguage() {
         return language;
     }
 
+    /**
+     * Returns extra information.
+     * @return Extra information.
+     */
     public String getValue() {
         return value;
     }

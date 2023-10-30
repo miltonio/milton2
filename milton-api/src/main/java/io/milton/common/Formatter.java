@@ -61,16 +61,21 @@ public class Formatter {
         }
     }
 
-    public Boolean toBool(Object o) {
-        if (o == null) {
+    /**
+     * Converts object to boolean if possible
+     * @param object to convert.
+     * @return boolean represenation of object.
+     */
+    public Boolean toBool(Object object) {
+        if (object == null) {
             return null;
-        } else if (o instanceof Boolean) {
-            return (Boolean) o;
-        } else if (o instanceof Integer) {
-            Integer i = (Integer) o;
+        } else if (object instanceof Boolean) {
+            return (Boolean) object;
+        } else if (object instanceof Integer) {
+            Integer i = (Integer) object;
             return i == 0;
-        } else if (o instanceof String) {
-            String s = (String) o;
+        } else if (object instanceof String) {
+            String s = (String) object;
             s = s.toLowerCase();
             s = s.trim();
             if (!s.isEmpty()) {
@@ -79,28 +84,34 @@ public class Formatter {
                 return null;
             }
         } else {
-            throw new RuntimeException("Unsupported boolean type: " + o.getClass());
+            throw new RuntimeException("Unsupported boolean type: " + object.getClass());
         }
 
     }
 
-    public BigDecimal toDecimal(Object o, int places) {
-        if (o == null) {
+    /**
+     * Converts object to decimal if possible.
+     * @param object to convert.
+     * @param places how many decimal places.
+     * @return decimal value of the object.
+     */
+    public BigDecimal toDecimal(Object object, int places) {
+        if (object == null) {
             return BigDecimal.ZERO;
-        } else if (o instanceof BigDecimal) {
-            BigDecimal bd = (BigDecimal) o;
+        } else if (object instanceof BigDecimal) {
+            BigDecimal bd = (BigDecimal) object;
             return bd.setScale(places, RoundingMode.HALF_UP);
-        } else if (o instanceof Double) {
-            Double d = (Double) o;
+        } else if (object instanceof Double) {
+            Double d = (Double) object;
             return BigDecimal.valueOf(d).setScale(places, RoundingMode.HALF_UP);
-        } else if (o instanceof Integer) {
-            Integer i = (Integer) o;
+        } else if (object instanceof Integer) {
+            Integer i = (Integer) object;
             return BigDecimal.valueOf(i.longValue()).setScale(places, RoundingMode.HALF_UP);
-        } else if (o instanceof Float) {
-            Float f = (Float) o;
+        } else if (object instanceof Float) {
+            Float f = (Float) object;
             return BigDecimal.valueOf(f.doubleValue()).setScale(places, RoundingMode.HALF_UP);
-        } else if (o instanceof String) {
-            String s = (String) o;
+        } else if (object instanceof String) {
+            String s = (String) object;
             s = s.trim();
             if (s.isEmpty()) {
                 return BigDecimal.ZERO;
@@ -112,15 +123,20 @@ public class Formatter {
                 }
             }
         } else {
-            throw new RuntimeException("Unsupported value type, should be numeric: " + o.getClass());
+            throw new RuntimeException("Unsupported value type, should be numeric: " + object.getClass());
         }
     }
 
-    public Double toDouble(Object o) {
-        if (o == null) {
+    /**
+     * Converts object to double if possible.
+     * @param object to convert.
+     * @return double value of the object.
+     */
+    public Double toDouble(Object object) {
+        if (object == null) {
             return 0d;
-        } else if (o instanceof String) {
-            String s = (String) o;
+        } else if (object instanceof String) {
+            String s = (String) object;
             s = s.trim();
             if (s.isEmpty()) {
                 return 0d;
@@ -131,19 +147,19 @@ public class Formatter {
                     throw new RuntimeException("Non-numeric data: " + s);
                 }
             }
-        } else if (o instanceof Double) {
-            return (Double) o;
-        } else if (o instanceof Integer) {
-            Integer i = (Integer) o;
+        } else if (object instanceof Double) {
+            return (Double) object;
+        } else if (object instanceof Integer) {
+            Integer i = (Integer) object;
             return (double) i;
-        } else if (o instanceof Float) {
-            Float f = (Float) o;
+        } else if (object instanceof Float) {
+            Float f = (Float) object;
             return f.doubleValue();
-        } else if (o instanceof BigDecimal) {
-            BigDecimal bd = (BigDecimal) o;
+        } else if (object instanceof BigDecimal) {
+            BigDecimal bd = (BigDecimal) object;
             return bd.doubleValue();
         } else {
-            throw new RuntimeException("Unsupported value type, should be numeric: " + o.getClass());
+            throw new RuntimeException("Unsupported value type, should be numeric: " + object.getClass());
         }
     }
 
@@ -151,29 +167,35 @@ public class Formatter {
         return toLong(oLimit, false);
     }
 
-    public Long toLong(Object oVal, boolean withNulls) {
+    /**
+     * Converts object to Long if possible.
+     * @param object to convert.
+     * @param withNulls if true 0L will be null.
+     * @return Long value of the object.
+     */
+    public Long toLong(Object object, boolean withNulls) {
         Long limit;
-        if (oVal == null) {
+        if (object == null) {
             limit = withNulls ? null : 0L;
-        } else if (oVal instanceof Long) {
-            limit = (Long) oVal;
-        } else if (oVal instanceof Integer) {
-            int i = (Integer) oVal;
+        } else if (object instanceof Long) {
+            limit = (Long) object;
+        } else if (object instanceof Integer) {
+            int i = (Integer) object;
             limit = (long) i;
-        } else if (oVal instanceof Double) {
-            Double d = (Double) oVal;
+        } else if (object instanceof Double) {
+            Double d = (Double) object;
             return d.longValue();
-        } else if (oVal instanceof Float) {
-            Float d = (Float) oVal;
+        } else if (object instanceof Float) {
+            Float d = (Float) object;
             return d.longValue();
-        } else if (oVal instanceof BigDecimal) {
-            BigDecimal bd = (BigDecimal) oVal;
+        } else if (object instanceof BigDecimal) {
+            BigDecimal bd = (BigDecimal) object;
             return bd.longValue();
-        } else if (oVal instanceof Boolean) {
-            Boolean bb = (Boolean) oVal;
+        } else if (object instanceof Boolean) {
+            Boolean bb = (Boolean) object;
             return Boolean.TRUE.equals(bb) ? 1L : 0L;
-        } else if (oVal instanceof String) {
-            String s = (String) oVal;
+        } else if (object instanceof String) {
+            String s = (String) object;
             if (s.isEmpty()) {
                 limit = withNulls ? null : 0L;
             } else {
@@ -190,38 +212,53 @@ public class Formatter {
                 }
             }
         } else {
-            throw new RuntimeException("unsupported class: " + oVal.getClass());
+            throw new RuntimeException("unsupported class: " + object.getClass());
         }
         return limit;
     }
 
-    public int getYear(Object o) {
-        if (!(o instanceof Date)) {
+    /**
+     * Returns year if object is instance of date, 0 otherwise.
+     * @param object to get year from.
+     * @return year or 0 if not a date.
+     */
+    public int getYear(Object object) {
+        if (!(object instanceof Date)) {
             return 0;
         }
-        Date dt = (Date) o;
+        Date dt = (Date) object;
 
         Calendar cal = Calendar.getInstance();
         cal.setTime(dt);
         return cal.get(Calendar.YEAR);
     }
 
-    public int getMonth(Object o) {
-        if (!(o instanceof Date)) {
+    /**
+     * Returns month if object is instance of date, 0 otherwise.
+     * @param object to get month from.
+     * @return month or 0 if not a date.
+     */
+    public int getMonth(Object object) {
+        if (!(object instanceof Date)) {
             return 0;
         }
-        Date dt = (Date) o;
+        Date dt = (Date) object;
 
         Calendar cal = Calendar.getInstance();
         cal.setTime(dt);
         return cal.get(Calendar.MONTH) + 1;
     }
 
-    public int getDayOfMonth(Object o) {
-        if (!(o instanceof Date)) {
+    /**
+     * Returns day of month if object is instance of date, 0 otherwise.
+     * @param object to get day of month from.
+     * @return day of month or 0 if not a date.
+     */
+    public int getDayOfMonth(Object object) {
+        if (!(object instanceof Date)) {
             return 0;
         }
-        Date dt = (Date) o;
+        Date dt = (Date) object;
 
         Calendar cal = Calendar.getInstance();
         cal.setTime(dt);
@@ -238,9 +275,9 @@ public class Formatter {
      * human readable duration such as 12:30 (12 mins, 30 seconds) or 12 mins, 3
      * hrs 20
      *
-     * @param object
-     * @param numeric
-     * @return
+     * @param object which can be parsed as Long.
+     * @param numeric true if numeric representation divided by :.
+     * @return duration.
      */
     public String formatMinsAsDuration(Object object, boolean numeric) {
         Long l = toLong(object);

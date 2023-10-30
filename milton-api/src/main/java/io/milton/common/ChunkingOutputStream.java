@@ -21,6 +21,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+/**
+ * Creates a chunked output stream. It writes data to output in chunks.
+ */
 public class ChunkingOutputStream extends OutputStream {
 
     final ChunkWriter chunkWriter;

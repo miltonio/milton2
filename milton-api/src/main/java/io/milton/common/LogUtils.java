@@ -23,12 +23,18 @@ import org.slf4j.Logger;
 
 
 /**
+ * Utils for logging.
  * @author HP
  */
 public class LogUtils {
 
     private LogUtils() {}
 
+    /**
+     * Traces the message.
+     * @param log Logger.
+     * @param args Arguments to trace.
+     */
     public static void trace(Logger log, Object... args) {
         if (log.isTraceEnabled()) {
             StringBuilder sb = new StringBuilder();
@@ -39,6 +45,11 @@ public class LogUtils {
         }
     }
 
+    /**
+     * Debugs the message.
+     * @param log Logger.
+     * @param args Arguments to debug.
+     */
     public static void debug(Logger log, Object... args) {
         if (log.isDebugEnabled()) {
             StringBuilder sb = new StringBuilder();
@@ -49,6 +60,11 @@ public class LogUtils {
         }
     }
 
+    /**
+     * Warns the message.
+     * @param log Logger.
+     * @param args Arguments to warn.
+     */
     public static void warn(Logger log, Object... args) {
         if (log.isWarnEnabled()) {
             StringBuilder sb = new StringBuilder();

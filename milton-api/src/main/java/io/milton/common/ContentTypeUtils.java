@@ -34,37 +34,64 @@ public class ContentTypeUtils {
 
     private static final ContentTypeService contentTypeService = new DefaultContentTypeService(); // will load props file ;
 
+    /**
+     * Finds a content type by file name/extension.
+     * @param name - file name or extension.
+     * @return Comma separated list of matched content types.
+     */
     public static String findContentTypes(String name) {
         List<String> list = contentTypeService.findContentTypes(name);
         return buildContentTypeText(list);
     }
 
+    /**
+     * Finds a content type by file name/extension.
+     * @param file - file name or extension.
+     * @return Comma separated list of matched content types.
+     */
     public static String findContentTypes(File file) {
         return buildContentTypeText(contentTypeService.findContentTypes(file.getName()));
     }
 
+    /**
+     * Returns acceptable mime type.
+     * @param canProvide - content type which server can provide.
+     * @param accepts - content type which client accept.
+     * @return content type which is accepted by client and supported by server, null otherwise.
+     */
     public static String findAcceptableContentType(String canProvide, String accepts) {
         return contentTypeService.getPreferedMimeType(accepts, toList(canProvide));
     }
 
+    /**
+     * Returns acceptable mime type for file name.
+     * @param name - file name.
+     * @param accepts - content type which client accept.
+     * @return content type which is accepted by client and supported by server, null otherwise.
+     */
     public static String findAcceptableContentTypeForName(String name, String accepts) {
         String canProvide = findContentTypes(name);
         List<String> canProvideList = toList(canProvide);
         return contentTypeService.getPreferedMimeType(accepts, canProvideList);
     }
 
-    private static String buildContentTypeText(List<String> mimeTypes) {
-        return Utils.toCsv(mimeTypes);
-    }
-
-    public static List<String> toList(String s) {
+    /**
+     * Converts comma separated string to list
+     * @param string - comma separated string.
+     * @return List.
+     */
+    public static List<String> toList(String string) {
         List<String> list = new ArrayList<>();
-        if (s != null) {
-            for (String x : s.split(",")) {
+        if (string != null) {
+            for (String x : string.split(",")) {
                 x = x.trim();
                 list.add(x);
             }
         }
         return list;
+    }
+
+    private static String buildContentTypeText(List<String> mimeTypes) {
+        return Utils.toCsv(mimeTypes);
     }
 }

@@ -148,18 +148,34 @@ public class BufferingOutputStream extends OutputStream {
         }
     }
 
+    /**
+     * Returns size of the buffer,
+     * @return size of the buffer.
+     */
     public long getSize() {
         return size;
     }
 
+    /**
+     * Returns underlying temporary file if exists.
+     * @return underlying temporary file if exists.
+     */
     File getTempFile() {
         return tempFile;
     }
 
+    /**
+     * Returns temporary in-memory buffer.
+     * @return temporary in-memory buffer.
+     */
     ByteArrayOutputStream getTempMemoryBuffer() {
         return tempMemoryBuffer;
     }
 
+    /**
+     * Sets callback which will be executed on stream close.
+     * @param r - callback for stream close.
+     */
     public void setOnClose(Runnable r) {
         this.runnable = r;
     }

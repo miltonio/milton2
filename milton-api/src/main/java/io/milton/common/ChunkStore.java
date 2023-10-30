@@ -17,6 +17,9 @@
 
 package io.milton.common;
 
+/**
+ * Provides ability to get and delete chunks.
+ */
 public interface ChunkStore extends ChunkWriter {
 
     /**

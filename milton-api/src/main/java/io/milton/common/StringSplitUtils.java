@@ -107,13 +107,13 @@ public class StringSplitUtils {
     }
 
     /**
-     * Replacealloccurencesofasubstringwithinastringwith
-     * anotherstring.
+     * Replace all occurrences of a substring within a string with
+     * another string.
      *
-     * @paraminStringStringtoexamine
-     * @paramoldPatternStringtoreplace
-     * @paramnewPatternStringtoinsert
-     * @returnaStringwiththereplacements
+     * @param inString String to examine
+     * @param oldPattern String to replace
+     * @param newPattern String to insert
+     * @return a String with the replacements
      */
     public static String replace(String inString, String oldPattern, String newPattern) {
         if (inString == null) {

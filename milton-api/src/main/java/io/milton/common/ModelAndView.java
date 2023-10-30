@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Model/view abstraction.
+ *
  * @author brad
  */
 public class ModelAndView {
@@ -27,32 +29,59 @@ public class ModelAndView {
 
     private final View view;
 
+    /**
+     * Creates {@link ModelAndView} with {@link Map} model and {@link View} view.
+     * @param model Model.
+     * @param view {@link View}.
+     */
     public ModelAndView(Map<String, Object> model, View view) {
         this.model = model;
         this.view = view;
     }
 
+    /**
+     * Creates {@link ModelAndView} with a template.
+     * @param template Template.
+     */
     public ModelAndView(String template) {
         view = new View(template);
         this.model = new HashMap<>();
     }
 
+    /**
+     * Creates {@link ModelAndView} with a model and template.
+     * @param model Model.
+     * @param template Template.
+     */
     public ModelAndView(Map<String, Object> model, String template) {
         view = new View(template);
         this.model = model;
     }
 
+    /**
+     * Creates {@link ModelAndView}.
+     * @param modelObjectName Model object name.
+     * @param modelObject Model object.
+     * @param template Template.
+     */
     public ModelAndView(String modelObjectName, Object modelObject, String template) {
         view = new View(template);
         this.model = new HashMap<>();
         model.put(modelObjectName, modelObject);
     }
 
-
+    /**
+     * Returns model.
+     * @return {@link Map} model.
+     */
     public Map<String, Object> getModel() {
         return model;
     }
 
+    /**
+     * Returns View.
+     * @return {@link View} view.
+     */
     public View getView() {
         return view;
     }

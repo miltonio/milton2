@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Immutable
+ * Immutable class which represents a path in the file system.
  */
 public class Path implements Serializable {
 
@@ -39,12 +39,23 @@ public class Path implements Serializable {
     public static final LengthComparator LENGTH_COMPARATOR = new LengthComparator();
 
 
+    /**
+     * Method which creates and instance of Path.
+     * @param parent Path to parent.
+     * @param path relative path from parent.
+     * @return Path instance.
+     */
     public static Path path(Path parent, String path) {
         if (path == null)
             throw new NullPointerException("The path parameter may not be null");
         return split(parent, path);
     }
 
+    /**
+     * Method which creates and instance of Path.
+     * @param path relative path from root.
+     * @return Path instance.
+     */
     public static Path path(String path) {
         if (path == null || path.isEmpty()) return root;
         return split(null, path);

@@ -25,10 +25,18 @@ package io.milton.common;
 public class View {
     private final String templateName;
 
+    /**
+     * Initializes {@link View} with template name.
+     * @param templateName to initialize with.
+     */
     public View(String templateName) {
         this.templateName = templateName;
     }
 
+    /**
+     * Returns template name.
+     * @return Template name.
+     */
     public String getTemplateName() {
         return templateName;
     }

@@ -26,10 +26,28 @@ import java.util.List;
  * @author brad
  */
 public interface ContentTypeService {
+
+    /**
+     * Finds a content type by file name/extension.
+     * @param name - file name or extension.
+     * @return List of matched content types.
+     */
     List<String> findContentTypes(String name);
 
+    /**
+     * Returns preferred mime type.
+     * @param accept - content type which client accept.
+     * @param canProvide - content types which server can provide.
+     * @return content type which is accepted by client and supported by server, null otherwise.
+     */
     String getPreferedMimeType(String accept, List<String> canProvide);
 
+    /**
+     * Returns preferred mime type.
+     * @param accept - content types which client accept.
+     * @param canProvide - content types which server can provide.
+     * @return first content type which is accepted by client and supported by server, null otherwise.
+     */
     String getPreferedMimeType(List<String> accept, List<String> canProvide);
 
 }

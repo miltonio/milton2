@@ -20,6 +20,7 @@
 package io.milton.common;
 
 /**
+ * Namespace abstraction.
  * @author alex
  */
 public class NameSpace {
@@ -27,15 +28,28 @@ public class NameSpace {
     private final String name;
     private final String prefix;
 
+    /**
+     * Creates {@link NameSpace}
+     * @param name Name.
+     * @param prefix Prefix.
+     */
     public NameSpace(String name, String prefix) {
         this.name = name;
         this.prefix = prefix;
     }
 
+    /**
+     * NameSpace name.
+     * @return Name.
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * NameSpace prefix.
+     * @return Prefix.
+     */
     public String getPrefix() {
         return prefix;
     }
