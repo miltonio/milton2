@@ -241,16 +241,6 @@ public class PutJsonResource extends JsonResource implements PostableResource {
         return Method.PUT;
     }
 
-    /**
-     * We dont return anything, so best not use json
-     *
-     * @param accepts
-     * @return
-     */
-//    @Override
-//    public String getContentType(String accepts) {
-//        return "text/html";
-//    }
     private String getName(String filename, Map<String, String> parameters) throws ConflictException, NotAuthorizedException, BadRequestException {
         String initialName = filename;
         if (parameters.containsKey(PARAM_NAME)) {
