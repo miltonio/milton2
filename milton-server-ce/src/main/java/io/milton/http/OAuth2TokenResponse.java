@@ -46,6 +46,11 @@ public class OAuth2TokenResponse extends OAuthAccessTokenResponse {
 	}
 
 	@Override
+	public String getTokenType() {
+		return getParam(OAuth.OAUTH_TOKEN_TYPE);
+	}
+
+	@Override
 	public Long getExpiresIn() {
 		String value = getParam(OAuth.OAUTH_EXPIRES_IN);
 		return value == null ? null : Long.valueOf(value);
@@ -63,7 +68,7 @@ public class OAuth2TokenResponse extends OAuthAccessTokenResponse {
 
 	@Override
 	public OAuthToken getOAuthToken() {
-		return new BasicOAuthToken(getAccessToken(), getExpiresIn(), getRefreshToken(), getScope());
+		return new BasicOAuthToken(getAccessToken(), getTokenType(), getExpiresIn(), getRefreshToken(), getScope());
 	}
 
 	@Override
