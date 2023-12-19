@@ -20,6 +20,7 @@
 package io.milton.common;
 
 /**
+ * Represents a service which could be stopped.
  * @author brad
  */
 public interface Stoppable {

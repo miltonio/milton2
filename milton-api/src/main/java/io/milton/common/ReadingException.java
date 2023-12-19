@@ -21,10 +21,17 @@ package io.milton.common;
 
 import java.io.IOException;
 
+/**
+ * Wraps IOException
+ */
 public class ReadingException extends IOException {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Wraps IOException cause.
+     * @param cause to wrap.
+     */
     public ReadingException(IOException cause) {
         super(cause.getMessage());
     }

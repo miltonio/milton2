@@ -20,15 +20,10 @@
 package io.milton.zsync;
 
 import io.milton.common.RangeUtils;
-import io.milton.common.StreamUtils;
 import io.milton.http.Range;
 import io.milton.httpclient.zsyncclient.RangeLoader;
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+
+import java.io.*;
 import java.util.List;
 
 /**
@@ -55,21 +50,12 @@ public class LocalFileRangeLoader implements RangeLoader {
     }
 
     private void writeRange(Range r, ByteArrayOutputStream bout) {
-        FileInputStream fin = null;
-        try {
-            fin = new FileInputStream(file);
+        try (FileInputStream fin = new FileInputStream(file)) {
             BufferedInputStream bufIn = new BufferedInputStream(fin);
             bytesDownloaded += (r.getFinish() - r.getStart());
             RangeUtils.writeRange(bufIn, r, bout);
-            //StreamUtils.readTo(bufIn, bout, true, false, r.getStart(), r.getFinish());						
         } catch (IOException ex) {
             throw new RuntimeException(ex);
-        }//		} catch(ReadingException e) {
-//			throw new RuntimeException(e);
-//		} catch(WritingException e) {
-//			throw new RuntimeException(e);
-        finally {
-            StreamUtils.close(fin);
         }
     }
 

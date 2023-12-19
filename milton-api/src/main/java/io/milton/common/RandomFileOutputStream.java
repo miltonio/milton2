@@ -26,37 +26,66 @@ import java.io.*;
  * <p>
  * Threading Design : [x] Single Threaded  [ ] Threadsafe  [ ] Immutable  [ ] Isolated
  * <p>
- * From http://stackoverflow.com/questions/825732/how-can-i-implement-an-outputstream-that-i-can-rewind
+ * From <a href="https://stackoverflow.com/questions/825732/how-can-i-implement-an-outputstream-that-i-can-rewind">
+ *     https://stackoverflow.com/questions/825732/how-can-i-implement-an-outputstream-that-i-can-rewind</a>
  */
 public class RandomFileOutputStream extends OutputStream {
 
     // *****************************************************************************
-// INSTANCE PROPERTIES
-// *****************************************************************************
+    // INSTANCE PROPERTIES
+    // *****************************************************************************
     protected RandomAccessFile randomFile;                             // the random file to write to
     protected boolean sync;                                   // whether to synchronize every write
 
-    public RandomFileOutputStream(String fnm) throws IOException {
-        this(fnm, false);
+    /**
+     * Initializes new {@link RandomFileOutputStream} with file name.
+     * @param fileName File name.
+     * @throws IOException in case of exception.
+     */
+    public RandomFileOutputStream(String fileName) throws IOException {
+        this(fileName, false);
     }
 
-    public RandomFileOutputStream(String fnm, boolean syn) throws IOException {
-        this(new File(fnm), syn);
+    /**
+     * Initializes new {@link RandomFileOutputStream} with file name.
+     * @param fileName File name.
+     * @param sync Whether to synchronize every write.
+     * @throws IOException in case of exception.
+     */
+    public RandomFileOutputStream(String fileName, boolean sync) throws IOException {
+        this(new File(fileName), sync);
     }
 
-    public RandomFileOutputStream(File fil) throws IOException {
-        this(fil, false);
+    /**
+     * Initializes new {@link RandomFileOutputStream}
+     * @param file File.
+     * @throws IOException in case of exception.
+     */
+    public RandomFileOutputStream(File file) throws IOException {
+        this(file, false);
     }
 
-    public RandomFileOutputStream(File fil, boolean syn) throws IOException {
+    /**
+     * Initializes new {@link RandomFileOutputStream} with file name and sync possibility.
+     * @param file File.
+     * @param sync Whether to synchronize every write.
+     * @throws IOException in case of exception.
+     */
+    public RandomFileOutputStream(File file, boolean sync) throws IOException {
         super();
-        randomFile = new RandomAccessFile(fil, "rw");
-        sync = syn;
+        randomFile = new RandomAccessFile(file, "rw");
+        this.sync = sync;
     }
 
     // *****************************************************************************
-// INSTANCE METHODS - OUTPUT STREAM IMPLEMENTATION
-// *****************************************************************************
+    // INSTANCE METHODS - OUTPUT STREAM IMPLEMENTATION
+    // *****************************************************************************
+
+    /**
+     * Write int value into stream.
+     * @param val   int value..
+     * @throws IOException in case of write errors.
+     */
     public void write(int val) throws IOException {
         randomFile.write(val);
         if (sync) {
@@ -93,24 +122,50 @@ public class RandomFileOutputStream extends OutputStream {
     }
 
     // *****************************************************************************
-// INSTANCE METHODS - RANDOM ACCESS EXTENSIONS
-// *****************************************************************************
+    // INSTANCE METHODS - RANDOM ACCESS EXTENSIONS
+    // *****************************************************************************
+
+    /**
+     * Returns current offset when last read was done.
+     * @return Current offset.
+     * @throws IOException in case of IO exception.
+     */
     public long getFilePointer() throws IOException {
         return randomFile.getFilePointer();
     }
 
+    /**
+     * Sets the position to the new offset.
+     * @param pos new position.
+     * @throws IOException in case of IO exception.
+     */
     public void setFilePointer(long pos) throws IOException {
         randomFile.seek(pos);
     }
 
+    /**
+     * Returns size of underlying file.
+     * @return file size.
+     * @throws IOException in case of IO exception.
+     */
     public long getFileSize() throws IOException {
         return randomFile.length();
     }
 
-    public void setFileSize(long len) throws IOException {
-        randomFile.setLength(len);
+    /**
+     * Sets new underlying file size.
+     * @param length new length.
+     * @throws IOException in case of IO exception.
+     */
+    public void setFileSize(long length) throws IOException {
+        randomFile.setLength(length);
     }
 
+    /**
+     * Returns underlying file descriptor.
+     * @return file descriptor.
+     * @throws IOException in case if IO eexception.
+     */
     public FileDescriptor getFD() throws IOException {
         return randomFile.getFD();
     }

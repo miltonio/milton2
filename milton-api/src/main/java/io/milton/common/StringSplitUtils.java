@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Utility helper for splitting the strings.
+ *
  * @author brad
  */
 public class StringSplitUtils {

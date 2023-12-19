@@ -18,8 +18,6 @@ package io.milton.common;
 
 import io.milton.http.Range;
 import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,16 +25,25 @@ import java.io.OutputStream;
 import java.util.List;
 
 /**
+ * Helper class for Content-Range header.
  * @author brad
  */
 public class RangeUtils {
 
-    private static final Logger log = LoggerFactory.getLogger(RangeUtils.class);
+    private RangeUtils() {
+    }
 
+    /**
+     * Converts start/finish/length to http supported range format.
+     * @param start Start of the range.
+     * @param finish End of the range.
+     * @param totalLength Total length or *
+     * @return range in format 'bytes 0-200/5'
+     */
     public static String toRangeString(long start, long finish, Long totalLength) {
         String l = totalLength == null ? "*" : totalLength.toString();
 
-        String s = null;
+        String s;
         if (finish > -1) {
             s = "bytes " + start + "-" + finish + "/" + l;
         } else {
@@ -47,6 +54,13 @@ public class RangeUtils {
         return s;
     }
 
+    /**
+     * Writes ranges from InputStream to OutputStream.
+     * @param in InputStream
+     * @param ranges collection of ranges to write from input to output.
+     * @param responseOut OutputStream to write to.
+     * @throws IOException in case of IO exception.
+     */
     public static void writeRanges(InputStream in, List<Range> ranges, OutputStream responseOut) throws IOException {
         try {
             long pos = 0;
@@ -65,6 +79,13 @@ public class RangeUtils {
         }
     }
 
+    /**
+     * Sends bytes from InputStream to OutputStream.
+     * @param in InputStream to send bytes from.
+     * @param out OutputStream to send bytes to.
+     * @param length Length of the bytes to send.
+     * @throws IOException in case of IO exception.
+     */
     public static void sendBytes(InputStream in, OutputStream out, long length) throws IOException {
         long numRead = 0;
         byte[] b = new byte[1024];
@@ -81,14 +102,21 @@ public class RangeUtils {
 
     }
 
-    public static void writeRange(InputStream in, Range r, OutputStream responseOut) throws IOException {
-        if (r != null) {
-            if (r.getStart() != null) {
-                long skip = r.getStart();
+    /**
+     * Writes range from InputStream to OutputStream.
+     * @param in InputStream
+     * @param range Range to write from input to output.
+     * @param responseOut OutputStream to write to.
+     * @throws IOException in case of IO exception.
+     */
+    public static void writeRange(InputStream in, Range range, OutputStream responseOut) throws IOException {
+        if (range != null) {
+            if (range.getStart() != null) {
+                long skip = range.getStart();
                 in.skip(skip);
             }
-            if (r.getFinish() != null) {
-                long length = r.getFinish() - r.getStart() + 1;
+            if (range.getFinish() != null) {
+                long length = range.getFinish() - range.getStart() + 1;
                 sendBytes(in, responseOut, length);
             } else {
                 IOUtils.copy(in, responseOut);

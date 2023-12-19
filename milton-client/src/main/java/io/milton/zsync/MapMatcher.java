@@ -45,38 +45,34 @@ USA
 package io.milton.zsync;
 
 import io.milton.common.StreamUtils;
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.Security;
 import java.util.Arrays;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- *
  * @author brad, original work by TomÃ¡Å¡ HlavniÄ�ka
  */
 public class MapMatcher {
-	
-	private static final Logger log = LoggerFactory.getLogger(MapMatcher.class);
-	
-    private final Generator gen = new Generator();	
-	
+
+    private static final Logger log = LoggerFactory.getLogger(MapMatcher.class);
+
+    private final Generator gen = new Generator();
+
     /**
      * Reads file and map it's data into the fileMap.
      */
     public double mapMatcher(File inputFile, MetaFileReader mfr, MakeContext mc) {
         int bufferOffset = 0;
-		InputStream is = null;
-		long fileLength = inputFile.length();
+        InputStream is = null;
+        long fileLength = inputFile.length();
         try {
-			is = new FileInputStream(inputFile);
-			InputStream inBuf = new BufferedInputStream(is);
+            is = new FileInputStream(inputFile);
+            InputStream inBuf = new BufferedInputStream(is);
             Security.addProvider(new JarsyncProvider());
             Configuration config = new Configuration();
             config.strongSum = MessageDigest.getInstance("MD4");
@@ -102,13 +98,13 @@ public class MapMatcher {
             int len = fileBuffer.length;
             boolean end = false;
             int blocksize = mfr.getBlocksize();
-            
+
             //
             long lastMatch = 0;
             //
-            
+
             while (mc.fileOffset != fileLength) {
-				//System.out.println("Outer loop: " + mc.fileOffset);
+                //System.out.println("Outer loop: " + mc.fileOffset);
                 n = inBuf.read(fileBuffer, 0, len);
                 if (firstBlock) {
                     weakSum = gen.generateWeakSum(fileBuffer, 0, config);
@@ -117,10 +113,10 @@ public class MapMatcher {
                     if (hashLookUp(weak, null, blocksize, mc)) {
                         strongSum = gen.generateStrongSum(fileBuffer, 0, blocksize, config);
                         boolean match = hashLookUp(updateWeakSum(weakSum, mfr), strongSum, blocksize, mc);
-                        if ( match ) {
-							lastMatch = mc.fileOffset;
-							//System.out.println("Last match: " + lastMatch);
-						}
+                        if (match) {
+                            lastMatch = mc.fileOffset;
+                            //System.out.println("Last match: " + lastMatch);
+                        }
                     }
                     mc.fileOffset++;
                     firstBlock = false;
@@ -132,19 +128,19 @@ public class MapMatcher {
                         newByte = 0;
                     }
                     weakSum = gen.generateRollSum(newByte, config);
-                	//System.out.println("Innner Loop: bufferOffset: " + bufferOffset + " - fileBuffer.length: " + fileBuffer.length + " weakSum: " + weakSum + " mc.fileOffset: " + mc.fileOffset + " - lastMatch: " + lastMatch);
-					boolean found = false;
-					if( mc.fileOffset >= lastMatch + blocksize ) {
-						int wSum =  updateWeakSum(weakSum, mfr);
-						if( hashLookUp(wSum, null, blocksize, mc) ) {
-							found = true;
-						} else {
-							//System.out.println("Not found, weaksum: " + wSum);
-						}
-					} else {
-						//System.out.println("Not looking for match because fileOffset not far enough: " + mc.fileOffset + " lastMatch: " + lastMatch + " blockSize: " + blocksize);
-					}
-                    if ( found ) {
+                    //System.out.println("Innner Loop: bufferOffset: " + bufferOffset + " - fileBuffer.length: " + fileBuffer.length + " weakSum: " + weakSum + " mc.fileOffset: " + mc.fileOffset + " - lastMatch: " + lastMatch);
+                    boolean found = false;
+                    if (mc.fileOffset >= lastMatch + blocksize) {
+                        int wSum = updateWeakSum(weakSum, mfr);
+                        if (hashLookUp(wSum, null, blocksize, mc)) {
+                            found = true;
+                        } else {
+                            //System.out.println("Not found, weaksum: " + wSum);
+                        }
+                    } else {
+                        //System.out.println("Not looking for match because fileOffset not far enough: " + mc.fileOffset + " lastMatch: " + lastMatch + " blockSize: " + blocksize);
+                    }
+                    if (found) {
                         if (mc.fileOffset + mfr.getBlocksize() > fileLength) {
                             if (n > 0) {
                                 Arrays.fill(fileBuffer, n, fileBuffer.length, (byte) 0);
@@ -160,16 +156,16 @@ public class MapMatcher {
                                 System.arraycopy(fileBuffer, 0, blockBuffer, mfr.getBlocksize() - bufferOffset - 1, bufferOffset + 1);
                             }
                             strongSum = gen.generateStrongSum(blockBuffer, 0, blocksize, config);
-							//System.out.println("Look for match: " + new String(blockBuffer));
+                            //System.out.println("Look for match: " + new String(blockBuffer));
                             boolean match = hashLookUp(updateWeakSum(weakSum, mfr), strongSum, blocksize, mc);
-                            if ( match ) lastMatch = mc.fileOffset;
+                            if (match) lastMatch = mc.fileOffset;
                         } else {
                             strongSum = gen.generateStrongSum(fileBuffer, bufferOffset - blocksize + 1, blocksize, config);
                             boolean match = hashLookUp(updateWeakSum(weakSum, mfr), strongSum, blocksize, mc);
-                            if ( match ) lastMatch = mc.fileOffset;
+                            if (match) lastMatch = mc.fileOffset;
                         }
                     }
-                    
+
                     mc.fileOffset++;
                     if (mc.fileOffset == fileLength) {
                         end = true;
@@ -184,19 +180,20 @@ public class MapMatcher {
             }
 
             double complete = matchControl(mfr, mc);
-            mc.removematch( mc.blockcount() - 1 );
+            mc.removematch(mc.blockcount() - 1);
             is.close();
             return complete;
         } catch (IOException | NoSuchAlgorithmException ex) {
             throw new RuntimeException(ex);
         } finally {
-			StreamUtils.close(is);
-		}
+            StreamUtils.close(is);
+        }
     }
-	
+
 
     /**
      * Shorten the calculated weakSum according to variable length of weaksum
+     *
      * @param weak Generated full weakSum
      * @return Shortened weakSum
      */
@@ -205,23 +202,23 @@ public class MapMatcher {
         switch (mfr.getRsumBytes()) {
             case 2:
                 rsum = new byte[]{(byte) 0,
-                    (byte) 0,
-                    (byte) (weak >> 24), //1
-                    (byte) ((weak << 8) >> 24) //2
+                        (byte) 0,
+                        (byte) (weak >> 24), //1
+                        (byte) ((weak << 8) >> 24) //2
                 };
                 break;
             case 3:
                 rsum = new byte[]{(byte) ((weak << 8) >> 24), //2
-                    (byte) 0, //3
-                    (byte) ((weak << 24) >> 24), //0
-                    (byte) (weak >> 24) //1
+                        (byte) 0, //3
+                        (byte) ((weak << 24) >> 24), //0
+                        (byte) (weak >> 24) //1
                 };
                 break;
             case 4:
                 rsum = new byte[]{(byte) (weak >> 24), //1
-                    (byte) ((weak << 8) >> 24), //2
-                    (byte) ((weak << 16) >> 24), //3
-                    (byte) ((weak << 24) >> 24) //0
+                        (byte) ((weak << 8) >> 24), //2
+                        (byte) ((weak << 16) >> 24), //3
+                        (byte) ((weak << 24) >> 24) //0
                 };
                 break;
             default:
@@ -233,18 +230,18 @@ public class MapMatcher {
         weakSum += (rsum[2] & 0x000000FF) << 8;
         weakSum += (rsum[3] & 0x000000FF);
         return weakSum;
-    }	
-	
+    }
+
 
     /**
      * Looks into hash table and check if got a hit
-	 * 
-     * @param weakSum Weak rolling checksum
+     *
+     * @param weakSum   Weak rolling checksum
      * @param strongSum Strong MD4 checksum
      * @return True if we got a hit
      */
     private boolean hashLookUp(int weakSum, byte[] strongSum, int blocksize, MakeContext mc) {
-		//System.out.println("hashLookup: " + weakSum);
+        //System.out.println("hashLookup: " + weakSum);
         ChecksumPair p;
         if (strongSum == null) {
             p = new ChecksumPair(weakSum);
@@ -257,7 +254,7 @@ public class MapMatcher {
             int seq;
             if (link != null) {
                 seq = link.getSequence();
-				//System.out.println(" found matching block, block index: " + seq + " fileoffset: " + mc.fileOffset + " block size: " + blocksize);
+                //System.out.println(" found matching block, block index: " + seq + " fileoffset: " + mc.fileOffset + " block size: " + blocksize);
                 //mc.fileMap[seq] = mc.fileOffset;
                 mc.put(seq, mc.fileOffset);
                 //mc.hashtable.delete(new ChecksumPair(weakSum, strongSum, blocksize * seq, blocksize, seq));
@@ -265,14 +262,15 @@ public class MapMatcher {
                 return true;
             }
         }
-		//System.out.println("No matching block: " + strongSum);
+        //System.out.println("No matching block: " + strongSum);
         return false;
-    }	
-	
-	
+    }
+
+
     /**
      * Clears non-matching blocks and returns percentage
      * value of how complete is our file
+     *
      * @return How many percent of file we have already
      */
     private double matchControl(MetaFileReader mfr, MakeContext mc) {
@@ -282,16 +280,16 @@ public class MapMatcher {
         for (int i = 0; i < blockCount; i++) {
             if (mfr.getSeqNum() == 2) { //pouze pokud kontrolujeme matching continuation
                 if (i > 0 && i < blockCount - 1) {
-                    if (!mc.matched( i - 1 ) && !mc.matched( i + 1 )) {
-                        mc.removematch( i );
+                    if (!mc.matched(i - 1) && !mc.matched(i + 1)) {
+                        mc.removematch(i);
                     }
                 } else if (i == 0) {
-                    if (!mc.matched( i + 1 )) {
-                        mc.removematch( i );
+                    if (!mc.matched(i + 1)) {
+                        mc.removematch(i);
                     }
                 } else if (i == blockCount - 1) {
-                    if (!mc.matched( i - 1 )) {
-                    	mc.removematch( i );
+                    if (!mc.matched(i - 1)) {
+                        mc.removematch(i);
                     }
                 }
             }
@@ -302,5 +300,5 @@ public class MapMatcher {
         log.trace("matchControl: fileMap.length: " + blockCount + " - missing: " + missing);
         return ((((double) blockCount - missing) / (double) blockCount) * 100);
     }
-	
+
 }

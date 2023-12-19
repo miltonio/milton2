@@ -23,6 +23,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 
+/**
+ * Utility class for reading from InputStream and writing to OutputStream.
+ */
 public class StreamUtils {
 
     private static final Logger log = LoggerFactory.getLogger(StreamUtils.class);
@@ -30,6 +33,12 @@ public class StreamUtils {
     private StreamUtils() {
     }
 
+    /**
+     * Skips over and discards {@code start} bytes of data from this input
+     * stream.
+     * @param in InputStream
+     * @param start bytes to skip.
+     */
     private static void skip(InputStream in, Long start) {
         try {
             in.skip(start);
@@ -38,59 +47,67 @@ public class StreamUtils {
         }
     }
 
+    /**
+     * Reads from InputFile into OutputStream
+     * @param inFile File to read from.
+     * @param out OutputStream to write to.
+     * @param closeOut Whether to close OutputStream.
+     * @return number of bytes written.
+     * @throws ReadingException In case of read exception.
+     * @throws WritingException In case of write exception.
+     */
     public static long readTo(File inFile, OutputStream out, boolean closeOut) throws ReadingException, WritingException {
-        try {
-            final FileInputStream in = new FileInputStream(inFile);
-            try {
-                return readTo(in, out);
-            } finally {
-                try {
-                    in.close();
-                } catch (IOException ex) {
-                    log.error("exception closing output stream", ex);
-                }
-                if (closeOut) {
-                    try {
-                        out.close();
-                    } catch (IOException ex) {
-                        log.error("exception closing outputstream", ex);
-                    }
-                }
-            }
+        try (FileInputStream in = new FileInputStream(inFile)) {
+            return readTo(in, out);
         } catch (FileNotFoundException ex) {
             throw new RuntimeException(ex);
-        }
-    }
-
-    public static long readTo(InputStream in, File outFile, boolean closeIn) throws ReadingException, WritingException {
-        try {
-            final FileOutputStream out = new FileOutputStream(outFile);
-            try {
-                return readTo(in, out);
-            } finally {
+        } catch (IOException e) {
+            log.error("exception closing output stream", e);
+            throw new RuntimeException(e);
+        } finally {
+            if (closeOut) {
                 try {
                     out.close();
                 } catch (IOException ex) {
-                    log.error("exception closing output stream", ex);
-                }
-                if (closeIn) {
-                    try {
-                        in.close();
-                    } catch (IOException ex) {
-                        log.error("exception closing inputstream", ex);
-                    }
+                    log.error("exception closing outputstream", ex);
                 }
             }
+        }
+    }
+
+    /**
+     * Reads from InputStream into File.
+     * @param in InputStream to read from.
+     * @param outFile File to write to.
+     * @param closeIn whether to close InputStream.
+     * @return number o bytes written.
+     * @throws ReadingException in case of read exception.
+     * @throws WritingException in case of write exception.
+     */
+    public static long readTo(InputStream in, File outFile, boolean closeIn) throws ReadingException, WritingException {
+        try (final FileOutputStream out = new FileOutputStream(outFile)) {
+            return readTo(in, out);
         } catch (FileNotFoundException ex) {
             throw new RuntimeException(ex);
+        } catch (Exception ex) {
+            log.error("exception closing output stream", ex);
+            throw new RuntimeException(ex);
+        } finally {
+            if (closeIn) {
+                try {
+                    in.close();
+                } catch (IOException ex) {
+                    log.error("exception closing inputstream", ex);
+                }
+            }
         }
     }
 
     /**
      * Copies data from in to out and DOES NOT close streams
      *
-     * @param in
-     * @param out
+     * @param in InputStream to read from.
+     * @param out OutputStream to write to.
      * @return
      * @throws io.milton.common.ReadingException
      * @throws io.milton.common.WritingException
@@ -103,18 +120,32 @@ public class StreamUtils {
      * Reads bytes from the input and writes them, completely, to the output.
      * Closes both streams when finished depending on closeIn and closeOyt
      *
-     * @param in
-     * @param out
-     * @param closeIn
-     * @param closeOut
-     * @return - number of bytes written
-     * @throws io.milton.common.ReadingException
-     * @throws io.milton.common.WritingException
+     * @param in InputStream to read from.
+     * @param out OutputStream to write to.
+     * @param closeIn Whether to close input stream after reading.
+     * @param closeOut Whether to close output stream after writing.
+     * @return number o bytes written.
+     * @throws ReadingException in case of read exception.
+     * @throws WritingException in case of write exception.
      */
     public static long readTo(InputStream in, OutputStream out, boolean closeIn, boolean closeOut) throws ReadingException, WritingException {
         return readTo(in, out, closeIn, closeOut, null, null);
     }
 
+    /**
+     * Reads bytes from the input and writes them, completely, to the output.
+     * Closes both streams when finished depending on closeIn and closeOyt
+     *
+     * @param in InputStream to read from.
+     * @param out OutputStream to write to.
+     * @param closeIn Whether to close input stream after reading.
+     * @param closeOut Whether to close output stream after writing.
+     * @param start Where to start reading.
+     * @param finish Where to finish writing.
+     * @return number o bytes written.
+     * @throws ReadingException in case of read exception.
+     * @throws WritingException in case of write exception.
+     */
     public static long readTo(InputStream in, OutputStream out, boolean closeIn, boolean closeOut, Long start, Long finish) throws ReadingException, WritingException {
         long cnt = 0;
         if (start != null) {
@@ -144,7 +175,6 @@ public class StreamUtils {
                         cnt = 0;
                     }
                 } catch (IOException ex) {
-                    //throw new WritingException(ex);
                     log.error("writing exectpion");
                 }
                 try {
@@ -169,6 +199,10 @@ public class StreamUtils {
         }
     }
 
+    /**
+     * Silently closes the OutputStream.
+     * @param out OutputStream to close.
+     */
     public static void close(OutputStream out) {
         if (out == null) {
             return;
@@ -180,6 +214,10 @@ public class StreamUtils {
         }
     }
 
+    /**
+     * Silently closes the InputStream.
+     * @param in InputStream to close.
+     */
     public static void close(InputStream in) {
         if (in == null) {
             return;

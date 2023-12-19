@@ -19,7 +19,6 @@
 package io.milton.zsync;
 
 import io.milton.common.RangeUtils;
-import io.milton.common.StreamUtils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -105,7 +104,7 @@ public class UploadReader {
          * this method invokes moveRange to copy incrementally
          */
 
-        /*The FileChannels should be obtained from a RandomAccessFile rather than a 
+        /*The FileChannels should be obtained from a RandomAccessFile rather than a
          *Stream, or the position() method will not work correctly
          */
         try (FileChannel rc = new RandomAccessFile(inFile, "r").getChannel();
@@ -151,7 +150,7 @@ public class UploadReader {
         while (bytesLeft > 0) {
             readAtOnce = Math.min(bytesLeft, MAX_BUFFER);
 
-            /*Because transferFrom does not update the write channel's position, 
+            /*Because transferFrom does not update the write channel's position,
              * it needs to be set manually
              */
             bytesRead = wc.transferFrom(rc, currOffset, readAtOnce);
@@ -304,11 +303,8 @@ public class UploadReader {
             throw new RuntimeException("No SHA1 checksum provided.");
         }
 
-        InputStream relocIn = null;
-        InputStream dataIn = null;
-        try {
-            relocIn = uploadData.getRelocStream();
-            dataIn = uploadData.getDataStream();
+        try (InputStream relocIn = uploadData.getRelocStream();
+             InputStream dataIn = uploadData.getDataStream()) {
 
             Enumeration<RelocateRange> relocEnum = new RelocateParser(relocIn);
             Enumeration<ByteRange> dataEnum = new ByteRangeParser(dataIn);
@@ -317,9 +313,6 @@ public class UploadReader {
 
             moveBlocks(serverCopy, relocEnum, (int) uploadData.getBlocksize(), uploadedCopy);
             sendRanges(dataEnum, uploadedCopy);
-        } finally {
-            StreamUtils.close(relocIn);
-            StreamUtils.close(dataIn);
         }
 
         return uploadedCopy;
@@ -409,7 +402,7 @@ public class UploadReader {
 
         /*The dataStream portion of an Upload*/
         private final InputStream dataQueue;
-        /*The Range of the next ByteRange. A null value means that the next Range has not 
+        /*The Range of the next ByteRange. A null value means that the next Range has not
          *been loaded or that the end of the data section has been reached.
          */
         private Range nextRange;
@@ -434,7 +427,7 @@ public class UploadReader {
             /*
              * If rangeloaded == false, attempt to read the next Range KV pair and set rangeloaded = true.
              * If rangeloaded == true and nextRange == null, there are no further ByteRanges.
-             * 
+             *
              */
             try {
 
