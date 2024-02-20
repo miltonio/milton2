@@ -20,18 +20,19 @@
 
 package io.milton.servlet;
 
-import jakarta.servlet.http.Part;
+import org.apache.commons.fileupload2.core.DiskFileItem;
+import org.apache.commons.fileupload2.core.FileItemHeaders;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
-public class PartWrapper implements io.milton.http.FileItem{
+public class FileItemWrapper implements io.milton.http.FileItem{
 
-    final Part wrapped;
+    final DiskFileItem wrapped;
 
     final String name;
 
@@ -51,7 +52,7 @@ public class PartWrapper implements io.milton.http.FileItem{
         return s;
     }
 
-    public PartWrapper(Part wrapped) {
+    public FileItemWrapper(DiskFileItem wrapped) {
         this.wrapped = wrapped;
         name = fixIEFileName(wrapped.getName());
     }
@@ -94,14 +95,20 @@ public class PartWrapper implements io.milton.http.FileItem{
 	public Map<String, String> getHeaders() {
 		if (mapOfHeaders == null) {
 			mapOfHeaders = new HashMap<>();
-			if (wrapped.getHeaderNames() != null) {
-				Collection<String> headers = wrapped.getHeaderNames();
-                for (String headerName : headers) {
-                    String s = wrapped.getHeader(headerName);
+			if (wrapped.getHeaders() != null) {
+                FileItemHeaders headers = wrapped.getHeaders();
+                for (Iterator<String> it = headers.getHeaderNames(); it.hasNext(); ) {
+                    String headerName = it.next();
+                    String s = headers.getHeader(headerName);
                     mapOfHeaders.put(headerName, s);
                 }
 			}
 		}
 		return mapOfHeaders;
 	}
+
+    @Override
+    public String getPath() {
+        return wrapped.getPath().toString();
+    }
 }
