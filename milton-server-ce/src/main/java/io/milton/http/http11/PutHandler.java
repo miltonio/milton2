@@ -60,6 +60,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -230,6 +231,7 @@ public class PutHandler implements Handler {
 
 						PutableResource putableResource = (PutableResource) folderResource;
 						processCreate(manager, request, response, putableResource, nameToCreate);
+						files.forEach((key, file) -> org.apache.commons.io.FileUtils.deleteQuietly(new File(file.getPath())));
 					} else {
 						LogUtils.debug(log, "method not implemented: PUT on class: ", folderResource.getClass(), folderResource.getName());
 						manager.getResponseHandler().respondMethodNotImplemented(folderResource, response, request);
@@ -251,7 +253,11 @@ public class PutHandler implements Handler {
 			Long l = putHelper.getContentLength(request);
 			String ct = putHelper.findContentTypes(request, newName);
 			LogUtils.debug(log, "PutHandler: creating resource of type: ", ct);
-			Resource newlyCreated = folder.createNew(newName, request.getInputStream(), l, ct);
+			InputStream inputStream = request.getInputStream();
+			if (MapUtils.isNotEmpty(request.getFiles())) {
+				inputStream = request.getFiles().entrySet().stream().findFirst().get().getValue().getInputStream();
+			}
+			Resource newlyCreated = folder.createNew(newName, inputStream, l, ct);
 			if (newlyCreated != null) {
 				if (newName != null && !newName.equals(newlyCreated.getName())) {
 					log.warn("getName on the created resource does not match the name requested by the client! requested: " + newName + " - created: " + newlyCreated.getName());

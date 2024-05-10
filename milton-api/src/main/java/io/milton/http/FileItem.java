@@ -72,4 +72,8 @@ public interface FileItem {
      * @return
      */
     Map<String, String> getHeaders();
+
+    default String getPath() {
+        return null;
+    }
 }

@@ -24,7 +24,9 @@ import io.milton.http.Response.ContentType;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import jakarta.servlet.http.Part;
+import org.apache.commons.fileupload2.core.DiskFileItem;
+import org.apache.commons.fileupload2.core.DiskFileItemFactory;
+import org.apache.commons.fileupload2.jakarta.JakartaServletFileUpload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +54,7 @@ public class ServletRequest extends AbstractRequest {
     }
 
     private final HttpServletRequest request;
-    private final ServletContext servletContext;
+    private final ServletContext  servletContext;
     private final Request.Method method;
     private final String url;
     private Auth auth;
@@ -167,16 +169,18 @@ public class ServletRequest extends AbstractRequest {
         try {
             if (isMultiPart()) {
                 log.trace("parseRequestParameters: isMultiPart");
-                Collection<Part> items = request.getParts();
+                DiskFileItemFactory factory = DiskFileItemFactory.builder().get();
+                JakartaServletFileUpload<DiskFileItem, DiskFileItemFactory> upload = new JakartaServletFileUpload<>(factory);
+                List<DiskFileItem> items = upload.parseRequest(request);
 
                 parseQueryString(params);
 
-                for (Part item : items) {
-                    if (isFormField(item)) {
-                        params.put(item.getName(), new String(item.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
+                for (DiskFileItem item : items) {
+                    if (item.isFormField()) {
+                        params.put(item.getFieldName(), item.getString());
                     } else {
                         // See http://jira.ettrema.com:8080/browse/MIL-118 - ServletRequest#parseRequestParameters overwrites multiple file uploads when using input type="file" multiple="multiple"
-                        String itemKey = item.getName();
+                        String itemKey = item.getFieldName();
                         if (files.containsKey(itemKey)) {
                             int count = 1;
                             while (files.containsKey(itemKey + count)) {
@@ -184,7 +188,7 @@ public class ServletRequest extends AbstractRequest {
                             }
                             itemKey = itemKey + count;
                         }
-                        files.put(itemKey, new PartWrapper(item));
+                        files.put(itemKey, new FileItemWrapper(item));
                     }
                 }
             } else {
@@ -208,10 +212,6 @@ public class ServletRequest extends AbstractRequest {
         } catch (Throwable ex) {
             throw new RequestParseException(ex.getMessage(), ex);
         }
-    }
-
-    private boolean isFormField(Part part) {
-        return (part.getSubmittedFileName() == null);
     }
 
     private void parseQueryString(Map<String, String> map) {
