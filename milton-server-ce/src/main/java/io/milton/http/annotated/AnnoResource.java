@@ -261,7 +261,7 @@ public abstract class AnnoResource implements GetableResource, PropFindableResou
         if (o instanceof Date date) {
             return date;
         } else {
-            log.warn("Got an incompatible value for ModifiedDate for source object: {} Is a: {} should be: {}", source.getClass(), o.getClass(), Date.class);
+            log.warn("Got an incompatible value for ModifiedDate for source object: {} Is a: {} should be: {}", source.getClass(), "null", Date.class);
             log.warn(" ModifiedDate={}", o);
             return null;
         }
