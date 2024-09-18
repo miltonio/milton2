@@ -18,28 +18,28 @@ package com.bandstand.domain;
 
 import java.io.Serializable;
 import java.util.Date;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @Entity
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Gig implements Serializable{
-      
+
     private Long id;
     private String displayName;
     private String fileName;
     private Band band;
     private Date startDate;
     private Date endDate;
-    
+
     private Date createdDate;
     private Date modifiedDate;
-    
+
 
     public Gig() {
     }
-            
+
     @Id
     @GeneratedValue
     public Long getId() {
@@ -57,14 +57,14 @@ public class Gig implements Serializable{
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
     }
-    
+
     public String getFileName() {
         return fileName;
     }
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
-    }    
+    }
 
     @ManyToOne
     public Band getBand() {
@@ -76,7 +76,7 @@ public class Gig implements Serializable{
     }
 
     @Column
-    @Temporal(javax.persistence.TemporalType.TIMESTAMP)    
+    @Temporal(jakarta.persistence.TemporalType.TIMESTAMP)
     public Date getStartDate() {
         return startDate;
     }
@@ -86,7 +86,7 @@ public class Gig implements Serializable{
     }
 
     @Column
-    @Temporal(javax.persistence.TemporalType.TIMESTAMP)        
+    @Temporal(jakarta.persistence.TemporalType.TIMESTAMP)
     public Date getEndDate() {
         return endDate;
     }
@@ -95,11 +95,11 @@ public class Gig implements Serializable{
         this.endDate = endDate;
     }
 
-    
-    
+
+
 
     @Column(nullable = false)
-    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    @Temporal(jakarta.persistence.TemporalType.TIMESTAMP)
     public Date getCreatedDate() {
         return createdDate;
     }
@@ -109,14 +109,14 @@ public class Gig implements Serializable{
     }
 
     @Column(nullable = false)
-    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    @Temporal(jakarta.persistence.TemporalType.TIMESTAMP)
     public Date getModifiedDate() {
         return modifiedDate;
     }
 
     public void setModifiedDate(Date modifiedDate) {
         this.modifiedDate = modifiedDate;
-    }    
+    }
 
-    
+
 }

@@ -18,7 +18,7 @@
  */
 package io.milton.mail;
 
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMessage;
 
 /**
  *  A service to copy information from a MimeMessage to a
@@ -31,7 +31,7 @@ public interface  StandardMessageFactory {
      * object, which will be constructed on the given Session
      *
      * @param sm
-     * @param mm - 
+     * @param mm -
      */
     void toMimeMessage(StandardMessage sm, MimeMessage mm);
 
@@ -39,7 +39,7 @@ public interface  StandardMessageFactory {
      * Copy information from the MimeMessage into the standard message
      *
      * @param mm - the MimeMessage which is the source of information
-     * @param sm - the standard message to be populated    
+     * @param sm - the standard message to be populated
      */
     void toStandardMessage(MimeMessage mm, StandardMessage sm);
 }

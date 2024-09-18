@@ -6,12 +6,12 @@ import io.milton.mail.StandardMessageFactoryImpl;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Properties;
-import javax.mail.Address;
-import javax.mail.Message.RecipientType;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.Address;
+import jakarta.mail.Message.RecipientType;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Session;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 import org.masukomi.aspirin.core.AspirinInternal;
 import org.masukomi.aspirin.core.delivery.DeliveryManager;
 import org.masukomi.aspirin.core.listener.AspirinListener;
@@ -26,14 +26,14 @@ public class AspirinMailSender implements MailSender, AspirinListener {
     private final AspirinInternal aspirin;
     private final ListenerManager listenerManager;
     private final DeliveryManager deliveryManager;
-  
+
     private boolean started;
 
- 
+
 
 
     /**
-     * 
+     *
      * @param retryInterval - eg 1000
      * @param deliveryThreads - eg 2
      * @param postmaster - eg admin@ettrema.com
@@ -41,7 +41,7 @@ public class AspirinMailSender implements MailSender, AspirinListener {
      */
     public AspirinMailSender(AspirinInternal aspirinInternal, DeliveryManager deliveryManager, ListenerManager listenerManager) {
         this.listenerManager = listenerManager;
-        this.deliveryManager = deliveryManager;        
+        this.deliveryManager = deliveryManager;
         this.aspirin = aspirinInternal;
     }
 
@@ -83,10 +83,10 @@ public class AspirinMailSender implements MailSender, AspirinListener {
 
     @Override
     public Session getSession() {
-        Properties props = new Properties();        
+        Properties props = new Properties();
         return Session.getInstance(props);
     }
-    
+
     @Override
     public MimeMessage newMessage(MimeMessage mm) {
         try {
@@ -95,7 +95,7 @@ public class AspirinMailSender implements MailSender, AspirinListener {
             throw new RuntimeException(ex);
         }
     }
-    
+
     @Override
     public MimeMessage newMessage() {
         return new MimeMessage(getSession());

@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  *
@@ -35,8 +35,8 @@ public class RepositoryController {
     public ModelAndView showRepositoryHome(MiltonMiniController.RepoHome repoHome, Request request) {
         ModelAndView mav = new ModelAndView("repositoriesHome",repoHome, "repoHome");
         return mav;
-    }    
-    
+    }
+
     @Get
     public ModelAndView showRepository(Repository repo, Request request) {
         DataSession dataSession = dataSessionManager.get(request, repo);
@@ -45,7 +45,7 @@ public class RepositoryController {
         mav.getModel().put("rootDir", rootNode);
         return mav;
     }
-    
+
     @ChildrenOf
     public List<DataSession.DataNode> getBranchMembers(Repository repo, Request request) {
         DataSession dataSession = dataSessionManager.get(request, repo);
@@ -88,8 +88,8 @@ public class RepositoryController {
         DataSession dataSession = dataSessionManager.get(request, repo, true, user);
         return createFile(dataSession.getRootDataNode(), newName, inputStream, request, repo, user);
     }
-    
-    
+
+
     @PutChild
     public DataSession.FileNode createFile(DataSession.DirectoryNode parent, String newName, InputStream inputStream, Request request, Repository repo, @Principal Profile principal) throws IOException {
         log.trace("createNew: set content");
@@ -98,7 +98,7 @@ public class RepositoryController {
         dataSessionManager.get(request, repo).save(principal);
         return newFileNode;
     }
-    
+
     @PutChild
     public DataSession.FileNode updateFile(DataSession.FileNode file, InputStream in) throws IOException {
         file.setContent(in);

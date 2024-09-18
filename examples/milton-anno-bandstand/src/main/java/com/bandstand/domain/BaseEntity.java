@@ -16,7 +16,7 @@ package com.bandstand.domain;
 
 import java.util.Date;
 import java.util.List;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -24,22 +24,22 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
  *
  * @author brad
  */
-@javax.persistence.Entity
+@jakarta.persistence.Entity
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "TYPE", discriminatorType = DiscriminatorType.STRING, length = 20)
 @DiscriminatorValue("E")
 public class BaseEntity {
-      
-    
+
+
     private long id;
     private String name;
     private String description;
     private Date createdDate;
     private Date modifiedDate;
-    
+
     private List<Image> images;
-    
+
     @Id
     @GeneratedValue
     public long getId() {
@@ -48,11 +48,11 @@ public class BaseEntity {
 
     public void setId(long id) {
         this.id = id;
-    }    
-    
+    }
+
 
     @Column(nullable = false)
-    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    @Temporal(jakarta.persistence.TemporalType.TIMESTAMP)
     public Date getCreatedDate() {
         return createdDate;
     }
@@ -62,7 +62,7 @@ public class BaseEntity {
     }
 
     @Column(nullable = false)
-    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    @Temporal(jakarta.persistence.TemporalType.TIMESTAMP)
     public Date getModifiedDate() {
         return modifiedDate;
     }
@@ -70,7 +70,7 @@ public class BaseEntity {
     public void setModifiedDate(Date modifiedDate) {
         this.modifiedDate = modifiedDate;
     }
-    
+
     @Column(nullable = false)
     public String getName() {
         return name;
@@ -86,8 +86,8 @@ public class BaseEntity {
 
     public void setDescription(String description) {
         this.description = description;
-    }    
-    
+    }
+
     @OneToMany(mappedBy = "baseEntity")
     public List<Image> getImages() {
         return images;
@@ -97,6 +97,6 @@ public class BaseEntity {
         this.images = image;
     }
 
-    
-    
+
+
 }

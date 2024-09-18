@@ -3,7 +3,6 @@ package io.milton.mail.receive;
 
 import io.milton.mail.AcceptEvent;
 import io.milton.mail.DeliverEvent;
-import io.milton.mail.Event;
 import io.milton.mail.Filter;
 import io.milton.mail.FilterChain;
 import io.milton.mail.MailResourceFactory;
@@ -14,20 +13,19 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Session;
+import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.subethamail.smtp.MessageListener;
-import org.subethamail.smtp.TooMuchDataException;
 import org.subethamail.smtp.server.CommandHandler;
 import org.subethamail.smtp.server.MessageListenerAdapter;
 import org.subethamail.smtp.server.SMTPServer;
 
 public class SubethaSmtpServer implements MessageListener, SmtpServer {
     private final static Logger log = LoggerFactory.getLogger(SubethaSmtpServer.class);
-        
+
     protected SMTPServer smtpReceivingServer;
     protected final int smtpPort;
     protected final boolean enableTls;
@@ -46,7 +44,7 @@ public class SubethaSmtpServer implements MessageListener, SmtpServer {
         this(25,false,resourceFactory, filters);
     }
 
-    
+
     @Override
     public void start() {
         initSmtpReceiver();
@@ -77,7 +75,7 @@ public class SubethaSmtpServer implements MessageListener, SmtpServer {
             return "[couldnt_read_subject]";
         }
     }
-    
+
     protected void initSmtpReceiver() {
         Collection<MessageListener> listeners = new ArrayList<>(1);
         listeners.add(this);
@@ -96,12 +94,12 @@ public class SubethaSmtpServer implements MessageListener, SmtpServer {
         MessageListenerAdapter mla = (MessageListenerAdapter) smtpReceivingServer.getMessageHandlerFactory();
         mla.setAuthenticationHandlerFactory(null);
     }
-    
-    
-            
+
+
+
     /**
      * Subetha.MessageListener
-     * 
+     *
      */
     @Override
     public boolean accept(String sFrom, String sRecipient) {
@@ -127,7 +125,7 @@ public class SubethaSmtpServer implements MessageListener, SmtpServer {
     /**
      * Subetha MessageListener. Called when an SMTP message has bee received. Could
      * be a send request from our domain or an email to our domain
-     * 
+     *
      */
     @Override
     public void deliver(String sFrom, String sRecipient, final InputStream data) throws IOException {
@@ -164,7 +162,7 @@ public class SubethaSmtpServer implements MessageListener, SmtpServer {
         return null;
     }
 
-    
+
     protected void storeMail(Mailbox recipMailbox, MimeMessage mm) {
         try {
             recipMailbox.storeMail(mm);

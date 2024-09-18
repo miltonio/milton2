@@ -7,7 +7,7 @@ import io.milton.vfs.db.Branch;
 import io.milton.vfs.db.Profile;
 import io.milton.vfs.db.Repository;
 import io.milton.vfs.db.utils.SessionManager;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import org.hashsplit4j.api.BlobStore;
 import org.hashsplit4j.api.HashStore;
 import org.hibernate.Session;
@@ -23,21 +23,21 @@ public class DataSessionManager {
     @Inject
     private BlobStore blobStore;
     @Inject
-    private CurrentDateService currentDateService;    
-    
+    private CurrentDateService currentDateService;
+
     public DataSession get(Request request, Repository repo) {
         return get(request, repo, false, null);
     }
-    
+
     /**
      * Get an existing data session in this request, or start a new one, for
      * the live branch of the given repository
-     * 
+     *
      * @param request
      * @param repo
      * @param autoCreateBranch
      * @param currentUser
-     * @return 
+     * @return
      */
     public DataSession get(Request request, Repository repo, boolean autoCreateBranch, Profile currentUser) {
         String sessKey = "dataSession-" + repo.getId();
@@ -48,7 +48,7 @@ public class DataSessionManager {
             if( trunk == null ) {
                 if( autoCreateBranch ) {
                     trunk = repo.createBranch(Branch.TRUNK, currentUser, session);
-                }                
+                }
             }
             if (trunk != null) {
                 dataSession = new DataSession(trunk, session, hashStore, blobStore, currentDateService, null);
@@ -57,5 +57,5 @@ public class DataSessionManager {
         }
         return dataSession;
     }
-    
+
 }

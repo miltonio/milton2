@@ -17,25 +17,25 @@
 package com.bandstand.domain;
 
 import java.io.Serializable;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @Entity
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class BandMember implements Serializable{
-    
 
-    
+
+
     private Long id;
     private Band band;
     private Musician musician;
 
     public BandMember() {
     }
-    
-    
-    
+
+
+
     @Id
     @GeneratedValue
     public Long getId() {
@@ -64,8 +64,8 @@ public class BandMember implements Serializable{
         this.musician = musician;
     }
 
-    
-    
-    
-    
+
+
+
+
 }

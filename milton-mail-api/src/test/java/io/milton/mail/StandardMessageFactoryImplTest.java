@@ -9,9 +9,9 @@ import java.io.InputStream;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Session;
+import jakarta.mail.internet.MimeMessage;
 import junit.framework.TestCase;
 
 /**

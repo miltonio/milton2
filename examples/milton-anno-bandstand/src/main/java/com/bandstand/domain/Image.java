@@ -17,14 +17,14 @@
 package com.bandstand.domain;
 
 import java.io.Serializable;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @Entity
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Image implements Serializable{
-      
+
     private Long id;
     private String displayName;
     private String fileName;
@@ -32,7 +32,7 @@ public class Image implements Serializable{
 
     public Image() {
     }
-            
+
     @Id
     @GeneratedValue
     public Long getId() {
@@ -50,12 +50,12 @@ public class Image implements Serializable{
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
     }
-    
+
 
     /**
      * The name of the file its persisted to
-     * 
-     * @return 
+     *
+     * @return
      */
     public String getFileName() {
         return fileName;
@@ -63,7 +63,7 @@ public class Image implements Serializable{
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
-    }    
+    }
 
     @ManyToOne
     public BaseEntity getBaseEntity() {
@@ -73,6 +73,6 @@ public class Image implements Serializable{
     public void setBaseEntity(BaseEntity baseEntity) {
         this.baseEntity = baseEntity;
     }
-    
-    
+
+
 }

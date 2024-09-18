@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import javax.mail.Session;
+import jakarta.mail.Session;
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
@@ -28,7 +28,7 @@ public class TransactionState extends BaseState {
         if( inbox != null ) {
             int num = 1;
             Collection<MessageResource> messageResources = inbox.getMessages();
-            if( messageResources != null ) {                
+            if( messageResources != null ) {
                 for (MessageResource mr : messageResources) {
                     Message m = new Message(mr, num++);
                     popSession.messages.add(m);

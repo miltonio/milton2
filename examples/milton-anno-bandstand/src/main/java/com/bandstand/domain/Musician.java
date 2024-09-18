@@ -17,9 +17,9 @@ package com.bandstand.domain;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.OneToMany;
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.OneToMany;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.annotations.Cache;
@@ -31,7 +31,7 @@ import org.hibernate.criterion.Restrictions;
  *
  * @author brad
  */
-@javax.persistence.Entity
+@jakarta.persistence.Entity
 @DiscriminatorValue("M")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Musician extends BaseEntity {
@@ -57,7 +57,7 @@ public class Musician extends BaseEntity {
         return m;
     }
 
-    
+
     private List<BandMember> bandMembers;
     private String avatarImageName; // image of the musician
     private String musicType; // eg singer, drummer, etc
@@ -77,8 +77,8 @@ public class Musician extends BaseEntity {
         this.contactUid = contactUid;
     }
 
-    
-    
+
+
     public String getAvatarImageName() {
         return avatarImageName;
     }
@@ -94,7 +94,7 @@ public class Musician extends BaseEntity {
     public void setMusicType(String musicType) {
         this.musicType = musicType;
     }
-    
+
     @OneToMany(mappedBy = "musician")
     public List<BandMember> getBandMembers() {
         return bandMembers;
@@ -112,7 +112,7 @@ public class Musician extends BaseEntity {
         this.password = password;
     }
 
-    
+
     public void removeFromBand(Band band, Session session) {
         if( getBandMembers() != null ) {
             Iterator<BandMember> it = getBandMembers().iterator();
@@ -157,7 +157,7 @@ public class Musician extends BaseEntity {
     public void setTelephonenumber(String telephonenumber) {
         this.telephonenumber = telephonenumber;
     }
-    
-    
-    
+
+
+
 }

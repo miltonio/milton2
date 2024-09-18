@@ -41,7 +41,7 @@ import io.milton.vfs.db.utils.SessionManager;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 @ResourceController
 public class SchedulingController {
@@ -50,14 +50,14 @@ public class SchedulingController {
 
     @Inject
     private ICalFormatter formatter;
-    
+
     @Inject
     private CalendarService calendarService;
 
     public SchedulingController() {
     }
 
-    
+
     @FreeBusyQuery
     public List<SchedulingResponseItem> freeBusyQuery(Profile profile, String icalQuery) throws NotAuthorizedException {
         ICalFormatter.FreeBusyRequest r = formatter.parseFreeBusyRequest(icalQuery);
@@ -88,34 +88,34 @@ public class SchedulingController {
     }
 
     @CalendarInvitations
-    public List<AttendeeRequest> getAttendeeRequests(Profile user) {  
+    public List<AttendeeRequest> getAttendeeRequests(Profile user) {
         log.info("getAttendeeRequests: " + user.getName());
         return calendarService.getAttendeeRequests(user, false);
     }
-    
-    @CalendarInvitationsCTag    
+
+    @CalendarInvitationsCTag
     public String getCalendarInvitationsCTag(Profile user) {
         return calendarService.getCalendarInvitationsCTag(user);
-    }    
-    
+    }
+
     @Delete
     public void deleteAttendeeRequest(AttendeeRequest ar) {
         log.info("deleteAttendeeRequest");
         ar.setAcknowledged(true); // dont delete, just mark as acknowledged so will be hidden
         SessionManager.session().save(ar);
     }
-    
+
 
     @ModifiedDate
     public Date getAttendeeRequestModDate(AttendeeRequest ar) {
         return ar.getOrganiserEvent().getModifiedDate();
     }
-    
+
     @UniqueId
     public String getAttendeeRequestUniqueId(AttendeeRequest ar) {
         return ar.getId().toString();
     }
-    
+
     /**
      *
      *
@@ -154,7 +154,7 @@ public class SchedulingController {
         return formatter.buildFreeBusyAttendeeResponse(list, request, domain, attendeeMailto);
 
     }
-    
+
     private boolean outsideDates(CalEvent event, Date start, Date end) {
         if (start != null) {
             if (event.getStartDate().before(start)) {
@@ -171,5 +171,5 @@ public class SchedulingController {
         }
 
         return false;
-    }    
+    }
 }

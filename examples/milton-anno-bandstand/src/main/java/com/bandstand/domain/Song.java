@@ -19,7 +19,7 @@ package com.bandstand.domain;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.annotations.Cache;
@@ -30,7 +30,7 @@ import org.hibernate.criterion.Restrictions;
 @Entity
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Song implements Serializable{
-      
+
     private Long id;
     private Band band;
     private String displayName;
@@ -38,9 +38,9 @@ public class Song implements Serializable{
 
     public Song() {
     }
-    
-    
-    
+
+
+
     @Id
     @GeneratedValue
     public Long getId() {
@@ -60,8 +60,8 @@ public class Song implements Serializable{
         this.displayName = displayName;
     }
 
-    
-    
+
+
     @ManyToOne(optional=false)
     public Band getBand() {
         return band;
@@ -77,5 +77,5 @@ public class Song implements Serializable{
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
-    }    
+    }
 }

@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.annotations.Cache;
@@ -29,22 +29,22 @@ import org.hibernate.criterion.Order;
  *
  * @author brad
  */
-@javax.persistence.Entity
+@jakarta.persistence.Entity
 @DiscriminatorValue("B")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Band extends BaseEntity {
     private List<Gig> gigs;
-    
+
     public static List<Band> findAll(Session session) {
         Criteria crit = session.createCriteria(Band.class);
         crit.addOrder(Order.asc("name"));
         return DbUtils.toList(crit, Band.class);
-    }       
-        
+    }
+
     private List<Song> songs;
     private List<BandMember> bandMembers;
-    
-    
+
+
     @OneToMany(mappedBy = "band")
     public List<BandMember> getBandMembers() {
         return bandMembers;
@@ -98,5 +98,5 @@ public class Band extends BaseEntity {
         getGigs().add(g);
         return g;
     }
-    
+
 }

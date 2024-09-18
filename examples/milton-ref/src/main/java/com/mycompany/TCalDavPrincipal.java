@@ -44,14 +44,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMessage;
 
 /**
  *
  * @author brad
  */
 @BeanPropertyResource(value = "ldap")
-public class TCalDavPrincipal extends TFolderResource implements CalDavPrincipal, Mailbox, CalendarResource, CardDavPrincipal, LdapPrincipal, LdapContact { 
+public class TCalDavPrincipal extends TFolderResource implements CalDavPrincipal, Mailbox, CalendarResource, CardDavPrincipal, LdapPrincipal, LdapContact {
 
     private static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(AbstractResource.class);
     private HrefPrincipleId principleId;
@@ -332,7 +332,7 @@ public class TCalDavPrincipal extends TFolderResource implements CalDavPrincipal
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    
 
-    
+
+
 }

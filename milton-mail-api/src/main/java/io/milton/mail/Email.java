@@ -30,13 +30,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
-import javax.mail.Address;
-import javax.mail.BodyPart;
-import javax.mail.Message.RecipientType;
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.Part;
-import javax.mail.Session;
+import jakarta.mail.Address;
+import jakarta.mail.BodyPart;
+import jakarta.mail.Message.RecipientType;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Multipart;
+import jakarta.mail.Part;
+import jakarta.mail.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,7 +100,7 @@ public class Email {
         return Session.getDefaultInstance(new Properties());
     }
 
-    
+
     private Address from;
     public final Recipients recipients = new Recipients();
     public final Attachments attachments = new Attachments();
@@ -217,7 +217,7 @@ public class Email {
         InputStream getData();
         String getContentType();
     }
-    
+
     public static class InMemoryAttachment implements
             Attachment {
         final String name;
@@ -245,6 +245,6 @@ public class Email {
         @Override
         public String getContentType() {
             return contentType;
-        }                               
+        }
     }
 }

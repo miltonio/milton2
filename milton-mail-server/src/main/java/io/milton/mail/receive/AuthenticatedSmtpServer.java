@@ -3,7 +3,6 @@ package io.milton.mail.receive;
 
 import io.milton.mail.AcceptEvent;
 import io.milton.mail.DeliverEvent;
-import io.milton.mail.Event;
 import io.milton.mail.Filter;
 import io.milton.mail.FilterChain;
 import io.milton.mail.LoginEvent;
@@ -14,13 +13,12 @@ import io.milton.mail.MailboxAddress;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import javax.mail.Session;
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.Session;
+import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.subethamail.smtp.AuthenticationHandler;
 import org.subethamail.smtp.AuthenticationHandlerFactory;
-import org.subethamail.smtp.TooMuchDataException;
 import org.subethamail.smtp.auth.LoginAuthenticationHandler;
 import org.subethamail.smtp.auth.LoginFailedException;
 import org.subethamail.smtp.auth.PlainAuthenticationHandler;
@@ -58,7 +56,7 @@ public class AuthenticatedSmtpServer extends SubethaSmtpServer {
     private final static Logger log = LoggerFactory.getLogger(AuthenticatedSmtpServer.class);
 
     private final MailSender mailSender;
-    
+
     public AuthenticatedSmtpServer(int smtpPort, boolean enableTls, MailResourceFactory resourceFactory, MailSender mailSender, List<Filter> filters) {
         super(smtpPort, enableTls, resourceFactory, filters);
         this.mailSender = mailSender;
@@ -69,30 +67,30 @@ public class AuthenticatedSmtpServer extends SubethaSmtpServer {
         this.mailSender = mailSender;
     }
 
-    
-    
+
+
     @Override
     protected void initSmtpReceiver() {
         super.initSmtpReceiver();
         MessageListenerAdapter mla = (MessageListenerAdapter) smtpReceivingServer.getMessageHandlerFactory();
         mla.setAuthenticationHandlerFactory(new AuthHandlerFactory());
     }
-    
-    
+
+
     /**
      * Sends the message assuming that this mimemessage was constructed on the MailSender's
      * session
-     * 
+     *
      * @param mm
      */
     public void sendMail(MimeMessage mm) {
         mailSender.sendMail(mm);
     }
-    
+
     public void sendMail(String fromAddress, String fromPersonal,List<String> to, String replyTo, String subject, String text) {
         mailSender.sendMail(fromAddress, fromPersonal, to, replyTo, subject, text);
     }
-    
+
     /**
      *
      * @return - the session used by the mail sender. can be used to build smtpmessage objects
@@ -101,10 +99,10 @@ public class AuthenticatedSmtpServer extends SubethaSmtpServer {
         return mailSender.getSession();
     }
 
-            
+
     /**
      * Subetha.MessageListener
-     * 
+     *
      * Always accept everything when receiving SMTP messages
      */
     @Override
@@ -137,7 +135,7 @@ public class AuthenticatedSmtpServer extends SubethaSmtpServer {
     /**
      * Subetha MessageListener. Called when an SMTP message has bee received. Could
      * be a send request from our domain or an email to our domain
-     * 
+     *
      */
     @Override
     public void deliver(String sFrom, String sRecipient, final InputStream data) throws IOException {
@@ -169,7 +167,7 @@ public class AuthenticatedSmtpServer extends SubethaSmtpServer {
         chain.doEvent(event);
     }
 
-    
+
     /**
      * Creates the JavaMail Session object for use in WiserMessage
      */

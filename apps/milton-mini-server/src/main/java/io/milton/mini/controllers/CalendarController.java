@@ -60,7 +60,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import javax.xml.namespace.QName;
 import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.TimeZone;

@@ -27,7 +27,7 @@ import io.milton.resource.Resource;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMessage;
 
 /**
  *

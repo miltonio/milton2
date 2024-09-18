@@ -19,8 +19,8 @@
     <dependencies>
         <dependency>
             <groupId>com.sun.mail</groupId>
-            <artifactId>javax.mail</artifactId>
-            <version>1.6.2</version>
+            <artifactId>jakarta.mail</artifactId>
+            <version>2.0.1</version>
         </dependency>
 
 
@@ -37,10 +37,10 @@
             <version>1.7.30</version>
         </dependency>
         <dependency>
-            <artifactId>activation</artifactId>
-            <groupId>javax.activation</groupId>
+            <artifactId>jakarta.activation</artifactId>
+            <groupId>com.sun.activation</groupId>
             <type>jar</type>
-            <version>1.1.1</version>
+            <version>2.0.1</version>
         </dependency>
         <dependency>
             <artifactId>commons-io</artifactId>
