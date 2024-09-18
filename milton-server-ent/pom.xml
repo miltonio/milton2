@@ -5,7 +5,7 @@
     <parent>
         <groupId>io.milton</groupId>
         <artifactId>milton</artifactId>
-        <version>4.0.2.2101</version>
+        <version>4.0.3.2215</version>
     </parent>
     <groupId>io.milton</groupId>
     <artifactId>milton-server-ent</artifactId>
@@ -61,7 +61,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>milton-ent-utils</artifactId>
-            <version>4.0.2.2101</version>
+            <version>4.0.3.2215</version>
         </dependency>
         <dependency>
             <groupId>org.mnode.ical4j</groupId>
