@@ -28,8 +28,8 @@
             <version>2.2.1</version>
         </dependency>
         <dependency>
-            <groupId>org.subethamail</groupId>
-            <artifactId>subethasmtp</artifactId>
+            <groupId>io.github.frshdn</groupId>
+            <artifactId>subethasmtp-java17</artifactId>
             <version>3.1.7</version>
         </dependency>
         <dependency>

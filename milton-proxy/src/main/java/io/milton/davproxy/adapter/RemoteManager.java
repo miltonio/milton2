@@ -27,7 +27,6 @@ import io.milton.http.exceptions.NotFoundException;
 import io.milton.davproxy.content.FolderHtmlContentGenerator;
 import io.milton.httpclient.Folder;
 import io.milton.httpclient.HttpException;
-import io.milton.resource.Resource;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +66,7 @@ public class RemoteManager {
 
     public void copyTo(io.milton.httpclient.Resource remoteResource, String destName, Folder destRemoteFolder) throws RuntimeException, ConflictException, BadRequestException, NotAuthorizedException {
         try {
-            if (destName.equals(remoteResource.name)) { // this is the normal case, copy with no rename                
+            if (destName.equals(remoteResource.name)) { // this is the normal case, copy with no rename
                 remoteResource.copyTo(destRemoteFolder);
             } else {    // its possible to request a copy with a new name
                 remoteResource.copyTo(destRemoteFolder, destName);
@@ -81,7 +80,7 @@ public class RemoteManager {
 
     public void moveTo(io.milton.httpclient.Resource remoteResource, String destName, Folder destRemoteFolder) throws NotAuthorizedException, ConflictException, BadRequestException {
         try {
-            if (destName.equals(remoteResource.name)) { // this is the normal case, move with no rename                
+            if (destName.equals(remoteResource.name)) { // this is the normal case, move with no rename
                 remoteResource.moveTo(destRemoteFolder);
             } else {    // its possible to request a copy with a new name
                 remoteResource.moveTo(destRemoteFolder, destName);
