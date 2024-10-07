@@ -21,24 +21,20 @@ import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.mail.MailboxAddress;
 import io.milton.principal.CalDavPrincipal;
-import io.milton.resource.CalendarResource;
-import io.milton.resource.CollectionResource;
-import io.milton.resource.ICalResource;
-import io.milton.resource.Resource;
-import io.milton.resource.SchedulingResponseItem;
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.*;
-
+import io.milton.resource.*;
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.Calendar;
-
+import net.fortuna.ical4j.model.Property;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
- *
  * @author brad
  */
 public class DefaultCalendarSearchService implements CalendarSearchService {
@@ -84,24 +80,32 @@ public class DefaultCalendarSearchService implements CalendarSearchService {
                 it.remove();
             }
 
-			StringReader sin = new StringReader(r.getICalData());
-			CalendarBuilder builder = new CalendarBuilder();
-			Calendar cal = null;
+            StringReader sin = new StringReader(r.getICalData());
+            CalendarBuilder builder = new CalendarBuilder();
+            Calendar cal = null;
 
-			try {
-				cal = builder.build(sin);
-			} catch(IOException e) {
-				log.error("Exception building calendar from ics", e);
-			} catch(ParserException e) {
-				log.error("Unable to parse ics", e);
-			}
+            try {
+                cal = builder.build(sin);
+            } catch (IOException e) {
+                log.error("Exception building calendar from ics", e);
+            } catch (ParserException e) {
+                log.error("Unable to parse ics", e);
+            }
 
-			if (propFilter != null) {
-				if (!cal.getComponent("VEVENT").getProperty(propFilter.getKey()).getValue().equals(propFilter.getValue())) {
-					log.info("Event do not match properties filter");
-					it.remove();
-				}
-			}
+            if (propFilter != null) {
+                AtomicBoolean equal = new AtomicBoolean(false);
+                cal.getComponent("VEVENT")
+                        .flatMap(ve -> ve.getProperty(propFilter.getKey()))
+                        .ifPresent(prop -> {
+                            if (((Property) prop).getValue().equals(propFilter.getValue())) {
+                                equal.set(true);
+                            }
+                        });
+                if (!equal.get()) {
+                    log.info("Event do not match properties filter");
+                    it.remove();
+                }
+            }
         }
         return list;
 
@@ -170,7 +174,7 @@ public class DefaultCalendarSearchService implements CalendarSearchService {
      * Attempt to iterate over the entire users collection, and for each event
      * in each user's calendar check if the given user is an attendee, and if
      * return it.
-     *
+     * <p>
      * Rather inefficient
      *
      * @param user
@@ -183,22 +187,22 @@ public class DefaultCalendarSearchService implements CalendarSearchService {
         List<ICalResource> list = new ArrayList<>();
         String host = HttpManager.request().getHostHeader();
         Resource rUsersHome = resourceFactory.getResource(host, usersBasePath);
-        if( rUsersHome instanceof CollectionResource ) {
+        if (rUsersHome instanceof CollectionResource) {
             CollectionResource usersHome = (CollectionResource) rUsersHome;
-            for( Resource rUser : Optional.ofNullable(usersHome.getChildren()).orElse(Collections.emptyList())) {
-                if( rUser instanceof CalDavPrincipal) {
+            for (Resource rUser : Optional.ofNullable(usersHome.getChildren()).orElse(Collections.emptyList())) {
+                if (rUser instanceof CalDavPrincipal) {
                     CalDavPrincipal p = (CalDavPrincipal) rUser;
-                    for( String href : p.getCalendarHomeSet() ) {
+                    for (String href : p.getCalendarHomeSet()) {
                         Resource rCalHome = resourceFactory.getResource(host, href);
-                        if( rCalHome instanceof CollectionResource ) {
+                        if (rCalHome instanceof CollectionResource) {
                             CollectionResource calHome = (CollectionResource) rCalHome;
-                            for( Resource rCal : Optional.ofNullable(calHome.getChildren()).orElse(Collections.emptyList())) {
-                                if( rCal instanceof CalendarResource) {
+                            for (Resource rCal : Optional.ofNullable(calHome.getChildren()).orElse(Collections.emptyList())) {
+                                if (rCal instanceof CalendarResource) {
                                     CalendarResource cal = (CalendarResource) rCal;
-                                    for( Resource rEvent : Optional.ofNullable(cal.getChildren()).orElse(Collections.emptyList())) {
-                                        if( rEvent instanceof ICalResource) {
+                                    for (Resource rEvent : Optional.ofNullable(cal.getChildren()).orElse(Collections.emptyList())) {
+                                        if (rEvent instanceof ICalResource) {
                                             ICalResource event = (ICalResource) rEvent;
-                                            if( isAttendeeOf(user, event) ) {
+                                            if (isAttendeeOf(user, event)) {
                                                 list.add(event);
                                             }
                                         }
@@ -240,7 +244,6 @@ public class DefaultCalendarSearchService implements CalendarSearchService {
     }
 
 
-
     @Override
     public String getSchedulingInboxColName() {
         return inboxName;
@@ -249,7 +252,6 @@ public class DefaultCalendarSearchService implements CalendarSearchService {
     public void setSchedulingInboxColName(String inboxName) {
         this.inboxName = inboxName;
     }
-
 
 
     @Override
@@ -262,15 +264,13 @@ public class DefaultCalendarSearchService implements CalendarSearchService {
     }
 
 
-
     /**
      * Use the domain portion of the email as the host, and the initial portion
      * as the userid. This wont work in systems which require use userid's with
      *
-     * @ symbols
-     *
      * @param attendeeMailto
      * @return
+     * @ symbols
      */
     private CalDavPrincipal findUserFromMailto(MailboxAddress add) throws NotAuthorizedException, BadRequestException {
         String userPath = usersBasePath + add.user;
@@ -372,9 +372,9 @@ public class DefaultCalendarSearchService implements CalendarSearchService {
      * @return
      */
     private boolean isAttendeeOf(CalDavPrincipal user, ICalResource event) {
-        for( String mailto : formatter.parseAttendees(event.getICalData()) ) {
+        for (String mailto : formatter.parseAttendees(event.getICalData())) {
             MailboxAddress add = MailboxAddress.parse(mailto);
-            if( add.user.equals(user.getName())) {
+            if (add.user.equals(user.getName())) {
                 return true;
             }
         }

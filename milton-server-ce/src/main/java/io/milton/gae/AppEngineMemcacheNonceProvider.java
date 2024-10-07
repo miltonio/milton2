@@ -21,11 +21,11 @@ package io.milton.gae;
 
 import java.util.Date;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-import com.google.appengine.api.memcache.Expiration;
-import com.google.appengine.api.memcache.MemcacheService;
-import com.google.appengine.api.memcache.MemcacheServiceFactory;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import io.milton.http.Request;
 import io.milton.http.http11.auth.Nonce;
 import io.milton.http.http11.auth.NonceProvider;
@@ -49,10 +49,14 @@ public class AppEngineMemcacheNonceProvider implements NonceProvider {
 
     protected final int nonceValiditySeconds;
     protected boolean enableNonceCountChecking;
-    protected final MemcacheService memcache = MemcacheServiceFactory.getMemcacheService();
+    final Cache<UUID, Nonce> memcache;
 
     public AppEngineMemcacheNonceProvider( int nonceValiditySeconds ) {
         this.nonceValiditySeconds = nonceValiditySeconds;
+        memcache = Caffeine.newBuilder()
+                .expireAfterWrite(nonceValiditySeconds, TimeUnit.SECONDS)
+                .maximumSize(10_000)
+                .build();
         log.info( "created" );
     }
 
@@ -61,7 +65,7 @@ public class AppEngineMemcacheNonceProvider implements NonceProvider {
         UUID id = UUID.randomUUID();
         Date now = new Date();
         Nonce n = new Nonce( id, now );
-        memcache.put( n.getValue(), n, Expiration.byDeltaSeconds(nonceValiditySeconds));
+        memcache.put( n.getValue(), n);
         log.info(String.format("created nonce: %s", n.getValue()));
         return n.getValue().toString();
     }
@@ -76,7 +80,7 @@ public class AppEngineMemcacheNonceProvider implements NonceProvider {
             log.info( "couldnt parse nonce" );
             return NonceValidity.INVALID;
         }
-        Nonce n = (Nonce)memcache.get(value);
+        Nonce n = memcache.get(value, null);
         if( n == null ) {
             log.info( "not found in cache" );
             return NonceValidity.INVALID;
@@ -95,7 +99,7 @@ public class AppEngineMemcacheNonceProvider implements NonceProvider {
                     } else {
                         log.info( "nonce and nonce-count ok" );
                         Nonce newNonce = n.increaseNonceCount( nc );
-                        memcache.put( newNonce.getValue(), newNonce, Expiration.byDeltaSeconds(nonceValiditySeconds));
+                        memcache.put( newNonce.getValue(), newNonce);
                         return NonceValidity.OK;
                     }
                 }

@@ -1,9 +1,7 @@
 package io.milton.mail.receive;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import org.subethamail.smtp.MessageHandlerFactory;
-import org.subethamail.smtp.MessageListener;
 import org.subethamail.smtp.command.StartTLSCommand;
 import org.subethamail.smtp.server.Command;
 import org.subethamail.smtp.server.CommandHandler;
@@ -16,9 +14,6 @@ class TlsDisabledSmtpServer extends SMTPServer {
         super(handlerFactory);
     }
 
-    public TlsDisabledSmtpServer(Collection<MessageListener> listeners) {
-        super(listeners);
-    }
 
     @Override
     public CommandHandler getCommandHandler() {
@@ -26,7 +21,7 @@ class TlsDisabledSmtpServer extends SMTPServer {
         return createCommandHandler();
     }
 
-    
+
     protected CommandHandler createCommandHandler() {
         ArrayList<Command> availableCommands = new ArrayList<>();
         for (CommandRegistry registry : CommandRegistry.values()) {

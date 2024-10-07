@@ -27,21 +27,23 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.net.URISyntaxException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.*;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
+
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.data.CalendarOutputter;
 import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.*;
+import net.fortuna.ical4j.model.TimeZone;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.component.VFreeBusy;
 import net.fortuna.ical4j.model.component.VTimeZone;
-import net.fortuna.ical4j.model.property.DateProperty;
 import net.fortuna.ical4j.model.property.ProdId;
 import net.fortuna.ical4j.model.property.Version;
+import net.fortuna.ical4j.model.property.immutable.ImmutableVersion;
 import net.fortuna.ical4j.validate.ValidationException;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.io.IOUtils;
@@ -128,10 +130,10 @@ public class CalDavBeanPropertyMapper {
 
     public String toVCard(Object bean) {
         net.fortuna.ical4j.model.Calendar calendar = new net.fortuna.ical4j.model.Calendar();
-        calendar.getProperties().add(new ProdId("-//spliffy.org//iCal4j 1.0//EN"));
-        calendar.getProperties().add(Version.VERSION_2_0);
+        calendar.add(new ProdId("-//spliffy.org//iCal4j 1.0//EN"));
+        calendar.add(ImmutableVersion.VERSION_2_0);
         VEvent vevent = new VEvent();
-        calendar.getComponents().add(vevent);
+        calendar.add(vevent);
 
         PropertyDescriptor[] pds = PropertyUtils.getPropertyDescriptors(bean);
         for (PropertyDescriptor pd : pds) {
@@ -159,11 +161,11 @@ public class CalDavBeanPropertyMapper {
     }
 
     private VEvent event(net.fortuna.ical4j.model.Calendar cal) {
-        return (VEvent) cal.getComponent("VEVENT");
+        return (VEvent) cal.getComponent("VEVENT").orElse(null);
     }
 
-    private VFreeBusy freeBusy(net.fortuna.ical4j.model.Calendar cal) {
-        return (VFreeBusy) cal.getComponent("VFREEBUSY");
+    private Optional<VFreeBusy> freeBusy(net.fortuna.ical4j.model.Calendar cal) {
+        return cal.getComponent("VFREEBUSY");
     }
 
     private String getPropValue(Property prop) {
@@ -171,13 +173,6 @@ public class CalDavBeanPropertyMapper {
             return null;
         }
         return prop.getValue();
-    }
-
-    private net.fortuna.ical4j.model.Date getDateValue(DateProperty prop) {
-        if (prop == null) {
-            return null;
-        }
-        return prop.getDate();
     }
 
     public abstract static class Mapper {
@@ -192,18 +187,17 @@ public class CalDavBeanPropertyMapper {
         @Override
         void mapToBean(net.fortuna.ical4j.model.Calendar cal, Object bean, PropertyDescriptor pd) {
             VEvent vevent = event(cal);
-            Property uidProp = null;
+            final AtomicReference<String> uidProp = new AtomicReference<>();
             if( vevent != null ) {
-                uidProp = vevent.getUid();
+                vevent.getUid().ifPresent(uuid -> uidProp.set(uuid.getValue()));
             } else {
-                VFreeBusy fb = freeBusy(cal);
-                uidProp = fb.getUid();
+                freeBusy(cal).flatMap(Component::getUid).ifPresent(uuid -> uidProp.set(uuid.getValue()));
             }
             Method m = pd.getWriteMethod();
-            
+
             String uid = null;
-            if (uidProp != null) {
-                uid = uidProp.getValue();
+            if (uidProp.get() != null) {
+                uid = uidProp.get();
             }
             if (uid == null) {
                 uid = UUID.randomUUID().toString();
@@ -215,7 +209,9 @@ public class CalDavBeanPropertyMapper {
         void mapToCard(net.fortuna.ical4j.model.Calendar cal, Object bean, PropertyDescriptor pd) {
             String uid = propertyAccessor.get(bean, pd.getReadMethod(), String.class);
             VEvent vevent = event(cal);
-            vevent.getProperties().add(new net.fortuna.ical4j.model.property.Uid(uid));
+            if (vevent != null) {
+                vevent.add(new net.fortuna.ical4j.model.property.Uid(uid));
+            }
         }
     }
 
@@ -224,7 +220,7 @@ public class CalDavBeanPropertyMapper {
         @Override
         void mapToBean(net.fortuna.ical4j.model.Calendar cal, Object bean, PropertyDescriptor pd) {
             Method m = pd.getWriteMethod();
-            String tzId = getPropValue(cal.getProperty(Property.TZID));
+            String tzId = getPropValue(cal.getProperty(Property.TZID).orElse(null));
             propertyAccessor.set(bean, m, tzId);
         }
 
@@ -233,13 +229,13 @@ public class CalDavBeanPropertyMapper {
             TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
             String tzId = propertyAccessor.get(bean, pd.getReadMethod(), String.class);
             TimeZone timezone = null;
-            if (tzId != null && tzId.length() > 0) {
+            if (tzId != null && !tzId.isEmpty()) {
                 timezone = registry.getTimeZone(tzId); // Eg Pacific/Auckland
             }
             // TODO: do we need to use a default time zone if none given?
             if (timezone != null) {
                 VTimeZone tz = timezone.getVTimeZone();
-                cal.getComponents().add(tz);
+                cal.add(tz);
             }
         }
     }
@@ -250,7 +246,7 @@ public class CalDavBeanPropertyMapper {
         void mapToBean(net.fortuna.ical4j.model.Calendar cal, Object bean, PropertyDescriptor pd) {
             VEvent vevent = event(cal);
             if (vevent != null) {
-                String s = getPropValue(vevent.getLocation());
+                String s = getPropValue(vevent.getLocation().orElse(null));
                 propertyAccessor.set(bean, pd.getWriteMethod(), s);
             }
         }
@@ -260,7 +256,9 @@ public class CalDavBeanPropertyMapper {
             String s = propertyAccessor.get(bean, pd.getReadMethod(), String.class);
             VEvent vevent = event(cal);
             net.fortuna.ical4j.model.property.Location d = new net.fortuna.ical4j.model.property.Location(s);
-            vevent.getProperties().add(d);
+            if (vevent != null) {
+                vevent.add(d);
+            }
         }
     }
 
@@ -270,7 +268,7 @@ public class CalDavBeanPropertyMapper {
         void mapToBean(net.fortuna.ical4j.model.Calendar cal, Object bean, PropertyDescriptor pd) {
             VEvent vevent = event(cal);
             if (vevent != null) {
-                String s = getPropValue(vevent.getOrganizer());
+                String s = getPropValue(vevent.getOrganizer().orElse(null));
                 propertyAccessor.set(bean, pd.getWriteMethod(), s);
             }
         }
@@ -278,17 +276,15 @@ public class CalDavBeanPropertyMapper {
         @Override
         void mapToCard(net.fortuna.ical4j.model.Calendar cal, Object bean, PropertyDescriptor pd) {
             String s = propertyAccessor.get(bean, pd.getReadMethod(), String.class);
-            if (s == null || s.trim().length() == 0) {
+            if (s == null || s.trim().isEmpty()) {
                 return;
             }
             VEvent vevent = event(cal);
-            net.fortuna.ical4j.model.property.Organizer d;
-            try {
+            if (vevent != null) {
+                net.fortuna.ical4j.model.property.Organizer d;
                 d = new net.fortuna.ical4j.model.property.Organizer(s);
-            } catch (URISyntaxException ex) {
-                throw new RuntimeException(s, ex);
+                vevent.add(d);
             }
-            vevent.getProperties().add(d);
         }
     }
 
@@ -298,7 +294,7 @@ public class CalDavBeanPropertyMapper {
         void mapToBean(net.fortuna.ical4j.model.Calendar cal, Object bean, PropertyDescriptor pd) {
             VEvent vevent = event(cal);
             if (vevent != null) {
-                String desc = getPropValue(vevent.getDescription());
+                String desc = getPropValue(vevent.getDescription().orElse(null));
                 propertyAccessor.set(bean, pd.getWriteMethod(), desc);
             } else {
                 propertyAccessor.set(bean, pd.getWriteMethod(), null);
@@ -308,7 +304,7 @@ public class CalDavBeanPropertyMapper {
         @Override
         void mapToCard(net.fortuna.ical4j.model.Calendar cal, Object bean, PropertyDescriptor pd) {
             String s = propertyAccessor.get(bean, pd.getReadMethod(), String.class);
-            if (s == null || s.trim().length() == 0) {
+            if (s == null || s.trim().isEmpty()) {
                 return;
             }
 
@@ -316,7 +312,7 @@ public class CalDavBeanPropertyMapper {
             if (vevent != null) {
                 net.fortuna.ical4j.model.property.Description d = new net.fortuna.ical4j.model.property.Description();
                 d.setValue(s);
-                vevent.getProperties().add(d);
+                vevent.add(d);
             }
         }
     }
@@ -327,7 +323,7 @@ public class CalDavBeanPropertyMapper {
         void mapToBean(net.fortuna.ical4j.model.Calendar cal, Object bean, PropertyDescriptor pd) {
             VEvent vevent = event(cal);
             if (vevent != null) {
-                String s = getPropValue(vevent.getSummary());
+                String s = getPropValue(vevent.getSummary().orElse(null));
                 propertyAccessor.set(bean, pd.getWriteMethod(), s);
             }
 
@@ -336,13 +332,15 @@ public class CalDavBeanPropertyMapper {
         @Override
         void mapToCard(net.fortuna.ical4j.model.Calendar cal, Object bean, PropertyDescriptor pd) {
             VEvent vevent = event(cal);
-            String s = propertyAccessor.get(bean, pd.getReadMethod(), String.class);
-            if (s == null || s.trim().length() == 0) {
-                return;
-            }
+            if (vevent != null) {
+                String s = propertyAccessor.get(bean, pd.getReadMethod(), String.class);
+                if (s == null || s.trim().isEmpty()) {
+                    return;
+                }
 
-            net.fortuna.ical4j.model.property.Summary d = new net.fortuna.ical4j.model.property.Summary(s);
-            vevent.getProperties().add(d);
+                net.fortuna.ical4j.model.property.Summary d = new net.fortuna.ical4j.model.property.Summary(s);
+                vevent.add(d);
+            }
         }
     }
 
@@ -351,30 +349,32 @@ public class CalDavBeanPropertyMapper {
         @Override
         void mapToBean(net.fortuna.ical4j.model.Calendar cal, Object bean, PropertyDescriptor pd) {
             VEvent vevent = event(cal);
-            Date dt = null;
+            final AtomicReference<LocalDateTime> dt = new AtomicReference<>();
             if (vevent != null) {
-                dt = getDateValue(vevent.getEndDate());
+                vevent.getDateTimeEnd().ifPresent(ed -> dt.set(LocalDateTime.from(ed.getDate())));
             } else {
-                VFreeBusy fb = freeBusy(cal);
-                if (fb != null) {
-                    dt = getDateValue(fb.getEndDate());
-                }
+                freeBusy(cal).flatMap(DateTimePropertyAccessor::getDateTimeEnd).ifPresent(ed -> {
+                    dt.set(LocalDateTime.from(ed.getDate()));
+                });
             }
-            propertyAccessor.set(bean, pd.getWriteMethod(), dt);
-
+            propertyAccessor.set(bean, pd.getWriteMethod(), dt.get());
         }
 
         @Override
         void mapToCard(net.fortuna.ical4j.model.Calendar cal, Object bean, PropertyDescriptor pd) {
             VEvent vevent = event(cal);
-            Date d = propertyAccessor.get(bean, pd.getReadMethod(), Date.class);
-            if (d == null) {
-                return;
-            }
+            if (vevent != null) {
+                Date d = propertyAccessor.get(bean, pd.getReadMethod(), Date.class);
+                if (d == null) {
+                    return;
+                }
 
-            net.fortuna.ical4j.model.Date dt = new net.fortuna.ical4j.model.Date(d);
-            net.fortuna.ical4j.model.property.DtEnd p = new net.fortuna.ical4j.model.property.DtEnd(dt);
-            vevent.getProperties().add(p);
+                net.fortuna.ical4j.model.property.DtEnd<LocalDateTime> p =
+                        new net.fortuna.ical4j.model.property.DtEnd<>(d.toInstant()
+                                .atZone(ZoneId.systemDefault())
+                                .toLocalDateTime());
+                vevent.add(p);
+            }
         }
     }
 
@@ -383,30 +383,33 @@ public class CalDavBeanPropertyMapper {
         @Override
         void mapToBean(net.fortuna.ical4j.model.Calendar cal, Object bean, PropertyDescriptor pd) {
             VEvent vevent = event(cal);
-            Date dt = null;
-            if( vevent != null ) {
-                dt = getDateValue(vevent.getStartDate());
+            final AtomicReference<LocalDateTime> dt = new AtomicReference<>();
+            if (vevent != null) {
+                vevent.getDateTimeStart().ifPresent(ed -> dt.set(LocalDateTime.from(ed.getDate())));
             } else {
-                VFreeBusy fb = freeBusy(cal);
-                if (fb != null) {
-                    dt = getDateValue(fb.getStartDate());
-                }                
+                freeBusy(cal).flatMap(DateTimePropertyAccessor::getDateTimeStart).ifPresent(ed -> {
+                    dt.set(LocalDateTime.from(ed.getDate()));
+                });
             }
-            propertyAccessor.set(bean, pd.getWriteMethod(), dt);
+            propertyAccessor.set(bean, pd.getWriteMethod(), dt.get());
 
         }
 
         @Override
         void mapToCard(net.fortuna.ical4j.model.Calendar cal, Object bean, PropertyDescriptor pd) {
             VEvent vevent = event(cal);
-            Date d = propertyAccessor.get(bean, pd.getReadMethod(), Date.class);
-            if (d == null) {
-                return;
-            }
+            if (vevent != null) {
+                Date d = propertyAccessor.get(bean, pd.getReadMethod(), Date.class);
+                if (d == null) {
+                    return;
+                }
 
-            net.fortuna.ical4j.model.Date dt = new net.fortuna.ical4j.model.Date(d);
-            net.fortuna.ical4j.model.property.DtStart p = new net.fortuna.ical4j.model.property.DtStart(dt);
-            vevent.getProperties().add(p);
+                net.fortuna.ical4j.model.property.DtEnd<LocalDateTime> p =
+                        new net.fortuna.ical4j.model.property.DtEnd<>(d.toInstant()
+                                .atZone(ZoneId.systemDefault())
+                                .toLocalDateTime());
+                vevent.add(p);
+            }
         }
     }
 }

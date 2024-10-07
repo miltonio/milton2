@@ -194,7 +194,12 @@ public class MiltonFtpFile implements FtpFile {
         }
     }
 
-	@Override
+    @Override
+    public Object getPhysicalFile() {
+        return path;
+    }
+
+    @Override
     public boolean mkdir() {
         log.debug( "mkdir: " + this.path );
         if( parent != null ) {

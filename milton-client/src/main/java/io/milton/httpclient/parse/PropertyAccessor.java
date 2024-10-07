@@ -20,7 +20,13 @@ package io.milton.httpclient.parse;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,7 +35,7 @@ import java.util.UUID;
  * @author brad
  */
 public class PropertyAccessor {
-    
+
     private final List<Converter> converters;
 
     public PropertyAccessor(List<Converter> converters) {
@@ -39,11 +45,12 @@ public class PropertyAccessor {
     public PropertyAccessor() {
         converters = new ArrayList<>();
         converters.add(new UUIDConverter());
+        converters.add(new DateConverter());
     }
 
-    
-    
-    
+
+
+
     public void set(Object bean, Method writeMethod, Object value) {
         Class<?>[] paramTypes = writeMethod.getParameterTypes();
         if( paramTypes == null || paramTypes.length == 0 ) {
@@ -52,7 +59,7 @@ public class PropertyAccessor {
         if( paramTypes.length > 1 ) {
             throw new RuntimeException("Cant set multi arg setter: " + writeMethod.getName() + " on class: " + bean.getClass());
         }
-        
+
         try {
             if (value == null) {
                 writeMethod.invoke(bean, (Object) null);
@@ -68,7 +75,7 @@ public class PropertyAccessor {
             throw new RuntimeException("Prop: " + writeMethod.getName(), e);
         }
     }
-    
+
     public <T> T get(Object bean, Method readMethod, Class<T> c) {
         Class<?>[] paramTypes = readMethod.getParameterTypes();
         if( paramTypes != null && paramTypes.length > 0 ) {
@@ -90,7 +97,7 @@ public class PropertyAccessor {
         }
         return (T) value;
     }
-    
+
     private Object convert(Object value, Class dest) {
         for( Converter c : converters) {
             if( c.getTarget().isAssignableFrom(dest)) {
@@ -99,12 +106,12 @@ public class PropertyAccessor {
         }
         throw new RuntimeException("No converters are compatible with the dest class: " + dest.getCanonicalName());
     }
-    
+
     public interface Converter {
         Class getTarget();
         Object convert(Object source);
     }
-    
+
     public static class UUIDConverter implements Converter {
 
         @Override
@@ -122,6 +129,30 @@ public class PropertyAccessor {
             } else {
                 throw new RuntimeException("Unsupported source type: " + source.getClass());
             }
-        }        
+        }
+    }
+
+    public static class DateConverter implements Converter {
+
+        @Override
+        public Class getTarget() {
+            return Date.class;
+        }
+
+        @Override
+        public Object convert(Object source) {
+            if( source instanceof LocalDateTime) {
+                return new net.fortuna.ical4j.model.DateTime(java.util.Date.from(((LocalDateTime)source)
+                        .atZone(ZoneId.systemDefault())
+                        .toInstant()));
+            } else if( source instanceof String) {
+                final LocalDate localDate = LocalDate.parse((CharSequence) source);
+                return java.util.Date.from(localDate.atStartOfDay()
+                        .atZone(ZoneId.systemDefault())
+                        .toInstant());
+            } else {
+                throw new RuntimeException("Unsupported source type: " + source.getClass());
+            }
+        }
     }
 }

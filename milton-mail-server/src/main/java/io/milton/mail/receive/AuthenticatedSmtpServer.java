@@ -12,19 +12,14 @@ import io.milton.mail.Mailbox;
 import io.milton.mail.MailboxAddress;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import jakarta.mail.Session;
 import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.subethamail.smtp.AuthenticationHandler;
 import org.subethamail.smtp.AuthenticationHandlerFactory;
-import org.subethamail.smtp.auth.LoginAuthenticationHandler;
-import org.subethamail.smtp.auth.LoginFailedException;
-import org.subethamail.smtp.auth.PlainAuthenticationHandler;
-import org.subethamail.smtp.auth.PluginAuthenticationHandler;
-import org.subethamail.smtp.auth.UsernamePasswordValidator;
-import org.subethamail.smtp.server.MessageListenerAdapter;
+import org.subethamail.smtp.auth.*;
 
 /**
  * A SMTP server for end-users to send mail to. This is often on port 25, but this
@@ -72,8 +67,21 @@ public class AuthenticatedSmtpServer extends SubethaSmtpServer {
     @Override
     protected void initSmtpReceiver() {
         super.initSmtpReceiver();
-        MessageListenerAdapter mla = (MessageListenerAdapter) smtpReceivingServer.getMessageHandlerFactory();
-        mla.setAuthenticationHandlerFactory(new AuthHandlerFactory());
+        initAuthenticationHandler();
+    }
+
+    private void initAuthenticationHandler() {
+        UsernamePasswordValidator usernamePasswordValidator = (username, password) -> {
+            boolean loginOk = doLogin(username, password);
+            if (!loginOk) {
+                throw new LoginFailedException("authentication failed");
+            }
+
+        };
+        List<AuthenticationHandlerFactory> factories = new ArrayList<>();
+        factories.add(new PlainAuthenticationHandlerFactory(usernamePasswordValidator));
+        factories.add(new LoginAuthenticationHandlerFactory(usernamePasswordValidator));
+        this.smtpReceivingServer.setAuthenticationHandlerFactory(new MultipleAuthenticationHandlerFactory(factories));
     }
 
 
@@ -174,26 +182,6 @@ public class AuthenticatedSmtpServer extends SubethaSmtpServer {
     @Override
     protected Session getSession() {
         return mailSender.getSession();
-    }
-
-    /**
-     * Creates the AuthHandlerFactory which logs the user/pass.
-     */
-    public class AuthHandlerFactory implements AuthenticationHandlerFactory {
-
-        public AuthenticationHandler create() {
-            PluginAuthenticationHandler ret = new PluginAuthenticationHandler();
-            UsernamePasswordValidator validator = (username, password) -> {
-                boolean loginOk = doLogin(username, password);
-                if (!loginOk) {
-                    throw new LoginFailedException("authentication failed");
-                }
-
-            };
-            ret.addPlugin(new PlainAuthenticationHandler(validator));
-            ret.addPlugin(new LoginAuthenticationHandler(validator));
-            return ret;
-        }
     }
 
     public boolean doLogin(String username, String password) {

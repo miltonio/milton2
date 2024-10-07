@@ -10,20 +10,18 @@ import io.milton.mail.Mailbox;
 import io.milton.mail.MailboxAddress;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import jakarta.mail.MessagingException;
 import jakarta.mail.Session;
 import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.subethamail.smtp.MessageListener;
+import org.subethamail.smtp.helper.SimpleMessageListener;
+import org.subethamail.smtp.helper.SimpleMessageListenerAdapter;
 import org.subethamail.smtp.server.CommandHandler;
-import org.subethamail.smtp.server.MessageListenerAdapter;
 import org.subethamail.smtp.server.SMTPServer;
 
-public class SubethaSmtpServer implements MessageListener, SmtpServer {
+public class SubethaSmtpServer implements SimpleMessageListener, SmtpServer {
     private final static Logger log = LoggerFactory.getLogger(SubethaSmtpServer.class);
 
     protected SMTPServer smtpReceivingServer;
@@ -77,22 +75,18 @@ public class SubethaSmtpServer implements MessageListener, SmtpServer {
     }
 
     protected void initSmtpReceiver() {
-        Collection<MessageListener> listeners = new ArrayList<>(1);
-        listeners.add(this);
-
         if( enableTls ) {
             log.info("Creating TLS enabled server");
-            this.smtpReceivingServer = new SMTPServer(listeners);
+            this.smtpReceivingServer = new SMTPServer(new SimpleMessageListenerAdapter(this));
         } else {
             log.info("Creating TLS DIS-abled server");
-            this.smtpReceivingServer = new TlsDisabledSmtpServer(listeners);
+            this.smtpReceivingServer = new TlsDisabledSmtpServer(new SimpleMessageListenerAdapter(this));
         }
         this.smtpReceivingServer.setPort(smtpPort);
         this.smtpReceivingServer.setMaxConnections(30000);
         CommandHandler cmdHandler = this.smtpReceivingServer.getCommandHandler();
 
-        MessageListenerAdapter mla = (MessageListenerAdapter) smtpReceivingServer.getMessageHandlerFactory();
-        mla.setAuthenticationHandlerFactory(null);
+        this.smtpReceivingServer.setAuthenticationHandlerFactory(null);
     }
 
 

@@ -24,7 +24,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version>
+                <version>3.13.0</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
@@ -43,39 +43,18 @@
             <artifactId>cardme</artifactId>
             <version>1.0.1</version>
         </dependency>
-        <!--
-        <dependency>
-            <groupId>com.ettrema</groupId>
-            <artifactId>endrick-cache</artifactId>
-            <version>1.7.8</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>kryo</artifactId>
-                    <groupId>com.esotericsoftware</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>minilog</artifactId>
-                    <groupId>com.esotericsoftware</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>reflectasm</artifactId>
-                    <groupId>com.esotericsoftware</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        -->
 
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.13</version>
+            <version>4.5.14</version>
             <type>jar</type>
         </dependency>
 
         <dependency>
             <groupId>org.mnode.ical4j</groupId>
             <artifactId>ical4j</artifactId>
-            <version>2.0.0</version>
+            <version>4.0.2</version>
         </dependency>
         <dependency>
             <groupId>org.jdom</groupId>
@@ -98,7 +77,7 @@
             <scope>test</scope>
             <groupId>cglib</groupId>
             <artifactId>cglib</artifactId>
-            <version>2.1_3</version>
+            <version>3.3.0</version>
         </dependency>
         <dependency>
             <groupId>net.sf.json-lib</groupId>
@@ -112,19 +91,6 @@
             <type>jar</type>
             <version>2.0.2</version>
         </dependency>
-        <!--
-        <dependency>
-            <groupId>com.ettrema</groupId>
-            <artifactId>endrick-jdbc</artifactId>
-            <version>1.7.8</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>jcs</artifactId>
-                    <groupId>jcs</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        -->
         <dependency>
             <groupId>com.googlecode.concurrentlinkedhashmap</groupId>
             <artifactId>concurrentlinkedhashmap-lru</artifactId>

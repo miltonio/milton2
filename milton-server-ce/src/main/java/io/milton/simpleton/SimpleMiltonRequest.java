@@ -17,8 +17,6 @@
 
 package io.milton.simpleton;
 
-import io.milton.http.Request.Header;
-import io.milton.http.Request.Method;
 import io.milton.http.*;
 import java.io.IOException;
 import java.io.InputStream;

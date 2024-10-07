@@ -104,7 +104,7 @@ public class SslSimpletonServer implements Container {
     protected SocketConnection initHttps( int port ) {
         SSLServerSocketFactory fac = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
 
-        log.info( "initHttps: port: " + port + " sslProtocol: " + sslProtocol + " keystoreAlgorithm:" + keystoreAlgorithm );        
+        log.info( "initHttps: port: " + port + " sslProtocol: " + sslProtocol + " keystoreAlgorithm:" + keystoreAlgorithm );
         try {
             KeyStore keystore = KeyStore.getInstance( keystoreType );
             keystore.load( new FileInputStream( keystoreFile ), keystorePassword.toCharArray() );
@@ -118,7 +118,7 @@ public class SslSimpletonServer implements Container {
                 log.info("   - algorithm: " + cert.getPublicKey().getAlgorithm() );
                 log.info("   - format: " + cert.getPublicKey().getFormat() );
             }
-            
+
 
             KeyManagerFactory kmf = KeyManagerFactory.getInstance( keystoreAlgorithm );
             kmf.init( keystore, keystorePassword.toCharArray() );
@@ -137,7 +137,7 @@ public class SslSimpletonServer implements Container {
             ssl.connect( address, sslc );
 
             log.debug( "server running on: " + address );
-            
+
             return ssl;
         } catch( java.net.BindException ex ) {
             throw new RuntimeException( "Couldnt bind to port: " + port );

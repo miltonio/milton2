@@ -54,9 +54,9 @@ public class SimpleMiltonResponse extends AbstractResponse{
     public void setContentLengthHeader(Long totalLength) {
 		if( totalLength != null ) {
 			int i = (int) totalLength.longValue();
-			baseResponse.setContentLength(i);		
+			baseResponse.setContentLength(i);
 		}
-//        String s = totalLength==null ? null : totalLength.toString();		
+//        String s = totalLength==null ? null : totalLength.toString();
 //        setResponseHeader( Header.CONTENT_LENGTH,s);
     }
 
@@ -161,9 +161,9 @@ public class SimpleMiltonResponse extends AbstractResponse{
 
 	/**
 	 * Just set the status and content, and close the connection
-	 * 
+	 *
 	 * @param status
-	 * @param message 
+	 * @param message
 	 */
 	@Override
 	public void sendError(Status status, String message) {
@@ -175,8 +175,8 @@ public class SimpleMiltonResponse extends AbstractResponse{
 		} finally {
 			closeReally();
 		}
-				
-		
+
+
 	}
 
 }

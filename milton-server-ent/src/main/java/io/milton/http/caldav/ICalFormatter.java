@@ -10,6 +10,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -54,17 +55,9 @@ public class ICalFormatter {
         if( ev == null) {
             return ;
         }
-        String summary = null;
-        if (ev.getSummary() != null) {
-            summary = ev.getSummary().getValue();
-        }
-        r.setSummary(summary);
-        r.setStart(ev.getStartDate().getDate());
-        Date endDate = null;
-        if (ev.getEndDate() != null) {
-            endDate = ev.getEndDate().getDate();
-        }
-        r.setEnd(endDate);
+        ev.getSummary().ifPresent(sum -> r.setSummary(sum.getValue()));
+        ev.getStartDate().ifPresent(st -> r.setStart(Date.from(Instant.from(st.getDate()))));
+        ev.getEndDate().ifPresent(st -> r.setEnd(Date.from(Instant.from(st.getDate()))));
     }
 
     /**
@@ -204,7 +197,7 @@ public class ICalFormatter {
     }
 
     private VEvent event(net.fortuna.ical4j.model.Calendar cal) {
-        return (VEvent) cal.getComponent("VEVENT");
+        return (VEvent) cal.getComponent("VEVENT").orElse(null);
     }
 
     public String buildFreeBusyAttendeeResponse(List<? extends EventResource> events, ICalFormatter.FreeBusyRequest request, String domain, String attendeeMailto) throws NotAuthorizedException, BadRequestException {
