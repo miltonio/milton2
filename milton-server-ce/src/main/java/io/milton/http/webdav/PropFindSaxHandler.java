@@ -19,63 +19,65 @@
 
 package io.milton.http.webdav;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Stack;
-import javax.xml.namespace.QName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import javax.xml.namespace.QName;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Stack;
+
 public class PropFindSaxHandler extends DefaultHandler {
 
-    private static final Logger log = LoggerFactory.getLogger( PropFindSaxHandler.class );
+    private static final Logger log = LoggerFactory.getLogger(PropFindSaxHandler.class);
 
     private final Stack<QName> elementPath = new Stack<>();
     private final Map<QName, String> attributes = new HashMap<>();
     private final StringBuilder sb = new StringBuilder();
     private boolean inProp;
     private boolean allProp;
+    private boolean propname;
 
     @Override
-    public void startElement( String uri, String localName, String name, Attributes attributes ) throws SAXException {
-        if( elementPath.size() > 0 ) {
+    public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException {
+        if (!elementPath.isEmpty()) {
             String elname = elementPath.peek().getLocalPart();
-            if( elname.equals( "prop" ) ) {
+            if (elname.equals("prop")) {
                 inProp = true;
             }
         }
-        if( localName.equals( "allprop" ) ) {
+        if (localName.equals("allprop")) {
             allProp = true;
         }
+        if (localName.equals("propname")) {
+            propname = true;
+        }
 
-        QName qname = new QName( uri, localName );
-        elementPath.push( qname );
-        super.startElement( uri, localName, name, attributes );
+        QName qname = new QName(uri, localName);
+        elementPath.push(qname);
+        super.startElement(uri, localName, name, attributes);
     }
 
     @Override
-    public void characters( char[] ch, int start, int length ) throws SAXException {
-        if( inProp ) {
-            sb.append( ch, start, length );
+    public void characters(char[] ch, int start, int length) throws SAXException {
+        if (inProp) {
+            sb.append(ch, start, length);
         }
     }
 
     @Override
-    public void endElement( String uri, String localName, String name ) throws SAXException {
+    public void endElement(String uri, String localName, String name) throws SAXException {
         elementPath.pop();
-        if( elementPath.size() > 0 && elementPath.peek().getLocalPart().endsWith( "prop" ) ) {
-            if( sb != null ) {
-//                uri = uri.substring( 0, uri.length()-1); // need to strip trailing :
-                QName qname = new QName( uri, localName );
-                getAttributes().put( qname, sb.toString().trim() );
-            }
-            sb.delete( 0, sb.length() );
+        if (!elementPath.isEmpty() && elementPath.peek().getLocalPart().endsWith("prop")) {
+            QName qname = new QName(uri, localName);
+            getAttributes().put(qname, sb.toString().trim());
+            sb.delete(0, sb.length());
         }
 
-        super.endElement( uri, localName, name );
+        super.endElement(uri, localName, name);
     }
 
     public Map<QName, String> getAttributes() {
@@ -84,5 +86,9 @@ public class PropFindSaxHandler extends DefaultHandler {
 
     public boolean isAllProp() {
         return allProp;
+    }
+
+    public boolean isPropname() {
+        return propname;
     }
 }

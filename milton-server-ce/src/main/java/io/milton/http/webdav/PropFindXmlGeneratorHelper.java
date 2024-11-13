@@ -43,8 +43,8 @@ public class PropFindXmlGeneratorHelper {
 
 	public PropFindXmlGeneratorHelper() {
 	}
-	
-	
+
+
 	public PropFindXmlGeneratorHelper(ValueWriters valueWriters) {
 		this.valueWriters = valueWriters;
 	}
@@ -121,7 +121,11 @@ public class PropFindXmlGeneratorHelper {
 			for (QName qname : properties.keySet()) {
 				String prefix = mapOfNamespaces.get(qname.getNamespaceURI());
 				ValueAndType val = properties.get(qname);
-				valueWriters.writeValue(writer, qname, prefix, val, href, mapOfNamespaces);
+				if (val.getType() == null) {
+					writer.writeProperty(prefix, qname.getLocalPart());
+				} else {
+					valueWriters.writeValue(writer, qname, prefix, val, href, mapOfNamespaces);
+				}
 			}
 			elProp.close();
 			writer.writeProperty(WebDavProtocol.NS_DAV.getPrefix(), "status", status.toString());
@@ -161,6 +165,6 @@ public class PropFindXmlGeneratorHelper {
 	public void setValueWriters(ValueWriters valueWriters) {
 		this.valueWriters = valueWriters;
 	}
-	
-	
+
+
 }

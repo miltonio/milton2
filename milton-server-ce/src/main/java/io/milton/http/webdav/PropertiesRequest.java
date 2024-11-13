@@ -19,88 +19,90 @@
 
 package io.milton.http.webdav;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 import javax.xml.namespace.QName;
+import java.util.*;
 
 /**
- *
  * @author bradm
  */
 public class PropertiesRequest {
 
-	private final boolean allProp;
-	private final Map<QName, Property> properties;
+    private final boolean allProp;
+    private final boolean propname;
+    private final Map<QName, Property> properties;
 
-	public static PropertiesRequest toProperties(Set<QName> set) {
-		Set<Property> props = new HashSet<>();
-		for (QName n : set) {
-			props.add(new Property(n, null));
-		}
-		return new PropertiesRequest(props);
-	}
+    public static PropertiesRequest toProperties(Set<QName> set) {
+        Set<Property> props = new HashSet<>();
+        for (QName n : set) {
+            props.add(new Property(n, null));
+        }
+        return new PropertiesRequest(props);
+    }
 
-	public PropertiesRequest() {
-		this.allProp = true;
-		this.properties = new HashMap<>();
-	}
+    public PropertiesRequest(boolean allProp, boolean propname) {
+        this.allProp = allProp;
+        this.propname = propname;
+        this.properties = new HashMap<>();
+    }
 
-	public PropertiesRequest(Collection<Property> set) {
-		this.allProp = false;
-		this.properties = new HashMap<>();
-		for (Property p : set) {
-			properties.put(p.getName(), p);
-		}
-	}
+    public PropertiesRequest(Collection<Property> set) {
+        this.allProp = false;
+        this.propname = false;
+        this.properties = new HashMap<>();
+        for (Property p : set) {
+            properties.put(p.getName(), p);
+        }
+    }
 
-	public Property get(QName name) {
-		return properties.get(name);
-	}
+    public Property get(QName name) {
+        return properties.get(name);
+    }
 
-	public void add(QName name) {
-		properties.put(name, new Property(name, null));
-	}
+    public void add(QName name) {
+        properties.put(name, new Property(name, null));
+    }
 
-	public boolean isAllProp() {
-		return allProp;
-	}
+    public boolean isAllProp() {
+        return allProp;
+    }
 
-	public Set<QName> getNames() {
-		return properties.keySet();
-	}
+    public boolean isPropname() {
+        return propname;
+    }
 
-	public Collection<Property> getProperties() {
-		return properties.values();
-	}
+    public Set<QName> getNames() {
+        return properties.keySet();
+    }
 
-	public static class Property {
+    public Collection<Property> getProperties() {
+        return properties.values();
+    }
 
-		private final QName name;
-		private final Map<QName, Property> nested;
+    public static class Property {
 
-		public Property(QName name, Set<Property> nestedSet) {
-			this.name = name;
-			this.nested = new HashMap<>();
-			if (nestedSet != null) {
-				for (Property p : nestedSet) {
-					nested.put(p.name, p);
-				}
-			}
-		}
+        private final QName name;
+        private final Map<QName, Property> nested;
 
-		public QName getName() {
-			return name;
-		}
+        public Property(QName name, Set<Property> nestedSet) {
+            this.name = name;
+            this.nested = new HashMap<>();
+            if (nestedSet != null) {
+                for (Property p : nestedSet) {
+                    nested.put(p.name, p);
+                }
+            }
+        }
 
-		public Collection<Property> getNested() {
-			return nested.values();
-		}
+        public QName getName() {
+            return name;
+        }
 
-		public Map<QName, Property> getNestedMap() {
-			return nested;
-		}
-	}
+        public Collection<Property> getNested() {
+            return nested.values();
+        }
+
+        public Map<QName, Property> getNestedMap() {
+            return nested;
+        }
+    }
 }
