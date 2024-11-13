@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.milton</groupId>
     <artifactId>milton</artifactId>
-    <version>4.0.4.2305</version>
+    <version>4.0.5.2400</version>
     <packaging>pom</packaging>
     <name>milton</name>
     <description>With Milton WebDAV Server Library for Java you can create your own WebDAV server, add WebDAV support to

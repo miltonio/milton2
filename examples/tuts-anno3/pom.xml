@@ -4,7 +4,7 @@
     <parent>
         <groupId>io.milton</groupId>
         <artifactId>milton</artifactId>
-        <version>4.0.4.2305</version>
+        <version>4.0.5.2400</version>
     </parent>
     <groupId>io.milton.tuts</groupId>
     <artifactId>tuts-anno3-caldav</artifactId>
@@ -15,7 +15,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <milton.version>4.0.4.2305</milton.version>
+        <milton.version>4.0.5.2400</milton.version>
     </properties>
 
     <build>
