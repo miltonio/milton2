@@ -121,7 +121,7 @@ public class PropFindXmlGeneratorHelper {
 			for (QName qname : properties.keySet()) {
 				String prefix = mapOfNamespaces.get(qname.getNamespaceURI());
 				ValueAndType val = properties.get(qname);
-				if (val.getType() == null) {
+				if (val == null) {
 					writer.writeProperty(prefix, qname.getLocalPart());
 				} else {
 					valueWriters.writeValue(writer, qname, prefix, val, href, mapOfNamespaces);
