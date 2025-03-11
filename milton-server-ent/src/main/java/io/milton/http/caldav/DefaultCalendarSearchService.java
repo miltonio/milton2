@@ -125,16 +125,16 @@ public class DefaultCalendarSearchService implements CalendarSearchService {
             }
         }
 
-        if (start != null) {
+        if (start != null && event.getStart() != null) {
             if (event.getStart().before(start)) {
                 log.info(" before start: " + event.getStart() + " < " + start);
                 return true;
             }
         }
 
-        if (end != null) {
+        if (end != null && event.getEnd() != null) {
             if (event.getEnd().after(end)) {
-                log.info(" after end: " + event.getEnd() + " < " + end);
+                log.info(" after end: " + event.getEnd() + " > " + end);
                 return true;
             }
         }

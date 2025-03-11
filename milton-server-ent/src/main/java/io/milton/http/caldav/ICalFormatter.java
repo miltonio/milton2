@@ -8,6 +8,7 @@ import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.NotAuthorizedException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -47,7 +48,7 @@ public class ICalFormatter {
 
     public void parseEvent(EventResource r, String data) throws IOException, ParserException {
         CalendarBuilder builder = new CalendarBuilder();
-        net.fortuna.ical4j.model.Calendar calendar = builder.build(new ByteArrayInputStream(data.getBytes("UTF-8")));
+        net.fortuna.ical4j.model.Calendar calendar = builder.build(new ByteArrayInputStream(data.getBytes(StandardCharsets.UTF_8)));
         if (calendar == null) {
             return;
         }
@@ -56,7 +57,7 @@ public class ICalFormatter {
             return ;
         }
         ev.getSummary().ifPresent(sum -> r.setSummary(sum.getValue()));
-        ev.getStartDate().ifPresent(st -> r.setStart(Date.from(Instant.from(st.getDate()))));
+        ev.getDateTimeStart().ifPresent(st -> r.setStart(Date.from(Instant.from(st.getDate()))));
         ev.getEndDate().ifPresent(st -> r.setEnd(Date.from(Instant.from(st.getDate()))));
     }
 
@@ -131,7 +132,7 @@ public class ICalFormatter {
     }
 
     public Date parseDate(String s) {
-        if (s == null || s.length() == 0) {
+        if (s == null || s.isEmpty()) {
             return null;
         }
         s = s.replace("T", " ");
@@ -172,7 +173,7 @@ public class ICalFormatter {
         // CN="Wilfredo Sanchez Vega":mailto:wilfredo@example.com
         int pos = s.lastIndexOf(MAILTO);
         if (pos >= 0) {
-            return s.substring(pos + MAILTO.length(), s.length());
+            return s.substring(pos + MAILTO.length());
         } else {
             return null;
         }
