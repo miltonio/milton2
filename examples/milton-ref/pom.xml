@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.milton</groupId>
     <artifactId>milton-ref</artifactId>
-    <version>4.0.5.2400</version>
+    <version>4.0.5.2421</version>
     <packaging>war</packaging>
     <name>Milton Reference implementiation</name>
     <description>A complete web application which uses an in memory content database.

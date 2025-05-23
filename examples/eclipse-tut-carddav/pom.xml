@@ -4,7 +4,7 @@
     <parent>
         <groupId>io.milton</groupId>
         <artifactId>milton</artifactId>
-        <version>4.0.5.2400</version>
+        <version>4.0.5.2421</version>
     </parent>
     <groupId>io.milton.tuts</groupId>
     <artifactId>eclipse-tut-carddav</artifactId>
@@ -16,7 +16,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <milton.version>4.0.5.2400</milton.version>
+        <milton.version>4.0.5.2421</milton.version>
     </properties>
 
     <build>
