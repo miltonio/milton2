@@ -9,32 +9,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <milton.version>4.0.5.2421</milton.version>
+        <milton.version>4.0.5.2500</milton.version>
     </properties>
-
-    <distributionManagement>
-        <repository>
-            <id>ettrema-repo</id>
-            <url>https://milton.io/maven/</url>
-        </repository>
-        <snapshotRepository>
-            <uniqueVersion>false</uniqueVersion>
-            <id>ettrema-repo</id>
-            <url>https://milton.io/maven/</url>
-        </snapshotRepository>
-    </distributionManagement>
-
-    <repositories>
-        <repository>
-            <id>milton-repo-bintray</id>
-            <url>https://dl.bintray.com/milton/Milton/</url>
-        </repository>
-        <repository>
-            <id>sonatype</id>
-            <name>Sonatype Groups</name>
-            <url>https://oss.sonatype.org/content/groups/public/</url>
-        </repository>
-    </repositories>
 
     <build>
         <plugins>
@@ -143,7 +119,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
-            <version>6.1.14</version>
+            <version>6.1.21</version>
         </dependency>
 
 

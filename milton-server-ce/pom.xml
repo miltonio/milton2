@@ -5,7 +5,7 @@
     <parent>
         <groupId>io.milton</groupId>
         <artifactId>milton</artifactId>
-        <version>4.0.5.2421</version>
+        <version>4.0.5.2500</version>
     </parent>
     <groupId>io.milton</groupId>
     <artifactId>milton-server-ce</artifactId>
@@ -98,7 +98,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
-            <version>6.1.14</version>
+            <version>6.1.21</version>
             <optional>true</optional>
         </dependency>
 
