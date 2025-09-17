@@ -9,32 +9,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <milton.version>4.0.5.2421</milton.version>
+        <milton.version>4.0.5.2500</milton.version>
     </properties>
-
-    <distributionManagement>
-        <repository>
-            <id>ettrema-repo</id>
-            <url>https://milton.io/maven/</url>
-        </repository>
-        <snapshotRepository>
-            <uniqueVersion>false</uniqueVersion>
-            <id>ettrema-repo</id>
-            <url>https://milton.io/maven/</url>
-        </snapshotRepository>
-    </distributionManagement>
-
-    <repositories>
-        <repository>
-            <id>milton-repo-bintray</id>
-            <url>https://dl.bintray.com/milton/Milton/</url>
-        </repository>
-        <repository>
-            <id>sonatype</id>
-            <name>Sonatype Groups</name>
-            <url>https://oss.sonatype.org/content/groups/public/</url>
-        </repository>
-    </repositories>
 
     <build>
         <plugins>

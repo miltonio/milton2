@@ -4,7 +4,7 @@
     <parent>
         <groupId>io.milton</groupId>
         <artifactId>milton</artifactId>
-        <version>4.0.5.2421</version>
+        <version>4.0.5.2500</version>
     </parent>
     <groupId>io.milton</groupId>
     <artifactId>milton-anno-bandstand</artifactId>
@@ -15,7 +15,7 @@
         use milton annotations in a "sort of" real life app.
     </description>
     <properties>
-        <milton.version>4.0.5.2421</milton.version>
+        <milton.version>4.0.5.2500</milton.version>
     </properties>
     <build>
         <plugins>
