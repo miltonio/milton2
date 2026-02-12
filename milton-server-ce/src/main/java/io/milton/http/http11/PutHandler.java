@@ -182,6 +182,11 @@ public class PutHandler implements Handler {
 			}
 
 			CollectionResource parentCol = putHelper.findNearestParent(manager, host, path);
+			if (parentCol == null) {
+				// http://www.webdav.org/specs/rfc4918.html#rfc.section.9.7.1
+				responseHandler.respondConflict(existingResource, response, request, "null parent collection");
+				return;
+			}
 			if (!handlerHelper.checkAuthorisation(manager, parentCol, request)) {
 				responseHandler.respondUnauthorised(parentCol, response, request);
 				return;
