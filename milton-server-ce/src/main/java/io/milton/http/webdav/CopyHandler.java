@@ -101,6 +101,14 @@ public class CopyHandler implements ExistingEntityHandler {
 				CollectionResource colDest = (CollectionResource) rDest;
 				Resource rExisting = colDest.child(dest.name);
 				if (rExisting != null) {
+					String sourceUniqueId = r.getUniqueId();
+					String destinationUniqueId = rExisting.getUniqueId();
+					if (sourceUniqueId != null && destinationUniqueId != null && sourceUniqueId.equals(destinationUniqueId)) {
+						// http://www.webdav.org/specs/rfc4918.html#rfc.section.9.8.5
+						log.info("the source and destination resources are the same resource. source unique id: " + sourceUniqueId + " dest unique id: " + destinationUniqueId);
+						responseHandler.respondForbidden(resource, response, request);
+						return;
+					}
 					if (!canOverwrite(request)) {
 						// Exists, and overwrite = F, disallow - http://www.webdav.org/specs/rfc4918.html#rfc.section.9.8.4
 						log.info("destination resource exists, and overwrite header is not set. dest name: " + dest.name + " dest folder: " + colDest.getName());
