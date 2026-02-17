@@ -24,7 +24,7 @@ import io.milton.http.exceptions.NotAuthorizedException;
 
 import java.io.InputStream;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +54,7 @@ public class PutChildAnnotationHandler extends AbstractAnnotationHandler {
 		}
 		try {
 			//Object[] args = outer.buildInvokeArgs(source, cm.method, newName, inputStream, length, contentType);
-			//return cm.method.invoke(cm.controller, args); 
+			//return cm.method.invoke(cm.controller, args);
 			return invoke(cm, res, newName, inputStream, length, contentType);
 		} catch (NotAuthorizedException | ConflictException | BadRequestException e) {
 			throw e;

@@ -24,14 +24,13 @@
         <artifactId>milton</artifactId>
         <version>4.0.5.2500</version>
     </parent>
-    <groupId>io.milton</groupId>
     <artifactId>milton-api</artifactId>
     <packaging>jar</packaging>
     <name>milton-api</name>
     <licenses>
         <license>
             <name>Apache2</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+            <url>https://www.apache.org/licenses/LICENSE-2.0</url>
             <distribution>repo</distribution>
             <comments>Permissive, business friendly license.</comments>
         </license>

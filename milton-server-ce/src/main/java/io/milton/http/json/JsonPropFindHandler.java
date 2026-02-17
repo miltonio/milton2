@@ -19,6 +19,7 @@
 
 package io.milton.http.json;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.milton.common.LogUtils;
 import io.milton.http.Range;
 import io.milton.http.exceptions.BadRequestException;
@@ -32,24 +33,15 @@ import io.milton.http.webdav.WebDavProtocol;
 import io.milton.resource.CollectionResource;
 import io.milton.resource.PropFindableResource;
 import io.milton.resource.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.Writer;
 import java.net.URISyntaxException;
 import java.util.*;
 import java.util.Map.Entry;
-
-import javax.xml.namespace.QName;
-
-import net.sf.json.JSON;
-import net.sf.json.JSONSerializer;
-import net.sf.json.JsonConfig;
-import net.sf.json.util.CycleDetectionStrategy;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -67,27 +59,24 @@ public class JsonPropFindHandler {
     }
 
     public void sendContent(PropFindableResource wrappedResource, String encodedUrl, OutputStream out, Range range, Map<String, String> params, String contentType) throws IOException, NotAuthorizedException, BadRequestException {
-        log.debug("sendContent: " + encodedUrl);
-        JsonConfig cfg = new JsonConfig();
-        cfg.setIgnoreTransientFields(true);
-        cfg.setCycleDetectionStrategy(CycleDetectionStrategy.LENIENT);
+        log.debug("sendContent: {}", encodedUrl);
+        ObjectMapper mapper = ObjectMapperFactory.mapper();
 
-        JSON json;
-        Writer writer = new PrintWriter(out);
+        Object json;
         String[] arr;
         if (propertyBuilder == null) {
             if (wrappedResource instanceof CollectionResource) {
                 List<? extends Resource> children = Optional.ofNullable(((CollectionResource) wrappedResource).getChildren()).orElse(List.of());
-                json = JSONSerializer.toJSON(toSimpleList(children), cfg);
+                json = toSimpleList(children);
             } else {
-                json = JSONSerializer.toJSON(toSimple(wrappedResource), cfg);
+                json = toSimple(wrappedResource);
             }
         } else {
             // use propfind handler
             String sFields = params.get("fields");
             Set<QName> fields = new HashSet<>();
             Map<QName, String> aliases = new HashMap<>();
-            if (sFields != null && sFields.length() > 0) {
+            if (sFields != null && !sFields.isEmpty()) {
                 arr = sFields.split(",");
                 for (String s : arr) {
                     parseField(s, fields, aliases);
@@ -96,7 +85,7 @@ public class JsonPropFindHandler {
 
             String sDepth = params.get("depth");
             int depth = 1;
-            if (sDepth != null && sDepth.trim().length() > 0) {
+            if (sDepth != null && !sDepth.trim().isEmpty()) {
                 depth = Integer.parseInt(sDepth);
             }
 
@@ -105,39 +94,37 @@ public class JsonPropFindHandler {
             PropertiesRequest parseResult = new PropertiesRequest(toProperties(fields));
             LogUtils.debug(log, "prop builder: ", propertyBuilder.getClass(), "href", href);
             List<PropFindResponse> props;
-			try {
-				props = propertyBuilder.buildProperties(wrappedResource, depth, parseResult, href);
-			} catch (URISyntaxException ex) {
-				throw new RuntimeException("Requested url is not properly encoded: " + href, ex);
-			}
+            try {
+                props = propertyBuilder.buildProperties(wrappedResource, depth, parseResult, href);
+            } catch (URISyntaxException ex) {
+                throw new RuntimeException("Requested url is not properly encoded: " + href, ex);
+            }
 
             String where = params.get("where");
             filterResults(props, where);
 
-            List<Map<String, Object>> list = helper.toMap(props, aliases);
-            json = JSONSerializer.toJSON(list, cfg);
+            json = helper.toMap(props, aliases);
         }
-        json.write(writer);
-        writer.flush();
+        mapper.writeValue(out, json);
     }
 
-	private Set<Property> toProperties(Set<QName> set) {
-		Set<Property> props = new HashSet<>();
-		for(QName n : set ) {
-			props.add(new Property(n, null));
-		}
-		return props;
-	}
+    private Set<Property> toProperties(Set<QName> set) {
+        Set<Property> props = new HashSet<>();
+        for (QName n : set) {
+            props.add(new Property(n, null));
+        }
+        return props;
+    }
 
     /**
      * Parse the given field and populate the given maps
-     *
+     * <p>
      * A field may be in the following forms
      * - foo
      * - DAV:foo
      * - DAV:foo>bar
      * - foo>bar
-     *
+     * <p>
      * The first is just a property named foo.
      * The second is a property called foo in the namespace DAV
      * The third includes an alias so the property is returned with the name "bar" in the json object
@@ -190,19 +177,18 @@ public class JsonPropFindHandler {
     /**
      * If the where argument is given, removes results where it does not
      * evaluate to true
-     *
+     * <p>
      * If the given where argument starts with ! the condition is negated
      *
      * @param results
      * @param where
      */
     private void filterResults(List<PropFindResponse> results, String where) {
-        if (where != null && where.length() > 0) {
+        if (where != null && !where.isEmpty()) {
             boolean negate = where.startsWith("!");
             if (negate) {
                 where = where.substring(1);
             }
-            ValueAndType prop;
             QName qnWhere = parseQName(where);
             Iterator<PropFindResponse> it = results.iterator();
             while (it.hasNext()) {
@@ -221,7 +207,7 @@ public class JsonPropFindHandler {
     /**
      * Find a boolean value from the given propery name on the propfind
      * result.
-     *
+     * <p>
      * Absense of the property, or a value which
      * cannot be interpreted as boolean, implies false.
      *

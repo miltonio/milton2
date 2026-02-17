@@ -18,40 +18,29 @@
  */
 package io.milton.http.json;
 
-import io.milton.resource.ReplaceableResource;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.milton.common.FileUtils;
 import io.milton.common.Utils;
 import io.milton.event.EventManager;
 import io.milton.event.PutEvent;
-import io.milton.http.*;
+import io.milton.http.FileItem;
+import io.milton.http.HttpManager;
+import io.milton.http.Range;
+import io.milton.http.Request;
 import io.milton.http.Request.Method;
 import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.exceptions.ConflictException;
 import io.milton.http.exceptions.NotAuthorizedException;
-import io.milton.resource.DeletableResource;
-import io.milton.resource.PostableResource;
-import io.milton.resource.PutableResource;
-import io.milton.resource.Resource;
+import io.milton.resource.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import net.sf.json.JSON;
-import net.sf.json.JSONSerializer;
-import net.sf.json.JsonConfig;
-import net.sf.json.util.CycleDetectionStrategy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 /**
  * Will use milton's PUT framework to support file uploads using POST and
@@ -151,11 +140,7 @@ public class PutJsonResource extends JsonResource implements PostableResource {
     }
 
     private byte[] toArray(String s) {
-        try {
-            return s.getBytes("UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        return s.getBytes(StandardCharsets.UTF_8);
     }
 
     private void processFile(String newName, InputStream in, Long length, String contentType, NewFile nf) throws BadRequestException, NotAuthorizedException, ConflictException {
@@ -164,20 +149,18 @@ public class PutJsonResource extends JsonResource implements PostableResource {
         try {
             Resource existing = wrapped.child(newName);
             if (existing != null) {
-                if (existing instanceof ReplaceableResource) {
+                if (existing instanceof ReplaceableResource rr) {
                     log.trace("existing resource is replaceable, so replace content");
-                    ReplaceableResource rr = (ReplaceableResource) existing;
                     rr.replaceContent(in, null);
-                    log.trace("completed POST processing for file. Updated: " + existing.getName());
+                    log.trace("completed POST processing for file. Updated: {}", existing.getName());
                     eventManager.fireEvent(new PutEvent(rr));
                     newResource = rr;
                 } else {
                     log.trace("existing resource is not replaceable, will be deleted");
-                    if (existing instanceof DeletableResource) {
-                        DeletableResource dr = (DeletableResource) existing;
+                    if (existing instanceof DeletableResource dr) {
                         dr.delete();
                         newResource = wrapped.createNew(newName, in, length, contentType);
-                        log.trace("completed POST processing for file. Deleted, then created: " + newResource.getName());
+                        log.trace("completed POST processing for file. Deleted, then created: {}", newResource.getName());
                         eventManager.fireEvent(new PutEvent(newResource));
                     } else {
                         throw new BadRequestException(existing, "existing resource could not be deleted, is not deletable");
@@ -196,7 +179,6 @@ public class PutJsonResource extends JsonResource implements PostableResource {
             nf.setHref(newHref);
         } catch (IOException ex) {
             throw new RuntimeException("Exception creating resource", ex);
-        } finally {
         }
     }
 
@@ -212,15 +194,12 @@ public class PutJsonResource extends JsonResource implements PostableResource {
      */
     @Override
     public void sendContent(OutputStream out, Range range, Map<String, String> params, String contentType) throws IOException, NotAuthorizedException {
-        JsonConfig cfg = new JsonConfig();
-        cfg.setIgnoreTransientFields(true);
-        cfg.setCycleDetectionStrategy(CycleDetectionStrategy.LENIENT);
-        Writer writer = new PrintWriter(out);
+        ObjectMapper mapper = ObjectMapperFactory.mapper();
+
         if (errorMessage != null) {
             Map map = new HashMap();
             map.put("error", errorMessage);
-            JSON json = JSONSerializer.toJSON(map, cfg);
-            json.write(writer);
+            mapper.writeValue(out, map);
 
         } else {
             NewFile[] arr;
@@ -230,10 +209,8 @@ public class PutJsonResource extends JsonResource implements PostableResource {
             } else {
                 arr = new NewFile[0];
             }
-            JSON json = JSONSerializer.toJSON(arr, cfg);
-            json.write(writer);
+            mapper.writeValue(out, arr);
         }
-        writer.flush();
     }
 
     @Override
@@ -246,7 +223,7 @@ public class PutJsonResource extends JsonResource implements PostableResource {
         if (parameters.containsKey(PARAM_NAME)) {
             initialName = parameters.get(PARAM_NAME);
         }
-        boolean nonBlankName = initialName != null && initialName.trim().length() > 0;
+        boolean nonBlankName = initialName != null && !initialName.trim().isEmpty();
         boolean autoname = (parameters.get(PARAM_AUTONAME) != null);
         boolean overwrite = (parameters.get(PARAM_OVERWRITE) != null);
         if (nonBlankName) {
@@ -287,7 +264,7 @@ public class PutJsonResource extends JsonResource implements PostableResource {
 
     private String findAcceptableName(String baseName, String ext, int i) throws ConflictException, NotAuthorizedException, BadRequestException {
         String candidateName = baseName + "_" + i;
-        if (ext != null && ext.length() > 0) {
+        if (ext != null && !ext.isEmpty()) {
             candidateName += "." + ext;
         }
         if (wrapped.child(candidateName) == null) {

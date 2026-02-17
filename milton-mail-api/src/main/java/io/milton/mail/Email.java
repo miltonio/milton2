@@ -18,7 +18,6 @@
  */
 package io.milton.mail;
 
-import com.sun.mail.smtp.SMTPMessage;
 import io.milton.common.ReadingException;
 import io.milton.common.StreamUtils;
 import io.milton.common.WritingException;
@@ -37,6 +36,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.Multipart;
 import jakarta.mail.Part;
 import jakarta.mail.Session;
+import org.eclipse.angus.mail.smtp.SMTPMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

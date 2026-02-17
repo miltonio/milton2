@@ -7,7 +7,6 @@
         <artifactId>milton</artifactId>
         <version>4.0.5.2500</version>
     </parent>
-    <groupId>io.milton</groupId>
     <artifactId>milton-client</artifactId>
     <packaging>jar</packaging>
     <name>milton-client</name>
@@ -80,10 +79,9 @@
             <version>3.3.0</version>
         </dependency>
         <dependency>
-            <groupId>net.sf.json-lib</groupId>
-            <artifactId>json-lib</artifactId>
-            <version>2.4</version>
-            <classifier>jdk15</classifier>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.21.0</version>
         </dependency>
         <dependency>
             <artifactId>xml-apis</artifactId>

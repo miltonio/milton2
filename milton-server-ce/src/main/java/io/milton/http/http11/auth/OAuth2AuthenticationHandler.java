@@ -25,7 +25,7 @@ import io.milton.resource.OAuth2Provider;
 import io.milton.resource.OAuth2Resource;
 import io.milton.resource.OAuth2Resource.OAuth2ProfileDetails;
 import io.milton.resource.Resource;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.oltu.oauth2.client.response.OAuthAccessTokenResponse;
 import org.apache.oltu.oauth2.client.response.OAuthResourceResponse;
 import org.apache.oltu.oauth2.common.OAuth;

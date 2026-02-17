@@ -22,7 +22,7 @@ import io.milton.http.exceptions.BadRequestException;
 import io.milton.http.values.Pair;
 import io.milton.resource.OAuth2Provider;
 import io.milton.resource.OAuth2Resource.OAuth2ProfileDetails;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.oltu.oauth2.client.OAuthClient;
 import org.apache.oltu.oauth2.client.URLConnectionClient;
 import org.apache.oltu.oauth2.client.request.OAuthBearerClientRequest;

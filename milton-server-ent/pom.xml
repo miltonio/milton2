@@ -7,7 +7,6 @@
         <artifactId>milton</artifactId>
         <version>4.0.5.2500</version>
     </parent>
-    <groupId>io.milton</groupId>
     <artifactId>milton-server-ent</artifactId>
     <packaging>jar</packaging>
     <name>milton-server-ent</name>

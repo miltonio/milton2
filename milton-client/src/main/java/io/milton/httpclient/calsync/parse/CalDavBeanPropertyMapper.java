@@ -18,6 +18,7 @@
  */
 package io.milton.httpclient.calsync.parse;
 
+import io.milton.httpclient.PropertyUtils;
 import io.milton.httpclient.calsync.parse.annotation.*;
 import io.milton.httpclient.parse.PropertyAccessor;
 import java.beans.PropertyDescriptor;
@@ -42,10 +43,8 @@ import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.component.VFreeBusy;
 import net.fortuna.ical4j.model.component.VTimeZone;
 import net.fortuna.ical4j.model.property.ProdId;
-import net.fortuna.ical4j.model.property.Version;
 import net.fortuna.ical4j.model.property.immutable.ImmutableVersion;
 import net.fortuna.ical4j.validate.ValidationException;
-import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.io.IOUtils;
 
 /**

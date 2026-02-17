@@ -7,7 +7,6 @@
         <artifactId>milton</artifactId>
         <version>4.0.5.2500</version>
     </parent>
-    <groupId>io.milton</groupId>
     <artifactId>milton-server-ce</artifactId>
     <packaging>jar</packaging>
     <name>milton-server-ce</name>
@@ -83,10 +82,9 @@
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>io.github.imrobin</groupId>
-            <artifactId>json-lib</artifactId>
-            <version>2.6.2</version>
-            <optional>true</optional>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.21.0</version>
         </dependency>
 
         <dependency>
@@ -173,10 +171,14 @@
             <type>jar</type>
         </dependency>
         <dependency>
-            <artifactId>commons-lang</artifactId>
-            <groupId>commons-lang</groupId>
-            <type>jar</type>
-            <version>2.6</version>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.20.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+            <version>1.12.0</version>
         </dependency>
         <dependency>
             <groupId>com.hazelcast</groupId>

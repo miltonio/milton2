@@ -81,7 +81,7 @@ import io.milton.property.DefaultPropertyAuthoriser;
 import io.milton.property.MultiNamespaceCustomPropertySource;
 import io.milton.property.PropertyAuthoriser;
 import io.milton.property.PropertySource;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

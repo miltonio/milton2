@@ -18,6 +18,7 @@
  */
 package io.milton.httpclient.cardsync.parse;
 
+import io.milton.httpclient.PropertyUtils;
 import io.milton.httpclient.parse.PropertyAccessor;
 import io.milton.httpclient.calsync.parse.annotation.Description;
 import io.milton.httpclient.calsync.parse.annotation.EndDate;
@@ -36,7 +37,6 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import org.apache.commons.beanutils.PropertyUtils;
 
 /**
  *

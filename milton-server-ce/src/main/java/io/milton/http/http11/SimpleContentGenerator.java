@@ -24,9 +24,7 @@ import io.milton.http.Response;
 import io.milton.http.Response.Status;
 import io.milton.resource.Resource;
 
-import java.io.OutputStream;
-
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,7 +82,7 @@ public class SimpleContentGenerator implements ContentGenerator {
 	}
 
 	private String applyTemplates(String template, Request request) {
-		template = template.replace("${url}", StringEscapeUtils.escapeHtml(request.getAbsolutePath()));
+		template = template.replace("${url}", StringEscapeUtils.escapeHtml4(request.getAbsolutePath()));
 		return template;
 	}
 
