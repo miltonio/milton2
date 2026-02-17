@@ -111,6 +111,14 @@ public class MoveHandler implements ExistingEntityHandler {
 			// check if the dest exists
 			Resource rExisting = colDest.child(dest.name);
 			if (rExisting != null) {
+				String sourceUniqueId = r.getUniqueId();
+				String destinationUniqueId = rExisting.getUniqueId();
+				if (sourceUniqueId != null && destinationUniqueId != null && sourceUniqueId.equals(destinationUniqueId)) {
+					// http://www.webdav.org/specs/rfc4918.html#rfc.section.9.9.4
+					log.info("the source and destination resources are the same resource. source unique id: " + sourceUniqueId + " dest unique id: " + destinationUniqueId);
+					responseHandler.respondForbidden(resource, response, request);
+					return;
+				}
 				// check for overwrite header
 				if (!canOverwrite(request)) {
 					log.info("destination resource exists, and overwrite header is not set. dest name: " + dest.name + " dest folder: " + colDest.getName());
