@@ -3,12 +3,12 @@ package io.milton.mail.send;
 import io.milton.mail.StandardMessage;
 import io.milton.mail.StandardMessageFactory;
 import io.milton.mail.StandardMessageFactoryImpl;
-import com.sun.mail.smtp.SMTPMessage;
 import java.util.ArrayList;
 import java.util.List;
 import jakarta.mail.MessagingException;
 import jakarta.mail.Session;
 import jakarta.mail.internet.MimeMessage;
+import org.eclipse.angus.mail.smtp.SMTPMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,23 +82,8 @@ public class MockMailSender implements MailSender{
     }
 
 
-
-    public static class SentMessage {
-        public final String fromAddress;
-        public final String fromPersonal;
-        public final List<String> to;
-        public final String replyTo;
-        public final String subject;
-        public final String text;
-
-        public SentMessage(String fromAddress, String fromPersonal, List<String> to, String replyTo, String subject, String text) {
-            this.fromAddress = fromAddress;
-            this.fromPersonal = fromPersonal;
-            this.to = to;
-            this.replyTo = replyTo;
-            this.subject = subject;
-            this.text = text;
-        }
+    public record SentMessage(String fromAddress, String fromPersonal, List<String> to, String replyTo, String subject,
+                              String text) {
     }
 
 }
