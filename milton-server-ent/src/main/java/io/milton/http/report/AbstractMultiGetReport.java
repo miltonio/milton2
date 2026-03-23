@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.xml.namespace.QName;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -61,7 +62,20 @@ public abstract class AbstractMultiGetReport implements QualifiedReport {
 
         for (String href : hrefs) {
             if(!href.startsWith("/")) {
-                href = Utils.suffixSlash(path) + href;
+                if (href.contains("://")) {
+                    try {
+                        URI uri = new URI(href);
+                        href = uri.getPath();
+                        if (log.isDebugEnabled()) {
+                            log.debug("Extracted path from absolute URI: {}", href);
+                        }
+                    } catch (URISyntaxException e) {
+                        log.warn("Invalid absolute URI in href: {}", href, e);
+                        href = Utils.suffixSlash(path) + href;
+                    }
+                } else {
+                    href = Utils.suffixSlash(path) + href;
+                }
             }
             String decodedHref = HttpManager.decodeUrl(href);
             Resource r = resourceFactory.getResource(host, decodedHref);
