@@ -127,12 +127,18 @@ public final class FileSystemResourceFactory implements ResourceFactory {
         log.debug("getResource: host: " + host + " - url:" + url);
         url = stripContext(url);
         File requested = resolvePath(root, url);
+        if (requested == null) {
+            return null;
+        }
         return resolveFile(host, requested);
     }
 
 
     public FsResource resolveFile(String host, File file) {
         FsResource r;
+        if (file == null) {
+            return null;
+        }
         if (!file.exists()) {
             log.debug("file not found: " + file.getAbsolutePath());
             return null;
@@ -147,11 +153,41 @@ public final class FileSystemResourceFactory implements ResourceFactory {
         return r;
     }
 
+    /**
+     * Resolves the given URL path against the configured root directory.
+     *
+     * <p>Performs path traversal protection: rejects any path containing
+     * "." or ".." segments and verifies that the resulting file is
+     * contained within the root directory (using canonical paths). If the
+     * request would escape the root, this method returns {@code null}
+     * (handled as not-found by callers) to avoid leaking information about
+     * files outside the WebDAV root.
+     *
+     * @param root the WebDAV root directory
+     * @param url  the requested URL path
+     * @return the resolved {@link File} located within {@code root}, or
+     *         {@code null} if the path is invalid or escapes the root
+     */
     public File resolvePath(File root, String url) {
         Path path = Path.path(url);
         File f = root;
         for (String s : path.getParts()) {
+            if (s == null || s.isEmpty() || s.equals(".") || s.equals("..")) {
+                log.warn("Rejecting path traversal segment '{}' in url: {}", s, url);
+                return null;
+            }
             f = new File(f, s);
+        }
+        try {
+            String rootCanon = root.getCanonicalPath();
+            String fCanon = f.getCanonicalPath();
+            if (!fCanon.equals(rootCanon) && !fCanon.startsWith(rootCanon + File.separator)) {
+                log.warn("Rejecting path that escapes root. url={}, resolved={}, root={}", url, fCanon, rootCanon);
+                return null;
+            }
+        } catch (java.io.IOException e) {
+            log.warn("Failed to canonicalize path for url: " + url, e);
+            return null;
         }
         return f;
     }

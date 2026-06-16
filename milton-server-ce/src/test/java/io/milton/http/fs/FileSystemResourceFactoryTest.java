@@ -67,4 +67,17 @@ public class FileSystemResourceFactoryTest extends TestCase{
 
     }
 
+    public void testResolvePath_RejectsDotDot() {
+        assertNull(factory.resolvePath(root, "/../secret.txt"));
+        assertNull(factory.resolvePath(root, "/lib/../../secret.txt"));
+        assertNull(factory.resolvePath(root, "/.."));
+    }
+
+    public void testResolvePath_RejectsSingleDot() {
+        assertNull(factory.resolvePath(root, "/./lib"));
+    }
+
+    public void testGetResource_RejectsTraversal() {
+        assertNull(factory.getResource("localhost", "/../secret.txt"));
+    }
 }
