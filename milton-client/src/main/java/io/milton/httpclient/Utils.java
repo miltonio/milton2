@@ -140,7 +140,11 @@ public class Utils {
                 if (listener != null && listener.isCancelled()) {
                     throw new CancelledException();
                 }
-                out.write(arr, 0, s);
+                // The bytes copied here are raw binary response content (e.g. a downloaded
+                // file) written to a caller-supplied OutputStream, not an HTTP response
+                // rendered as HTML. There is no HTML/JS execution context, so this is not a
+                // real XSS sink. Suppress the code-scanning false positive.
+                out.write(arr, 0, s); // lgtm[java/xss]
                 s = in.read(arr);
                 bytes += s;
                 if (listener != null) {
