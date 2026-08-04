@@ -23,6 +23,7 @@ import io.milton.http.*;
 import io.milton.http.exceptions.NotAuthorizedException;
 import io.milton.resource.*;
 import java.io.*;
+import java.nio.file.Path;
 import java.util.*;
 
 import org.apache.commons.io.FileUtils;
@@ -126,7 +127,9 @@ public class FsDirectoryResource extends FsResource implements MakeCollectionabl
     }
 
     private boolean isRecursive(File dest) throws IOException {
-        return dest.getCanonicalPath().startsWith(this.file.getCanonicalPath());
+        Path sourcePath = this.file.getCanonicalFile().toPath();
+        Path destPath = dest.getCanonicalFile().toPath();
+        return destPath.startsWith(sourcePath);
     }
 
     @Override

@@ -85,9 +85,9 @@ public class Rsum implements RollingChecksum, Cloneable, java.io.Serializable {
 
     /**
      * Rolling checksum that takes single byte and compute checksum
-     * of block from file in offset that equals offset of newByte 
+     * of block from file in offset that equals offset of newByte
      * minus length of block
-     * 
+     *
      * @param newByte New byte that will actualize a checksum
      */
     @Override
@@ -115,12 +115,12 @@ public class Rsum implements RollingChecksum, Cloneable, java.io.Serializable {
     @Override
     public void check(byte[] buf, int offset, int length) {
         reset();
-        int index=offset;
-        short unsignedB;
-        for(int i=length;i>0;i--){
-            unsignedB=unsignedByte(buf[index]);
-            a+=unsignedB;
-            b+=i*unsignedB;
+
+        int index = offset;
+        for (int i = length; i > 0; i--) {
+            int unsignedB = unsignedByte(buf[index]);
+            a = (short) (a + unsignedB);
+            b = (short) (b + i * unsignedB);
             index++;
         }
     }

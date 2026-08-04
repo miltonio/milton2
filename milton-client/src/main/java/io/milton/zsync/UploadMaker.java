@@ -203,7 +203,7 @@ public class UploadMaker {
             File local, int blockSize) throws IOException {
 
         /*
-         * The ranges are determined by sorting the offset values in the fileMap array, 
+         * The ranges are determined by sorting the offset values in the fileMap array,
          * i.e. sorting matching blocks according to their start byte in the local file. The method checks
          * the space between consecutive blocks, and if it is >= 0, adds that space to the list of ranges.
          */
@@ -241,7 +241,7 @@ public class UploadMaker {
                 }
             }
 
-            /*Add the Range between the end of the previous block and the start of the 
+            /*Add the Range between the end of the previous block and the start of the
              * current one, if that Range is > 0
              */
             long prevEnd = 0;
@@ -297,11 +297,12 @@ public class UploadMaker {
                 }
 
                 Range blockRange;
-                if (combineRanges == true) {
+                if (combineRanges) {
 
                     //blockRange = null;
                     blockRange = consecMatches(fileMap, blockSize, blockIndex);
-                    blockIndex += blockRange.getFinish() - blockRange.getStart() - 1;
+                    long combinedBlocksDelta = blockRange.getFinish() - blockRange.getStart() - 1L;
+                    blockIndex = blockIndex + Math.toIntExact(combinedBlocksDelta);
                 } else {
 
                     blockRange = new Range((long)blockIndex, blockIndex + 1L);
