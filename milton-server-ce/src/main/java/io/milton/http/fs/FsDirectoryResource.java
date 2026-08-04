@@ -56,7 +56,8 @@ public class FsDirectoryResource extends FsResource implements MakeCollectionabl
 
     @Override
     public CollectionResource createCollection(String name) {
-        File fnew = new File(file, name);
+        String safeName = validatePathComponent(name);
+        File fnew = new File(file, safeName);
         boolean ok = fnew.mkdir();
         if (!ok) {
             throw new RuntimeException("Failed to create: " + fnew.getAbsolutePath());
@@ -67,7 +68,8 @@ public class FsDirectoryResource extends FsResource implements MakeCollectionabl
 
     @Override
     public Resource child(String name) {
-        File fchild = new File(file, name);
+        String safeName = validatePathComponent(name);
+        File fchild = new File(file, safeName);
         return factory.resolveFile(this.host, fchild);
 
     }
@@ -107,8 +109,16 @@ public class FsDirectoryResource extends FsResource implements MakeCollectionabl
 
     @Override
     public Resource createNew(String name, InputStream in, Long length, String contentType) throws IOException {
-		File dest = new File(this.getFile(), name);
-		contentService.setFileContent(dest, in);
+        File baseDir = this.getFile().getCanonicalFile();
+        File dest = new File(baseDir, name).getCanonicalFile();
+
+        String basePath = baseDir.getPath();
+        String destPath = dest.getPath();
+        if (!(destPath.equals(basePath) || destPath.startsWith(basePath + File.separator))) {
+            throw new IOException("Invalid file name");
+        }
+
+        contentService.setFileContent(dest, in);
         factory.getWsManager().ifPresent(wsManager -> wsManager.notifyCreated(factory.toResourcePath(dest)));
         return factory.resolveFile(this.host, dest);
 
@@ -156,7 +166,7 @@ public class FsDirectoryResource extends FsResource implements MakeCollectionabl
     /**
      * Will generate a listing of the contents of this directory, unless the
      * factory's allowDirectoryBrowsing has been set to false.
-     *
+     * <p>
      * If so it will just output a message saying that access has been disabled.
      *
      * @param out
@@ -258,5 +268,44 @@ public class FsDirectoryResource extends FsResource implements MakeCollectionabl
         String s = abUrl.substring(0, pos) + "/" + prefix;
         s += abUrl.substring(pos);
         return s;
+    }
+
+    private File resolveValidatedChildDirectory(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Directory name is required");
+        }
+        if (name.contains("..") || name.contains("/") || name.contains("\\")) {
+            throw new IllegalArgumentException("Invalid directory name: " + name);
+        }
+
+        File candidate = new File(file, name);
+        try {
+            String parentPath = file.getCanonicalPath();
+            String childPath = candidate.getCanonicalPath();
+            String prefix = parentPath.endsWith(File.separator) ? parentPath : parentPath + File.separator;
+            if (!childPath.startsWith(prefix)) {
+                throw new IllegalArgumentException("Invalid directory name: " + name);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to validate directory name: " + name, e);
+        }
+        return candidate;
+    }
+
+    private String validatePathComponent(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("Name may not be null");
+        }
+        String trimmed = name.trim();
+        if (trimmed.isEmpty()) {
+            throw new IllegalArgumentException("Name may not be empty");
+        }
+        if (trimmed.contains("..") || trimmed.contains("/") || trimmed.contains("\\")) {
+            throw new IllegalArgumentException("Invalid name");
+        }
+        if (new File(trimmed).isAbsolute()) {
+            throw new IllegalArgumentException("Invalid name");
+        }
+        return trimmed;
     }
 }
