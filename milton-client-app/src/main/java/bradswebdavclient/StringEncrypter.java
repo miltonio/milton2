@@ -21,33 +21,31 @@ package bradswebdavclient;
 
 import org.base64coder.Base64Coder;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.security.InvalidKeyException;
+import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.spec.KeySpec;
+import java.security.SecureRandom;
+import java.util.Arrays;
 
 import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.DESKeySpec;
-import javax.crypto.spec.DESedeKeySpec;
+import javax.crypto.spec.GCMParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 
 
 public class StringEncrypter {
     
-    public static final String DESEDE_ENCRYPTION_SCHEME = "DESede";
-    public static final String DES_ENCRYPTION_SCHEME = "DES";
+    public static final String AES_ENCRYPTION_SCHEME = "AES/GCM/NoPadding";
     public static final String			DEFAULT_ENCRYPTION_KEY	= "This is a fairly long phrase used to encrypt";
     
-    private KeySpec				keySpec;
-    private SecretKeyFactory	keyFactory;
+    private SecretKeySpec		secretKey;
     private Cipher				cipher;
     
-    private static final String	UNICODE_FORMAT			= "UTF8";
+    private static final int    GCM_TAG_LENGTH_BITS     = 128;
+    private static final int    GCM_IV_LENGTH_BYTES     = 12;
     
     public static StringEncrypter getInstance() throws EncryptionException {
-        return new StringEncrypter(DES_ENCRYPTION_SCHEME);
+        return new StringEncrypter(AES_ENCRYPTION_SCHEME);
     }
     
     public StringEncrypter( String encryptionScheme ) throws EncryptionException {
@@ -60,28 +58,16 @@ public class StringEncrypter {
             throw new IllegalArgumentException( "encryption key was null" );
         if ( encryptionKey.trim().length() < 24 )
             throw new IllegalArgumentException("encryption key was less than 24 characters" );
+        if ( !AES_ENCRYPTION_SCHEME.equals(encryptionScheme) )
+            throw new IllegalArgumentException( "Encryption scheme not supported: " + encryptionScheme );
         
         try {
-            byte[] keyAsBytes = encryptionKey.getBytes( UNICODE_FORMAT );
-            
-            if ( encryptionScheme.equals( DESEDE_ENCRYPTION_SCHEME) ) {
-                keySpec = new DESedeKeySpec( keyAsBytes );
-            } else if ( encryptionScheme.equals( DES_ENCRYPTION_SCHEME ) ) {
-                keySpec = new DESKeySpec( keyAsBytes );
-            } else {
-                throw new IllegalArgumentException( "Encryption scheme not supported: " + encryptionScheme );
-            }
-            
-            keyFactory = SecretKeyFactory.getInstance( encryptionScheme );
-            cipher = Cipher.getInstance( encryptionScheme );
-            
-        } catch (InvalidKeyException e) {
-            throw new EncryptionException( e );
-        } catch (UnsupportedEncodingException e) {
-            throw new EncryptionException( e );
+            byte[] keyMaterial = MessageDigest.getInstance("SHA-256").digest(encryptionKey.getBytes(StandardCharsets.UTF_8));
+            this.secretKey = new SecretKeySpec(Arrays.copyOf(keyMaterial, 16), "AES");
+            this.cipher = Cipher.getInstance(AES_ENCRYPTION_SCHEME);
         } catch (NoSuchAlgorithmException e) {
             throw new EncryptionException( e );
-        } catch (NoSuchPaddingException e) {
+        } catch (GeneralSecurityException e) {
             throw new EncryptionException( e );
         }
         
@@ -91,12 +77,17 @@ public class StringEncrypter {
         if ( unencryptedString == null || unencryptedString.trim().length() == 0 ) throw new IllegalArgumentException("unencrypted string was null or empty" );
         
         try {
-            SecretKey key = keyFactory.generateSecret( keySpec );
-            cipher.init( Cipher.ENCRYPT_MODE, key );
-            byte[] cleartext = unencryptedString.getBytes( UNICODE_FORMAT );
+            byte[] iv = new byte[GCM_IV_LENGTH_BYTES];
+            new SecureRandom().nextBytes(iv);
+            GCMParameterSpec gcmSpec = new GCMParameterSpec(GCM_TAG_LENGTH_BITS, iv);
+            cipher.init( Cipher.ENCRYPT_MODE, secretKey, gcmSpec );
+            byte[] cleartext = unencryptedString.getBytes( StandardCharsets.UTF_8 );
             byte[] ciphertext = cipher.doFinal( cleartext );
+            byte[] out = new byte[iv.length + ciphertext.length];
+            System.arraycopy(iv, 0, out, 0, iv.length);
+            System.arraycopy(ciphertext, 0, out, iv.length, ciphertext.length);
             
-            return encodeBase64( ciphertext );
+            return encodeBase64( out );
         } catch (Exception e) {
             throw new EncryptionException( e );
         }
@@ -107,12 +98,17 @@ public class StringEncrypter {
             throw new IllegalArgumentException( "encrypted string was null or empty" );
         
         try {
-            SecretKey key = keyFactory.generateSecret( keySpec );
-            cipher.init( Cipher.DECRYPT_MODE, key );
-            byte[] cleartext = decodeBase64( encryptedString );
-            byte[] ciphertext = cipher.doFinal( cleartext );
+            byte[] input = decodeBase64( encryptedString );
+            if (input.length <= GCM_IV_LENGTH_BYTES) {
+                throw new IllegalArgumentException("encrypted payload is invalid");
+            }
+            byte[] iv = Arrays.copyOfRange(input, 0, GCM_IV_LENGTH_BYTES);
+            byte[] ciphertext = Arrays.copyOfRange(input, GCM_IV_LENGTH_BYTES, input.length);
+            GCMParameterSpec gcmSpec = new GCMParameterSpec(GCM_TAG_LENGTH_BITS, iv);
+            cipher.init( Cipher.DECRYPT_MODE, secretKey, gcmSpec );
+            byte[] cleartext = cipher.doFinal( ciphertext );
             
-            return bytes2String( ciphertext );
+            return new String( cleartext, StandardCharsets.UTF_8 );
         } catch (Exception e) {
             throw new EncryptionException( e );
         }
@@ -128,13 +124,7 @@ public class StringEncrypter {
         return Base64Coder.decode(chars);
     }
     
-    private static String bytes2String( byte[] bytes ) {
-        StringBuilder stringBuffer = new StringBuilder();
-        for (int i = 0; i < bytes.length; i++) {
-            stringBuffer.append( (char) bytes[i] );
-        }
-        return stringBuffer.toString();
-    }
+
     
     public static class EncryptionException extends Exception {
         private static final long serialVersionUID = 1L;
