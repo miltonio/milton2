@@ -18,23 +18,24 @@
  */
 package io.milton.servlet;
 
-import io.milton.common.Path;
 import io.milton.http.ResourceFactory;
 import io.milton.resource.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Used for providing simple readonly access to resources which are files in a
  * conventional file system.
- *
+ * <p>
  * Can be provided with a single or multiple root directories. If multiple they
  * are searched in turn for a matching resource
- *
+ * <p>
  * Will check for a system property static.resource.roots which, if present, is
  * expected to be a comma delimited list of absolute paths to root locations. An
  * exception will be thrown if a path is given which does not exist
@@ -43,90 +44,100 @@ import org.slf4j.LoggerFactory;
  */
 public class StaticResourceFactory implements ResourceFactory {
 
-	private static final Logger log = LoggerFactory.getLogger(StaticResourceFactory.class);
-	public static final String FILE_ROOTS_SYS_PROP_NAME = "static.resource.roots";
-	private final List<File> roots;
-	private String contextPath;
-	private Date modDate = new Date();
+    private static final Logger log = LoggerFactory.getLogger(StaticResourceFactory.class);
+    public static final String FILE_ROOTS_SYS_PROP_NAME = "static.resource.roots";
+    private final List<File> roots;
+    private String contextPath;
+    private Date modDate = new Date();
 
-	public StaticResourceFactory() {
-		roots = new ArrayList<>();
-		String sRoots = System.getProperty(FILE_ROOTS_SYS_PROP_NAME);
-		if (sRoots != null && sRoots.length() > 0) {
-			for (String s : sRoots.split(",")) {
-				s = s.trim();
-				if (s.length() > 0) {
-					File root = new File(s);
-					if (root.exists()) {
-						if (root.isDirectory()) {
-							roots.add(root);
-						} else {
-							throw new RuntimeException("Extra file root is not a directory: " + root.getAbsolutePath());
-						}
-					} else {
-						throw new RuntimeException("Extra file root does not exist: " + root.getAbsolutePath());
-					}
-				}
-			}
+    public StaticResourceFactory() {
+        roots = new ArrayList<>();
+        String sRoots = System.getProperty(FILE_ROOTS_SYS_PROP_NAME);
+        if (sRoots != null && !sRoots.isEmpty()) {
+            for (String s : sRoots.split(",")) {
+                s = s.trim();
+                if (!s.isEmpty()) {
+                    File root = new File(s);
+                    if (root.exists()) {
+                        if (root.isDirectory()) {
+                            roots.add(root);
+                        } else {
+                            throw new RuntimeException("Extra file root is not a directory: " + root.getAbsolutePath());
+                        }
+                    } else {
+                        throw new RuntimeException("Extra file root does not exist: " + root.getAbsolutePath());
+                    }
+                }
+            }
 
-		}
-	}
+        }
+    }
 
-	public StaticResourceFactory(File root) {
-		this();
-		roots.add(root);
-	}
+    public StaticResourceFactory(File root) {
+        this();
+        roots.add(root);
+    }
 
-	public StaticResourceFactory(List<File> roots) {
-		this();
-		this.roots.addAll(roots);
-	}
+    public StaticResourceFactory(List<File> roots) {
+        this();
+        this.roots.addAll(roots);
+    }
 
-	@Override
-	public Resource getResource(String host, String url) {
-		Path p = Path.path(url);
-		String path = stripContext(url);
-		// Fix for possible attack - see https://nvd.nist.gov/vuln/detail/CVE-2000-0920
-		if( path.contains("../") || path.contains("/..") ) {
-			log.error("getResource: Invalid path {}, attempt to use relative notation", path);
-			return null;
-		}
+    @Override
+    public Resource getResource(String host, String url) {
+        String path = stripContext(url);
+        // Fast reject for obviously unsafe input
+        if (path == null || path.contains("..") || path.contains("\\") || path.indexOf('\0') >= 0) {
+            log.error("getResource: Invalid path {}, possible traversal attempt", path);
+            return null;
+        }
 
+        for (File root : roots) {
+            try {
+                File canonicalRoot = root.getCanonicalFile();
+                File file = new File(canonicalRoot, path).getCanonicalFile();
+                String rootPath = canonicalRoot.getPath();
+                String filePath = file.getPath();
+                if (!filePath.equals(rootPath) && !filePath.startsWith(rootPath + File.separator)) {
+                    log.error("getResource: Resolved path {} escapes root {}", filePath, rootPath);
+                    continue;
+                }
 
-		for (File root : roots) {
-			File file = new File(root, path);
-			if (file.exists() && file.isFile()) {
-				return new StaticResource(file);
-			}
-		}
-		return null;
-	}
+                if (file.exists() && file.isFile()) {
+                    return new StaticResource(file);
+                }
+            } catch (IOException e) {
+                log.error("getResource: Could not canonicalize path {} for root {}", path, root, e);
+            }
+        }
+        return null;
+    }
 
-	private String stripContext(String url) {
-		if (this.contextPath != null && contextPath.length() > 0) {
-			url = url.replaceFirst('/' + contextPath, "");
-			log.debug("stripped context: " + url);
-		}
-		return url;
-	}
+    private String stripContext(String url) {
+        if (this.contextPath != null && !contextPath.isEmpty()) {
+            url = url.replaceFirst('/' + contextPath, "");
+            log.debug("stripped context: {}", url);
+        }
+        return url;
+    }
 
-	public String getContextPath() {
-		return contextPath;
-	}
+    public String getContextPath() {
+        return contextPath;
+    }
 
-	public void setContextPath(String contextPath) {
-		this.contextPath = contextPath;
-	}
+    public void setContextPath(String contextPath) {
+        this.contextPath = contextPath;
+    }
 
-	public Date getModDate() {
-		return modDate;
-	}
+    public Date getModDate() {
+        return modDate;
+    }
 
-	public void setModDate(Date modDate) {
-		this.modDate = modDate;
-	}
+    public void setModDate(Date modDate) {
+        this.modDate = modDate;
+    }
 
-	public List<File> getRoots() {
-		return roots;
-	}
+    public List<File> getRoots() {
+        return roots;
+    }
 }

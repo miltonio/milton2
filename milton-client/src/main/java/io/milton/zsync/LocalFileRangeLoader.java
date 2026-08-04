@@ -21,6 +21,7 @@ package io.milton.zsync;
 
 import io.milton.common.RangeUtils;
 import io.milton.http.Range;
+import io.milton.httpclient.zsyncclient.HttpRangeLoader;
 import io.milton.httpclient.zsyncclient.RangeLoader;
 
 import java.io.*;
@@ -63,11 +64,7 @@ public class LocalFileRangeLoader implements RangeLoader {
         return bytesDownloaded;
     }
 
-    public static int calcExpectedLength(List<Range> rangeList) {
-        int l = 0;
-        for (Range r : rangeList) {
-            l += (r.getFinish() - r.getStart());
-        }
-        return l;
+    public static long calcExpectedLength(List<Range> rangeList) {
+        return HttpRangeLoader.calcExpectedLength(rangeList);
     }
 }

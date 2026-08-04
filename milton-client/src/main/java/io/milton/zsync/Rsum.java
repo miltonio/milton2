@@ -141,8 +141,8 @@ public class Rsum implements RollingChecksum, Cloneable, java.io.Serializable {
         short unsignedB;
         for(int i=length;i>0;i--){
             unsignedB=unsignedByte(buf[index]);
-            a+=unsignedB;
-            b+=i*unsignedB;
+            a = (short) (a + unsignedB);
+            b = (short) (b + i * unsignedB);
             index++;
         }
         blockLength=length;

@@ -52,13 +52,13 @@ public class HttpRangeLoader implements RangeLoader {
 		try {
 			file.download(out, listener, rangeList);
 		} catch (HttpException ex) {
-			
+
 		} catch (CancelledException ex) {
 			throw new RuntimeException("Cancelled, which is odd because no progress listener was provided");
 		}
 
 		byte[] bytes = out.toByteArray();
-		int expectedLength = calcExpectedLength(rangeList);
+		long expectedLength = calcExpectedLength(rangeList);
 //		if( expectedLength != bytes.length) {
 //			log.warn("Got an unexpected data size!!");
 //		}
@@ -66,8 +66,8 @@ public class HttpRangeLoader implements RangeLoader {
 		return bytes;
 	}
 
-	public static int calcExpectedLength(List<Range> rangeList) {
-		int l = 0;
+	public static long calcExpectedLength(List<Range> rangeList) {
+		long l = 0;
 		for (Range r : rangeList) {
 			l += (r.getFinish() - r.getStart());
 		}
