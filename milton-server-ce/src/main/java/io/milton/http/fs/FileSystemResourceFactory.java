@@ -71,7 +71,7 @@ public final class FileSystemResourceFactory implements ResourceFactory {
     public FileSystemResourceFactory() {
         log.debug("setting default configuration...");
         String sRoot = System.getProperty("user.home");
-        io.milton.http.SecurityManager sm = new NullSecurityManager();        
+        io.milton.http.SecurityManager sm = new NullSecurityManager();
         init(sRoot, sm);
     }
 
@@ -137,6 +137,20 @@ public final class FileSystemResourceFactory implements ResourceFactory {
     public FsResource resolveFile(String host, File file) {
         FsResource r;
         if (file == null) {
+            return null;
+        }
+        try {
+            File canonicalRoot = root.getCanonicalFile();
+            File canonicalFile = file.getCanonicalFile();
+            String rootPath = canonicalRoot.getPath();
+            String filePath = canonicalFile.getPath();
+            if (!(filePath.equals(rootPath) || filePath.startsWith(rootPath + File.separator))) {
+                log.warn("Rejected path outside root: {}", file.getPath());
+                return null;
+            }
+            file = canonicalFile;
+        } catch (java.io.IOException ex) {
+            log.warn("Failed to resolve canonical path for file: {}", file.getPath(), ex);
             return null;
         }
         if (!file.exists()) {

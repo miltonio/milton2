@@ -109,8 +109,9 @@ public class FsDirectoryResource extends FsResource implements MakeCollectionabl
 
     @Override
     public Resource createNew(String name, InputStream in, Long length, String contentType) throws IOException {
+        String safeName = validatePathComponent(name);
         File baseDir = this.getFile().getCanonicalFile();
-        File dest = new File(baseDir, name).getCanonicalFile();
+        File dest = new File(baseDir, safeName).getCanonicalFile();
 
         String basePath = baseDir.getPath();
         String destPath = dest.getPath();
