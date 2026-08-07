@@ -148,9 +148,11 @@ public class StreamUtils {
      */
     public static long readTo(InputStream in, OutputStream out, boolean closeIn, boolean closeOut, Long start, Long finish) throws ReadingException, WritingException {
         long cnt = 0;
+        long pos = 0;
         if (start != null) {
             skip(in, start);
             cnt = start;
+            pos = start;
         }
 
         byte[] buf = new byte[1024];
@@ -166,16 +168,27 @@ public class StreamUtils {
             }
             long numBytes = 0;
             while (s > 0) {
+                if (finish != null && pos + s > finish) {
+                    s = (int) (finish - pos);
+                }
+                if (s <= 0) {
+                    break;
+                }
                 try {
                     numBytes += s;
                     cnt += s;
+                    pos += s;
                     out.write(buf, 0, s);
                     if (cnt > 10000) {
                         out.flush();
                         cnt = 0;
                     }
                 } catch (IOException ex) {
-                    log.error("writing exectpion");
+//                    log.error("writing exectpion");
+                    throw new WritingException("Write exception at byte: " + numBytes, ex);
+                }
+                if (finish != null && pos >= finish) {
+                    break;
                 }
                 try {
                     s = in.read(buf);
