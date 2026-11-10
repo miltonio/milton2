@@ -19,12 +19,16 @@
             <comments>Permissive, business friendly license.</comments>
         </license>
     </licenses>
+    <properties>
+        <ftpserver.version>1.2.1</ftpserver.version>
+        <grizzly.version>4.0.2</grizzly.version>
+    </properties>
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.13.0</version>
+                <version>${maven-compiler-plugin.version}</version>
                 <configuration>
                     <source>17</source>
                     <target>17</target>
@@ -43,7 +47,7 @@
                 <dependency>
                     <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-simple</artifactId>
-                    <version>1.7.30</version>
+                    <version>1.7.36</version>
                 </dependency>
             </dependencies>
             <build>
@@ -51,7 +55,7 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
-                        <version>3.3.0</version>
+                        <version>3.7.0</version>
                         <executions>
                             <execution>
                                 <phase>install</phase>
@@ -78,13 +82,13 @@
         <dependency>
             <groupId>org.apache.ftpserver</groupId>
             <artifactId>ftpserver-core</artifactId>
-            <version>1.2.0</version>
+            <version>${ftpserver.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.22.3</version>
+            <version>${jackson.version}</version>
         </dependency>
 
         <dependency>
@@ -141,20 +145,20 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>
-            <version>4.5.0</version>
+            <version>4.6.0</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.ftpserver</groupId>
             <artifactId>ftplet-api</artifactId>
-            <version>1.2.0</version>
+            <version>${ftpserver.version}</version>
             <scope>compile</scope>
             <type>jar</type>
         </dependency>
         <dependency>
             <groupId>org.apache.mina</groupId>
             <artifactId>mina-core</artifactId>
-            <version>2.2.8</version>
+            <version>${mina.version}</version>
             <scope>compile</scope>
             <type>jar</type>
         </dependency>
@@ -173,12 +177,12 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.20.0</version>
+            <version>3.21.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-text</artifactId>
-            <version>1.12.0</version>
+            <version>1.15.0</version>
         </dependency>
         <dependency>
             <groupId>com.hazelcast</groupId>
@@ -190,7 +194,7 @@
         <dependency>
             <groupId>com.github.ben-manes.caffeine</groupId>
             <artifactId>caffeine</artifactId>
-            <version>3.1.8</version>
+            <version>3.3.1</version>
             <type>jar</type>
         </dependency>
 
@@ -198,31 +202,31 @@
         <dependency>
             <groupId>org.glassfish.grizzly</groupId>
             <artifactId>grizzly-framework</artifactId>
-            <version>2.4.4</version>
+            <version>${grizzly.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.grizzly</groupId>
             <artifactId>grizzly-http-server</artifactId>
-            <version>4.0.0</version>
+            <version>${grizzly.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.grizzly</groupId>
             <artifactId>grizzly-http-servlet</artifactId>
-            <version>4.0.0</version>
+            <version>${grizzly.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.grizzly</groupId>
             <artifactId>tls-sni</artifactId>
-            <version>4.0.0</version>
+            <version>${grizzly.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.glassfish.grizzly</groupId>
             <artifactId>grizzly-http-server-multipart</artifactId>
-            <version>4.0.0</version>
+            <version>${grizzly.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -239,7 +243,7 @@
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20260719</version>
+            <version>20260814</version>
         </dependency>
         <dependency>
             <groupId>org.apache.oltu.oauth2</groupId>
@@ -249,7 +253,7 @@
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcpkix-jdk15to18</artifactId>
-            <version>1.84</version>
+            <version>1.86</version>
             <type>jar</type>
             <optional>true</optional>
         </dependency>
@@ -262,4 +266,3 @@
 
     </dependencies>
 </project>
-

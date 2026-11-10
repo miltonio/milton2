@@ -29,7 +29,12 @@
     <properties>
         <servlet.version>6.0.0</servlet.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <easy-mock.version>5.2.0</easy-mock.version>
+        <easy-mock.version>5.7.0</easy-mock.version>
+        <jackson.version>2.22.4</jackson.version>
+        <commons-io.version>2.22.0</commons-io.version>
+        <mina.version>2.2.10</mina.version>
+        <ical4j.version>4.0.8</ical4j.version>
+        <maven-compiler-plugin.version>3.16.0</maven-compiler-plugin.version>
     </properties>
 
     <organization>
@@ -49,7 +54,7 @@
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.13.0</version>
+                <version>${maven-compiler-plugin.version}</version>
                 <configuration>
                     <source>17</source>
                     <target>17</target>
@@ -58,8 +63,13 @@
                 </configuration>
             </plugin>
             <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <!-- Surefire 3.6+ no longer supports the JUnit 3 test suite. -->
+                <version>3.5.6</version>
+            </plugin>
+            <plugin>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.3.1</version>
+                <version>3.4.0</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -71,7 +81,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.10.0</version>
+                <version>3.12.0</version>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
@@ -91,7 +101,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
-                <version>3.2.5</version>
+                <version>3.2.8</version>
                 <executions>
                     <execution>
                         <id>sign-artifacts</id>
@@ -122,7 +132,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jxr-plugin</artifactId>
-                <version>3.4.0</version>
+                <version>3.6.0</version>
             </plugin>
         </plugins>
     </reporting>
