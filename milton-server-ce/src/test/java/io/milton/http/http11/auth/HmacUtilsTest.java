@@ -15,31 +15,23 @@
  */
 package io.milton.http.http11.auth;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  *
  * @author brad
  */
-public class HmacUtilsTest extends TestCase {
+public class HmacUtilsTest {
 
-	public HmacUtilsTest(String testName) {
-		super(testName);
-	}
 
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-	}
 
-	@Override
-	protected void tearDown() throws Exception {
-		super.tearDown();
-	}
 
 	/**
 	 * Test of calcShaHash method, of class HmacUtils.
 	 */
+	@Test
 	public void testCalcShaHash() {
 		String data = "SampleIntegrationOwner2008-11-18T19:14:40.293Z";
 		String key = "xBy/2CLudnBJOxOtDhDRnsDYq9HTuDVr2uCs3FMzoxXEA/Od9tOuwSC70+mIfpjeG68ZGm/PrxFf/s/CzwxF4Q==";

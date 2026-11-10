@@ -16,60 +16,55 @@
  */
 package io.milton.httpclient;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  *
  * @author brad
  */
-public class HostTest extends TestCase {
+public class HostTest {
 
-    public HostTest(String testName) {
-        super(testName);
-    }
-
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+    @Test
     public void testBuildUrl_Simple() {
         Host h = new Host("localhost", 8080, null, null, null);
         assertEquals("http://localhost:8080/", h.encodedUrl());
     }
 
+    @Test
     public void testBuildUrl_Secure() {
         Host h = new Host("localhost", 8080, null, null, null);
         h.setSecure(true);
         assertEquals("https://localhost:8080/", h.encodedUrl());
     }
 
+    @Test
     public void testBuildUrl_WithRootPath() {
         Host h = new Host("localhost","/a/", 8080, null, null, null, null);
         String actual = h.encodedUrl();
         assertEquals("http://localhost:8080/a/", actual);
     }
 
+    @Test
     public void testBuildUrl_WithUnencodedRootPath() {
         Host h = new Host("localhost","/a b/", 8080, null, null, null, null);
         String actual = h.encodedUrl();        
         assertEquals("http://localhost:8080/a%20b/", actual);
     }
     
+    @Test
     public void test_Href_WithUnencodedRootPath() {
         Host h = new Host("localhost","/a b/", 8080, null, null, null, null);
         System.out.println("actual1: " + h.href());
         assertEquals("http://localhost:8080/a b/", h.href());
     }
+    @Test
     public void test_Href() {
         Host h = new Host("localhost", 8080, null, null, null, null);
         assertEquals("http://localhost:8080/", h.href());
     }    
+    @Test
     public void test_Href_DefaultPort() {
         Host h = new Host("localhost", 80, null, null, null, null);
         assertEquals("http://localhost/", h.href());

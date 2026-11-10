@@ -19,13 +19,12 @@
 
 package io.milton.http;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
-public class TestAbstractRequest extends TestCase{
-    public TestAbstractRequest(String name) {
-        super(name);
-    }
-    
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public class TestAbstractRequest{
+    @Test
     public void test() {
         String t = "http://abc.com/path/2";
         String s = AbstractRequest.stripToPath(t);

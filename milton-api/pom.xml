@@ -72,22 +72,9 @@
         </dependency>
         <dependency>
             <scope>test</scope>
-            <groupId>org.easymock</groupId>
-            <artifactId>easymockclassextension</artifactId>
-            <version>3.2</version>
-        </dependency>
-        <dependency>
-            <scope>test</scope>
-            <groupId>cglib</groupId>
-            <artifactId>cglib</artifactId>
-            <version>3.3.0</version>
-        </dependency>
-        <dependency>
-            <scope>test</scope>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>1.7.36</version>
         </dependency>
     </dependencies>
 </project>
-

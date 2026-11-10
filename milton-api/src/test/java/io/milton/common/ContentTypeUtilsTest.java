@@ -19,30 +19,35 @@
 
 package io.milton.common;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
  * @author brad
  */
-public class ContentTypeUtilsTest extends TestCase {
+public class ContentTypeUtilsTest {
     
-    public ContentTypeUtilsTest(String testName) {
-        super(testName);
-    }
 
+    @Test
     public void testFindContentTypes_Doc() {
         assertEquals( "application/msword", ContentTypeUtils.findContentTypes( "abc.doc"));
     }
 
+    @Test
     public void testFindContentTypes_Html() {
         assertEquals( "text/html", ContentTypeUtils.findContentTypes( "abc.html"));
     }
 
+    @Test
     public void testFindContentTypes_Txt() {
         assertEquals( "text/plain", ContentTypeUtils.findContentTypes( "abc.txt"));
     }
 
+    @Test
     public void testfindAcceptableContentTypeForName() {
         String s = ContentTypeUtils.findAcceptableContentTypeForName("x.mpg", "video");
         assertNotNull(s);
@@ -56,9 +61,11 @@ public class ContentTypeUtilsTest extends TestCase {
         assertEquals("video/mpeg", ContentTypeUtils.findAcceptableContentTypeForName("x.mpg", "text"));
     }
 
+    @Test
     public void testFindContentTypes_File() {
     }
 
+    @Test
     public void testFindAcceptableContentType() {
     }
 

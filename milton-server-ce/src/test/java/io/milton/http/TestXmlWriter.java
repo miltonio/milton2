@@ -19,13 +19,14 @@
 
 package io.milton.http;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 
-public class TestXmlWriter extends TestCase {
+public class TestXmlWriter {
     public TestXmlWriter() {
     }
 
+    @Test
     public void test() throws Exception {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         XmlWriter w = new XmlWriter(out);
@@ -43,6 +44,7 @@ public class TestXmlWriter extends TestCase {
 //        assertEquals(expected,s);
     }
 
+    @Test
     public void testNested() throws Exception {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         XmlWriter w = new XmlWriter(out);

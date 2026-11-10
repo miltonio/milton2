@@ -22,7 +22,13 @@ package io.milton.common;
 import java.io.File;
 import java.io.InputStream;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 
@@ -30,12 +36,10 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
  *
  * @author brad
  */
-public class BufferingOutputStreamTest extends TestCase {
+public class BufferingOutputStreamTest {
     
-    public BufferingOutputStreamTest(String testName) {
-        super(testName);
-    }
 
+    @Test
     public void testWriteByte() throws Exception {
         BufferingOutputStream out = new BufferingOutputStream( 10);
         assertNull(out.getTempFile());
@@ -44,6 +48,7 @@ public class BufferingOutputStreamTest extends TestCase {
         assertEquals( 1, out.getTempMemoryBuffer().size());
     }
 
+    @Test
     public void test_WriteArray() throws Exception {
         BufferingOutputStream out = new BufferingOutputStream( 10);
         out.write( new byte[5]);
@@ -53,6 +58,7 @@ public class BufferingOutputStreamTest extends TestCase {
         assertEquals( 7, out.getTempMemoryBuffer().size());
     }
 
+    @Test
     public void test_MemoryRead() throws Exception {
         BufferingOutputStream out = new BufferingOutputStream( 10);
         out.write( new byte[9]);
@@ -69,6 +75,7 @@ public class BufferingOutputStreamTest extends TestCase {
 
     }
 
+    @Test
     public void test_TransitionToFile() throws Exception {
         BufferingOutputStream out = new BufferingOutputStream( 10);
         out.write( new byte[10]);

@@ -19,18 +19,20 @@
 
 package io.milton.common;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
  * @author brad
  */
-public class PathTest extends TestCase {
+public class PathTest {
 
-    public PathTest(String testName) {
-        super(testName);
-    }
 
+    @Test
     public void test() {
         Path path = Path.path("/brad/test/1");
         System.out.println("path name: " + path.getName());
@@ -44,12 +46,14 @@ public class PathTest extends TestCase {
         System.out.println("----------------------");
     }
 
+    @Test
     public void testSingle() {
         Path p = Path.path("abc");
         String s = p.toString();
         assertEquals("abc",s);
     }
 
+    @Test
     public void testStrip() {
         Path path = Path.path("/a/b/c");
         Path stripped = path.getStripFirst();
@@ -58,11 +62,13 @@ public class PathTest extends TestCase {
         assertEquals("/b/c",s);
     }
 
+    @Test
     public void testAbsolute() {
         Path path = Path.path("/a/b/c");
         assertFalse(path.isRelative());
     }
 
+    @Test
     public void testRelative() {
         Path p1 = Path.path("test.ettrema.com:8080");
         assertEquals( 1,p1.getLength());
@@ -71,6 +77,7 @@ public class PathTest extends TestCase {
         assertTrue(path.isRelative());
     }
 
+    @Test
     public void testDoubleSlash() {
         Path p = Path.path("/a//b/c");
         assertEquals("/a/b/c", p.toString());

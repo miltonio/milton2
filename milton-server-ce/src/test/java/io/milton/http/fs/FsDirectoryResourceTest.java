@@ -23,53 +23,59 @@
  */
 package io.milton.http.fs;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  *
  * @author brad
  */
-public class FsDirectoryResourceTest extends TestCase {
+public class FsDirectoryResourceTest {
 	
-	public FsDirectoryResourceTest(String testName) {
-		super(testName);
-	}
 	
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-	}
 
+	@Test
 	public void testCreateCollection() {
 	}
 
+	@Test
 	public void testChild() {
 	}
 
+	@Test
 	public void testGetChildren() {
 	}
 
+	@Test
 	public void testCheckRedirect() {
 	}
 
+	@Test
 	public void testCreateNew() throws Exception {
 	}
 
+	@Test
 	public void testCreateAndLock() throws Exception {
 	}
 
+	@Test
 	public void testSendContent() throws Exception {
 	}
 
+	@Test
 	public void testGetMaxAgeSeconds() {
 	}
 
+	@Test
 	public void testGetContentType() {
 	}
 
+	@Test
 	public void testGetContentLength() {
 	}
 
+	@Test
 	public void testInsertSsoPrefix() {
 		String s = FsDirectoryResource.insertSsoPrefix("http://test.com/folder/file", "xxxyyy");
 		System.out.println(s);

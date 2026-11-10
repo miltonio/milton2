@@ -20,19 +20,25 @@
 package io.milton.http;
 
 import io.milton.http.LockTimeout;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  *
  * @author brad
  */
-public class TestLockTimeout extends TestCase {
+public class TestLockTimeout {
+    @Test
     public void testNull() {
         LockTimeout t = LockTimeout.parseTimeout((String)null);
         assertNotNull(t);
         assertNull(t.getSeconds());
     }
     
+    @Test
     public void testEmpty() {
         LockTimeout t = LockTimeout.parseTimeout("");
         assertNotNull(t);
@@ -43,18 +49,21 @@ public class TestLockTimeout extends TestCase {
         assertNull(t.getSeconds());                
     }
     
+    @Test
     public void testSingleInfinite() {
         LockTimeout t = LockTimeout.parseTimeout("Infinite");
         assertNotNull(t);
         assertEquals((Object)Long.MAX_VALUE, t.getSeconds());        
     }
 
+    @Test
     public void testSingleSeconds() {
         LockTimeout t = LockTimeout.parseTimeout("Second-5");
         assertNotNull(t);
         assertEquals(new Long(5), t.getSeconds());        
     }
     
+    @Test
     public void testTwo() {
         LockTimeout t = LockTimeout.parseTimeout("Infinite, Second-5");
         assertNotNull(t);
@@ -64,6 +73,7 @@ public class TestLockTimeout extends TestCase {
         
     }
     
+    @Test
     public void testMalformed() {
         LockTimeout t = LockTimeout.parseTimeout("Infinite Second5");
         assertNotNull(t);

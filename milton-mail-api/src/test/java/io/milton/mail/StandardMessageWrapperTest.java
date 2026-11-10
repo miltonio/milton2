@@ -5,18 +5,18 @@
 
 package io.milton.mail;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  *
  * @author brad
  */
-public class StandardMessageWrapperTest extends TestCase {
+public class StandardMessageWrapperTest {
     
-    public StandardMessageWrapperTest(String testName) {
-        super(testName);
-    }
 
+    @Test
     public void test() {
         StandardMessageImpl sm = new StandardMessageImpl();
         sm.setText("text");

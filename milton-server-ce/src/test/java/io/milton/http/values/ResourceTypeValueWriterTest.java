@@ -23,28 +23,18 @@
  */
 package io.milton.http.values;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author HP
  */
-public class ResourceTypeValueWriterTest extends TestCase {
+public class ResourceTypeValueWriterTest {
 	
-	public ResourceTypeValueWriterTest(String testName) {
-		super(testName);
-	}
 	
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-	}
 	
-	@Override
-	protected void tearDown() throws Exception {
-		super.tearDown();
-	}
 
+	@Test
 	public void testSomeMethod() {
 	}
 }

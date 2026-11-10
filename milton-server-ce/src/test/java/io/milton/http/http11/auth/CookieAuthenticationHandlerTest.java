@@ -30,15 +30,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
  * @author brad
  */
-public class CookieAuthenticationHandlerTest extends TestCase {
+public class CookieAuthenticationHandlerTest {
 //	public void testEncoding() {
 //		//CookieAuthenticationHandler c = new CookieAuthenticationHandler(Collections.emptyList(), null);
 //		String s = "/users/admin/";
@@ -65,6 +67,7 @@ public class CookieAuthenticationHandlerTest extends TestCase {
 		nonceProvider.getNonces().put(id, new Nonce(id, new Date()));
 	}
 
+	@Test
 	public void test_GenerateHash() {
 		CookieAuthenticationHandler c = new CookieAuthenticationHandler(nonceProvider, Collections.emptyList(), null, keys);
 		String s = "/users/Reviewer/";
@@ -84,6 +87,7 @@ public class CookieAuthenticationHandlerTest extends TestCase {
 //		assertNotNull(validatedUrl);
 //		assertEquals(s, validatedUrl);
 //	}
+	@Test
 	public void test_ValidateBase64() {
 		CookieAuthenticationHandler c = new CookieAuthenticationHandler(nonceProvider, Collections.emptyList(), null, keys);
 		String s = "/users/Reviewer/";
@@ -100,6 +104,7 @@ public class CookieAuthenticationHandlerTest extends TestCase {
 		assertEquals(s, validatedUrl);
 	}
 
+	@Test
 	public void test_getUserUrlFromRequest() {
 		CookieAuthenticationHandler c = new CookieAuthenticationHandler(nonceProvider, Collections.emptyList(), null, keys);
 		String s = "/users/Reviewer/";

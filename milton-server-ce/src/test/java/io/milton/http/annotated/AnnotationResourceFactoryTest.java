@@ -15,19 +15,18 @@
  */
 package io.milton.http.annotated;
 
-import static junit.framework.Assert.assertEquals;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  *
  * @author brad
  */
-public class AnnotationResourceFactoryTest extends TestCase {
+public class AnnotationResourceFactoryTest {
 	
-	public AnnotationResourceFactoryTest(String testName) {
-		super(testName);
-	}
 
+	@Test
 	public void testStripContext_null() {
 		AnnotationResourceFactory arf = new AnnotationResourceFactory();
 		arf.setContextPath(null);
@@ -36,6 +35,7 @@ public class AnnotationResourceFactoryTest extends TestCase {
 		assertEquals("/something/somewhere.doc", s);
 	}	
 
+	@Test
 	public void testStripContext_empty() {
 		AnnotationResourceFactory arf = new AnnotationResourceFactory();
 		arf.setContextPath(null);
@@ -44,6 +44,7 @@ public class AnnotationResourceFactoryTest extends TestCase {
 		assertEquals("/something/somewhere.doc", s);
 	}	
 	
+	@Test
 	public void testStripContext_root() {
 		AnnotationResourceFactory arf = new AnnotationResourceFactory();
 		arf.setContextPath("/");
@@ -52,6 +53,7 @@ public class AnnotationResourceFactoryTest extends TestCase {
 		assertEquals("/something/somewhere.doc", s);
 	}
 	
+	@Test
 	public void testStripContext_nonroot_path() {
 		AnnotationResourceFactory arf = new AnnotationResourceFactory();
 		arf.setContextPath("/something");
@@ -60,6 +62,7 @@ public class AnnotationResourceFactoryTest extends TestCase {
 		assertEquals("/somewhere.doc", s);
 	}	
 	
+	@Test
 	public void testStripContext_nonroot_name() {
 		AnnotationResourceFactory arf = new AnnotationResourceFactory();
 		arf.setContextPath("something");

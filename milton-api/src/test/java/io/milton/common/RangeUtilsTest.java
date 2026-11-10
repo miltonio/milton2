@@ -27,18 +27,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.apache.commons.io.IOUtils;
 
 /**
  *
  * @author brad
  */
-public class RangeUtilsTest extends TestCase {
+public class RangeUtilsTest {
 
-    public RangeUtilsTest(String testName) {
-        super(testName);
-    }
 
     public void xtestSendBytes_Under1k() throws Exception {
         long length = 500;
@@ -87,6 +86,7 @@ public class RangeUtilsTest extends TestCase {
 
     }
     
+    @Test
     public void testWrite_BeyondEndOfFile() throws IOException {
         InputStream in = this.getClass().getResourceAsStream("/jquery-ui-1.8.20.custom.min.js");
         if( in == null ) {
@@ -106,6 +106,7 @@ public class RangeUtilsTest extends TestCase {
     }    
     
     
+    @Test
     public void testWrite_ToEndOfFile() throws IOException {
         InputStream in = this.getClass().getResourceAsStream("/jquery-ui-1.8.20.custom.min.js");
         if( in == null ) {

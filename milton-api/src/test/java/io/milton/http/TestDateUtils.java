@@ -27,12 +27,17 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
-public class TestDateUtils extends TestCase {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+public class TestDateUtils {
     public TestDateUtils() {
     }
 
+    @Test
     public void test() throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy hh:mm");
         Date dt = sdf.parse("1-1-2007 19:03");
@@ -41,17 +46,20 @@ public class TestDateUtils extends TestCase {
         System.out.println("formatted to: " + s);
     }
 
+    @Test
     public void test_FirefoxOSCaldavDate() throws ParseException, DateParseException {
         Date date = DateUtils.parseIcalDateTime("20140104T050000Z");
         System.out.println("formatted to: " + date);
     }
 
 
+    @Test
     public void test_iOSCaldavDate() throws ParseException, DateParseException {
         Date date = DateUtils.parseIcalDateTime("20131222T000000Z");
         System.out.println("formatted to: " + date);
     }
 
+	@Test
 	public void test_parseIcalDateTime_old() throws ParseException, DateParseException
 	{
 		Date date;
@@ -73,6 +81,7 @@ public class TestDateUtils extends TestCase {
 		assertFalse( this.checkDate( dateToParse, date ) );
 	}
 
+	@Test
 	public void test_parseIcalDateTime() throws ParseException, DateParseException
 	{
 		Date date ;
@@ -105,6 +114,7 @@ public class TestDateUtils extends TestCase {
 		return checkedDate.equalsIgnoreCase( dateToParse );
 	}
 
+    @Test
     public void testParseNormal() throws DateParseException {
         Date dt = DateUtils.parseDate( "Sun, 28 Mar 2010 01:00:00 GMT");
         System.out.println( dt.getTime() );
@@ -116,23 +126,27 @@ public class TestDateUtils extends TestCase {
      *
      * @throws io.milton.http.DateUtils.DateParseException
      */
+    @Test
     public void testParseWithoutSeconds() throws DateParseException {
         Date dt = DateUtils.parseDate( "Sun, 28 Mar 2010 01:00 GMT");
         System.out.println( dt.getTime() );
         assertEquals(1269738000000L, dt.getTime());
     }
 
+    @Test
     public void testParseHeaderFormat() throws DateParseException {
         Date dt = DateUtils.parseDate("2010-04-11 12:00:00");
         System.out.println("dt: " + dt);
     }
 
 
+    @Test
     public void testParseWebdavDate_LongFormat() throws DateParseException {
         Date dt = DateUtils.parseWebDavDate("Wed, 27 Jun 2012 02:08:54 GMT");
         System.out.println("testParseWebdavDate_LongFormat: " + dt);
     }
 
+    @Test
     public void testParseWebdavDate_ExpectedFormat() throws DateParseException {
         Date dt = DateUtils.parseWebDavDate("2010-09-03T09:29:43Z");
         System.out.println("testParseWebdavDate_ExpectedFormat: " + dt);

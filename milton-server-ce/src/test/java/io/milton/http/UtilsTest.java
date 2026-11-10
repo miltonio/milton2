@@ -21,27 +21,28 @@ package io.milton.http;
 
 import io.milton.common.Utils;
 import io.milton.http.webdav.Dest;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  *
  * @author brad
  */
-public class UtilsTest extends TestCase {
+public class UtilsTest {
 
-    public UtilsTest( String testName ) {
-        super( testName );
-    }
-
+    @Test
     public void testStripServer_NoHttp() {
 //        assertEquals("abc", Utils.stripServer("abc"));
     }
 
+    @Test
     public void testStripServer_WithHttp() {
 //        assertEquals("/abc", Utils.stripServer("http://server/abc"));
     }
 
 
+    @Test
     public void testPercentEncode() {
 //        for( int i=0; i<180; i++ ) {
 //            String s = String.valueOf((char)i);
@@ -82,6 +83,7 @@ public class UtilsTest extends TestCase {
         assertEquals( originalUnencoded, decoded );
     }
 
+    @Test
     public void testDecodeHref() {
         String href = "/";
         String result = Utils.decodePath( href );
@@ -93,6 +95,7 @@ public class UtilsTest extends TestCase {
 
     }
 
+    @Test
     public void testDecodeHref_WithSquareBrackets() {
         String href = "/a[b]";
         String result = Utils.decodePath( href );
@@ -101,6 +104,7 @@ public class UtilsTest extends TestCase {
     }
 
     
+    @Test
     public void testDecodeHref_DifferentCodes_SameCharacter() {
         String href = "/%C3%A4";
         String result = Utils.decodePath( href );
@@ -113,6 +117,7 @@ public class UtilsTest extends TestCase {
 //        assertEquals( "/ä", result );
     }
 	
+	@Test
 	public void testDecodeHref_AtSymbol() {
 		String href = "/a%40b";
 		String result = Utils.decodePath( href );
@@ -128,6 +133,7 @@ public class UtilsTest extends TestCase {
         System.out.println();
     }
 
+	@Test
 	public void testGetDecodedDestination_Simple() {
 		String testDest = "http://xyz.com/folder1/folder2/name";
 		Dest dest = Utils.getDecodedDestination(testDest);
@@ -136,6 +142,7 @@ public class UtilsTest extends TestCase {
 		assertEquals("name", dest.name);
 	}
 	
+	@Test
 	public void testGetDecodedDestination_WithEncodedChars() {
 		String testDest = "http://xyz.com/folder1/folder2/na%20me";
 		Dest dest = Utils.getDecodedDestination(testDest);
@@ -144,6 +151,7 @@ public class UtilsTest extends TestCase {
 		assertEquals("na me", dest.name);
 	}		
 	
+	@Test
 	public void testGetDecodedDestination_Https() {
 		String testDest = "https://xyz.com/folder1/folder2/name";
 		Dest dest = Utils.getDecodedDestination(testDest);

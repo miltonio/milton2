@@ -26,22 +26,29 @@ import io.milton.http.LockTimeout;
 import io.milton.http.LockToken;
 import io.milton.http.exceptions.NotAuthorizedException;
 import java.io.File;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
  * @author brad
  */
-public class MemoryLockManagerTest extends TestCase {
+public class MemoryLockManagerTest {
 
     FsMemoryLockManager lockManager;
 
-    @Override
+    @BeforeEach
     protected void setUp() throws Exception {
         lockManager = new FsMemoryLockManager();
     }
 
     
+    @Test
     public void testLockUnLock() throws NotAuthorizedException {
         LockTimeout timeout = new LockTimeout(100L);
         LockInfo lockInfo = new LockInfo( LockInfo.LockScope.NONE, LockInfo.LockType.READ, "me", LockInfo.LockDepth.ZERO );
@@ -66,12 +73,15 @@ public class MemoryLockManagerTest extends TestCase {
         assertNull( token );
     }
 
+    @Test
     public void testRefresh() {
     }
 
+    @Test
     public void testUnlock() {
     }
 
+    @Test
     public void testGetCurrentToken() {
     }
 }

@@ -11,29 +11,31 @@ import io.milton.http.XmlWriter;
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Map;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
  * @author brad
  */
-public class LockTokenValueWriterTest extends TestCase {
+public class LockTokenValueWriterTest {
 
 	LockTokenValueWriter valueWriter;
 
-	public LockTokenValueWriterTest(String testName) {
-		super(testName);
-	}
 
-	@Override
+	@BeforeEach
 	protected void setUp() throws Exception {
 		valueWriter = new LockTokenValueWriter();
 	}
 
+	@Test
 	public void testSupports() {
 		assertTrue(valueWriter.supports(null, null, LockToken.class));
 	}
 
+	@Test
 	public void testWriteValue() {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		XmlWriter xmlWriter = new XmlWriter(out);
@@ -66,6 +68,7 @@ public class LockTokenValueWriterTest extends TestCase {
 //</D:lockdiscovery>		
 	}
 
+	@Test
 	public void testParse() {
 		try {
 			valueWriter.parse(null, null, null);

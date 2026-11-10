@@ -16,31 +16,23 @@
 
 package io.milton.http.annotated;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
  * @author brad
  */
-public class SpecificityUtilsTest extends TestCase {
+public class SpecificityUtilsTest {
 	
-	public SpecificityUtilsTest(String testName) {
-		super(testName);
-	}
 	
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-	}
 	
-	@Override
-	protected void tearDown() throws Exception {
-		super.tearDown();
-	}
 
 	/**
 	 * Test of sourceSpecifityIndex method, of class SpecificityUtils.
 	 */
+	@Test
 	public void testSourceSpecifityIndex() {
 		int scoreLower = SpecificityUtils.sourceSpecifityIndex(BaseClass.class, EndClass.class);
 		int scoreHigher = SpecificityUtils.sourceSpecifityIndex(EndClass.class, EndClass.class);

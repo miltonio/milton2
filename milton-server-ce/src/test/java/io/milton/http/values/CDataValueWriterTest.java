@@ -18,13 +18,17 @@ package io.milton.http.values;
 import io.milton.http.XmlWriter;
 import java.io.ByteArrayOutputStream;
 import java.util.Map;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
  *
  * @author brad
  */
-public class CDataValueWriterTest extends TestCase {
+public class CDataValueWriterTest {
 	
 	CDataValueWriter writer;
 	XmlWriter xmlWriter;
@@ -32,18 +36,15 @@ public class CDataValueWriterTest extends TestCase {
 	CData testVal;
 	Map<String,String> nsPrefixes;
 	
-	public CDataValueWriterTest(String testName) {
-		super(testName);
-	}
 
-	@Override
+	@BeforeEach
 	protected void setUp() throws Exception {
-		super.setUp();
 		out = new ByteArrayOutputStream();
 		writer = new CDataValueWriter();
 		xmlWriter = new XmlWriter(out);
 	}
 
+	@Test
 	public void testSimple() {
 		testVal = new CData("Test cdata value");
 		writer.writeValue(xmlWriter, "DAV", "D", "testprop", testVal, "/some/href", nsPrefixes);
@@ -53,6 +54,7 @@ public class CDataValueWriterTest extends TestCase {
 		assertEquals("<D:testprop><![CDATA[Test cdata value]]></D:testprop>", result);
 	}	
 	
+	@Test
 	public void testDoesNotEncodeAmp() {
 		testVal = new CData("Test cdata& value");
 		writer.writeValue(xmlWriter, "DAV", "D", "testprop", testVal, "/some/href", nsPrefixes);
@@ -62,6 +64,7 @@ public class CDataValueWriterTest extends TestCase {
 		assertFalse(result.contains("&amp;")); // must not do encoding
 	}
 	
+	@Test
 	public void testDoesEncodeCdataDelimiter() {
 		testVal = new CData("]]>");
 		writer.writeValue(xmlWriter, "DAV", "D", "testprop", testVal, "/some/href", nsPrefixes);

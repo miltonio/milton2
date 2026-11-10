@@ -5,24 +5,26 @@
 
 package io.milton.mail;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  *
  * @author brad
  */
-public class UtilsTest extends TestCase {
+public class UtilsTest {
     
-    public UtilsTest(String testName) {
-        super(testName);
-    }
 
+    @Test
     public void testClose_OutputStream() {
     }
 
+    @Test
     public void testClose_InputStream() {
     }
 
+    @Test
     public void testParseContentId() {
         String s = "<abc>";
         s = Utils.parseContentId(s);

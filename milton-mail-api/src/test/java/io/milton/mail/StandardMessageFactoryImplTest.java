@@ -12,32 +12,31 @@ import java.util.logging.Logger;
 import jakarta.mail.MessagingException;
 import jakarta.mail.Session;
 import jakarta.mail.internet.MimeMessage;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
  * @author brad
  */
-public class StandardMessageFactoryImplTest extends TestCase {
+public class StandardMessageFactoryImplTest {
 
     Session session;
     StandardMessageFactoryImpl factory;
 
-    public StandardMessageFactoryImplTest(String testName) {
-        super(testName);
-    }
 
-    @Override
+    @BeforeEach
     protected void setUp() throws Exception {
         factory = new StandardMessageFactoryImpl();
         session = Session.getDefaultInstance(new Properties());
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
 
+    @Test
     public void testSimpleText() throws MessagingException, IOException {
         InputStream in = this.getClass().getResourceAsStream("simple-text.smtp");
         assertNotNull(in);

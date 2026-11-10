@@ -23,47 +23,49 @@
  */
 package io.milton.http.webdav;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author brad
  */
-public class CopyHandlerTest extends TestCase {
+public class CopyHandlerTest {
 	
-	public CopyHandlerTest(String testName) {
-		super(testName);
-	}
 	
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-	}
 
+	@Test
 	public void testGetMethods() {
 	}
 
+	@Test
 	public void testIsCompatible() {
 	}
 
+	@Test
 	public void testProcessResource() throws Exception {
 	}
 
+	@Test
 	public void testProcess() throws Exception {
 	}
 
+	@Test
 	public void testProcessExistingResource() throws Exception {
 	}
 
+	@Test
 	public void testSetDeleteExistingBeforeCopy() {
 	}
 
+	@Test
 	public void testIsDeleteExistingBeforeCopy() {
 	}
 
+	@Test
 	public void testGetUserAgentHelper() {
 	}
 
+	@Test
 	public void testSetUserAgentHelper() {
 	}
 }

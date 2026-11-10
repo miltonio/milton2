@@ -111,18 +111,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <scope>test</scope>
-            <groupId>org.easymock</groupId>
-            <artifactId>easymockclassextension</artifactId>
-            <version>3.2</version>
-        </dependency>
-        <dependency>
-            <scope>test</scope>
-            <groupId>cglib</groupId>
-            <artifactId>cglib</artifactId>
-            <version>3.3.0</version>
-        </dependency>
-        <dependency>
             <groupId>commons-beanutils</groupId>
             <artifactId>commons-beanutils</artifactId>
             <version>1.11.0</version>

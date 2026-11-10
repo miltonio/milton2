@@ -23,25 +23,29 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Set;
 import javax.xml.namespace.QName;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  *
  * @author brad
  */
-public class DefaultPropFindRequestFieldParserTest extends TestCase {
+public class DefaultPropFindRequestFieldParserTest {
 
     DefaultPropFindRequestFieldParser fieldParser;
 
     final String namespace = "http://ns.example.com/boxschema/";
 
-    @Override
+    @BeforeEach
     protected void setUp() throws Exception {
         fieldParser = new DefaultPropFindRequestFieldParser();
     }
 
 
 
+    @Test
     public void testGetRequestedFields_SingleField() {
         String xml = "<?xml version=\"1.0\" encoding=\"utf-8\" ?> " +
             "<D:propfind xmlns:D=\"DAV:\">" +
@@ -59,6 +63,7 @@ public class DefaultPropFindRequestFieldParserTest extends TestCase {
         assertEquals( "author", qn.getLocalPart());
     }
 
+    @Test
     public void testGetRequestedFields_EmptyData() {
         String xml = "";
 

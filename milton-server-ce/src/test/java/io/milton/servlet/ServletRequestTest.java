@@ -21,12 +21,15 @@ package io.milton.servlet;
 
 import java.util.HashMap;
 import java.util.Map;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
-public class ServletRequestTest extends TestCase{
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public class ServletRequestTest{
     public ServletRequestTest() {
     }
     
+    @Test
     public void test() {
         String qs = "Command=FileUpload&Type=Image&CurrentFolder=%2Fusers%2F";
         Map<String,String> map = new HashMap<>();

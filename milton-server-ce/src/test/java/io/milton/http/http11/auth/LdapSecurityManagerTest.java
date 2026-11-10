@@ -19,27 +19,26 @@
 
 package io.milton.http.http11.auth;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author bradm
  */
-public class LdapSecurityManagerTest extends TestCase {
+public class LdapSecurityManagerTest {
 	
 	LdapSecurityManager securityManager;
 	
-	public LdapSecurityManagerTest(String testName) {
-		super(testName);
-	}
 	
-	@Override
+	@BeforeEach
 	protected void setUp() throws Exception {
 		securityManager = new LdapSecurityManager();
 	}
 
 
 
+	@Test
 	public void testAuthoriseBasic() {
 		System.out.println("testAuthoriseBasic ---------------------");
 		Object result = securityManager.authenticate("brad", "xxxxx");
@@ -47,6 +46,7 @@ public class LdapSecurityManagerTest extends TestCase {
 		System.out.println("testAuthoriseBasic - ooooooooooooooooooooooooooooo");
 	}
 
+	@Test
 	public void testAuthoriseDigest() {
 	}
 	

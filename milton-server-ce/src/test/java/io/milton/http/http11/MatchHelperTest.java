@@ -18,24 +18,27 @@ package io.milton.http.http11;
 
 import io.milton.http.Request;
 import io.milton.resource.Resource;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.easymock.classextension.EasyMock.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import static org.easymock.EasyMock.*;
 
 /**
  *
  * @author brad
  */
-public class MatchHelperTest extends TestCase {
+public class MatchHelperTest {
 
 	MatchHelper matchHelper;
 	JustCopyTheUniqueIdETagGenerator eTagGenerator;
 	Request request;
 	Resource resource;
 
-	@Override
+	@BeforeEach
 	protected void setUp() throws Exception {
-		super.setUp();
 		eTagGenerator = new JustCopyTheUniqueIdETagGenerator();
 		matchHelper = new MatchHelper(eTagGenerator);
 		resource = createMock(Resource.class);
@@ -45,6 +48,7 @@ public class MatchHelperTest extends TestCase {
 	/**
 	 * Test of checkIfMatch method, of class MatchHelper.
 	 */
+	@Test
 	public void testCheckIfMatch_DoesMatch_SingleValue() {
 		expect(resource.getUniqueId()).andReturn("X");
 		expect(request.getIfMatchHeader()).andReturn("X");
@@ -54,6 +58,7 @@ public class MatchHelperTest extends TestCase {
 		assertTrue(result);
 	}
 
+	@Test
 	public void testCheckIfMatch_DoesMatch_Star() {
 		expect(resource.getUniqueId()).andReturn("X");
 		expect(request.getIfMatchHeader()).andReturn("*");
@@ -63,6 +68,7 @@ public class MatchHelperTest extends TestCase {
 		assertTrue(result);
 	}
 
+	@Test
 	public void testCheckIfMatch_DoesMatch_Star_NullResource() {
 		expect(request.getIfMatchHeader()).andReturn("*");
 		replay(resource, request);
@@ -72,6 +78,7 @@ public class MatchHelperTest extends TestCase {
 		assertFalse(result);
 	}
 
+	@Test
 	public void testCheckIfMatch_DoesMatch_NoHeader_NullResource() {
 		expect(request.getIfMatchHeader()).andReturn(null);
 		replay(resource, request);
@@ -83,6 +90,7 @@ public class MatchHelperTest extends TestCase {
 
 
 
+	@Test
 	public void testCheckIfMatch_DoesMatch_MultiValues() {
 		expect(resource.getUniqueId()).andReturn("X");
 		expect(request.getIfMatchHeader()).andReturn("X, Y");
@@ -92,6 +100,7 @@ public class MatchHelperTest extends TestCase {
 		assertTrue(result);
 	}
 
+	@Test
 	public void testCheckIfMatch_DoesNotMatch() {
 		expect(resource.getUniqueId()).andReturn("X");
 		expect(request.getIfMatchHeader()).andReturn("Y");
@@ -101,6 +110,7 @@ public class MatchHelperTest extends TestCase {
 		assertFalse(result);
 	}
 
+	@Test
 	public void testCheckIfMatch_NullRequest() {
 		expect(request.getIfMatchHeader()).andReturn(null);
 		expect(request.getIfHeader()).andReturn(null);
@@ -110,6 +120,7 @@ public class MatchHelperTest extends TestCase {
 		assertTrue(result); // should be true because we want processing to continue
 	}
 
+	@Test
 	public void testCheckIfMatch_NullUniqueId() {
 		expect(resource.getUniqueId()).andReturn(null);
 		expect(request.getIfMatchHeader()).andReturn("X");
@@ -120,6 +131,7 @@ public class MatchHelperTest extends TestCase {
 	}
 
 //********
+	@Test
 	public void testCheckIfNoneMatch_DoesNotMatch_SingleValue() {
 		expect(resource.getUniqueId()).andReturn("X");
 		expect(request.getIfNoneMatchHeader()).andReturn("Y");
@@ -135,6 +147,7 @@ public class MatchHelperTest extends TestCase {
 	 * ie
 	 *
 	 */
+	@Test
 	public void testCheckIfNoneMatch_DoesNotMatch_Star_TrueIfResource() {
 		expect(request.getIfNoneMatchHeader()).andReturn("*");
 		replay(request);
@@ -143,6 +156,7 @@ public class MatchHelperTest extends TestCase {
 		assertTrue(result);
 	}
 
+	@Test
 	public void testCheckIfNoneMatch_DoesNotMatch_Star_FalseIfNoResource() {
 		expect(request.getIfNoneMatchHeader()).andReturn("*");
 		replay(request);
@@ -151,6 +165,7 @@ public class MatchHelperTest extends TestCase {
 		assertFalse(result);
 	}
 
+	@Test
 	public void testCheckIfNoneMatch_DoesNotMatch_MultiValues() {
 		expect(resource.getUniqueId()).andReturn("X");
 		expect(request.getIfNoneMatchHeader()).andReturn("Y, Z");
@@ -160,6 +175,7 @@ public class MatchHelperTest extends TestCase {
 		assertFalse(result);
 	}
 
+	@Test
 	public void testCheckIfNoneMatch_DoesMatch() {
 		expect(resource.getUniqueId()).andReturn("X");
 		expect(request.getIfNoneMatchHeader()).andReturn("X");
@@ -169,6 +185,7 @@ public class MatchHelperTest extends TestCase {
 		assertTrue(result);
 	}
 
+	@Test
 	public void testCheckIfNoneMatch_NullRequest() {
 		expect(request.getIfNoneMatchHeader()).andReturn(null);
 		replay(request);
@@ -177,6 +194,7 @@ public class MatchHelperTest extends TestCase {
 		assertFalse(result);
 	}
 
+	@Test
 	public void testCheckIfNoneMatch_NullUniqueId() {
 		expect(resource.getUniqueId()).andReturn(null);
 		expect(request.getIfNoneMatchHeader()).andReturn("X");
@@ -187,6 +205,7 @@ public class MatchHelperTest extends TestCase {
 	}
 
 
+	@Test
 	public void test_CheckIfRange_NoHeader() {
 		expect(request.getIfRangeHeader() ).andReturn(null);
 		replay(resource, request);
@@ -195,6 +214,7 @@ public class MatchHelperTest extends TestCase {
 		assertTrue(result);
 	}
 
+	@Test
 	public void test_CheckIfRange_Matches() {
 		expect(resource.getUniqueId()).andReturn("X");
 		expect(request.getIfRangeHeader() ).andReturn("X");
@@ -204,6 +224,7 @@ public class MatchHelperTest extends TestCase {
 		assertTrue(result);
 	}
 
+	@Test
 	public void test_CheckIfRange_NotMatches() {
 		expect(resource.getUniqueId()).andReturn("X");
 		expect(request.getIfRangeHeader() ).andReturn("Y");

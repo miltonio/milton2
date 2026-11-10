@@ -20,22 +20,26 @@ package io.milton.httpclient.calsync.parse;
 
 import io.milton.httpclient.parse.PropertyAccessor;
 import java.lang.reflect.Method;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  *
  * @author brad
  */
-public class TypeConverterTest extends TestCase {
+public class TypeConverterTest {
     
     PropertyAccessor typeConverter;
 
-    @Override
+    @BeforeEach
     protected void setUp() throws Exception {
         typeConverter = new PropertyAccessor();
     }
     
         
+    @Test
     public void test_GetString() throws Exception{
         MyCalendarEventBean bean = new MyCalendarEventBean();
         bean.setSummary("XXX");
@@ -44,6 +48,7 @@ public class TypeConverterTest extends TestCase {
         assertEquals("XXX", v);
     }
     
+    @Test
     public void test_SetString() throws Exception{
         MyCalendarEventBean bean = new MyCalendarEventBean();
         bean.setSummary("XXX");

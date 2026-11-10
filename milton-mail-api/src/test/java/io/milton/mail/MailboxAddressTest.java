@@ -1,17 +1,18 @@
 package io.milton.mail;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  *
  * @author brad
  */
-public class MailboxAddressTest extends TestCase {
+public class MailboxAddressTest {
     
-    public MailboxAddressTest(String testName) {
-        super(testName);
-    }
 
+    @Test
     public void testParse_NoPersonal() {
         MailboxAddress ma = MailboxAddress.parse("abc@def.com");
         assertEquals("abc", ma.user);
@@ -28,6 +29,7 @@ public class MailboxAddressTest extends TestCase {
 //        assertNull(ma.personal);
 //    }
 
+    @Test
     public void testToString() {
         MailboxAddress ma;
         ma = new MailboxAddress("abc", "def.com");
@@ -38,6 +40,7 @@ public class MailboxAddressTest extends TestCase {
 
     }
 
+    @Test
     public void testParse_WithPersonal() {
         MailboxAddress ma = MailboxAddress.parse("\"John Wayne\" <everyone@www.aucklandcanoepolo.co.nz>");
         System.out.println("user: " + ma.user);
@@ -50,6 +53,7 @@ public class MailboxAddressTest extends TestCase {
         assertEquals("\"John Wayne\" <everyone@www.aucklandcanoepolo.co.nz>", ma.toString());
     }
 
+    @Test
     public void testRemoveSurroundingDelimiters() {
         assertEquals("abc", MailboxAddress.removeSurroundingDelimiters("\"abc\"", "\"", "\""));
         assertEquals("abc", MailboxAddress.removeSurroundingDelimiters(" \"abc\"", "\"", "\""));

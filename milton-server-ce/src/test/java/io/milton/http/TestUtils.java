@@ -32,14 +32,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TestUtils extends TestCase {
+public class TestUtils {
 
 	private static final Logger log = LoggerFactory.getLogger(TestUtils.class);
 		
+    @Test
     public void test() throws NotAuthorizedException, BadRequestException {
         ColRes col1 = new ColRes("col1");
         ColRes col2 = new ColRes("col2");
@@ -52,6 +55,7 @@ public class TestUtils extends TestCase {
         assertEquals(page, r);
     }
 
+    @Test
     public void testGetProtocol() {
         String url = "http://abc.com/aaa";
         assertEquals("http", Utils.getProtocol(url));

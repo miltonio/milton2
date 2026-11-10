@@ -22,29 +22,32 @@ package io.milton.http.http11;
 import io.milton.http.Range;
 import java.util.List;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.easymock.classextension.EasyMock.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+import static org.easymock.EasyMock.*;
 
 /**
  *
  * @author brad
  */
-public class PartialGetHelperTest extends TestCase {
+public class PartialGetHelperTest {
 	
 	PartialGetHelper partialGetHelper;
 	Http11ResponseHandler responseHandler;
 	
-	public PartialGetHelperTest(String testName) {
-		super(testName);
-	}
 	
-	@Override
+	@BeforeEach
 	protected void setUp() throws Exception {
 		responseHandler = createMock(Http11ResponseHandler.class);
 		partialGetHelper = new PartialGetHelper();
 	}
 
+	@Test
 	public void testGetRange_null() {
 		List<Range> ranges = partialGetHelper.getRanges(null);
 		assertNull(ranges);
@@ -52,6 +55,7 @@ public class PartialGetHelperTest extends TestCase {
 		assertNull(ranges);
 	}
 	
+	@Test
 	public void testGetRange_first_half() {
 		List<Range> ranges = partialGetHelper.getRanges("bytes=100-");
 		assertNotNull(ranges);
@@ -61,6 +65,7 @@ public class PartialGetHelperTest extends TestCase {
 		assertNull(r.getFinish());
 	}	
 
+	@Test
 	public void testGetRange_second_half() {
 		List<Range> ranges = partialGetHelper.getRanges("bytes=-100");
 		assertNotNull(ranges);
@@ -71,6 +76,7 @@ public class PartialGetHelperTest extends TestCase {
 	}	
 	
 	
+	@Test
 	public void testGetRange_single() {
 		List<Range> ranges = partialGetHelper.getRanges("bytes=0-499");
 		assertNotNull(ranges);
@@ -80,6 +86,7 @@ public class PartialGetHelperTest extends TestCase {
 		assertEquals(499L, r.getFinish().longValue());
 	}
 	
+	@Test
 	public void testGetRange_multi() {
 		List<Range> ranges = partialGetHelper.getRanges("bytes=0-499,1000-1500,2000-2500");
 		assertNotNull(ranges);
@@ -92,15 +99,19 @@ public class PartialGetHelperTest extends TestCase {
 		assertEquals(2500, ranges.get(2).getFinish().intValue());	
 	}
 
+	@Test
 	public void testGetRanges() {
 	}
 
+	@Test
 	public void testSendPartialContent() throws Exception {
 	}
 
+	@Test
 	public void testGetMaxMemorySize() {
 	}
 
+	@Test
 	public void testSetMaxMemorySize() {
 	}
 

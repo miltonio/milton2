@@ -19,19 +19,20 @@
 
 package io.milton.common;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  *
  * @author brad
  */
-public class FileUtilsTest extends TestCase {
+public class FileUtilsTest {
     
-    public FileUtilsTest(String testName) {
-        super(testName);
-    }
 
-    public static void testStripExtension() {
+    @Test
+    public void testStripExtension() {
         assertEquals( "abc", FileUtils.stripExtension( "abc.def"));
         String s = FileUtils.stripExtension( "abc");
         assertEquals( "abc", s);
@@ -39,31 +40,37 @@ public class FileUtilsTest extends TestCase {
         assertEquals( "abc.def", FileUtils.stripExtension( "abc.def.xxx"));
     }
     
+    @Test
     public void testGetExtension() {
         String s = FileUtils.getExtension("abc.txt");
         assertEquals("txt", s);
     }
     
+    @Test
     public void testGetExtension_NoPreExt() {
         String s = FileUtils.getExtension(".txt");
         assertEquals("txt", s);
     }    
     
+    @Test
     public void testGetExtension_NoExt() {
         String s = FileUtils.getExtension("abc");
         assertNull(s);
     }    
     
+    @Test
     public void testGetExtension_EndsWithDot() {
         String s = FileUtils.getExtension("abc.");
         assertEquals("", s);
     }        
     
+    @Test
     public void testGetExtension_Blank() {
         String s = FileUtils.getExtension("");
         assertNull(s);
     }        
     
+    @Test
     public void testGetExtension_Path() {
         String s = FileUtils.getExtension("/theme/../assets/fonts/Lato-Lig-webfont.eot");
         assertEquals("eot", s);

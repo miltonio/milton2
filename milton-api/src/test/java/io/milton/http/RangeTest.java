@@ -16,24 +16,26 @@
  */
 package io.milton.http;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  *
  * @author brad
  */
-public class RangeTest extends TestCase {
+public class RangeTest {
     
-    public RangeTest(String testName) {
-        super(testName);
-    }
 
+    @Test
     public void testRangeParseWithSpace() {
         Range r = Range.parse(" 123-456");
         assertEquals(123, r.getStart().longValue());
         assertEquals(456, r.getFinish().longValue());
     }
 
+    @Test
     public void testRangeParseWithNoEnd() {
         Range r = Range.parse("123-");
         assertEquals(123, r.getStart().longValue());

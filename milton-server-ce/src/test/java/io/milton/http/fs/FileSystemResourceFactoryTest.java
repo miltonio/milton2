@@ -21,19 +21,24 @@ package io.milton.http.fs;
 
 import io.milton.http.SecurityManager;
 import java.io.File;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
  */
-public class FileSystemResourceFactoryTest extends TestCase{
+public class FileSystemResourceFactoryTest{
 
     File root;
     FileSystemResourceFactory factory;
 
-    @Override
+    @BeforeEach
     protected void setUp() throws Exception {
-        super.setUp();
         root = new File(System.getProperty("java.home"));
         SecurityManager sm = null;
         factory = new FileSystemResourceFactory( root, sm );
@@ -42,16 +47,19 @@ public class FileSystemResourceFactoryTest extends TestCase{
 
 
 
+    @Test
     public void testResolvePath_Root() {
         File f = factory.resolvePath(root, "/");
         assertEquals(root, f);
     }
 
+    @Test
     public void testResolvePath_SubDir() {
         File f = factory.resolvePath(root, "/lib");
         assertEquals(new File(root,"lib"), f);
     }
 
+    @Test
     public void testResolvePath_SubSubDir() {
         File f = factory.resolvePath(root, "/lib/security");
         assertEquals("security", f.getName());
@@ -59,6 +67,7 @@ public class FileSystemResourceFactoryTest extends TestCase{
         assertTrue(f.isDirectory());
     }
 
+    @Test
     public void testResolvePath_File() {
         File f = factory.resolvePath(root, "/lib/security/default.policy");
         assertEquals("default.policy", f.getName());
@@ -67,16 +76,19 @@ public class FileSystemResourceFactoryTest extends TestCase{
 
     }
 
+    @Test
     public void testResolvePath_RejectsDotDot() {
         assertNull(factory.resolvePath(root, "/../secret.txt"));
         assertNull(factory.resolvePath(root, "/lib/../../secret.txt"));
         assertNull(factory.resolvePath(root, "/.."));
     }
 
+    @Test
     public void testResolvePath_RejectsSingleDot() {
         assertNull(factory.resolvePath(root, "/./lib"));
     }
 
+    @Test
     public void testGetResource_RejectsTraversal() {
         assertNull(factory.getResource("localhost", "/../secret.txt"));
     }

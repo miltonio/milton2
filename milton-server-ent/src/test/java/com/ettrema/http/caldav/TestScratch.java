@@ -15,13 +15,14 @@
  */
 package com.ettrema.http.caldav;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author brad
  */
-public class TestScratch extends TestCase{
+public class TestScratch{
+    @Test
     public void test() {
         System.out.println("ismilton: " + isMilton(false, true, true, true));
     }

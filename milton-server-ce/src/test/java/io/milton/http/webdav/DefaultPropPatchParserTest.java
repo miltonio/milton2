@@ -24,7 +24,10 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.Set;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import javax.xml.namespace.QName;
 
@@ -32,16 +35,10 @@ import javax.xml.namespace.QName;
  *
  * @author brad
  */
-public class DefaultPropPatchParserTest extends TestCase {
-	public DefaultPropPatchParserTest(String testName) {
-		super(testName);
-	}
+public class DefaultPropPatchParserTest {
 	
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-	}
 
+    @Test
     public void testMsOfficePropPatch() throws Exception
     {
         DefaultPropPatchParser parser = new DefaultPropPatchParser();
@@ -62,6 +59,7 @@ public class DefaultPropPatchParserTest extends TestCase {
         assertEquals(0, fieldsToRemove.size());
     }
 
+    @Test
     public void testVistaPropPatch() throws Exception
     {
         DefaultPropPatchParser parser = new DefaultPropPatchParser();
@@ -84,6 +82,7 @@ public class DefaultPropPatchParserTest extends TestCase {
         assertEquals(0, fieldsToRemove.size());
     }
 
+    @Test
     public void testSpecPropPatch() throws Exception
     {
         DefaultPropPatchParser parser = new DefaultPropPatchParser();
@@ -104,6 +103,7 @@ public class DefaultPropPatchParserTest extends TestCase {
         assertTrue(fieldsToRemove.contains(copyrightOwner));
     }
 
+    @Test
     public void testMkCalendar() throws Exception
     {
         DefaultPropPatchParser parser = new DefaultPropPatchParser();

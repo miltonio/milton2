@@ -8,14 +8,15 @@ package com.ettrema.http.caldav;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author brad
  */
-public class CalDavPropertySourceTest extends TestCase {
+public class CalDavPropertySourceTest {
 
+    @Test
     public void testGetProperty() throws URISyntaxException {
         URI uri = new URI( "mailto:bernard@example.com" );
         URI[] arr = new URI[1];
@@ -25,15 +26,19 @@ public class CalDavPropertySourceTest extends TestCase {
         }
     }
 
+    @Test
     public void testSetProperty() {
     }
 
+    @Test
     public void testGetPropertyMetaData() {
     }
 
+    @Test
     public void testClearProperty() {
     }
 
+    @Test
     public void testGetAllPropertyNames() {
     }
 }

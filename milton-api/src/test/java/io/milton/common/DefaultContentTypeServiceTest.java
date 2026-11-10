@@ -21,18 +21,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  *
  * @author brad
  */
-public class DefaultContentTypeServiceTest extends TestCase {
+public class DefaultContentTypeServiceTest {
 
     DefaultContentTypeService contentTypeService;
     Map<String, List<String>> mapOfContentTypes;
     
-    @Override
+    @BeforeEach
     protected void setUp() throws Exception {
         mapOfContentTypes = new HashMap<>();
         mapOfContentTypes.put("html", ContentTypeUtils.toList("text/html"));
@@ -42,6 +47,7 @@ public class DefaultContentTypeServiceTest extends TestCase {
     }
         
 
+    @Test
     public void testFindContentTypes_Single() {
         List<String> list = contentTypeService.findContentTypes("x.html");
         assertNotNull(list);
@@ -49,11 +55,13 @@ public class DefaultContentTypeServiceTest extends TestCase {
         assertEquals("text/html", list.get(0));
     }
 
+    @Test
     public void testFindContentTypes_None() {
         List<String> list = contentTypeService.findContentTypes("x.XXX");
         assertNull(list);
     }
     
+    @Test
     public void testFindContentTypes_Multi() {
         List<String> list = contentTypeService.findContentTypes("x.aiff");
         assertNotNull(list);
@@ -66,42 +74,49 @@ public class DefaultContentTypeServiceTest extends TestCase {
     /**
      * Test of getPreferedMimeType method, of class DefaultContentTypeService.
      */
+    @Test
     public void testGetPreferedMimeType_NoAccept() {
         List<String> list = ContentTypeUtils.toList("x,y");
         String ct = contentTypeService.getPreferedMimeType((String)null, list);
         assertEquals("x", ct);
     }
     
+    @Test
     public void testGetPreferedMimeType_NoCanProvide() {
         List<String> list = ContentTypeUtils.toList("x,y");
         String ct = contentTypeService.getPreferedMimeType("x", null);
         assertNull(ct);
     }
     
+    @Test
     public void testGetPreferedMimeType_MatchingSingle() {
         List<String> list = ContentTypeUtils.toList("x");
         String ct = contentTypeService.getPreferedMimeType("x", list);
         assertEquals("x", ct);
     }    
 
+    @Test
     public void testGetPreferedMimeType_MatchingFirst() {
         List<String> list = ContentTypeUtils.toList("x,y");
         String ct = contentTypeService.getPreferedMimeType("x", list);
         assertEquals("x", ct);
     }    
 
+    @Test
     public void testGetPreferedMimeType_MatchingLast() {
         List<String> list = ContentTypeUtils.toList("x,y");
         String ct = contentTypeService.getPreferedMimeType("y", list);
         assertEquals("y", ct);
     }    
 
+    @Test
     public void testGetPreferedMimeType_Ignores_QoP() {
         List<String> list = ContentTypeUtils.toList("x; q=0.4,y; q=0.5");
         String ct = contentTypeService.getPreferedMimeType("y", list);
         assertEquals("y", ct);
     }    
     
+    @Test
     public void testGetPreferedMimeType_MultiAcceptsFirst() {
         List<String> list = ContentTypeUtils.toList("x; q=0.4,y; q=0.5");
         List<String> accepts = ContentTypeUtils.toList("x, y");
@@ -109,6 +124,7 @@ public class DefaultContentTypeServiceTest extends TestCase {
         assertEquals("x", ct);
     }        
 
+    @Test
     public void testGetPreferedMimeType_MultiAcceptsSecond() {
         List<String> list = ContentTypeUtils.toList("x; q=0.4,y; q=0.5");
         List<String> accepts = ContentTypeUtils.toList("a, y");

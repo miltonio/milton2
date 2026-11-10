@@ -25,12 +25,15 @@ import io.milton.http.LockInfo.LockType;
 import io.milton.http.webdav.PropFindSaxHandler;
 import java.util.Map;
 import javax.xml.namespace.QName;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-public class TestSaxHandler extends TestCase {
+public class TestSaxHandler {
+    @Test
     public void testPropFind() throws Exception{
         XMLReader reader = XMLReaderFactory.createXMLReader();
 		reader.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
@@ -44,6 +47,7 @@ public class TestSaxHandler extends TestCase {
         assertEquals("Thu, 01 Jan 1970 00:00:00 GMT", result.get(new QName( "DAV:", "getlastmodified")));
         assertEquals("1970-01-01T00:00:00Z", result.get(new QName( "DAV:", "creationdate")));
     }
+    @Test
     public void testLockInfo() throws Exception{
         XMLReader reader = XMLReaderFactory.createXMLReader();
 		reader.setFeature("http://xml.org/sax/features/external-parameter-entities", false);

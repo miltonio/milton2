@@ -19,22 +19,28 @@
 package io.milton.httpclient.calsync.parse;
 
 import io.milton.httpclient.parse.PropertyAccessor;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import net.fortuna.ical4j.model.*;
 
 /**
  *
  * @author brad
  */
-public class ParserTest extends TestCase {
+public class ParserTest {
 
     CalDavBeanPropertyMapper parser;
 
-    @Override
+    @BeforeEach
     protected void setUp() throws Exception {
         parser = new CalDavBeanPropertyMapper(new PropertyAccessor());
     }
 
+    @Test
     public void testParse() throws Exception {
         String ical = "BEGIN:VCALENDAR\n"
                 + "PRODID:-//milton.io//iCal4j 1.0//EN\n"
@@ -133,6 +139,7 @@ public class ParserTest extends TestCase {
 //        assertEquals(end, bean.getEndDate());
     }
 
+    @Test
     public void testFormat() {
         MyCalendarEventBean bean = new MyCalendarEventBean();
         bean.setUid("xxx");

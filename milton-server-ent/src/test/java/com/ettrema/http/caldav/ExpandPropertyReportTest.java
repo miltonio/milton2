@@ -22,7 +22,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import javax.xml.namespace.QName;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.jdom2.Document;
 import static org.easymock.EasyMock.*;
@@ -32,7 +33,7 @@ import org.jdom2.input.SAXBuilder;
  *
  * @author bradm
  */
-public class ExpandPropertyReportTest extends TestCase {
+public class ExpandPropertyReportTest {
 	
 	ResourceFactory resourceFactory;
 	PropFindableResource otherResource;
@@ -47,11 +48,8 @@ public class ExpandPropertyReportTest extends TestCase {
 	PropFindXmlGeneratorHelper xmlGeneratorHelper;
 	ValueWriters valueWriters;
 	
-	public ExpandPropertyReportTest(String testName) {
-		super(testName);
-	}
 	
-	@Override
+	@BeforeEach
 	protected void setUp() throws Exception {
 		propertySource = createMock(PropertySource.class);
 		xmlGeneratorHelper = new PropFindXmlGeneratorHelper();
@@ -71,6 +69,7 @@ public class ExpandPropertyReportTest extends TestCase {
 		
 	}
 
+	@Test
 	public void testProcess() throws Exception {
 		PropFindableResource pfr = createMock(PropFindableResource.class);
 		SAXBuilder builder = new org.jdom2.input.SAXBuilder();
@@ -141,6 +140,7 @@ public class ExpandPropertyReportTest extends TestCase {
 //	}
 	
 
+	@Test
 	public void testGetName() {
 	}
 }

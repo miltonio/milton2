@@ -19,12 +19,15 @@
 
 package io.milton.http.webdav;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
-public class TestMoveHandler extends TestCase {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public class TestMoveHandler {
     public TestMoveHandler() {
     }
     
+    @Test
     public void test() throws Exception {
         Dest dest;
         

@@ -12,25 +12,24 @@ import io.milton.http.webdav.SupportedLocks;
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Map;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author brad
  */
-public class SupportedLockValueWriterTest extends TestCase {
+public class SupportedLockValueWriterTest {
 
     SupportedLockValueWriter valueWriter;
 
-    public SupportedLockValueWriterTest(String testName) {
-        super(testName);
-    }
 
-    @Override
+    @BeforeEach
     protected void setUp() throws Exception {
         valueWriter = new SupportedLockValueWriter();
     }
 
+    @Test
     public void testWriteValue() {
         PropFindableResource res = null;
         SupportedLocks locks = new SupportedLocks(res);

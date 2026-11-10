@@ -18,19 +18,18 @@ package io.milton.http;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
-import static junit.framework.Assert.assertEquals;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  *
  * @author brad
  */
-public class BeanCookieTest extends TestCase {
+public class BeanCookieTest {
     
-    public BeanCookieTest(String testName) {
-        super(testName);
-    }
 
+    @Test
     public void testFormat_Simple()  {
         BeanCookie bc = new BeanCookie("name");                
         bc.setValue("value");
@@ -38,6 +37,7 @@ public class BeanCookieTest extends TestCase {
     }
     
     
+    @Test
     public void testFormat_Complex() throws DateUtils.DateParseException {
         BeanCookie bc = new BeanCookie("SSID");                
         bc.setValue("XYZ");

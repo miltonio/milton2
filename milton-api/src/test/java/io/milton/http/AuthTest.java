@@ -21,14 +21,18 @@
 package io.milton.http;
 
 import io.milton.http.Auth.Scheme;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  *
  * @author brad
  */
-public class AuthTest extends TestCase {
+public class AuthTest {
 
+    @Test
     public void testBasic() {
         Auth auth = new Auth( "Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==");
         //Auth auth = new Auth( "Basic username=Aladdin,password=\"open sesame\"");
@@ -36,6 +40,7 @@ public class AuthTest extends TestCase {
         assertEquals( "open sesame", auth.getPassword());
     }
 
+    @Test
     public void testDigest() {
         Auth auth = new Auth( "Digest username=\"Mufasa\",realm=\"testrealm@host.com\",nonce=\"ZTMyNmFmNDEtYWEwYy00MTc5LTk2OWEtZjMyOGRiOWI1NTg0\",uri=\"/webdav/secure\",cnonce=\"09683d5720f7e5e7dec2daeee585fe15\",nc=00000001,response=\"e6e7559f052bf75cdd8a979943197f40\",qop=\"auth\"");
         assertEquals( "Mufasa", auth.getUser());
@@ -49,6 +54,7 @@ public class AuthTest extends TestCase {
 
     }
 
+    @Test
     public void testNullBearer() {
         Auth auth = new Auth( "Bearer");
         assertEquals(Scheme.BEARER, auth.getScheme());

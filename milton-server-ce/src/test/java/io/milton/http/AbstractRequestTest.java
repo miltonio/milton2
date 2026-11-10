@@ -20,28 +20,25 @@
 
 package io.milton.http;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  *
  * @author brad
  */
-public class AbstractRequestTest extends TestCase {
+public class AbstractRequestTest {
     
-    public AbstractRequestTest(String testName) {
-        super(testName);
-    }
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
 
+    @Test
     public void testStripToPath() {
         String s = AbstractRequest.stripToPath("http://abc:80/my/path");
         assertEquals("/my/path", s);
     }
 
+    @Test
     public void testStripToPathWithQueryString() {
         String s = AbstractRequest.stripToPath("http://abc:80/my/path?x=y");
         assertEquals("/my/path", s);

@@ -24,22 +24,26 @@ import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
 import javax.xml.namespace.QName;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.easymock.classextension.EasyMock.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+
+import static org.easymock.EasyMock.*;
 
 /**
  *
  * @author brad
  */
-public class MsPropFindRequestFieldParserTest extends TestCase {
+public class MsPropFindRequestFieldParserTest {
 
     MsPropFindRequestFieldParser fieldParser;
     PropFindRequestFieldParser wrapped;
     InputStream request;
     Set<QName> set;
 
-    @Override
+    @BeforeEach
     protected void setUp() throws Exception {
         request = createMock( InputStream.class );
         wrapped = createMock( PropFindRequestFieldParser.class );
@@ -47,6 +51,7 @@ public class MsPropFindRequestFieldParserTest extends TestCase {
         set = new HashSet<>();
     }
 
+    @Test
     public void testGetRequestedFields_WrappedReturnsFields() {
         set.add( new QName( "a" ) );
         PropertiesRequest res = new PropertiesRequest( toProperties(set) );
@@ -58,6 +63,7 @@ public class MsPropFindRequestFieldParserTest extends TestCase {
         assertSame( res, actual );
     }
 
+    @Test
     public void testGetRequestedFields_WrappedReturnsNothing() {
         PropertiesRequest res = new PropertiesRequest( toProperties(set) );
         expect( wrapped.getRequestedFields( request ) ).andReturn( res );
